@@ -24,5 +24,5 @@ class TranscodeJob(BaseModel):
     profile = models.CharField(max_length=100)
     executor = models.CharField(max_length=20)
     status = models.CharField(max_length=10, choices=TRANSCODE_JOB_CHOICES)
-    started_on = models.DateTimeField(db_index=True)
-    ended_on = models.DateTimeField(db_index=True)
+    started_on = models.DateTimeField(db_index=True, null=True)
+    ended_on = models.DateTimeField(db_index=True, null=True)

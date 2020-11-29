@@ -1,1 +1,3 @@
 django
+ffmpeg-python
+ffprobe-python==1.0.3
