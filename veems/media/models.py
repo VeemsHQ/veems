@@ -26,3 +26,4 @@ class TranscodeJob(BaseModel):
     status = models.CharField(max_length=10, choices=TRANSCODE_JOB_CHOICES)
     started_on = models.DateTimeField(db_index=True, null=True)
     ended_on = models.DateTimeField(db_index=True, null=True)
+    # TODO: failure context
