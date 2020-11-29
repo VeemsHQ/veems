@@ -22,17 +22,30 @@ def test_get_metadata():
 
 class TestTranscode:
     @pytest.fixture
-    def transcode_job(self):
-        upload = Upload.objects.create(media_type='video/quicktime')
-        return TranscodeJob.objects.create(
-            upload=upload,
-            profile='webm360p',
-            executor='ffmpeg',
-            status='created',
-            started_on=timezone.now(),
-        )
+    def transcode_job_factory(self):
+        def make(profile):
+            upload = Upload.objects.create(media_type='video/quicktime')
+            return TranscodeJob.objects.create(
+                upload=upload,
+                profile=profile,
+                executor='ffmpeg',
+                status='created',
+                started_on=timezone.now(),
+            )
 
-    def test(self, transcode_job):
+        return make
+
+    @pytest.mark.parametrize(
+        'transcode_profile_name, exp_width_height',
+        [
+            ('webm360p', (640, 360)),
+            ('webm720p', (1280, 720)),
+        ]
+    )
+    def test(
+        self, transcode_job_factory, transcode_profile_name, exp_width_height
+    ):
+        transcode_job = transcode_job_factory(profile=transcode_profile_name)
         result_path = ffmpeg.transcode(
             transcode_job=transcode_job, source_file_path=VIDEO_PATH
         )
@@ -40,9 +53,10 @@ class TestTranscode:
         assert isinstance(result_path, Path)
         assert result_path.exists()
         metadata = ffmpeg._get_metadata(video_path=result_path)
+        exp_width, exp_height = exp_width_height
         assert metadata == {
-            'width': 640,
-            'height': 360,
+            'width': exp_width,
+            'height': exp_height,
         }
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
