@@ -38,8 +38,8 @@ class TestTranscode:
 
     @pytest.mark.parametrize(
         'transcode_profile_name, exp_width_height', [
-            # ('webm_360p', (640, 360)),
-            # ('webm_720p', (1280, 720)),
+            ('webm_360p', (640, 360)),
+            ('webm_720p', (1280, 720)),
             ('webm_1080p', (1920, 1080)),
             ('webm_2160p', (3840, 2160)),
         ]
@@ -53,7 +53,6 @@ class TestTranscode:
         )
 
         assert isinstance(result_path, Path)
-        import ipdb; ipdb.set_trace()
         assert result_path.exists()
         metadata = ffmpeg._get_metadata(video_path=result_path)
         exp_width, exp_height = exp_width_height
