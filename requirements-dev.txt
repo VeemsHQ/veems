@@ -5,3 +5,4 @@ pep8-naming
 pytest
 pytest-mock
 pytest-django
+ipdb

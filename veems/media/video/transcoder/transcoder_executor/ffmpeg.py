@@ -1,7 +1,6 @@
 import tempfile
 import os
 from pathlib import Path
-import subprocess
 
 from django.utils import timezone
 from ffprobe import FFProbe
@@ -15,21 +14,32 @@ def _get_metadata(video_path):
     return {
         'width': int(first_stream.width),
         'height': int(first_stream.height),
+        'framerate': int(first_stream.framerate),
     }
 
 
-def _ffmpeg_transcode(
-    source_file_path, bitrate, width, height, output_file_path
-):
-    command_template = (
-        f'ffmpeg -y -i {source_file_path} '
-        '-c:v libvpx-vp9 -crf 30 -b:v 0 '
-        f'-b:a {bitrate}k '
-        f'-vf scale={width}:{height} '
+def _ffmpeg_transcode(*, source_file_path, profile, output_file_path):
+    base_command = (
+        f'ffmpeg -y -i {source_file_path} -vf '
+        f'scale={profile.width}x{profile.height} '
+        f'-b:v {profile.average_rate}k '
+        f'-minrate {profile.min_rate}k '
+        f'-maxrate {profile.max_rate}k '
+        f'-tile-columns {profile.tile_columns} '
+        '-g 240 '
+        f'-threads {profile.threads} '
+        '-quality good '
+        f'-crf {profile.constant_rate_factor} '
+        '-c:v libvpx-vp9 '
         '-c:a libopus '
-        f'{output_file_path}'
+        '-speed 4 '
     )
-    result = os.system(command_template)
+    command_1 = base_command + ('-pass 1 ' f'{output_file_path}')
+    command_2 = base_command + ('-pass 2 ' f'{output_file_path}')
+    result = os.system(command_1)
+    if result != 0:
+        raise RuntimeError('Transcoding failed')
+    result = os.system(command_2)
     if result != 0:
         raise RuntimeError('Transcoding failed')
 
@@ -56,9 +66,7 @@ def transcode(*, transcode_job, source_file_path):
     try:
         _ffmpeg_transcode(
             source_file_path=source_file_path,
-            width=profile.width,
-            height=profile.height,
-            bitrate=profile.bitrate,
+            profile=profile,
             output_file_path=output_file_path,
         )
     except RuntimeError:

@@ -7,7 +7,7 @@ from veems.media.video.transcoder.transcoder_executor import ffmpeg
 from veems.media.models import TranscodeJob, Upload
 
 pytestmark = pytest.mark.django_db
-VIDEO_PATH = Path(__file__).parent.parent / 'test_data/1080p.mov'
+VIDEO_PATH = Path(__file__).parent.parent / 'test_data/2160p_30fps.mp4'
 INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
 
 
@@ -17,6 +17,7 @@ def test_get_metadata():
     assert metadata == {
         'width': 1920,
         'height': 1080,
+        'framerate': 30,
     }
 
 
@@ -24,7 +25,7 @@ class TestTranscode:
     @pytest.fixture
     def transcode_job_factory(self):
         def make(profile):
-            upload = Upload.objects.create(media_type='video/quicktime')
+            upload = Upload.objects.create(media_type='video/mp4')
             return TranscodeJob.objects.create(
                 upload=upload,
                 profile=profile,
@@ -36,10 +37,11 @@ class TestTranscode:
         return make
 
     @pytest.mark.parametrize(
-        'transcode_profile_name, exp_width_height',
-        [
-            ('webm360p', (640, 360)),
-            ('webm720p', (1280, 720)),
+        'transcode_profile_name, exp_width_height', [
+            # ('webm_360p', (640, 360)),
+            # ('webm_720p', (1280, 720)),
+            ('webm_1080p', (1920, 1080)),
+            ('webm_2160p', (3840, 2160)),
         ]
     )
     def test(
@@ -51,12 +53,14 @@ class TestTranscode:
         )
 
         assert isinstance(result_path, Path)
+        import ipdb; ipdb.set_trace()
         assert result_path.exists()
         metadata = ffmpeg._get_metadata(video_path=result_path)
         exp_width, exp_height = exp_width_height
         assert metadata == {
             'width': exp_width,
             'height': exp_height,
+            'framerate': 30,
         }
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
