@@ -1,3 +1,11 @@
+"""
+Video transcode profiles.
+
+According to recommended specs:
+https://developers.google.com/media/vp9/settings/vod
+"""
+
+
 class WebM360p:
     name = 'webm_360p'
     format = 'video/webm'
