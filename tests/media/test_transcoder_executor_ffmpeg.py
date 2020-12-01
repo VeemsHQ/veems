@@ -7,12 +7,26 @@ from veems.media.video.transcoder.transcoder_executor import ffmpeg
 from veems.media.models import TranscodeJob, Upload
 
 pytestmark = pytest.mark.django_db
-VIDEO_PATH = Path(__file__).parent.parent / 'test_data/2160p_30fps.mp4'
+VIDEO_PATH_2160_30FPS = (
+    Path(__file__).parent.parent / 'test_data/2160p_30fps.mp4'
+)
+VIDEO_PATH_2160_24FPS = (
+    Path(__file__).parent.parent / 'test_data/2160p_24fps.mp4'
+)
+VIDEO_PATH_2160_60FPS = (
+    Path(__file__).parent.parent / 'test_data/2160p_60fps.mkv'
+)
+VIDEO_PATH_1080_60FPS = (
+    Path(__file__).parent.parent / 'test_data/1080p_60fps.mp4'
+)
+VIDEO_PATH_360_60FPS = (
+    Path(__file__).parent.parent / 'test_data/360p_60fps.webm'
+)
 INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
 
 
 def test_get_metadata():
-    metadata = ffmpeg._get_metadata(video_path=VIDEO_PATH)
+    metadata = ffmpeg._get_metadata(video_path=VIDEO_PATH_2160_30FPS)
 
     assert metadata == {
         'width': 1920,
@@ -37,19 +51,24 @@ class TestTranscode:
         return make
 
     @pytest.mark.parametrize(
-        'transcode_profile_name, exp_width_height', [
-            ('webm_360p', (640, 360)),
-            ('webm_720p', (1280, 720)),
-            ('webm_1080p', (1920, 1080)),
-            ('webm_2160p', (3840, 2160)),
+        'source_file_path, transcode_profile_name, exp_width_height, exp_fps',
+        [
+            (VIDEO_PATH_1080_60FPS, 'webm_360p', (640, 360), 60),
+            # (VIDEO_PATH_2160_60FPS, 'webm_360p', (640, 360), 60),
+            # (VIDEO_PATH_24FPS, 'webm_360p', (640, 360), 24),
+            # (VIDEO_PATH, 'webm_360p', (640, 360), 30),
+            # (VIDEO_PATH, 'webm_720p', (1280, 720), 30),
+            # (VIDEO_PATH, 'webm_1080p', (1920, 1080), 30),
+            # (VIDEO_PATH, 'webm_2160p', (3840, 2160), 30),
         ]
     )
     def test(
-        self, transcode_job_factory, transcode_profile_name, exp_width_height
+        self, transcode_job_factory, transcode_profile_name, exp_width_height,
+        source_file_path, exp_fps
     ):
         transcode_job = transcode_job_factory(profile=transcode_profile_name)
         result_path = ffmpeg.transcode(
-            transcode_job=transcode_job, source_file_path=VIDEO_PATH
+            transcode_job=transcode_job, source_file_path=source_file_path
         )
 
         assert isinstance(result_path, Path)
@@ -59,8 +78,29 @@ class TestTranscode:
         assert metadata == {
             'width': exp_width,
             'height': exp_height,
-            'framerate': 30,
+            'framerate': exp_fps,
         }
+        # TODO: check audio
+        assert transcode_job.status == 'completed'
+        assert transcode_job.ended_on
+
+    @pytest.mark.parametrize(
+        'source_file_path, transcode_profile_name', [
+            (VIDEO_PATH_360_60FPS, 'webm_720p'),
+            (VIDEO_PATH_360_60FPS, 'webm_1080p'),
+            (VIDEO_PATH_360_60FPS, 'webm_2160p'),
+            (VIDEO_PATH_1080_60FPS, 'webm_2160p'),
+        ]
+    )
+    def test_cannot_transcode_into_resolution_higher_than_source_file(
+        self, source_file_path, transcode_profile_name, transcode_job_factory
+    ):
+        transcode_job = transcode_job_factory(profile=transcode_profile_name)
+        result_path = ffmpeg.transcode(
+            transcode_job=transcode_job, source_file_path=source_file_path
+        )
+
+        assert result_path is None
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
 

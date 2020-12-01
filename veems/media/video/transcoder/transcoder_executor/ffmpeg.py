@@ -61,8 +61,16 @@ def transcode(*, transcode_job, source_file_path):
         p for p in transcoder_profiles.PROFILES
         if p.name == transcode_job.profile
     ][0]
+    metadata = _get_metadata(source_file_path)
+    if profile.height > metadata['height']:
+        transcode_job.status = 'completed'
+        transcode_job.ended_on = timezone.now()
+        return None
+
     tmp_dir = tempfile.mkdtemp()
     output_file_path = Path(tmp_dir) / profile.storage_filename
+    if not source_file_path.exists():
+        raise LookupError('Source file not found')
     try:
         _ffmpeg_transcode(
             source_file_path=source_file_path,
