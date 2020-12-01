@@ -19,6 +19,9 @@ VIDEO_PATH_2160_60FPS = (
 VIDEO_PATH_1080_60FPS = (
     Path(__file__).parent.parent / 'test_data/1080p_60fps.mp4'
 )
+VIDEO_PATH_1080_30FPS_VERT = (
+    Path(__file__).parent.parent / 'test_data/1080p_30fps_vertical.webm'
+)
 VIDEO_PATH_360_60FPS = (
     Path(__file__).parent.parent / 'test_data/360p_60fps.webm'
 )
@@ -53,13 +56,14 @@ class TestTranscode:
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name, exp_width_height, exp_fps',
         [
+            (VIDEO_PATH_2160_30FPS, 'webm_360p', (640, 360), 30),
+            (VIDEO_PATH_2160_30FPS, 'webm_720p', (1280, 720), 30),
+            (VIDEO_PATH_2160_30FPS, 'webm_1080p', (1920, 1080), 30),
+            (VIDEO_PATH_2160_30FPS, 'webm_2160p', (3840, 2160), 30),
+            (VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', (640, 360), 30),
             (VIDEO_PATH_1080_60FPS, 'webm_360p', (640, 360), 60),
-            # (VIDEO_PATH_2160_60FPS, 'webm_360p', (640, 360), 60),
-            # (VIDEO_PATH_24FPS, 'webm_360p', (640, 360), 24),
-            # (VIDEO_PATH, 'webm_360p', (640, 360), 30),
-            # (VIDEO_PATH, 'webm_720p', (1280, 720), 30),
-            # (VIDEO_PATH, 'webm_1080p', (1920, 1080), 30),
-            # (VIDEO_PATH, 'webm_2160p', (3840, 2160), 30),
+            (VIDEO_PATH_2160_60FPS, 'webm_360p', (640, 360), 60),
+            (VIDEO_PATH_2160_24FPS, 'webm_360p', (640, 360), 24),
         ]
     )
     def test(
