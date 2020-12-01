@@ -63,8 +63,7 @@ def transcode(*, transcode_job, source_file_path):
     ][0]
     metadata = _get_metadata(source_file_path)
     if profile.height > metadata['height']:
-        transcode_job.status = 'completed'
-        transcode_job.ended_on = timezone.now()
+        _mark_completed(transcode_job)
         return None
 
     tmp_dir = tempfile.mkdtemp()
@@ -78,10 +77,18 @@ def transcode(*, transcode_job, source_file_path):
             output_file_path=output_file_path,
         )
     except RuntimeError:
-        transcode_job.status = 'failed'
-        transcode_job.ended_on = timezone.now()
+        _mark_failed(transcode_job)
         return None
     else:
-        transcode_job.status = 'completed'
-        transcode_job.ended_on = timezone.now()
+        _mark_completed(transcode_job)
         return output_file_path
+
+
+def _mark_completed(transcode_job):
+    transcode_job.status = 'completed'
+    transcode_job.ended_on = timezone.now()
+
+
+def _mark_failed(transcode_job):
+    transcode_job.status = 'failed'
+    transcode_job.ended_on = timezone.now()
