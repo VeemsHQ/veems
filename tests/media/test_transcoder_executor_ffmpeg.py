@@ -32,8 +32,8 @@ def test_get_metadata():
     metadata = ffmpeg._get_metadata(video_path=VIDEO_PATH_2160_30FPS)
 
     assert metadata == {
-        'width': 1920,
-        'height': 1080,
+        'width': 3840,
+        'height': 2160,
         'framerate': 30,
     }
 
