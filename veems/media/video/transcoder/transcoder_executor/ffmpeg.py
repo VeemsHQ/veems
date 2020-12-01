@@ -1,11 +1,14 @@
 import tempfile
 import os
+import logging
 from pathlib import Path
 
 from django.utils import timezone
 from ffprobe import FFProbe
 
 from .. import transcoder_profiles
+
+logger = logging.getLogger(__name__)
 
 
 def _get_metadata(video_path):
@@ -63,6 +66,11 @@ def transcode(*, transcode_job, source_file_path):
     ][0]
     metadata = _get_metadata(source_file_path)
     if profile.height > metadata['height']:
+        _mark_completed(transcode_job)
+        return None
+    if not (
+        profile.min_framerate <= metadata['framerate'] <= profile.max_framerate
+    ):
         _mark_completed(transcode_job)
         return None
 

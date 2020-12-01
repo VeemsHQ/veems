@@ -108,6 +108,24 @@ class TestTranscode:
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
 
+    @pytest.mark.parametrize(
+        'source_file_path, transcode_profile_name', [
+            (VIDEO_PATH_1080_60FPS, 'webm_720p'),
+            (VIDEO_PATH_2160_30FPS, 'webm_720p_high'),
+        ]
+    )
+    def test_cannot_transcode_into_different_framerate(
+        self, source_file_path, transcode_profile_name, transcode_job_factory
+    ):
+        transcode_job = transcode_job_factory(profile=transcode_profile_name)
+        result_path = ffmpeg.transcode(
+            transcode_job=transcode_job, source_file_path=source_file_path
+        )
+
+        assert result_path is None
+        assert transcode_job.status == 'completed'
+        assert transcode_job.ended_on
+
     def test_transcode_job_failed_when_video_file_is_not_valid(
         self, transcode_job
     ):

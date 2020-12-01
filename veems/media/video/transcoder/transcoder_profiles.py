@@ -18,6 +18,8 @@ class WebM360p:
     tile_columns = 1
     threads = 4
     storage_filename = '360.webm'
+    min_framerate = 0
+    max_framerate = 49
 
 
 class WebM720p:
@@ -32,6 +34,8 @@ class WebM720p:
     tile_columns = 2
     threads = 7
     storage_filename = '720.webm'
+    min_framerate = 0
+    max_framerate = 49
 
 
 class WebM720pHigh(WebM720p):
@@ -39,6 +43,8 @@ class WebM720pHigh(WebM720p):
     average_rate = 1800
     min_rate = 900
     max_rate = 1800
+    min_framerate = 50
+    max_framerate = 99999999999
 
 
 class WebM1080p:
@@ -53,6 +59,8 @@ class WebM1080p:
     tile_columns = 3
     threads = 8
     storage_filename = '1080.webm'
+    min_framerate = 0
+    max_framerate = 49
 
 
 class WebM1080pHigh(WebM1080p):
@@ -60,6 +68,8 @@ class WebM1080pHigh(WebM1080p):
     average_rate = 3000
     min_rate = 1500
     max_rate = 4350
+    min_framerate = 50
+    max_framerate = 99999999999
 
 
 class WebM2160p:
@@ -74,6 +84,8 @@ class WebM2160p:
     tile_columns = 3
     threads = 24
     storage_filename = '2160.webm'
+    min_framerate = 0
+    max_framerate = 49
 
 
 class WebM2160pHigh(WebM2160p):
@@ -81,11 +93,14 @@ class WebM2160pHigh(WebM2160p):
     average_rate = 18000
     min_rate = 9000
     max_rate = 26100
+    min_framerate = 50
+    max_framerate = 99999999999
 
 
 # TODO: Low/High FPS profiles
 # TODO: split audio into m4a for higher quality files?
 
 PROFILES = (
-    WebM360p, WebM720p, WebM1080p, WebM1080pHigh, WebM2160p, WebM2160pHigh
+    WebM360p, WebM720p, WebM720pHigh, WebM1080p, WebM1080pHigh, WebM2160p,
+    WebM2160pHigh
 )
