@@ -13,6 +13,7 @@ TRANSCODE_JOB_CHOICES = (
 class Upload(BaseModel):
     presigned_upload_url = models.URLField()
     media_type = models.CharField(max_length=200)
+    file = models.FileField()
 
     @property
     def lease_id(self):
