@@ -14,6 +14,9 @@ EXECUTOR = 'ffmpeg'
 
 def handle_upload_complete(upload_id):
     upload = models.Upload.objects.get(id=upload_id)
+    # Determine which transcode profiles to Run
+    # depending on the uploaded video resolution
+    # and frame rate
     for profile_cls in transcoder_profiles.PROFILES:
         transcode_job_id = models.TranscodeJob.objects.create(
             upload=upload,
@@ -22,6 +25,17 @@ def handle_upload_complete(upload_id):
             status='created',
         ).id
         task_transcode.delay(upload.id, transcode_job_id)
+
+
+def _transcode_profile_does_apply(profile_cls, ffprobe_stream):
+    if profile_cls.height > int(ffprobe_stream.height):
+        return False
+    if not (
+        profile_cls.min_framerate <= ffprobe_stream.framerate <=
+        profile_cls.max_framerate
+    ):
+        return False
+    return True
 
 
 def _mark_transcode_job_processing(transcode_job):
@@ -35,10 +49,10 @@ def task_transcode(upload_id, transcode_job_id):
     upload = models.Upload.objects.get(id=upload_id)
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
     _mark_transcode_job_processing(transcode_job=transcode_job)
-    uploaded_file = tempfile.NamedTemporaryFile(suffix=upload.file.name,
-    )
+    uploaded_file = tempfile.NamedTemporaryFile(suffix=upload.file.name)
     with uploaded_file as file_:
         file_.write(upload.file.read())
         transcode_executor.transcode(
-            transcode_job=transcode_job, source_file_path=Path(uploaded_file.name)
+            transcode_job=transcode_job,
+            source_file_path=Path(uploaded_file.name)
         )

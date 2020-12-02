@@ -22,6 +22,16 @@ class WebM360p:
     max_framerate = 49
 
 
+class WebM360pHigh(WebM360p):
+    name = 'webm_360p_high'
+    # TODO: adjust bitrate values
+    average_rate = 1800
+    min_rate = 900
+    max_rate = 1800
+    min_framerate = 50
+    max_framerate = 99999999999
+
+
 class WebM720p:
     name = 'webm_720p'
     format = 'video/webm'
@@ -101,6 +111,12 @@ class WebM2160pHigh(WebM2160p):
 # TODO: split audio into m4a for higher quality files?
 
 PROFILES = (
-    WebM360p, WebM720p, WebM720pHigh, WebM1080p, WebM1080pHigh, WebM2160p,
+    WebM360p,
+    WebM360pHigh,
+    WebM720p,
+    WebM720pHigh,
+    WebM1080p,
+    WebM1080pHigh,
+    WebM2160p,
     WebM2160pHigh
 )

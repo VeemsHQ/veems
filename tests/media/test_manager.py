@@ -3,6 +3,7 @@ from pathlib import Path
 from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 from django.utils import timezone
+from ffprobe import FFProbe
 
 from veems.media import models
 from veems.media.video.transcoder import manager
@@ -11,7 +12,8 @@ from veems.media.video.transcoder import transcoder_profiles
 pytestmark = pytest.mark.django_db
 
 MODULE = 'veems.media.video.transcoder.manager'
-VIDEO_PATH = Path(__file__).parent.parent / 'test_data/2160p_30fps.mp4'
+TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
+VIDEO_PATH = TEST_DATA_DIR / '2160p_30fps.mp4'
 
 
 @pytest.fixture
@@ -23,6 +25,45 @@ def upload():
         media_type='video',
         file=SimpleUploadedFile(VIDEO_PATH.name, file_contents)
     )
+
+
+@pytest.mark.parametrize(
+    'video_filename, profile_cls, exp_result', [
+        ('2160p_30fps.mp4', transcoder_profiles.WebM360p, True),
+        ('2160p_30fps.mp4', transcoder_profiles.WebM720p, True),
+        ('2160p_30fps.mp4', transcoder_profiles.WebM1080p, True),
+        ('2160p_30fps.mp4', transcoder_profiles.WebM2160p, True),
+        ('2160p_30fps.mp4', transcoder_profiles.WebM720pHigh, False),
+        ('2160p_30fps.mp4', transcoder_profiles.WebM1080pHigh, False),
+        ('2160p_30fps.mp4', transcoder_profiles.WebM2160pHigh, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM360pHigh, True),
+        ('360p_60fps.webm', transcoder_profiles.WebM360p, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM720p, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM720pHigh, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM1080p, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM1080pHigh, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM2160p, False),
+        ('360p_60fps.webm', transcoder_profiles.WebM2160pHigh, False),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM360pHigh, True),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM720pHigh, True),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM1080pHigh, True),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM2160pHigh, False),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM360p, False),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM720p, False),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM1080p, False),
+        ('1080p_60fps.mp4', transcoder_profiles.WebM2160p, False),
+    ]
+)
+def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
+    video_path = TEST_DATA_DIR / video_filename
+    metadata = FFProbe(str(video_path))
+    ffprobe_stream = metadata.video[0]
+
+    result = manager._transcode_profile_does_apply(
+        profile_cls=profile_cls, ffprobe_stream=ffprobe_stream
+    )
+
+    assert result == exp_result
 
 
 class TestHandleUploadComplete:
