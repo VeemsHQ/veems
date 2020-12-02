@@ -107,16 +107,9 @@ class WebM2160pHigh(WebM2160p):
     max_framerate = 99999999999
 
 
-# TODO: Low/High FPS profiles
 # TODO: split audio into m4a for higher quality files?
 
 PROFILES = (
-    WebM360p,
-    WebM360pHigh,
-    WebM720p,
-    WebM720pHigh,
-    WebM1080p,
-    WebM1080pHigh,
-    WebM2160p,
-    WebM2160pHigh
+    WebM360p, WebM360pHigh, WebM720p, WebM720pHigh, WebM1080p, WebM1080pHigh,
+    WebM2160p, WebM2160pHigh
 )
