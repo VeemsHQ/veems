@@ -86,6 +86,22 @@ DATABASES = {
 AWS_REGION = os.environ['AWS_REGION']
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_S3_USE_SSL = False
+AWS_S3_ENDPOINT_URL = 'http://localhost:4566'
+AWS_STORAGE_BUCKET_NAME = os.environ['OBJECT_STORAGE_BUCKET']
+UPLOADED_OBJECT_STORAGE_BUCKET = os.environ['UPLOADED_OBJECT_STORAGE_BUCKET']
+
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.#
+    Path(__file__).parent.parent / 'static',
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

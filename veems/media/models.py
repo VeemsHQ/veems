@@ -1,6 +1,7 @@
 from django.db import models
 
 from ..common.models import BaseModel
+from .storage_backends import UploadStorage
 
 TRANSCODE_JOB_CHOICES = (
     ('created', 'created'),
@@ -10,10 +11,16 @@ TRANSCODE_JOB_CHOICES = (
 )
 
 
+def _upload_file_upload_to(instance, filename):
+    return f'{instance.id}/{filename}'
+
+
 class Upload(BaseModel):
     presigned_upload_url = models.URLField()
     media_type = models.CharField(max_length=200)
-    file = models.FileField()
+    file = models.FileField(
+        upload_to=_upload_file_upload_to, storage=UploadStorage
+    )
 
     @property
     def lease_id(self):

@@ -3,3 +3,6 @@ ffmpeg-python
 ffprobe-python==1.0.3
 celery
 psycopg2
+django-storages
+boto3
+awscli
