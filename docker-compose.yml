@@ -1,0 +1,42 @@
+version: "3.2"
+services:
+  rabbit:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_USER}
+    ports:
+      - "5672:5672"
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASS}
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4563-4599:4563-4599"
+      - "8055:8080"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - "./.localstack:/tmp/localstack"
+  app:
+    build: .
+    ports:
+      - 8000:8000
+    command: ./run.sh
+    env_file:
+      - .env
+    depends_on:
+      - localstack
+      - postgres
+      - rabbit
