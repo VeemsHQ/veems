@@ -4,7 +4,7 @@ from django.utils import timezone
 import pytest
 
 from veems.media.video.transcoder.transcoder_executor import ffmpeg
-from veems.media.models import TranscodeJob, Upload
+from veems.media.models import TranscodeJob
 
 pytestmark = pytest.mark.django_db
 VIDEO_PATH_2160_30FPS = (
@@ -40,11 +40,10 @@ def test_get_metadata():
 
 class TestTranscode:
     @pytest.fixture
-    def transcode_job_factory(self):
+    def transcode_job_factory(self, video):
         def make(profile):
-            upload = Upload.objects.create(media_type='video/mp4')
             return TranscodeJob.objects.create(
-                upload=upload,
+                video=video,
                 profile=profile,
                 executor='ffmpeg',
                 status='created',
@@ -61,8 +60,8 @@ class TestTranscode:
             (VIDEO_PATH_2160_30FPS, 'webm_1080p', (1920, 1080), 30),
             (VIDEO_PATH_2160_30FPS, 'webm_2160p', (3840, 2160), 30),
             (VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', (640, 360), 30),
-            (VIDEO_PATH_1080_60FPS, 'webm_360p', (640, 360), 60),
-            (VIDEO_PATH_2160_60FPS, 'webm_360p', (640, 360), 60),
+            (VIDEO_PATH_1080_60FPS, 'webm_360p_high', (640, 360), 60),
+            (VIDEO_PATH_2160_60FPS, 'webm_360p_high', (640, 360), 60),
             (VIDEO_PATH_2160_24FPS, 'webm_360p', (640, 360), 24),
         ]
     )

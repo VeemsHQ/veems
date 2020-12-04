@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 from django.utils import timezone
 from ffprobe import FFProbe
@@ -57,81 +56,52 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     assert result == exp_result
 
 
-@pytest.fixture
-def upload():
-    with VIDEO_PATH_2160_30FPS.open('rb') as file_:
-        file_contents = file_.read()
-    return models.Upload.objects.create(
-        presigned_upload_url='htts://example.com/s3-blah',
-        media_type='video',
-        file=SimpleUploadedFile(VIDEO_PATH_2160_30FPS.name, file_contents)
-    )
-
-
-class TestHandleUploadComplete:
-    @pytest.fixture
-    def upload_factory(self):
-        def make(video_path):
-            with video_path.open('rb') as file_:
-                file_contents = file_.read()
-            return models.Upload.objects.create(
-                presigned_upload_url='htts://example.com/s3-blah',
-                media_type='video',
-                file=SimpleUploadedFile(video_path.name, file_contents)
+@pytest.mark.parametrize(
+    'video_filename, exp_profiles', [
+        (
+            VIDEO_PATH_2160_30FPS, (
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+                'webm_2160p',
             )
+        ),
+        (
+            VIDEO_PATH_2160_60FPS, (
+                'webm_360p_high',
+                'webm_720p_high',
+                'webm_1080p_high',
+                'webm_2160p_high',
+            )
+        ),
+        (VIDEO_PATH_360_60FPS, ('webm_360p_high', )),
+    ]
+)
+def test_create_transcodes(
+    video_filename, exp_profiles, video_factory, mocker
+):
+    video = video_factory(video_path=video_filename)
+    mock_task_transcode = mocker.patch(f'{MODULE}.task_transcode')
 
-        return make
+    manager.create_transcodes(video_id=video.id)
 
-    @pytest.mark.parametrize(
-        'video_filename, exp_profiles', [
-            (
-                VIDEO_PATH_2160_30FPS, (
-                    'webm_360p',
-                    'webm_720p',
-                    'webm_1080p',
-                    'webm_2160p',
-                )
-            ),
-            (
-                VIDEO_PATH_2160_60FPS, (
-                    'webm_360p_high',
-                    'webm_720p_high',
-                    'webm_1080p_high',
-                    'webm_2160p_high',
-                )
-            ),
-            (
-                VIDEO_PATH_360_60FPS, (
-                    'webm_360p_high',
-                )
-            ),
-        ]
+    exp_num_jobs = len(exp_profiles)
+    assert models.TranscodeJob.objects.count() == exp_num_jobs
+    assert (
+        models.TranscodeJob.objects.filter(status='created'
+                                           ).count() == exp_num_jobs
     )
-    def test_creates_transcode_jobs(
-        self, upload_factory, video_filename, exp_profiles, mocker
-    ):
-        upload = upload_factory(video_path=video_filename)
-        mock_task_transcode = mocker.patch(f'{MODULE}.task_transcode')
-
-        manager.handle_upload_complete(upload_id=upload.id)
-
-        exp_num_jobs = len(exp_profiles)
-        assert models.TranscodeJob.objects.count() == exp_num_jobs
-        assert (
-            models.TranscodeJob.objects.filter(status='created'
-                                               ).count() == exp_num_jobs
-        )
-        assert mock_task_transcode.delay.call_count == exp_num_jobs
-        executed_profiles = tuple(
-            models.TranscodeJob.objects.values_list('profile', flat=True)
-        )
-        assert executed_profiles == exp_profiles
+    assert mock_task_transcode.delay.call_count == exp_num_jobs
+    executed_profiles = tuple(
+        models.TranscodeJob.objects.values_list('profile', flat=True)
+    )
+    assert executed_profiles == exp_profiles
 
 
-def test_task_transcode(upload, mocker):
+def test_task_transcode(video, mocker):
     mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
     transcode_job = models.TranscodeJob.objects.create(
-        upload=upload,
+        video=video,
         profile='webm_360p_high',
         executor='ffmpeg',
         status='created',
@@ -139,7 +109,7 @@ def test_task_transcode(upload, mocker):
     )
 
     manager.task_transcode(
-        upload_id=upload.id, transcode_job_id=transcode_job.id
+        video_id=video.id, transcode_job_id=transcode_job.id
     )
 
     mock_executor.transcode.assert_called_once_with(
@@ -156,4 +126,4 @@ def test_task_transcode(upload, mocker):
     )
     with source_file_path.open('rb') as file_:
         file_data = file_.read()
-    assert file_data == upload.file.read()
+    assert file_data == video.upload.file.read()

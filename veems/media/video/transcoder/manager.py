@@ -13,27 +13,30 @@ from ... import models
 EXECUTOR = 'ffmpeg'
 
 
-def handle_upload_complete(upload_id):
-    upload = models.Upload.objects.get(id=upload_id)
-    uploaded_file = tempfile.NamedTemporaryFile(suffix=upload.file.name)
+def create_transcodes(video_id):
+    video = models.Video.objects.get(id=video_id)
+    upload = video.upload
+    uploaded_file = tempfile.NamedTemporaryFile(
+        suffix=Path(upload.file.name).name
+    )
     with uploaded_file as file_:
         file_.write(upload.file.read())
 
         metadata = FFProbe(file_.name)
         ffprobe_stream = metadata.video[0]
-
+        # TODO: group of celery tassks
         for profile_cls in transcoder_profiles.PROFILES:
             if not _transcode_profile_does_apply(
                 profile_cls=profile_cls, ffprobe_stream=ffprobe_stream
             ):
                 continue
             transcode_job_id = models.TranscodeJob.objects.create(
-                upload=upload,
+                video=video,
                 profile=profile_cls.name,
                 executor=EXECUTOR,
                 status='created',
             ).id
-            task_transcode.delay(upload.id, transcode_job_id)
+            task_transcode.delay(video.id, transcode_job_id)
 
 
 def _transcode_profile_does_apply(profile_cls, ffprobe_stream):
@@ -54,12 +57,13 @@ def _mark_transcode_job_processing(transcode_job):
 
 
 @shared_task()
-def task_transcode(upload_id, transcode_job_id):
-    upload = models.Upload.objects.get(id=upload_id)
+def task_transcode(video_id, transcode_job_id):
+    video = models.Video.objects.get(id=video_id)
+    upload = video.upload
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
     _mark_transcode_job_processing(transcode_job=transcode_job)
     uploaded_file = tempfile.NamedTemporaryFile(
-        suffix=upload.file.name, delete=False
+        suffix=Path(upload.file.name).name, delete=False
     )
     with uploaded_file as file_:
         file_.write(upload.file.read())
@@ -67,3 +71,4 @@ def task_transcode(upload_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name)
         )
+        # TODO: Add VideoFormat

@@ -9,6 +9,29 @@ from veems.media import models
 pytestmark = pytest.mark.django_db
 
 
+def test_upload_file_upload_to(upload):
+    result = models._upload_file_upload_to(
+        instance=upload, filename='blah.mp4'
+    )
+
+    assert result == f'{upload.id}.mp4'
+
+
+def test_mediaformat_upload_to(video):
+    mediaformat = models.MediaFormat.objects.create(
+        video=video,
+        name='360p',
+        ext='webm',
+        filesize=1,
+    )
+
+    result = models._mediaformat_upload_to(
+        instance=mediaformat, filename='360p.webm'
+    )
+
+    assert result == f'{mediaformat.id}.webm'
+
+
 class TestUpload:
     def test_set_file_using_uploaded_file(self):
         upload = models.Upload.objects.create(
@@ -23,10 +46,10 @@ class TestUpload:
         upload.save()
         upload.refresh_from_db()
 
-        assert upload.file.name == f'{upload.id}/video.mp4'
+        assert upload.file.name == f'{upload.id}.mp4'
         assert upload.file.url.startswith(
-            f'http://localhost:4566/veems-local-uploaded/{upload.id}/'
-            f'video.mp4?AWSAccessKeyId'
+            f'http://localhost:4566/veems-local-uploaded/{upload.id}.mp4'
+            '?AWSAccessKeyId'
         )
 
     def test_file_uploaded_outside_the_applocation(self, settings):
