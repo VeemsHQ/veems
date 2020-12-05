@@ -78,7 +78,6 @@ def transcode(*, transcode_job, source_file_path):
         return None
     else:
         logger.info('FFMPEF transcode done')
-        _mark_completed(transcode_job)
         metadata_transcoded = _get_metadata(output_file_path)
         logger.info(
             'Persisting transcoded video %s %s...', transcode_job,
@@ -96,6 +95,7 @@ def transcode(*, transcode_job, source_file_path):
         _persist_media_file_thumbs(
             media_file_record=media_file, thumbnails=thumbnails
         )
+        _mark_completed(transcode_job)
         # TODO: cleanup TMP files
         logger.info('Completed transcode job %s', transcode_job)
         return output_file_path, thumbnails
