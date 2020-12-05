@@ -69,6 +69,7 @@ def transcode(*, transcode_job, source_file_path):
         _persist_thumbnails(
             media_file_record=media_file, thumbnails=thumbnails
         )
+        # TODO: cleanup TMP files
         return output_file_path, thumbnails
 
 
