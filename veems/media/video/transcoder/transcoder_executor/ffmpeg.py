@@ -24,7 +24,7 @@ def _get_metadata(video_path):
     }
 
 
-def _ffmpeg_transcode(*, source_file_path, profile, output_file_path):
+def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     base_command = (
         f'ffmpeg -y -i {source_file_path} -vf '
         f'scale={profile.width}x{profile.height} '
@@ -86,7 +86,7 @@ def transcode(*, transcode_job, source_file_path):
     if not source_file_path.exists():
         raise LookupError('Source file not found')
     try:
-        _ffmpeg_transcode(
+        _ffmpeg_transcode_video(
             source_file_path=source_file_path,
             profile=profile,
             output_file_path=output_file_path,
