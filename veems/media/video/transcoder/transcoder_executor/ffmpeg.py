@@ -4,12 +4,72 @@ import time
 import logging
 from pathlib import Path
 
+from django.core.files import File
 from django.utils import timezone
 from ffprobe import FFProbe
 
 from .. import transcoder_profiles
+from .... import models
 
 logger = logging.getLogger(__name__)
+
+
+def transcode(*, transcode_job, source_file_path):
+    """
+
+    TODOs
+
+    1. open the video file with ffmpeg
+    2. extract the first video stream.
+    3. get the width and height of the video
+    4. (not always) if the video is vertical, rotate it.
+    5. run the transcode with ffmpeg
+    7. update the transcode job status = COMPLETE
+    6. upload the resulting webm file to s3 bucket/others
+    """
+    profile = [
+        p for p in transcoder_profiles.PROFILES
+        if p.name == transcode_job.profile
+    ][0]
+    try:
+        metadata = _get_metadata(source_file_path)
+    except LookupError:
+        _mark_failed(transcode_job)
+        return None
+    if profile.height > metadata['height']:
+        _mark_completed(transcode_job)
+        return None
+    if not (
+        profile.min_framerate <= metadata['framerate'] <= profile.max_framerate
+    ):
+        _mark_completed(transcode_job)
+        return None
+
+    tmp_dir = tempfile.mkdtemp()
+    output_file_path = Path(tmp_dir) / profile.storage_filename
+    if not source_file_path.exists():
+        raise LookupError('Source file not found')
+    try:
+        output_file_path, thumbnails = _ffmpeg_transcode_video(
+            source_file_path=source_file_path,
+            profile=profile,
+            output_file_path=output_file_path,
+        )
+    except RuntimeError:
+        _mark_failed(transcode_job)
+        return None
+    else:
+        _mark_completed(transcode_job)
+        metadata_transcoded = _get_metadata(output_file_path)
+        media_file = _persist_video(
+            video_record=transcode_job.video,
+            video_path=output_file_path,
+            metadata=metadata_transcoded
+        )
+        _persist_thumbnails(
+            media_file_record=media_file, thumbnails=thumbnails
+        )
+        return output_file_path, thumbnails
 
 
 def _get_metadata(video_path):
@@ -56,6 +116,9 @@ def _get_thumbnail_time_offsets(video_path):
 
 
 def _ffmpeg_generate_thumbnails(*, video_file_path):
+    """
+    Generate a thumbnail image for every 30 secs of video.
+    """
     time_offsets = _get_thumbnail_time_offsets(video_path=video_file_path)
     thumbnails = []
     for offset in time_offsets:
@@ -110,54 +173,35 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     return output_file_path, tuple(thumbnails)
 
 
-def transcode(*, transcode_job, source_file_path):
-    """
-
-    TODOs
-
-    1. open the video file with ffmpeg
-    2. extract the first video stream.
-    3. get the width and height of the video
-    4. (not always) if the video is vertical, rotate it.
-    5. run the transcode with ffmpeg
-    7. update the transcode job status = COMPLETE
-    6. upload the resulting webm file to s3 bucket/others
-    """
-    profile = [
-        p for p in transcoder_profiles.PROFILES
-        if p.name == transcode_job.profile
-    ][0]
-    try:
-        metadata = _get_metadata(source_file_path)
-    except LookupError:
-        _mark_failed(transcode_job)
-        return None
-    if profile.height > metadata['height']:
-        _mark_completed(transcode_job)
-        return None
-    if not (
-        profile.min_framerate <= metadata['framerate'] <= profile.max_framerate
-    ):
-        _mark_completed(transcode_job)
-        return None
-
-    tmp_dir = tempfile.mkdtemp()
-    output_file_path = Path(tmp_dir) / profile.storage_filename
-    if not source_file_path.exists():
-        raise LookupError('Source file not found')
-    try:
-        output_file_path, thumbnails = _ffmpeg_transcode_video(
-            source_file_path=source_file_path,
-            profile=profile,
-            output_file_path=output_file_path,
+def _persist_video(*, video_record, video_path, metadata):
+    with video_path.open('rb') as file_:
+        return models.MediaFile.objects.create(
+            video=video_record,
+            file=File(file_),
+            width=metadata['width'],
+            height=metadata['height'],
+            duration=metadata['duration'],
+            ext=video_path.suffix.replace('.', ''),
+            framerate=metadata['framerate'],
+            # TODO: fill
+            filesize=0,
+            audio_codec=None,
+            video_codec=None,
+            container=None,
         )
-    except RuntimeError:
-        raise
-        _mark_failed(transcode_job)
-        return None
-    else:
-        _mark_completed(transcode_job)
-        return output_file_path, thumbnails
+
+
+def _persist_thumbnails(*, media_file_record, thumbnails):
+    for time_offset_secs, thumb_path in thumbnails:
+        with thumb_path.open('rb') as file_:
+            models.MediaFileThumbnail.objects.create(
+                media_file=media_file_record,
+                file=File(file_),
+                ext=thumb_path.suffix.replace('.', ''),
+                # TODO: fill
+                width=0,
+                height=0,
+            )
 
 
 def _mark_completed(transcode_job):
