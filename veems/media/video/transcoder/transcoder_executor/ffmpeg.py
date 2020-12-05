@@ -28,10 +28,7 @@ def transcode(*, transcode_job, source_file_path):
     6. upload the resulting webm file to s3 bucket/others
     """
     logger.info('Started transcode job %s', transcode_job)
-    profile = [
-        p for p in transcoder_profiles.PROFILES
-        if p.name == transcode_job.profile
-    ][0]
+    profile = transcoder_profiles.get_profile(transcode_job.profile)
     try:
         metadata = _get_metadata(source_file_path)
     except LookupError:
@@ -87,7 +84,7 @@ def transcode(*, transcode_job, source_file_path):
             'Persisting transcoded video %s %s...', transcode_job,
             transcode_job.video.id
         )
-        media_file = _persist_video(
+        media_file = _persist_media_file(
             video_record=transcode_job.video,
             video_path=output_file_path,
             metadata=metadata_transcoded
@@ -96,7 +93,7 @@ def transcode(*, transcode_job, source_file_path):
             'Persisting thumbnails %s %s...', transcode_job,
             transcode_job.video.id
         )
-        _persist_thumbnails(
+        _persist_media_file_thumbs(
             media_file_record=media_file, thumbnails=thumbnails
         )
         # TODO: cleanup TMP files
@@ -205,7 +202,7 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     return output_file_path, tuple(thumbnails)
 
 
-def _persist_video(*, video_record, video_path, metadata):
+def _persist_media_file(*, video_record, video_path, metadata):
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
             video=video_record,
@@ -223,7 +220,7 @@ def _persist_video(*, video_record, video_path, metadata):
         )
 
 
-def _persist_thumbnails(*, media_file_record, thumbnails):
+def _persist_media_file_thumbs(*, media_file_record, thumbnails):
     for time_offset_secs, thumb_path in thumbnails:
         with thumb_path.open('rb') as file_:
             models.MediaFileThumbnail.objects.create(

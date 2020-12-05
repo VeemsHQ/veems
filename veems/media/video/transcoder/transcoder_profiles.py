@@ -113,3 +113,7 @@ PROFILES = (
     WebM360p, WebM360pHigh, WebM720p, WebM720pHigh, WebM1080p, WebM1080pHigh,
     WebM2160p, WebM2160pHigh
 )
+
+
+def get_profile(name):
+    return [p for p in PROFILES if p.name == name][0]
