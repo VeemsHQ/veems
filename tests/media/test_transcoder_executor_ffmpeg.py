@@ -92,7 +92,7 @@ class TestTranscode:
         source_file_path, exp_fps, mocker
     ):
         transcode_job = transcode_job_factory(profile=transcode_profile_name)
-        result_path = ffmpeg.transcode(
+        result_path, thumbnails = ffmpeg.transcode(
             transcode_job=transcode_job, source_file_path=source_file_path
         )
 
@@ -107,6 +107,16 @@ class TestTranscode:
             'duration': mocker.ANY,
         }
         # TODO: check audio
+
+        assert thumbnails
+        assert isinstance(thumbnails, tuple)
+        for time_offset, thumb_path in thumbnails:
+            assert isinstance(time_offset, int)
+            assert thumb_path.name.endswith('.jpg')
+            thumb_meta = ffmpeg._get_metadata(thumb_path)
+            assert thumb_meta['width'] == exp_width
+            assert thumb_meta['height'] == exp_height
+
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
 

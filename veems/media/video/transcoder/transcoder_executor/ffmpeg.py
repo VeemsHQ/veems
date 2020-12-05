@@ -55,6 +55,29 @@ def _get_thumbnail_time_offsets(video_path):
     return tuple(offsets)
 
 
+def _ffmpeg_generate_thumbnails(*, video_file_path):
+    time_offsets = _get_thumbnail_time_offsets(video_path=video_file_path)
+    thumbnails = []
+    for offset in time_offsets:
+        thumb_path = video_file_path.parent / f'{offset}.jpg'
+        command = (
+            'ffmpeg '
+            f'-ss {offset} '
+            f'-i {video_file_path} '
+            '-vf "select=gt(scene\,0.4)" '  # noqa: W605
+            '-vf select="eq(pict_type\,I)" '  # noqa: W605
+            '-vframes 1 '
+            f'{thumb_path}'
+        )
+        result = os.system(command)
+        if result != 0:
+            raise RuntimeError('Thumbnail creation failed')
+        if not thumb_path.exists():
+            raise RuntimeError('No file output from transcode thumb process')
+        thumbnails.append((offset, thumb_path))
+    return tuple(thumbnails)
+
+
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     base_command = (
         f'ffmpeg -y -i {source_file_path} -vf '
@@ -79,6 +102,12 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     result = os.system(command_2)
     if result != 0:
         raise RuntimeError('Transcoding failed')
+    if not output_file_path.exists():
+        # TODO: test
+        raise RuntimeError('No file output from transcode process')
+
+    thumbnails = _ffmpeg_generate_thumbnails(video_file_path=output_file_path)
+    return output_file_path, tuple(thumbnails)
 
 
 def transcode(*, transcode_job, source_file_path):
@@ -117,17 +146,18 @@ def transcode(*, transcode_job, source_file_path):
     if not source_file_path.exists():
         raise LookupError('Source file not found')
     try:
-        _ffmpeg_transcode_video(
+        output_file_path, thumbnails = _ffmpeg_transcode_video(
             source_file_path=source_file_path,
             profile=profile,
             output_file_path=output_file_path,
         )
     except RuntimeError:
+        raise
         _mark_failed(transcode_job)
         return None
     else:
         _mark_completed(transcode_job)
-        return output_file_path
+        return output_file_path, thumbnails
 
 
 def _mark_completed(transcode_job):
