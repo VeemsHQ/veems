@@ -13,7 +13,7 @@ def test_prepare():
     assert upload.media_type == 'video'
     assert upload.presigned_upload_url.startswith('https://')
     assert isinstance(video, models.Video)
-    assert not upload.title
+    assert not video.title
 
 
 def test_complete(video, mocker):
