@@ -17,8 +17,8 @@ def test_upload_file_upload_to(upload):
     assert result == f'{upload.id}.mp4'
 
 
-def test_mediaformat_upload_to(video, simple_uploaded_file):
-    mediaformat = models.MediaFormat.objects.create(
+def test_mediafile_upload_to(video, simple_uploaded_file):
+    mediafile = models.MediaFile.objects.create(
         video=video,
         file=simple_uploaded_file,
         name='360p',
@@ -26,11 +26,11 @@ def test_mediaformat_upload_to(video, simple_uploaded_file):
         filesize=1,
     )
 
-    result = models._mediaformat_upload_to(
-        instance=mediaformat, filename='360p.webm'
+    result = models._mediafile_upload_to(
+        instance=mediafile, filename='360p.webm'
     )
 
-    assert result == f'{mediaformat.id}.webm'
+    assert result == f'{mediafile.id}.webm'
 
 
 class TestUpload:

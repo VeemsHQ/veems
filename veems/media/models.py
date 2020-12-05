@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 from ..common.models import BaseModel
-from .storage_backends import UploadStorage, MediaFormatStorage
+from . import storage_backends
 
 TRANSCODE_JOB_CHOICES = (
     'created',
@@ -23,15 +23,21 @@ def _upload_file_upload_to(instance, filename):
     return f'{instance.id}{Path(filename).suffix}'
 
 
-def _mediaformat_upload_to(instance, filename):
+def _mediafile_upload_to(instance, filename):
     return f'{instance.id}{Path(filename).suffix}'
+
+
+def _media_file_thumbnail_upload_to(instance, filename):
+    # TODO: test
+    return f'{instance.media_file.id}/{instance.id}{Path(filename).suffix}'
 
 
 class Upload(BaseModel):
     presigned_upload_url = models.URLField()
     media_type = models.CharField(max_length=200)
     file = models.FileField(
-        upload_to=_upload_file_upload_to, storage=UploadStorage
+        upload_to=_upload_file_upload_to,
+        storage=storage_backends.UploadStorage
     )
 
 
@@ -45,7 +51,7 @@ class Video(BaseModel):
     tags = ArrayField(models.CharField(max_length=1000), null=True)
 
 
-class MediaFormat(BaseModel):
+class MediaFile(BaseModel):
     """
     A format to be linked to a Video.
 
@@ -53,7 +59,8 @@ class MediaFormat(BaseModel):
     """
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     file = models.FileField(
-        upload_to=_mediaformat_upload_to, storage=MediaFormatStorage
+        upload_to=_mediafile_upload_to,
+        storage=storage_backends.MediaFileStorage
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
@@ -65,6 +72,17 @@ class MediaFormat(BaseModel):
     container = models.CharField(max_length=30, null=True)
     filesize = models.IntegerField()  # bytes
     # TODO: add duration seconds,
+
+
+class MediaFileThumbnail(BaseModel):
+    media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
+    file = models.FileField(
+        upload_to=_media_file_thumbnail_upload_to,
+        storage=storage_backends.MediaFileThumbnailStorage
+    )
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+    ext = models.CharField(max_length=4, null=False)
 
 
 class TranscodeJob(BaseModel):

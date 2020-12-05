@@ -6,5 +6,9 @@ class UploadStorage(S3Boto3Storage):
     bucket_name = settings.UPLOADED_OBJECT_STORAGE_BUCKET
 
 
-class MediaFormatStorage(S3Boto3Storage):
+class MediaFileStorage(S3Boto3Storage):
     bucket_name = settings.MEDIA_FORMAT_OBJECT_STORAGE_BUCKET
+
+
+class MediaFileThumbnailStorage(S3Boto3Storage):
+    bucket_name = settings.MEDIA_FORMAT_THUMBNAIL_OBJECT_STORAGE_BUCKET
