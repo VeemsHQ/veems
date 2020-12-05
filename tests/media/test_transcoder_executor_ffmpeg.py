@@ -89,7 +89,7 @@ class TestTranscode:
     )
     def test(
         self, transcode_job_factory, transcode_profile_name, exp_width_height,
-        source_file_path, exp_fps
+        source_file_path, exp_fps, mocker
     ):
         transcode_job = transcode_job_factory(profile=transcode_profile_name)
         result_path = ffmpeg.transcode(
@@ -104,6 +104,7 @@ class TestTranscode:
             'width': exp_width,
             'height': exp_height,
             'framerate': exp_fps,
+            'duration': mocker.ANY,
         }
         # TODO: check audio
         assert transcode_job.status == 'completed'
