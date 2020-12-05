@@ -8,6 +8,9 @@ pytestmark = pytest.mark.django_db
 VIDEO_PATH_2160_30FPS = (
     Path(__file__).parent.parent / 'test_data/2160p_30fps.mp4'
 )
+VIDEO_PATH_2160_30FPS_10MIN = (
+    Path(__file__).parent.parent / 'test_data/360p_30fps_10min.mp4'
+)
 VIDEO_PATH_2160_24FPS = (
     Path(__file__).parent.parent / 'test_data/2160p_24fps.mp4'
 )
@@ -26,14 +29,48 @@ VIDEO_PATH_360_60FPS = (
 INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
 
 
-def test_get_metadata():
-    metadata = ffmpeg._get_metadata(video_path=VIDEO_PATH_2160_30FPS)
+@pytest.mark.parametrize(
+    'video_path, exp_metadata', [
+        (
+            VIDEO_PATH_2160_30FPS, {
+                'width': 3840,
+                'height': 2160,
+                'framerate': 30,
+                'duration': 10.1,
+            }
+        ),
+        (
+            VIDEO_PATH_1080_30FPS_VERT,
+            {
+                'duration': 77,
+                'framerate': 30,
+                'height': 1920,
+                'width': 1080
+            },
+        )
+    ]
+)
+def test_get_metadata(video_path, exp_metadata):
+    metadata = ffmpeg._get_metadata(video_path=video_path)
 
-    assert metadata == {
-        'width': 3840,
-        'height': 2160,
-        'framerate': 30,
-    }
+    assert metadata == exp_metadata
+
+
+@pytest.mark.parametrize(
+    'video_path, exp_offsets', [
+        (
+            VIDEO_PATH_2160_30FPS_10MIN, (
+                15, 46, 77, 108, 139, 171, 202, 233, 264, 295, 326, 357, 388,
+                419, 450, 481, 513, 544, 575, 606, 637
+            )
+        ), (VIDEO_PATH_2160_30FPS, (5, )),
+        (VIDEO_PATH_1080_30FPS_VERT, (19, 57))
+    ]
+)
+def test_get_thumbnail_time_offsets(video_path, exp_offsets):
+    time_offsets = ffmpeg._get_thumbnail_time_offsets(video_path=video_path)
+
+    assert time_offsets == exp_offsets
 
 
 class TestTranscode:

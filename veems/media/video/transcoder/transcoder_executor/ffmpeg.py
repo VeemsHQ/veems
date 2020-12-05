@@ -1,5 +1,6 @@
 import tempfile
 import os
+import time
 import logging
 from pathlib import Path
 
@@ -17,11 +18,41 @@ def _get_metadata(video_path):
         first_stream = metadata.video[0]
     except IndexError as exc:
         raise LookupError('Could not get metadata') from exc
+
+    if first_stream.duration.upper() == 'N/A':
+        duration_str = first_stream.__dict__['TAG:DURATION'].split('.')[0]
+        struct_time = time.strptime(duration_str, '%H:%M:%S')
+        hours = struct_time.tm_hour * 3600
+        mins = struct_time.tm_min * 60
+        seconds = struct_time.tm_sec
+        duration_secs = hours + mins + seconds
+    else:
+        duration_secs = first_stream.duration_seconds()
     return {
         'width': int(first_stream.width),
         'height': int(first_stream.height),
         'framerate': int(first_stream.framerate),
+        'duration': duration_secs,
     }
+
+
+def _get_thumbnail_time_offsets(video_path):
+    """
+    Returns time offsets for generating thumbnails across a whole video.
+
+    https://superuser.com/a/821680/1180593
+    """
+    metadata = _get_metadata(video_path=video_path)
+    one_every_secs = 30
+    num_thumbnails = int(max(1, metadata['duration'] / one_every_secs))
+    offsets = []
+    for idx in range(num_thumbnails):
+        thumb_num = idx + 1
+        time_offset = int(
+            (thumb_num - 0.5) * metadata['duration'] / num_thumbnails
+        )
+        offsets.append(time_offset)
+    return tuple(offsets)
 
 
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):

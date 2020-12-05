@@ -64,6 +64,7 @@ class MediaFormat(BaseModel):
     video_codec = models.CharField(max_length=50, null=True)  # vp9
     container = models.CharField(max_length=30, null=True)
     filesize = models.IntegerField()  # bytes
+    # TODO: add duration seconds,
 
 
 class TranscodeJob(BaseModel):
