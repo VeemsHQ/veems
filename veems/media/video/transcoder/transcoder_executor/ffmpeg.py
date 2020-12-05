@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 def _get_metadata(video_path):
     metadata = FFProbe(str(video_path))
-    first_stream = metadata.video[0]
+    try:
+        first_stream = metadata.video[0]
+    except IndexError as exc:
+        raise LookupError('Could not get metadata') from exc
     return {
         'width': int(first_stream.width),
         'height': int(first_stream.height),
@@ -57,14 +60,18 @@ def transcode(*, transcode_job, source_file_path):
     3. get the width and height of the video
     4. (not always) if the video is vertical, rotate it.
     5. run the transcode with ffmpeg
-    6. upload the resulting webm file to s3 bucket/others
     7. update the transcode job status = COMPLETE
+    6. upload the resulting webm file to s3 bucket/others
     """
     profile = [
         p for p in transcoder_profiles.PROFILES
         if p.name == transcode_job.profile
     ][0]
-    metadata = _get_metadata(source_file_path)
+    try:
+        metadata = _get_metadata(source_file_path)
+    except LookupError:
+        _mark_failed(transcode_job)
+        return None
     if profile.height > metadata['height']:
         _mark_completed(transcode_job)
         return None

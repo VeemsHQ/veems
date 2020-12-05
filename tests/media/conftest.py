@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 import pytest
 
 from veems.media import models
@@ -17,6 +18,13 @@ def upload(upload_factory):
 @pytest.fixture
 def video(video_factory):
     return video_factory(video_path=VIDEO_PATH_2160_30FPS)
+
+
+@pytest.fixture
+def simple_uploaded_file():
+    with VIDEO_PATH_2160_30FPS.open('rb') as file_:
+        file_contents = file_.read()
+    return SimpleUploadedFile(VIDEO_PATH_2160_30FPS.name, file_contents)
 
 
 @pytest.fixture
@@ -41,3 +49,22 @@ def video_factory(upload_factory):
         return models.Video.objects.create(upload=upload)
 
     return make
+
+
+@pytest.fixture
+def transcode_job_factory(video):
+    def make(profile):
+        return models.TranscodeJob.objects.create(
+            video=video,
+            profile=profile,
+            executor='ffmpeg',
+            status='created',
+            started_on=timezone.now(),
+        )
+
+    return make
+
+
+@pytest.fixture
+def transcode_job(transcode_job_factory):
+    return transcode_job_factory(profile='webm_360p')

@@ -1,10 +1,8 @@
 from pathlib import Path
 
-from django.utils import timezone
 import pytest
 
 from veems.media.video.transcoder.transcoder_executor import ffmpeg
-from veems.media.models import TranscodeJob
 
 pytestmark = pytest.mark.django_db
 VIDEO_PATH_2160_30FPS = (
@@ -39,19 +37,6 @@ def test_get_metadata():
 
 
 class TestTranscode:
-    @pytest.fixture
-    def transcode_job_factory(self, video):
-        def make(profile):
-            return TranscodeJob.objects.create(
-                video=video,
-                profile=profile,
-                executor='ffmpeg',
-                status='created',
-                started_on=timezone.now(),
-            )
-
-        return make
-
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name, exp_width_height, exp_fps',
         [

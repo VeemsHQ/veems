@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 from ..common.models import BaseModel
-from .storage_backends import UploadStorage
+from .storage_backends import UploadStorage, MediaFormatStorage
 
 TRANSCODE_JOB_CHOICES = (
     'created',
@@ -52,6 +52,9 @@ class MediaFormat(BaseModel):
     Either a piece of Audio/Video/Audio+Video.
     """
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    file = models.FileField(
+        upload_to=_mediaformat_upload_to, storage=MediaFormatStorage
+    )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
     framerate = models.IntegerField(null=True)  # 30
