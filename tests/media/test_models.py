@@ -4,7 +4,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 import boto3
 
-from veems.media import models
+from veems.media import models, storage_backends
 
 pytestmark = pytest.mark.django_db
 
@@ -71,7 +71,7 @@ class TestUpload:
         # Upload the file completely outside of Django
         s3 = boto3.client('s3', endpoint_url=settings.AWS_S3_ENDPOINT_URL)
         s3.upload_fileobj(
-            io.BytesIO(b'data'), models.UploadStorage.bucket_name,
+            io.BytesIO(b'data'), storage_backends.UploadStorage.bucket_name,
             uploaded_filename
         )
 
