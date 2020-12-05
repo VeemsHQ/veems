@@ -9,6 +9,11 @@ from veems.media import models
 pytestmark = pytest.mark.django_db
 
 
+def test_transcode_job(transcode_job):
+    assert str(transcode_job
+               ) == (f'<TranscodeJob {transcode_job.id} webm_360p created>')
+
+
 def test_upload_file_upload_to(upload):
     result = models._upload_file_upload_to(
         instance=upload, filename='blah.mp4'

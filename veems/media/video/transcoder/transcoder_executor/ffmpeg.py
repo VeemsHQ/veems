@@ -27,6 +27,7 @@ def transcode(*, transcode_job, source_file_path):
     7. update the transcode job status = COMPLETE
     6. upload the resulting webm file to s3 bucket/others
     """
+    logger.info('Started transcode job %s', transcode_job)
     profile = [
         p for p in transcoder_profiles.PROFILES
         if p.name == transcode_job.profile
@@ -34,20 +35,35 @@ def transcode(*, transcode_job, source_file_path):
     try:
         metadata = _get_metadata(source_file_path)
     except LookupError:
+        logger.warning(
+            'Failed to get metadata %s', transcode_job, exc_info=True
+        )
         _mark_failed(transcode_job)
         return None
     if profile.height > metadata['height']:
+        logger.warning(
+            'Failed profile height check %s. Investigate.',
+            transcode_job,
+            exc_info=True
+        )
         _mark_completed(transcode_job)
         return None
     if not (
         profile.min_framerate <= metadata['framerate'] <= profile.max_framerate
     ):
+        logger.warning(
+            'Failed profile framerate check %s. Investigate.',
+            transcode_job,
+            exc_info=True
+        )
         _mark_completed(transcode_job)
         return None
 
     tmp_dir = tempfile.mkdtemp()
     output_file_path = Path(tmp_dir) / profile.storage_filename
     if not source_file_path.exists():
+        # TODO: test
+        # TODO: mark failed
         raise LookupError('Source file not found')
     try:
         output_file_path, thumbnails = _ffmpeg_transcode_video(
@@ -56,20 +72,35 @@ def transcode(*, transcode_job, source_file_path):
             output_file_path=output_file_path,
         )
     except RuntimeError:
+        logger.warning(
+            'FFMPEG transcode unexpectedly failed, %s',
+            transcode_job,
+            exc_info=True
+        )
         _mark_failed(transcode_job)
         return None
     else:
+        logger.info('FFMPEF transcode done')
         _mark_completed(transcode_job)
         metadata_transcoded = _get_metadata(output_file_path)
+        logger.info(
+            'Persisting transcoded video %s %s...', transcode_job,
+            transcode_job.video.id
+        )
         media_file = _persist_video(
             video_record=transcode_job.video,
             video_path=output_file_path,
             metadata=metadata_transcoded
         )
+        logger.info(
+            'Persisting thumbnails %s %s...', transcode_job,
+            transcode_job.video.id
+        )
         _persist_thumbnails(
             media_file_record=media_file, thumbnails=thumbnails
         )
         # TODO: cleanup TMP files
+        logger.info('Completed transcode job %s', transcode_job)
         return output_file_path, thumbnails
 
 

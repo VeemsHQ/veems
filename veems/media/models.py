@@ -96,4 +96,10 @@ class TranscodeJob(BaseModel):
     )
     started_on = models.DateTimeField(db_index=True, null=True)
     ended_on = models.DateTimeField(db_index=True, null=True)
-    # TODO: failure context
+    # TODO: store failure context
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} {self.id} '
+            f'{self.profile} {self.status}>'
+        )
