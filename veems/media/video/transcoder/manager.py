@@ -4,13 +4,11 @@ from pathlib import Path
 from celery import shared_task
 from django.utils import timezone
 from ffprobe import FFProbe
+from django.conf import settings
 
 from .transcoder_executor import ffmpeg as transcode_executor
 from . import transcoder_profiles
 from ... import models
-
-# TODO: move to settings.py
-EXECUTOR = 'ffmpeg'
 
 
 def create_transcodes(video_id):
@@ -33,7 +31,7 @@ def create_transcodes(video_id):
             transcode_job_id = models.TranscodeJob.objects.create(
                 video=video,
                 profile=profile_cls.name,
-                executor=EXECUTOR,
+                executor=settings.ACTIVE_EXECUTOR,
                 status='created',
             ).id
             task_transcode.delay(video.id, transcode_job_id)

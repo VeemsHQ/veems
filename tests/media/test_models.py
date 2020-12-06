@@ -28,7 +28,7 @@ def test_mediafile_upload_to(video, simple_uploaded_file):
         file=simple_uploaded_file,
         name='360p',
         ext='webm',
-        filesize=1,
+        file_size=1,
     )
 
     result = models._mediafile_upload_to(

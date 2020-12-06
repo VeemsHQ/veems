@@ -108,7 +108,8 @@ class Webm2160pHigh(Webm2160p):
 
 
 # TODO: split audio into m4a for higher quality files?
-
+# TODO: add 1440p: 2560x1440.
+# TODO: add 240p: 426x240.
 PROFILES = (
     Webm360p, Webm360pHigh, Webm720p, Webm720pHigh, Webm1080p, Webm1080pHigh,
     Webm2160p, Webm2160pHigh
