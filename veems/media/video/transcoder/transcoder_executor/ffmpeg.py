@@ -58,10 +58,6 @@ def transcode(*, transcode_job, source_file_path):
 
     tmp_dir = tempfile.mkdtemp()
     output_file_path = Path(tmp_dir) / profile.storage_filename
-    if not source_file_path.exists():
-        # TODO: test
-        # TODO: mark failed
-        raise LookupError('Source file not found')
     try:
         output_file_path, thumbnails = _ffmpeg_transcode_video(
             source_file_path=source_file_path,

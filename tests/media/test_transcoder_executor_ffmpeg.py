@@ -183,3 +183,9 @@ class TestTranscode:
         assert result_path is None
         assert transcode_job.status == 'failed'
         assert transcode_job.ended_on
+
+    def test_raises_if_source_file_path_does_not_exist(self, transcode_job):
+        with pytest.raises(OSError):
+            ffmpeg.transcode(
+                transcode_job=transcode_job, source_file_path=Path('not_found')
+            )
