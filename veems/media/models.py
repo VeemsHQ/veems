@@ -67,11 +67,11 @@ class MediaFile(BaseModel):
     framerate = models.IntegerField(null=True)  # 30
     duration = models.IntegerField(null=True)  # secs
     name = models.CharField(max_length=30, null=False)  # 240p
-    ext = models.CharField(max_length=4, null=False)  # webm
-    audio_codec = models.CharField(max_length=50, null=True)  # mp4a.40.2
-    video_codec = models.CharField(max_length=50, null=True)  # vp9
+    ext = models.CharField(max_length=4, null=False)
+    audio_codec = models.CharField(max_length=50, null=True)
+    video_codec = models.CharField(max_length=50, null=True)
     container = models.CharField(max_length=30, null=True)
-    filesize = models.IntegerField()  # bytes
+    file_size = models.IntegerField()  # bytes
     # TODO: add duration seconds,
 
 

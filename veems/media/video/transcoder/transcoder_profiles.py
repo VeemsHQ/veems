@@ -6,7 +6,7 @@ https://developers.google.com/media/vp9/settings/vod
 """
 
 
-class WebM360p:
+class Webm360p:
     name = 'webm_360p'
     format = 'video/webm'
     width = 640
@@ -22,7 +22,7 @@ class WebM360p:
     max_framerate = 49
 
 
-class WebM360pHigh(WebM360p):
+class Webm360pHigh(Webm360p):
     name = 'webm_360p_high'
     # TODO: adjust bitrate values
     average_rate = 1800
@@ -32,7 +32,7 @@ class WebM360pHigh(WebM360p):
     max_framerate = 99999999999
 
 
-class WebM720p:
+class Webm720p:
     name = 'webm_720p'
     format = 'video/webm'
     width = 1280
@@ -48,7 +48,7 @@ class WebM720p:
     max_framerate = 49
 
 
-class WebM720pHigh(WebM720p):
+class Webm720pHigh(Webm720p):
     name = 'webm_720p_high'
     average_rate = 1800
     min_rate = 900
@@ -57,7 +57,7 @@ class WebM720pHigh(WebM720p):
     max_framerate = 99999999999
 
 
-class WebM1080p:
+class Webm1080p:
     name = 'webm_1080p'
     format = 'video/webm'
     width = 1920
@@ -73,7 +73,7 @@ class WebM1080p:
     max_framerate = 49
 
 
-class WebM1080pHigh(WebM1080p):
+class Webm1080pHigh(Webm1080p):
     name = 'webm_1080p_high'
     average_rate = 3000
     min_rate = 1500
@@ -82,7 +82,7 @@ class WebM1080pHigh(WebM1080p):
     max_framerate = 99999999999
 
 
-class WebM2160p:
+class Webm2160p:
     name = 'webm_2160p'
     format = 'video/webm'
     width = 3840
@@ -98,7 +98,7 @@ class WebM2160p:
     max_framerate = 49
 
 
-class WebM2160pHigh(WebM2160p):
+class Webm2160pHigh(Webm2160p):
     name = 'webm_2160p_high'
     average_rate = 18000
     min_rate = 9000
@@ -110,8 +110,8 @@ class WebM2160pHigh(WebM2160p):
 # TODO: split audio into m4a for higher quality files?
 
 PROFILES = (
-    WebM360p, WebM360pHigh, WebM720p, WebM720pHigh, WebM1080p, WebM1080pHigh,
-    WebM2160p, WebM2160pHigh
+    Webm360p, Webm360pHigh, Webm720p, Webm720pHigh, Webm1080p, Webm1080pHigh,
+    Webm2160p, Webm2160pHigh
 )
 
 

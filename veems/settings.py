@@ -20,10 +20,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ufj8+7pa3g%2!!8_^pakn+&3mu$r9u*i)_b!3i2e))zj8$-)-*'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ['DEBUG'].lower() == 'true'
 
 ALLOWED_HOSTS = []
 
@@ -98,12 +98,11 @@ TRANSCODED_VIDEO_BUCKET = os.environ['TRANSCODED_VIDEO_BUCKET']
 TRANSCODED_THUMBNAIL_BUCKET = os.environ['TRANSCODED_THUMBNAIL_BUCKET']
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
-STATICFILES_DIRS = (
-    Path(__file__).parent.parent / 'static',
-)
+# STATICFILES_DIRS = (
+#     Path(__file__).parent.parent / 'static',
+# )
 
 AUTH_PASSWORD_VALIDATORS = [
     {

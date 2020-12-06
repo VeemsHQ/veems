@@ -1,5 +1,3 @@
-AWS_REGION=us-east-1
-
 .ONESHELL:
 lint:
 	flake8

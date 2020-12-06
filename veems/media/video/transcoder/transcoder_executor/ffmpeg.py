@@ -82,7 +82,8 @@ def transcode(*, transcode_job, source_file_path):
         media_file = _persist_media_file(
             video_record=transcode_job.video,
             video_path=output_file_path,
-            metadata=metadata_transcoded
+            metadata=metadata_transcoded,
+            profile=profile,
         )
         logger.info(
             'Persisting thumbnails %s %s...', transcode_job,
@@ -125,6 +126,7 @@ def _get_metadata(video_path):
         'duration': duration_secs,
         'video_codec': first_stream.codec_name,
         'audio_codec': audio_codec,
+        'file_size': video_path.stat().st_size,
     }
 
 
@@ -205,20 +207,21 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     return output_file_path, tuple(thumbnails)
 
 
-def _persist_media_file(*, video_record, video_path, metadata):
+def _persist_media_file(*, video_record, video_path, metadata, profile):
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
             video=video_record,
             file=File(file_),
+            name=profile.name,
             width=metadata['width'],
             height=metadata['height'],
             duration=metadata['duration'],
             ext=video_path.suffix.replace('.', ''),
             framerate=metadata['framerate'],
+            audio_codec=metadata['audio_codec'],
+            video_codec=metadata['video_codec'],
+            file_size=metadata['file_size'],
             # TODO: fill
-            filesize=0,
-            audio_codec=None,
-            video_codec=None,
             container=None,
         )
 
