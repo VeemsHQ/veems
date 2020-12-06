@@ -104,6 +104,11 @@ def _get_metadata(video_path):
     except IndexError as exc:
         raise LookupError('Could not get metadata') from exc
 
+    audio_codec = None
+    if metadata.audio:
+        audio_stream = metadata.audio[0]
+        audio_codec = audio_stream.codec_name
+
     if first_stream.duration.upper() == 'N/A':
         duration_str = first_stream.__dict__['TAG:DURATION'].split('.')[0]
         struct_time = time.strptime(duration_str, '%H:%M:%S')
@@ -118,6 +123,8 @@ def _get_metadata(video_path):
         'height': int(first_stream.height),
         'framerate': int(first_stream.framerate),
         'duration': duration_secs,
+        'video_codec': first_stream.codec_name,
+        'audio_codec': audio_codec,
     }
 
 

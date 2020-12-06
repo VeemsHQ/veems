@@ -38,6 +38,9 @@ INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
                 'height': 2160,
                 'framerate': 30,
                 'duration': 10.1,
+                'video_codec': 'h264',
+                'audio_codec': None,
+                'container': 'mp4',
             }
         ),
         (
@@ -46,7 +49,10 @@ INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
                 'duration': 77,
                 'framerate': 30,
                 'height': 1920,
-                'width': 1080
+                'width': 1080,
+                'video_codec': 'vp9',
+                'audio_codec': 'opus',
+                'container': 'webm',
             },
         )
     ]
