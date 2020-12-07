@@ -2,7 +2,7 @@
 
 **An open-source platform for online video.**
 
-This is the code will power https://veems.tv.
+The code powering https://veems.tv.
 A next generation video sharing platform, with freedom of speech values.
 
 ## Contributing
