@@ -17,6 +17,8 @@ We're actively looking for help with both frontend and backend development.
 
 A preview of what we're building.
 
+Further design materials can be found [here](https://github.com/VeemsHQ/design).
+
 ![https://i.imgur.com/pkrQgzE.png](https://i.imgur.com/pkrQgzE.png)
 
 ![https://i.imgur.com/ZMJYNvl.png](https://i.imgur.com/ZMJYNvl.png)
