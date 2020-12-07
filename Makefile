@@ -9,10 +9,10 @@ test:
 .ONESHELL:
 start-deps:
 	docker-compose up -d postgres localstack
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://veems-local
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://veems-local-uploaded
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://veems-local-media-format
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://veems-local-media-thumbs
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC}
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_UPLOADS}
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA_FILES}
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA_FILE_THUMBNAILS}
 
 .ONESHELL:
 .PHONY: run

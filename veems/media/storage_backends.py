@@ -3,12 +3,12 @@ from django.conf import settings
 
 
 class UploadStorage(S3Boto3Storage):
-    bucket_name = settings.UPLOADED_OBJECT_STORAGE_BUCKET
+    bucket_name = settings.BUCKET_UPLOADS
 
 
 class MediaFileStorage(S3Boto3Storage):
-    bucket_name = settings.MEDIA_FORMAT_OBJECT_STORAGE_BUCKET
+    bucket_name = settings.BUCKET_MEDIA_FILES
 
 
 class MediaFileThumbnailStorage(S3Boto3Storage):
-    bucket_name = settings.MEDIA_FORMAT_THUMBNAIL_OBJECT_STORAGE_BUCKET
+    bucket_name = settings.BUCKET_MEDIA_FILE_THUMBNAILS
