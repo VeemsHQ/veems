@@ -5,6 +5,24 @@ According to recommended specs:
 https://developers.google.com/media/vp9/settings/vod
 """
 
+MAX_FRAMERATE = 99999999999
+
+
+class Webm240p:
+    name = 'webm_240p'
+    format = 'video/webm'
+    width = 320
+    height = 240
+    average_rate = 150
+    min_rate = 75
+    max_rate = 218
+    constant_rate_factor = 37
+    tile_columns = 0
+    threads = 2
+    storage_filename = '240.webm'
+    min_framerate = 0
+    max_framerate = MAX_FRAMERATE
+
 
 class Webm360p:
     name = 'webm_360p'
@@ -29,7 +47,7 @@ class Webm360pHigh(Webm360p):
     min_rate = 900
     max_rate = 1800
     min_framerate = 50
-    max_framerate = 99999999999
+    max_framerate = MAX_FRAMERATE
 
 
 class Webm720p:
@@ -54,7 +72,7 @@ class Webm720pHigh(Webm720p):
     min_rate = 900
     max_rate = 1800
     min_framerate = 50
-    max_framerate = 99999999999
+    max_framerate = MAX_FRAMERATE
 
 
 class Webm1080p:
@@ -79,7 +97,31 @@ class Webm1080pHigh(Webm1080p):
     min_rate = 1500
     max_rate = 4350
     min_framerate = 50
-    max_framerate = 99999999999
+    max_framerate = MAX_FRAMERATE
+
+
+class Webm1440p:
+    name = 'webm_1440p'
+    width = 2560
+    height = 1440
+    average_rate = 6000
+    min_rate = 3000
+    max_rate = 8700
+    constant_rate_factor = 24
+    tile_columns = 3
+    threads = 8
+    storage_filename = '1440.webm'
+    min_framerate = 0
+    max_framerate = 49
+
+
+class Webm1440pHigh(Webm1440p):
+    name = 'webm_1440p_high'
+    average_rate = 9000
+    min_rate = 4500
+    max_rate = 13050
+    min_framerate = 50
+    max_framerate = MAX_FRAMERATE
 
 
 class Webm2160p:
@@ -104,15 +146,15 @@ class Webm2160pHigh(Webm2160p):
     min_rate = 9000
     max_rate = 26100
     min_framerate = 50
-    max_framerate = 99999999999
+    max_framerate = MAX_FRAMERATE
 
 
 # TODO: split audio into m4a for higher quality files?
-# TODO: add 1440p: 2560x1440.
-# TODO: add 240p: 426x240.
+# TODO: test aspect ratio 2:3 and
+# https://en.wikipedia.org/wiki/List_of_common_resolutions
 PROFILES = (
-    Webm360p, Webm360pHigh, Webm720p, Webm720pHigh, Webm1080p, Webm1080pHigh,
-    Webm2160p, Webm2160pHigh
+    Webm240p, Webm360p, Webm360pHigh, Webm720p, Webm720pHigh, Webm1080p,
+    Webm1080pHigh, Webm1440p, Webm1440pHigh, Webm2160p, Webm2160pHigh
 )
 
 

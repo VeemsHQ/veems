@@ -84,6 +84,18 @@ class TestTranscode:
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name, exp_metadata', [
             (
+                VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
+                    'audio_codec': 'opus',
+                    'duration': 77,
+                    'framerate': 30,
+                    'height': 240,
+                    'video_codec': 'vp9',
+                    'width': 320,
+                    'file_size': 2468513,
+                    'video_aspect_ratio': '9:16',
+                }
+            ),
+            (
                 VIDEO_PATH_2160_30FPS, 'webm_360p', {
                     'audio_codec': None,
                     'duration': 10,
@@ -92,6 +104,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': 275477,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
             (
@@ -103,6 +116,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 1280,
                     'file_size': 1106071,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
             (
@@ -114,6 +128,19 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 1920,
                     'file_size': 2666458,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                VIDEO_PATH_2160_30FPS, 'webm_1440p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 1440,
+                    'video_codec': 'vp9',
+                    'width': 2560,
+                    'file_size': 7005631,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
             (
@@ -125,6 +152,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 3840,
                     'file_size': 17327709,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
             (
@@ -136,6 +164,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': 3693226,
+                    'video_aspect_ratio': '9:16',
                 }
             ),
             (
@@ -147,6 +176,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': 2490631,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
             (
@@ -158,6 +188,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': 2338906,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
             (
@@ -169,6 +200,7 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': 1137905,
+                    'video_aspect_ratio': '16:9',
                 }
             ),
         ]
@@ -220,7 +252,9 @@ class TestTranscode:
         assert transcode_job.ended_on
 
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name', [
+        'source_file_path, transcode_profile_name',
+        [
+            # TODO: 1440p check
             (VIDEO_PATH_360_60FPS, 'webm_720p'),
             (VIDEO_PATH_360_60FPS, 'webm_1080p'),
             (VIDEO_PATH_360_60FPS, 'webm_2160p'),

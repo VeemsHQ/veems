@@ -37,7 +37,10 @@ def transcode(*, transcode_job, source_file_path):
         )
         _mark_failed(transcode_job)
         return None
-    if profile.height > metadata['height']:
+    if (
+        (profile.height * profile.width) >
+        (metadata['height'] * metadata['width'])
+    ):
         logger.warning(
             'Failed profile height check %s. Investigate.',
             transcode_job,
@@ -104,7 +107,6 @@ def _get_metadata(video_path):
         first_stream = metadata.video[0]
     except IndexError as exc:
         raise LookupError('Could not get metadata') from exc
-
     audio_codec = None
     if metadata.audio:
         audio_stream = metadata.audio[0]
@@ -127,6 +129,7 @@ def _get_metadata(video_path):
         'video_codec': first_stream.codec_name,
         'audio_codec': audio_codec,
         'file_size': video_path.stat().st_size,
+        'video_aspect_ratio': first_stream.display_aspect_ratio,
     }
 
 
