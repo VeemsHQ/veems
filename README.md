@@ -24,7 +24,7 @@ Further design materials can be found [here](https://github.com/VeemsHQ/design).
 
 ![https://i.imgur.com/ZMJYNvl.png](https://i.imgur.com/ZMJYNvl.png)
 
-![https://i.imgur.com/fgzdBsY.png](https://i.imgur.com/fgzdBsY.png)
+![https://i.imgur.com/VGC6FQj.png](https://i.imgur.com/VGC6FQj.png)
 
 ## Feature Roadmap
 
