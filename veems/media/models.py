@@ -12,6 +12,7 @@ TRANSCODE_JOB_CHOICES = (
     'failed',
 )
 
+# TODO: default to 'draft'.
 VIDEO_VISIBILITY_CHOICES = (
     'private',
     'public',

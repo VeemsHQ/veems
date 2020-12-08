@@ -4,36 +4,15 @@ import pytest
 
 from veems.media.video.transcoder.transcoder_executor import ffmpeg
 from veems.media import models
+from tests import constants
 
 pytestmark = pytest.mark.django_db
-VIDEO_PATH_2160_30FPS = (
-    Path(__file__).parent.parent / 'test_data/2160p_30fps.mp4'
-)
-VIDEO_PATH_2160_30FPS_10MIN = (
-    Path(__file__).parent.parent / 'test_data/360p_30fps_10min.mp4'
-)
-VIDEO_PATH_2160_24FPS = (
-    Path(__file__).parent.parent / 'test_data/2160p_24fps.mp4'
-)
-VIDEO_PATH_2160_60FPS = (
-    Path(__file__).parent.parent / 'test_data/2160p_60fps.mkv'
-)
-VIDEO_PATH_1080_60FPS = (
-    Path(__file__).parent.parent / 'test_data/1080p_60fps.mp4'
-)
-VIDEO_PATH_1080_30FPS_VERT = (
-    Path(__file__).parent.parent / 'test_data/1080p_30fps_vertical.webm'
-)
-VIDEO_PATH_360_60FPS = (
-    Path(__file__).parent.parent / 'test_data/360p_60fps.webm'
-)
-INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
 
 
 @pytest.mark.parametrize(
     'video_path, exp_metadata', [
         (
-            VIDEO_PATH_2160_30FPS, {
+            constants.VIDEO_PATH_2160_30FPS, {
                 'width': 3840,
                 'height': 2160,
                 'framerate': 30,
@@ -41,10 +20,11 @@ INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
                 'video_codec': 'h264',
                 'audio_codec': None,
                 'file_size': 54623999,
+                'video_aspect_ratio': '16:9',
             }
         ),
         (
-            VIDEO_PATH_1080_30FPS_VERT,
+            constants.VIDEO_PATH_1080_30FPS_VERT,
             {
                 'duration': 77,
                 'framerate': 30,
@@ -53,8 +33,9 @@ INVALID_VIDEO_PATH = Path(__file__).parent.parent / 'test_data/not_a_video.mov'
                 'video_codec': 'vp9',
                 'audio_codec': 'opus',
                 'file_size': 26813061,
+                'video_aspect_ratio': '9:16',
             },
-        )
+        ),
     ]
 )
 def test_get_metadata(video_path, exp_metadata):
@@ -66,12 +47,12 @@ def test_get_metadata(video_path, exp_metadata):
 @pytest.mark.parametrize(
     'video_path, exp_offsets', [
         (
-            VIDEO_PATH_2160_30FPS_10MIN, (
+            constants.VIDEO_PATH_2160_30FPS_10MIN, (
                 15, 46, 77, 108, 139, 171, 202, 233, 264, 295, 326, 357, 388,
                 419, 450, 481, 513, 544, 575, 606, 637
             )
-        ), (VIDEO_PATH_2160_30FPS, (5, )),
-        (VIDEO_PATH_1080_30FPS_VERT, (19, 57))
+        ), (constants.VIDEO_PATH_2160_30FPS, (5, )),
+        (constants.VIDEO_PATH_1080_30FPS_VERT, (19, 57))
     ]
 )
 def test_get_thumbnail_time_offsets(video_path, exp_offsets):
@@ -82,9 +63,10 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata', [
+        'source_file_path, transcode_profile_name, exp_metadata',
+        [
             # (
-            #     VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
+            #     constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
             #         'audio_codec': 'opus',
             #         'duration': 77,
             #         'framerate': 30,
@@ -96,7 +78,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_30FPS, 'webm_360p', {
+            #     constants.VIDEO_PATH_2160_30FPS, 'webm_360p', {
             #         'audio_codec': None,
             #         'duration': 10,
             #         'framerate': 30,
@@ -108,7 +90,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_30FPS, 'webm_720p', {
+            #     constants.VIDEO_PATH_2160_30FPS, 'webm_720p', {
             #         'audio_codec': None,
             #         'duration': 10,
             #         'framerate': 30,
@@ -120,7 +102,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_30FPS, 'webm_1080p', {
+            #     constants.VIDEO_PATH_2160_30FPS, 'webm_1080p', {
             #         'audio_codec': None,
             #         'duration': 10,
             #         'framerate': 30,
@@ -132,7 +114,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_30FPS, 'webm_1440p', {
+            #     constants.VIDEO_PATH_2160_30FPS, 'webm_1440p', {
             #         'audio_codec': None,
             #         'duration': 10,
             #         'framerate': 30,
@@ -144,7 +126,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_30FPS, 'webm_2160p', {
+            #     constants.VIDEO_PATH_2160_30FPS, 'webm_2160p', {
             #         'audio_codec': None,
             #         'duration': 10,
             #         'framerate': 30,
@@ -156,7 +138,7 @@ class TestTranscode:
             #     }
             # ),
             (
-                VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', {
+                constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', {
                     'audio_codec': 'opus',
                     'duration': 77,
                     'framerate': 30,
@@ -168,7 +150,7 @@ class TestTranscode:
                 }
             ),
             # (
-            #     VIDEO_PATH_1080_60FPS, 'webm_360p_high', {
+            #     constants.VIDEO_PATH_1080_60FPS, 'webm_360p_high', {
             #         'audio_codec': 'opus',
             #         'duration': 12,
             #         'framerate': 60,
@@ -180,7 +162,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_60FPS, 'webm_360p_high', {
+            #     constants.VIDEO_PATH_2160_60FPS, 'webm_360p_high', {
             #         'audio_codec': 'opus',
             #         'duration': 13,
             #         'framerate': 60,
@@ -192,7 +174,7 @@ class TestTranscode:
             #     }
             # ),
             # (
-            #     VIDEO_PATH_2160_24FPS, 'webm_360p', {
+            #     constants.VIDEO_PATH_2160_24FPS, 'webm_360p', {
             #         'audio_codec': None,
             #         'duration': 37,
             #         'framerate': 24,
@@ -255,10 +237,10 @@ class TestTranscode:
         'source_file_path, transcode_profile_name',
         [
             # TODO: 1440p check
-            (VIDEO_PATH_360_60FPS, 'webm_720p'),
-            (VIDEO_PATH_360_60FPS, 'webm_1080p'),
-            (VIDEO_PATH_360_60FPS, 'webm_2160p'),
-            (VIDEO_PATH_1080_60FPS, 'webm_2160p'),
+            (constants.VIDEO_PATH_360_60FPS, 'webm_720p'),
+            (constants.VIDEO_PATH_360_60FPS, 'webm_1080p'),
+            (constants.VIDEO_PATH_360_60FPS, 'webm_2160p'),
+            (constants.VIDEO_PATH_1080_60FPS, 'webm_2160p'),
         ]
     )
     def test_cannot_transcode_into_resolution_higher_than_source_file(
@@ -277,8 +259,8 @@ class TestTranscode:
 
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name', [
-            (VIDEO_PATH_1080_60FPS, 'webm_720p'),
-            (VIDEO_PATH_2160_30FPS, 'webm_720p_high'),
+            (constants.VIDEO_PATH_1080_60FPS, 'webm_720p'),
+            (constants.VIDEO_PATH_2160_30FPS, 'webm_720p_high'),
         ]
     )
     def test_cannot_transcode_into_different_framerate(
@@ -299,7 +281,8 @@ class TestTranscode:
         self, transcode_job
     ):
         result_path = ffmpeg.transcode(
-            transcode_job=transcode_job, source_file_path=INVALID_VIDEO_PATH
+            transcode_job=transcode_job,
+            source_file_path=constants.INVALID_VIDEO_PATH
         )
 
         assert result_path is None

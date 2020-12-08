@@ -8,7 +8,11 @@ https://developers.google.com/media/vp9/settings/vod
 MAX_FRAMERATE = 99999999999
 
 
-class Webm240p:
+class BaseProfile:
+    required_aspect_ratio = None
+
+
+class Webm240p(BaseProfile):
     name = 'webm_240p'
     format = 'video/webm'
     width = 320
@@ -24,7 +28,7 @@ class Webm240p:
     max_framerate = MAX_FRAMERATE
 
 
-class Webm360p:
+class Webm360p(BaseProfile):
     name = 'webm_360p'
     format = 'video/webm'
     width = 640
@@ -50,7 +54,7 @@ class Webm360pHigh(Webm360p):
     max_framerate = MAX_FRAMERATE
 
 
-class Webm720p:
+class Webm720p(BaseProfile):
     name = 'webm_720p'
     format = 'video/webm'
     width = 1280
@@ -75,7 +79,7 @@ class Webm720pHigh(Webm720p):
     max_framerate = MAX_FRAMERATE
 
 
-class Webm1080p:
+class Webm1080p(BaseProfile):
     name = 'webm_1080p'
     format = 'video/webm'
     width = 1920
@@ -100,7 +104,7 @@ class Webm1080pHigh(Webm1080p):
     max_framerate = MAX_FRAMERATE
 
 
-class Webm1440p:
+class Webm1440p(BaseProfile):
     name = 'webm_1440p'
     width = 2560
     height = 1440
@@ -113,6 +117,7 @@ class Webm1440p:
     storage_filename = '1440.webm'
     min_framerate = 0
     max_framerate = 49
+    required_aspect_ratio = '16:9'
 
 
 class Webm1440pHigh(Webm1440p):
@@ -124,7 +129,7 @@ class Webm1440pHigh(Webm1440p):
     max_framerate = MAX_FRAMERATE
 
 
-class Webm2160p:
+class Webm2160p(BaseProfile):
     name = 'webm_2160p'
     format = 'video/webm'
     width = 3840
@@ -152,6 +157,8 @@ class Webm2160pHigh(Webm2160p):
 # TODO: split audio into m4a for higher quality files?
 # TODO: test aspect ratio 2:3 and
 # https://en.wikipedia.org/wiki/List_of_common_resolutions
+
+# TODO: add 144p
 PROFILES = (
     Webm240p, Webm360p, Webm360pHigh, Webm720p, Webm720pHigh, Webm1080p,
     Webm1080pHigh, Webm1440p, Webm1440pHigh, Webm2160p, Webm2160pHigh

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 from django.utils import timezone
 from ffprobe import FFProbe
@@ -7,14 +5,94 @@ from ffprobe import FFProbe
 from veems.media import models
 from veems.media.video.transcoder import manager
 from veems.media.video.transcoder import transcoder_profiles
+from tests import constants
 
 pytestmark = pytest.mark.django_db
 
 MODULE = 'veems.media.video.transcoder.manager'
-TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
-VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
-VIDEO_PATH_2160_60FPS = TEST_DATA_DIR / '2160p_60fps.mkv'
-VIDEO_PATH_360_60FPS = TEST_DATA_DIR / '360p_60fps.webm'
+
+
+@pytest.mark.parametrize(
+    'video_path, exp_profiles', [
+        (
+            constants.VID_2160P_30FPS,
+            [
+                'webm_240p', 'webm_360p', 'webm_720p', 'webm_1080p',
+                'webm_1440p', 'webm_2160p'
+            ],
+        ),
+        (
+            constants.VID_2160P_24FPS,
+            [
+                'webm_240p', 'webm_360p', 'webm_720p', 'webm_1080p',
+                'webm_1440p', 'webm_2160p'
+            ],
+        ),
+        (
+            constants.VID_720P_24FPS,
+            [
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+            ],
+        ),
+        (
+            constants.VID_720_X_576_24FPS,
+            [
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+            ],
+        ),
+        (
+            constants.VID_1828_X_1332_24FPS,
+            [
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+            ],
+        ),
+        (
+            constants.VID_1440P_24FPS,
+            [
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+                'webm_1440p',
+            ],
+        ),
+        (
+            constants.VID_360P_24FPS,
+            [
+                'webm_240p',
+                'webm_360p',
+            ],
+        ),
+        (
+            constants.VID_240P_24FPS,
+            [
+                'webm_240p',
+            ],
+        ),
+        (
+            constants.VIDEO_PATH_1080_30FPS_VERT,
+            [
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+            ],
+        ),
+    ]
+)
+def test_get_applicable_transcode_profiles(video_path, exp_profiles):
+    profiles = manager._get_applicable_transcode_profiles(
+        video_path=video_path
+    )
+
+    assert [p.name for p in profiles] == exp_profiles
 
 
 @pytest.mark.parametrize(
@@ -45,7 +123,7 @@ VIDEO_PATH_360_60FPS = TEST_DATA_DIR / '360p_60fps.webm'
     ]
 )
 def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
-    video_path = TEST_DATA_DIR / video_filename
+    video_path = constants.TEST_DATA_DIR / video_filename
     metadata = FFProbe(str(video_path))
     ffprobe_stream = metadata.video[0]
 
@@ -59,22 +137,29 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
 @pytest.mark.parametrize(
     'video_filename, exp_profiles', [
         (
-            VIDEO_PATH_2160_30FPS, (
+            constants.VIDEO_PATH_2160_30FPS, (
+                'webm_240p',
                 'webm_360p',
                 'webm_720p',
                 'webm_1080p',
+                'webm_1440p',
                 'webm_2160p',
             )
         ),
         (
-            VIDEO_PATH_2160_60FPS, (
+            constants.VIDEO_PATH_2160_60FPS, (
+                'webm_240p',
                 'webm_360p_high',
                 'webm_720p_high',
                 'webm_1080p_high',
+                'webm_1440p_high',
                 'webm_2160p_high',
             )
         ),
-        (VIDEO_PATH_360_60FPS, ('webm_360p_high', )),
+        (constants.VIDEO_PATH_360_60FPS, (
+            'webm_240p',
+            'webm_360p_high',
+        )),
     ]
 )
 def test_create_transcodes(
