@@ -38,6 +38,7 @@ def transcode(*, transcode_job, source_file_path):
         )
         _mark_failed(transcode_job)
         return None
+    # TODO: correct this res check
     # if (
     #     (profile.height * profile.width) <
     #     (metadata['height'] * metadata['width'])
