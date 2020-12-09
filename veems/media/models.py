@@ -97,6 +97,7 @@ class TranscodeJob(BaseModel):
     )
     started_on = models.DateTimeField(db_index=True, null=True)
     ended_on = models.DateTimeField(db_index=True, null=True)
+    failure_context = models.TextField(null=True)
     # TODO: store failure context
 
     def __str__(self):

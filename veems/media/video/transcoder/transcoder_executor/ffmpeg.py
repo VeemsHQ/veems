@@ -1,6 +1,7 @@
 import tempfile
 import os
 import time
+import subprocess
 import logging
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from ffprobe import FFProbe
 
 from .. import transcoder_profiles
 from .... import models
+from .exceptions import TranscodeException
 
 logger = logging.getLogger(__name__)
 
@@ -67,13 +69,13 @@ def transcode(*, transcode_job, source_file_path):
             profile=profile,
             output_file_path=output_file_path,
         )
-    except RuntimeError:
+    except TranscodeException as exc:
         logger.warning(
             'FFMPEG transcode unexpectedly failed, %s',
             transcode_job,
             exc_info=True
         )
-        _mark_failed(transcode_job)
+        _mark_failed(transcode_job, failure_context=exc.stderr)
         return None
     else:
         logger.info('FFMPEF transcode done')
@@ -171,17 +173,24 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
         )
         result = os.system(command)
         if result != 0:
-            raise RuntimeError('Thumbnail creation failed')
+            raise TranscodeException('Thumbnail creation failed')
         if not thumb_path.exists():
-            raise RuntimeError('No file output from transcode thumb process')
+            raise TranscodeException(
+                'No file output from transcode thumb process'
+            )
         thumbnails.append((offset, thumb_path))
     return tuple(thumbnails)
 
 
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
+    meta = _get_metadata(source_file_path)
+    if meta['width'] > meta['height']:
+        scale = f'{profile.width}:-2'
+    else:
+        scale = f'-2:{profile.height}'
     base_command = (
         f'ffmpeg -y -i {source_file_path} -vf '
-        f'scale={profile.width}x{profile.height} '
+        f'scale={scale}  '
         f'-b:v {profile.average_rate}k '
         f'-minrate {profile.min_rate}k '
         f'-maxrate {profile.max_rate}k '
@@ -194,18 +203,20 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
         '-c:a libopus '
         '-speed 4 '
     )
-    command_1 = base_command + ('-pass 1 ' f'{output_file_path}')
-    command_2 = base_command + ('-pass 2 ' f'{output_file_path}')
-    result = os.system(command_1)
-    if result != 0:
-        raise RuntimeError('Transcoding failed')
-    result = os.system(command_2)
-    if result != 0:
-        raise RuntimeError('Transcoding failed')
+    command_1 = f'{base_command} -pass 1 ' f'{output_file_path}'
+    command_2 = f'{base_command} -pass 2 ' f'{output_file_path}'
+    result = subprocess.run(command_1.split(), capture_output=True)
+    if result.returncode != 0:
+        raise TranscodeException(
+            'Transcoding failed', stderr=result.stderr.decode()
+        )
+    result = subprocess.run(command_2.split(), capture_output=True)
+    if result.returncode != 0:
+        raise TranscodeException(
+            'Transcoding failed', stderr=result.stderr.decode()
+        )
     if not output_file_path.exists():
-        # TODO: test
-        raise RuntimeError('No file output from transcode process')
-
+        raise TranscodeException('No file output from transcode process')
     thumbnails = _ffmpeg_generate_thumbnails(video_file_path=output_file_path)
     return output_file_path, tuple(thumbnails)
 
@@ -245,8 +256,11 @@ def _persist_media_file_thumbs(*, media_file_record, thumbnails):
 def _mark_completed(transcode_job):
     transcode_job.status = 'completed'
     transcode_job.ended_on = timezone.now()
+    transcode_job.save()
 
 
-def _mark_failed(transcode_job):
+def _mark_failed(transcode_job, failure_context):
     transcode_job.status = 'failed'
+    transcode_job.failure_context = failure_context
     transcode_job.ended_on = timezone.now()
+    transcode_job.save()
