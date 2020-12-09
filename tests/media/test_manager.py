@@ -37,14 +37,6 @@ MODULE = 'veems.media.video.transcoder.manager'
             ],
         ),
         (
-            constants.VID_720_X_576_24FPS,
-            [
-                'webm_240p',
-                'webm_360p',
-                'webm_720p',
-            ],
-        ),
-        (
             constants.VID_1828_X_1332_24FPS,
             [
                 'webm_240p',
@@ -78,6 +70,15 @@ MODULE = 'veems.media.video.transcoder.manager'
         ),
         (
             constants.VIDEO_PATH_1080_30FPS_VERT,
+            [
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+            ],
+        ),
+        (
+            constants.VID_1920_X_960,
             [
                 'webm_240p',
                 'webm_360p',

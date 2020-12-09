@@ -50,7 +50,10 @@ def _transcode_profile_does_apply(profile_cls, ffprobe_stream):
         profile_cls.required_aspect_ratio
     ):
         return False
-    if profile_cls.height > int(ffprobe_stream.height):
+    if (
+        profile_cls.width > int(ffprobe_stream.width)
+        and profile_cls.height > int(ffprobe_stream.height)
+    ):
         return False
     if not (
         profile_cls.min_framerate <= ffprobe_stream.framerate <=

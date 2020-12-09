@@ -66,6 +66,18 @@ class TestTranscode:
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name, exp_metadata', [
             (
+                constants.VID_1920_X_960, 'webm_1080p', {
+                    'audio_codec': 'opus',
+                    'duration': 77,
+                    'framerate': 30,
+                    'height': 960,
+                    'video_codec': 'vp9',
+                    'width': 1920,
+                    'file_size': 2407372,
+                    'video_aspect_ratio': '9:16',
+                }
+            ),
+            (
                 constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
                     'audio_codec': 'opus',
                     'duration': 77,

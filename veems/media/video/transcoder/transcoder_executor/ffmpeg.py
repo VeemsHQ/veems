@@ -40,7 +40,7 @@ def transcode(*, transcode_job, source_file_path):
         _mark_failed(transcode_job)
         return None
     if (
-        (profile.height * profile.width) >
+        (profile.height * profile.width) <
         (metadata['height'] * metadata['width'])
     ):
         logger.warning(
