@@ -64,8 +64,7 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata',
-        [
+        'source_file_path, transcode_profile_name, exp_metadata', [
             (
                 constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
                     'audio_codec': 'opus',
@@ -236,7 +235,6 @@ class TestTranscode:
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name',
         [
-            # TODO: 1440p check
             (constants.VIDEO_PATH_360_60FPS, 'webm_720p'),
             (constants.VIDEO_PATH_360_60FPS, 'webm_1080p'),
             (constants.VIDEO_PATH_360_60FPS, 'webm_2160p'),
@@ -280,9 +278,12 @@ class TestTranscode:
     def test_transcode_job_failed_when_ffmpeg_returns_an_error(
         self, transcode_job_factory, mocker
     ):
-        mocker.patch(f'{MODULE}.subprocess.run', return_value=mocker.Mock(
-            returncode=1, stderr=b'command error output'
-        ))
+        mocker.patch(
+            f'{MODULE}.subprocess.run',
+            return_value=mocker.Mock(
+                returncode=1, stderr=b'command error output'
+            )
+        )
         transcode_job = transcode_job_factory(profile='webm_240p')
 
         result_path = ffmpeg.transcode(
