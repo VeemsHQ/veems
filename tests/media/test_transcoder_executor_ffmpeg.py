@@ -226,6 +226,7 @@ class TestTranscode:
         assert media_file.audio_codec == metadata['audio_codec']
         assert media_file.video_codec == metadata['video_codec']
         assert media_file.ext == 'webm'
+        assert media_file.container == 'webm'
         assert media_file.file_size == metadata['file_size']
 
         # Check thumbnails created

@@ -248,8 +248,7 @@ def _persist_media_file(*, video_record, video_path, metadata, profile):
             audio_codec=metadata['audio_codec'],
             video_codec=metadata['video_codec'],
             file_size=metadata['file_size'],
-            # TODO: fill
-            container=None,
+            container=video_path.suffix.replace('.', ''),
         )
 
 
