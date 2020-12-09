@@ -39,17 +39,17 @@ def transcode(*, transcode_job, source_file_path):
         )
         _mark_failed(transcode_job)
         return None
-    if (
-        (profile.height * profile.width) <
-        (metadata['height'] * metadata['width'])
-    ):
-        logger.warning(
-            'Failed profile height check %s. Investigate.',
-            transcode_job,
-            exc_info=True
-        )
-        _mark_completed(transcode_job)
-        return None
+    # if (
+    #     (profile.height * profile.width) <
+    #     (metadata['height'] * metadata['width'])
+    # ):
+    #     logger.warning(
+    #         'Failed profile height check %s. Investigate.',
+    #         transcode_job,
+    #         exc_info=True
+    #     )
+    #     _mark_completed(transcode_job)
+    #     return None
     if not (
         profile.min_framerate <= metadata['framerate'] <= profile.max_framerate
     ):
@@ -158,27 +158,34 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
     """
     Generate a thumbnail image for every 30 secs of video.
     """
-    time_offsets = _get_thumbnail_time_offsets(video_path=video_file_path)
-    thumbnails = []
-    for offset in time_offsets:
-        thumb_path = video_file_path.parent / f'{offset}.jpg'
+    def run_command(offset, video_file_path, thumb_path):
         command = (
             'ffmpeg '
             f'-ss {offset} '
             f'-i {video_file_path} '
             '-vf "select=gt(scene\,0.4)" '  # noqa: W605
-            '-vf select="eq(pict_type\,I)" '  # noqa: W605
+            # '-vf select="eq(pict_type\,I)" '  # noqa: W605
             '-vframes 1 '
             f'{thumb_path}'
         )
-        result = os.system(command)
-        if result != 0:
-            raise TranscodeException('Thumbnail creation failed')
-        if not thumb_path.exists():
-            raise TranscodeException(
-                'No file output from transcode thumb process'
+        result = subprocess.run(command.split(), capture_output=True)
+        if thumb_path.exists() and result.returncode == 0:
+            return (offset, thumb_path)
+        raise TranscodeException(
+            'Thumbnail could not be created', stderr=result.stderr
+        )
+
+    time_offsets = _get_thumbnail_time_offsets(video_path=video_file_path)
+    thumbnails = []
+    for offset in time_offsets:
+        thumb_path = video_file_path.parent / f'{offset}.jpg'
+        thumbnails.append(
+            run_command(
+                offset=offset,
+                video_file_path=video_file_path,
+                thumb_path=thumb_path
             )
-        thumbnails.append((offset, thumb_path))
+        )
     return tuple(thumbnails)
 
 
