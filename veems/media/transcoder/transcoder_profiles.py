@@ -10,11 +10,26 @@ MAX_FRAMERATE = 99999999999
 
 class BaseProfile:
     required_aspect_ratio = None
+    format = 'video/webm'
+
+
+class Webm144p(BaseProfile):
+    name = 'webm_144p'
+    width = 256
+    height = 144
+    min_rate = 45
+    average_rate = 100
+    max_rate = 140
+    constant_rate_factor = 40
+    tile_columns = 0
+    threads = 2
+    storage_filename = '144.webm'
+    min_framerate = 0
+    max_framerate = MAX_FRAMERATE
 
 
 class Webm240p(BaseProfile):
     name = 'webm_240p'
-    format = 'video/webm'
     width = 320
     height = 240
     average_rate = 150
@@ -30,7 +45,6 @@ class Webm240p(BaseProfile):
 
 class Webm360p(BaseProfile):
     name = 'webm_360p'
-    format = 'video/webm'
     width = 640
     height = 360
     average_rate = 276
@@ -56,7 +70,6 @@ class Webm360pHigh(Webm360p):
 
 class Webm720p(BaseProfile):
     name = 'webm_720p'
-    format = 'video/webm'
     width = 1280
     height = 720
     average_rate = 1024
@@ -81,7 +94,6 @@ class Webm720pHigh(Webm720p):
 
 class Webm1080p(BaseProfile):
     name = 'webm_1080p'
-    format = 'video/webm'
     width = 1920
     height = 1080
     average_rate = 1800
@@ -131,7 +143,6 @@ class Webm1440pHigh(Webm1440p):
 
 class Webm2160p(BaseProfile):
     name = 'webm_2160p'
-    format = 'video/webm'
     width = 3840
     height = 2160
     average_rate = 12000
@@ -158,10 +169,10 @@ class Webm2160pHigh(Webm2160p):
 # TODO: test aspect ratio 2:3 and
 # https://en.wikipedia.org/wiki/List_of_common_resolutions
 
-# TODO: add 144p
 PROFILES = (
-    Webm240p, Webm360p, Webm360pHigh, Webm720p, Webm720pHigh, Webm1080p,
-    Webm1080pHigh, Webm1440p, Webm1440pHigh, Webm2160p, Webm2160pHigh
+    Webm144p, Webm240p, Webm360p, Webm360pHigh, Webm720p, Webm720pHigh,
+    Webm1080p, Webm1080pHigh, Webm1440p, Webm1440pHigh, Webm2160p,
+    Webm2160pHigh
 )
 
 

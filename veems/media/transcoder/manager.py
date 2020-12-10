@@ -19,7 +19,6 @@ def create_transcodes(video_id):
     )
     with uploaded_file as file_:
         file_.write(upload.file.read())
-        # TODO: group of celery tassks
         profiles = _get_applicable_transcode_profiles(file_.name)
         for profile_cls in profiles:
             transcode_job_id = models.TranscodeJob.objects.create(

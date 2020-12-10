@@ -9,7 +9,7 @@ from django.utils import timezone
 from ffprobe import FFProbe
 
 from .. import transcoder_profiles
-from .... import models
+from ... import models
 from .exceptions import TranscodeException
 
 logger = logging.getLogger(__name__)
