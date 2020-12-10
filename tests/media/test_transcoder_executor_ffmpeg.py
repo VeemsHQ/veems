@@ -218,43 +218,36 @@ class TestTranscode:
         exp_metadata, mocker
     ):
         transcode_job = transcode_job_factory(profile=transcode_profile_name)
-        result_path, thumbnails = ffmpeg.transcode(
+        media_file, thumbnails = ffmpeg.transcode(
             transcode_job=transcode_job, source_file_path=source_file_path
         )
 
-        # Check video transcoded
-        assert isinstance(result_path, Path)
-        assert result_path.exists()
-        metadata = ffmpeg._get_metadata(video_path=result_path)
-        assert metadata == exp_metadata
-        # Check video persisted
-        media_file = models.MediaFile.objects.get(video=transcode_job.video)
+        # Check video transcoded & persisted
+        assert isinstance(media_file, models.MediaFile)
         assert media_file.file
         assert media_file.name == transcode_profile_name
         assert media_file.width == exp_metadata['width']
         assert media_file.height == exp_metadata['height']
-        assert media_file.duration == metadata['duration']
-        assert media_file.framerate == metadata['framerate']
-        assert media_file.audio_codec == metadata['audio_codec']
-        assert media_file.video_codec == metadata['video_codec']
+        assert media_file.duration == exp_metadata['duration']
+        assert media_file.framerate == exp_metadata['framerate']
+        assert media_file.audio_codec == exp_metadata['audio_codec']
+        assert media_file.video_codec == exp_metadata['video_codec']
         assert media_file.ext == 'webm'
         assert media_file.container == 'webm'
-        assert media_file.file_size == metadata['file_size']
+        assert media_file.file_size == exp_metadata['file_size']
 
+        assert thumbnails
+        assert all(isinstance(t, models.MediaFileThumbnail) for t in thumbnails)
         # Check thumbnails created
         assert thumbnails
-        for time_offset, thumb_path in thumbnails:
-            assert isinstance(time_offset, int)
-            assert thumb_path.name.endswith('.jpg')
-            thumb_meta = ffmpeg._get_metadata(thumb_path)
-            assert thumb_meta['width'] == exp_metadata['width']
-            assert thumb_meta['height'] == exp_metadata['height']
-        # Check thumbnails persisted
-        thumbnail_db_records = models.MediaFileThumbnail.objects.filter(
-            media_file__video=transcode_job.video
-        )
-        assert len(thumbnail_db_records) == len(thumbnails)
-        assert all(t.file for t in thumbnail_db_records)
+        for thumbnail_record in thumbnails:
+            assert isinstance(thumbnail_record, models.MediaFileThumbnail)
+            assert thumbnail_record.time_offset_secs > 0
+            assert thumbnail_record.file
+            assert thumbnail_record.file.name.endswith('.jpg')
+            assert thumbnail_record.ext == 'jpg'
+            assert thumbnail_record.width == exp_metadata['width']
+            assert thumbnail_record.height == exp_metadata['height']
 
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on

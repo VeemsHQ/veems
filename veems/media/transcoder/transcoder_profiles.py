@@ -60,10 +60,9 @@ class Webm360p(BaseProfile):
 
 class Webm360pHigh(Webm360p):
     name = 'webm_360p_high'
-    # TODO: adjust bitrate values
-    average_rate = 1800
-    min_rate = 900
-    max_rate = 1800
+    average_rate = 400
+    min_rate = 138
+    max_rate = 512
     min_framerate = 50
     max_framerate = MAX_FRAMERATE
 

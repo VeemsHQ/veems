@@ -84,6 +84,7 @@ class MediaFileThumbnail(BaseModel):
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
+    time_offset_secs = models.IntegerField(null=True)
     ext = models.CharField(max_length=4, null=False)
 
 

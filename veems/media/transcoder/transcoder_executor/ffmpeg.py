@@ -49,47 +49,47 @@ def transcode(*, transcode_job, source_file_path):
         _mark_completed(transcode_job)
         return None
 
-    tmp_dir = tempfile.mkdtemp()
-    output_file_path = Path(tmp_dir) / profile.storage_filename
-    try:
-        output_file_path, thumbnails = _ffmpeg_transcode_video(
-            source_file_path=source_file_path,
-            profile=profile,
-            output_file_path=output_file_path,
-        )
-    except TranscodeException as exc:
-        logger.warning(
-            'FFMPEG transcode unexpectedly failed, %s',
-            transcode_job,
-            exc_info=True
-        )
-        _mark_failed(transcode_job, failure_context=exc.stderr)
-        return None
-    else:
-        logger.info('FFMPEG transcode done')
-        metadata_transcoded = _get_metadata(output_file_path)
-        logger.info(
-            'Persisting transcoded video %s %s...', transcode_job,
-            transcode_job.video.id
-        )
-        media_file = _persist_media_file(
-            video_record=transcode_job.video,
-            video_path=output_file_path,
-            metadata=metadata_transcoded,
-            profile=profile,
-        )
-        logger.info(
-            'Persisting thumbnails %s %s...', transcode_job,
-            transcode_job.video.id
-        )
-        _persist_media_file_thumbs(
-            media_file_record=media_file, thumbnails=thumbnails
-        )
-        _mark_completed(transcode_job)
-        # TODO: cleanup TMP files
-        # TODO: return MediaFile and Thumbs
-        logger.info('Completed transcode job %s', transcode_job)
-        return output_file_path, thumbnails
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        output_file_path = Path(tmp_dir) / profile.storage_filename
+        try:
+            output_file_path, thumbnails = _ffmpeg_transcode_video(
+                source_file_path=source_file_path,
+                profile=profile,
+                output_file_path=output_file_path,
+            )
+        except TranscodeException as exc:
+            logger.warning(
+                'FFMPEG transcode unexpectedly failed, %s',
+                transcode_job,
+                exc_info=True
+            )
+            _mark_failed(transcode_job, failure_context=exc.stderr)
+            return None
+        else:
+            logger.info('FFMPEG transcode done')
+            metadata_transcoded = _get_metadata(output_file_path)
+            logger.info(
+                'Persisting transcoded video %s %s...', transcode_job,
+                transcode_job.video.id
+            )
+            media_file = _persist_media_file(
+                video_record=transcode_job.video,
+                video_path=output_file_path,
+                metadata=metadata_transcoded,
+                profile=profile,
+            )
+            logger.info(
+                'Persisting thumbnails %s %s...', transcode_job,
+                transcode_job.video.id
+            )
+            thumbnail_records = _persist_media_file_thumbs(
+                media_file_record=media_file, thumbnails=thumbnails
+            )
+            _mark_completed(transcode_job)
+            # TODO: cleanup TMP files
+            # TODO: return MediaFile and Thumbs
+            logger.info('Completed transcode job %s', transcode_job)
+            return media_file, thumbnail_records
 
 
 def _get_metadata(video_path):
@@ -242,16 +242,19 @@ def _persist_media_file(*, video_record, video_path, metadata, profile):
 
 
 def _persist_media_file_thumbs(*, media_file_record, thumbnails):
+    records = []
     for time_offset_secs, thumb_path in thumbnails:
+        img_meta = _get_metadata(thumb_path)
         with thumb_path.open('rb') as file_:
-            models.MediaFileThumbnail.objects.create(
+            records.append(models.MediaFileThumbnail.objects.create(
                 media_file=media_file_record,
                 file=File(file_),
                 ext=thumb_path.suffix.replace('.', ''),
-                # TODO: fill
-                width=0,
-                height=0,
-            )
+                time_offset_secs=time_offset_secs,
+                width=img_meta['width'],
+                height=img_meta['height'],
+            ))
+    return records
 
 
 def _mark_completed(transcode_job):
