@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from veems.media.video.transcoder.transcoder_executor import ffmpeg
+from veems.media.transcoder.transcoder_executor import ffmpeg
 from veems.media import models
 from tests import constants
 
 pytestmark = pytest.mark.django_db
-MODULE = 'veems.media.video.transcoder.transcoder_executor.ffmpeg'
+MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
 
 
 @pytest.mark.parametrize(

@@ -84,4 +84,3 @@ def task_transcode(video_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name)
         )
-        # TODO: Add VideoFormat

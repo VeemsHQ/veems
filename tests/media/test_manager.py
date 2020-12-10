@@ -3,13 +3,13 @@ from django.utils import timezone
 from ffprobe import FFProbe
 
 from veems.media import models
-from veems.media.video.transcoder import manager
-from veems.media.video.transcoder import transcoder_profiles
+from veems.media.transcoder import manager
+from veems.media.transcoder import transcoder_profiles
 from tests import constants
 
 pytestmark = pytest.mark.django_db
 
-MODULE = 'veems.media.video.transcoder.manager'
+MODULE = 'veems.media.transcoder.manager'
 
 
 @pytest.mark.parametrize(
