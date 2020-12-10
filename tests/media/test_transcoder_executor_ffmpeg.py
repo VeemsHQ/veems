@@ -192,11 +192,11 @@ class TestTranscode:
                     'audio_codec': None,
                     'duration': 37,
                     'framerate': 24,
-                    'height': 360,
+                    'height': 338,
                     'video_codec': 'vp9',
                     'width': 640,
-                    'file_size': 1137905,
-                    'video_aspect_ratio': '16:9',
+                    'file_size': 1092609,
+                    'video_aspect_ratio': '320:169',
                 }
             ),
         ]
