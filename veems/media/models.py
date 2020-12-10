@@ -65,15 +65,15 @@ class MediaFile(BaseModel):
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
-    framerate = models.IntegerField(null=True)  # 30
-    duration = models.IntegerField(null=True)  # secs
-    name = models.CharField(max_length=30, null=False)  # 240p
+    framerate = models.IntegerField(null=True)
+    duration = models.IntegerField(null=True)
+    name = models.CharField(max_length=30, null=False)
+    # TODO: validate no .
     ext = models.CharField(max_length=4, null=False)
     audio_codec = models.CharField(max_length=50, null=True)
     video_codec = models.CharField(max_length=50, null=True)
     container = models.CharField(max_length=30, null=True)
-    file_size = models.IntegerField()  # bytes
-    # TODO: add duration seconds,
+    file_size = models.IntegerField()
 
 
 class MediaFileThumbnail(BaseModel):
@@ -84,7 +84,6 @@ class MediaFileThumbnail(BaseModel):
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
-    # TODO: validate no .
     ext = models.CharField(max_length=4, null=False)
 
 
