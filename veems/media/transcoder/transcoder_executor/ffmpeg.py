@@ -16,18 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 def transcode(*, transcode_job, source_file_path):
-    """
-
-    TODOs
-
-    1. open the video file with ffmpeg
-    2. extract the first video stream.
-    3. get the width and height of the video
-    4. (not always) if the video is vertical, rotate it.
-    5. run the transcode with ffmpeg
-    7. update the transcode job status = COMPLETE
-    6. upload the resulting webm file to s3 bucket/others
-    """
     logger.info('Started transcode job %s', transcode_job)
     profile = transcoder_profiles.get_profile(transcode_job.profile)
     try:
@@ -78,7 +66,7 @@ def transcode(*, transcode_job, source_file_path):
         _mark_failed(transcode_job, failure_context=exc.stderr)
         return None
     else:
-        logger.info('FFMPEF transcode done')
+        logger.info('FFMPEG transcode done')
         metadata_transcoded = _get_metadata(output_file_path)
         logger.info(
             'Persisting transcoded video %s %s...', transcode_job,
