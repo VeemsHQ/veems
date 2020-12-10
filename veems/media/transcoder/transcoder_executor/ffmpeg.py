@@ -99,6 +99,7 @@ def transcode(*, transcode_job, source_file_path):
         )
         _mark_completed(transcode_job)
         # TODO: cleanup TMP files
+        # TODO: return MediaFile and Thumbs
         logger.info('Completed transcode job %s', transcode_job)
         return output_file_path, thumbnails
 
