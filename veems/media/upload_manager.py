@@ -25,10 +25,11 @@ def _get_presigned_upload_url(*, upload, filename):
 
 
 def prepare(filename):
-    upload = models.Upload.objects.create(
-        media_type='video',
-        presigned_upload_url=_get_presigned_upload_url(),
+    upload = models.Upload.objects.create(media_type='video')
+    upload.presigned_upload_url = _get_presigned_upload_url(
+        upload=upload, filename=filename
     )
+    upload.save()
     video = models.Video.objects.create(
         upload=upload,
         visibility='draft',

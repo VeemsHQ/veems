@@ -7,11 +7,11 @@ MODULE = 'veems.media.upload_manager'
 
 
 def test_prepare():
-    upload, video = upload_manager.prepare()
+    upload, video = upload_manager.prepare(filename='MyFile.mp4')
 
     assert isinstance(upload, models.Upload)
     assert upload.media_type == 'video'
-    assert upload.presigned_upload_url.startswith('https://')
+    assert upload.presigned_upload_url.startswith('http://')
     assert isinstance(video, models.Video)
     assert not video.title
     assert video.visibility == 'draft'
