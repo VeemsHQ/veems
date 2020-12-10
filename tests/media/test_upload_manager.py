@@ -14,6 +14,7 @@ def test_prepare():
     assert upload.presigned_upload_url.startswith('https://')
     assert isinstance(video, models.Video)
     assert not video.title
+    assert video.visibility == 'draft'
 
 
 def test_complete(video, mocker):

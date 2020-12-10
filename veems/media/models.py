@@ -12,7 +12,6 @@ TRANSCODE_JOB_CHOICES = (
     'failed',
 )
 
-# TODO: default to 'draft'.
 VIDEO_VISIBILITY_CHOICES = (
     'private',
     'public',
@@ -46,7 +45,7 @@ class Video(BaseModel):
     upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     visibility = models.CharField(
-        max_length=10, choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES)
+        max_length=10, choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)

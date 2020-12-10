@@ -1,5 +1,5 @@
 from . import models
-from .video.transcoder import manager as transcode_manager
+from .transcoder import manager as transcode_manager
 
 
 def _get_presigned_upload_url():
@@ -12,7 +12,10 @@ def prepare():
         media_type='video',
         presigned_upload_url=_get_presigned_upload_url(),
     )
-    video = models.Video.objects.create(upload=upload)
+    video = models.Video.objects.create(
+        upload=upload,
+        visibility='draft',
+    )
     return upload, video
 
 

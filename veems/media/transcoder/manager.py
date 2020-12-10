@@ -8,7 +8,7 @@ from django.conf import settings
 
 from .transcoder_executor import ffmpeg as transcode_executor
 from . import transcoder_profiles
-from ... import models
+from .. import models
 
 
 def create_transcodes(video_id):
