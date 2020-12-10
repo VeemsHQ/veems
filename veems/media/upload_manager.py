@@ -1,5 +1,6 @@
 from django.conf import settings
 import boto3
+from celery import shared_task
 
 from . import models
 from .transcoder import manager as transcode_manager
@@ -14,7 +15,7 @@ def _get_presigned_upload_url(*, upload, filename):
         instance=upload, filename=filename
     )
     response = s3.generate_presigned_url(
-        'get_object',
+        ClientMethod='put_object',
         Params={
             'Bucket': bucket_name,
             'Key': object_name
@@ -37,6 +38,7 @@ def prepare(filename):
     return upload, video
 
 
+@shared_task()
 def complete(upload_id):
     video_id = models.Video.objects.get(upload_id=upload_id).id
     transcode_manager.create_transcodes(video_id=video_id)

@@ -142,3 +142,31 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 ACTIVE_EXECUTOR = 'ffmpeg'
+
+CELERY_TASK_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER')
+                            or 'false').lower() == 'true'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ENABLE_UTC = True
+CELERY_BROKER_CONNECTION_TIMEOUT = 4.0
+CELERY_TASK_DEFAULT_QUEUE = 'celery'
+CELERY_DEFAULT_QUEUE = CELERY_TASK_DEFAULT_QUEUE
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'sqs://')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_DEFAULT_QUEUE = CELERY_TASK_DEFAULT_QUEUE
+CELERY_ACKS_LATE = True
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'region': AWS_REGION,
+    'polling_interval': 0.3,
+    'visibility_timeout': 3600,
+    # hang workaround
+    'max_retries': 4,
+    'interval_start': 0,
+    'interval_step': 0.5,
+    'interval_max': 3,
+    'queue_name_prefix': 'celery-',
+}
+CELERY_BROKER_HEARTBEAT = 30
+CELERY_BROKER_HEARTBEAT_CHECKRATE = 2

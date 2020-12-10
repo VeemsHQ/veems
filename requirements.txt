@@ -6,3 +6,4 @@ psycopg2
 django-storages
 boto3
 awscli
+djangorestframework
