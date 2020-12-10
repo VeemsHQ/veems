@@ -67,7 +67,6 @@ class MediaFile(BaseModel):
     framerate = models.IntegerField(null=True)
     duration = models.IntegerField(null=True)
     name = models.CharField(max_length=30, null=False)
-    # TODO: validate no .
     ext = models.CharField(max_length=4, null=False)
     audio_codec = models.CharField(max_length=50, null=True)
     video_codec = models.CharField(max_length=50, null=True)
