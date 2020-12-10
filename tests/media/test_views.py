@@ -1,15 +1,13 @@
 from http.client import CREATED, BAD_REQUEST, OK
 import json
-import io
 
 import pytest
-import boto3
-import requests
 
-from veems.media import models, storage_backends
+from veems.media import models
 from tests import constants
 
 pytestmark = pytest.mark.django_db
+MODULE = 'veems.media.views'
 
 
 class TestUploadPrepare:
@@ -50,14 +48,14 @@ class TestUploadPrepare:
 
 class TestUploadComplete:
     def test_put_with_upload_id_triggers_transcoding_process(
-        self, client, settings, simple_uploaded_file
+        self, client, settings, simple_uploaded_file, mocker
     ):
+
         body = json.dumps({'filename': constants.VID_240P_24FPS.name})
         url = '/api/v1/upload/prepare/'
         response = client.put(url, body, content_type='application/json')
         resp_json = response.json()
         upload_id = resp_json['upload_id']
-        presigned_upload_url = resp_json['presigned_upload_url']
 
         # Upload the Video file to S3
         upload = models.Upload.objects.get(id=upload_id)
@@ -68,10 +66,12 @@ class TestUploadComplete:
         # with constants.VID_240P_24FPS.open('rb') as data:
         #  resp = requests.post(presigned_upload_url, data)
         # assert resp.ok, resp.textField
+        mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
 
         url = f'/api/v1/upload/complete/{upload_id}/'
         response = client.put(url, body, content_type='application/json')
 
         assert response.status_code == OK
 
-        assert models.TranscodeJob.objects.count() == 1
+        assert mock_upload_manager.complete.delay.called
+        mock_upload_manager.complete.delay.assert_called_once_with(upload_id)
