@@ -38,6 +38,25 @@ def test_mediafile_upload_to(video, simple_uploaded_file):
     assert result == f'{mediafile.id}.webm'
 
 
+def test_media_file_thumbnail_upload_to(video, simple_uploaded_file):
+    media_file = models.MediaFile.objects.create(
+        video=video,
+        file=simple_uploaded_file,
+        name='360p',
+        ext='webm',
+        file_size=1,
+    )
+    media_file_thumbnail = models.MediaFileThumbnail.objects.create(
+        media_file=media_file, time_offset_secs=1
+    )
+
+    result = models._media_file_thumbnail_upload_to(
+        instance=media_file_thumbnail, filename='something.jpg'
+    )
+
+    assert f'{media_file.id}/{media_file_thumbnail.id}.jpg'
+
+
 class TestUpload:
     def test_set_file_using_uploaded_file(self):
         upload = models.Upload.objects.create(

@@ -28,7 +28,6 @@ def _mediafile_upload_to(instance, filename):
 
 
 def _media_file_thumbnail_upload_to(instance, filename):
-    # TODO: test
     return f'{instance.media_file.id}/{instance.id}{Path(filename).suffix}'
 
 
@@ -45,7 +44,8 @@ class Video(BaseModel):
     upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     visibility = models.CharField(
-        max_length=10, choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
+        max_length=10,
+        choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
