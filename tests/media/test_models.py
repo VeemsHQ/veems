@@ -54,7 +54,7 @@ def test_media_file_thumbnail_upload_to(video, simple_uploaded_file):
         instance=media_file_thumbnail, filename='something.jpg'
     )
 
-    assert f'{media_file.id}/{media_file_thumbnail.id}.jpg'
+    assert result == f'{media_file.id}/{media_file_thumbnail.id}.jpg'
 
 
 class TestUpload:

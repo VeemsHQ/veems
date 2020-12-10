@@ -52,8 +52,7 @@ def test_get_metadata(video_path, exp_metadata):
                 15, 46, 77, 108, 139, 171, 202, 233, 264, 295, 326, 357, 388,
                 419, 450, 481, 513, 544, 575, 606, 637
             )
-        ),
-        (constants.VIDEO_PATH_2160_30FPS, (5, )),
+        ), (constants.VIDEO_PATH_2160_30FPS, (5, )),
         (constants.VID_1920_X_960, (5, )),
         (constants.VIDEO_PATH_1080_30FPS_VERT, (19, 57))
     ]
@@ -66,7 +65,8 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata', [
+        'source_file_path, transcode_profile_name, exp_metadata',
+        [
             (
                 constants.VID_720P_24FPS, 'webm_144p', {
                     'audio_codec': None,
@@ -237,7 +237,9 @@ class TestTranscode:
         assert media_file.file_size == exp_metadata['file_size']
 
         assert thumbnails
-        assert all(isinstance(t, models.MediaFileThumbnail) for t in thumbnails)
+        assert all(
+            isinstance(t, models.MediaFileThumbnail) for t in thumbnails
+        )
         # Check thumbnails created
         assert thumbnails
         for thumbnail_record in thumbnails:
@@ -253,8 +255,7 @@ class TestTranscode:
         assert transcode_job.ended_on
 
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name',
-        [
+        'source_file_path, transcode_profile_name', [
             (constants.VIDEO_PATH_360_60FPS, 'webm_720p'),
             (constants.VIDEO_PATH_360_60FPS, 'webm_1080p'),
             (constants.VIDEO_PATH_360_60FPS, 'webm_2160p'),
