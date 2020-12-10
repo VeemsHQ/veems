@@ -44,18 +44,18 @@ def upload_factory():
 
 @pytest.fixture
 def video_factory(upload_factory):
-    def make(video_path):
+    def make(video_path, **kwargs):
         upload = upload_factory(video_path=video_path)
-        return models.Video.objects.create(upload=upload)
+        return models.Video.objects.create(upload=upload, **kwargs)
 
     return make
 
 
 @pytest.fixture
 def transcode_job_factory(video):
-    def make(profile):
+    def make(profile, video_record=None):
         return models.TranscodeJob.objects.create(
-            video=video,
+            video=video_record or video,
             profile=profile,
             executor='ffmpeg',
             status='created',
