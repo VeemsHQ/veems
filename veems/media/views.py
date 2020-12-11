@@ -30,7 +30,6 @@ def upload_prepare(request):
 
 @api_view(['PUT'])
 def upload_complete(request, upload_id):
-    import ipdb; ipdb.set_trace()
     upload_manager.complete.delay(upload_id)
     return Response({}, status=OK)
 
