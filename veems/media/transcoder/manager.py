@@ -1,7 +1,6 @@
 import tempfile
 from pathlib import Path
 
-from celery import shared_task
 from django.utils import timezone
 from ffprobe import FFProbe
 from django.conf import settings
@@ -9,6 +8,7 @@ from django.conf import settings
 from .transcoder_executor import ffmpeg as transcode_executor
 from . import transcoder_profiles
 from .. import models
+from ...celery import async_task
 
 
 def create_transcodes(video_id):
@@ -68,7 +68,7 @@ def _mark_transcode_job_processing(transcode_job):
     transcode_job.save()
 
 
-@shared_task()
+@async_task()
 def task_transcode(video_id, transcode_job_id):
     video = models.Video.objects.get(id=video_id)
     upload = video.upload

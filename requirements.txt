@@ -7,3 +7,5 @@ django-storages
 boto3
 awscli
 djangorestframework
+sentry-sdk
+django_celery_beat

@@ -10,8 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import sys
+from datetime import timedelta
 import os
 from pathlib import Path
+
+from veems import log
+
+log.configure_logging()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +34,31 @@ DEBUG = os.environ['DEBUG'].lower() == 'true'
 
 ALLOWED_HOSTS = []
 
-# Application definition
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,6 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'veems.media',
 ]
 
@@ -88,6 +120,7 @@ AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_S3_USE_SSL = False
 AWS_S3_ENDPOINT_URL = 'http://localhost:4566'
+AWS_S3_ENDPOINT_URL = None
 AWS_STORAGE_BUCKET_NAME = os.environ['BUCKET_STATIC']
 BUCKET_UPLOADS = os.environ['BUCKET_UPLOADS']
 BUCKET_MEDIA_FILE_THUMBNAILS = os.environ[
@@ -143,30 +176,29 @@ STATIC_URL = '/static/'
 
 ACTIVE_EXECUTOR = 'ffmpeg'
 
-CELERY_TASK_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER')
-                            or 'false').lower() == 'true'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
+RABBITMQ_USER = os.environ['RABBITMQ_USER']
+RABBITMQ_PASS = os.environ['RABBITMQ_PASS']
+RABBITMQ_PORT = os.environ['RABBITMQ_PORT']
+RABBITMQ_HOST = os.environ['RABBITMQ_HOST']
+RABBITMQ_VHOST = os.environ['RABBITMQ_VHOST']
+CELERY_BROKER_URL = (
+    f'amqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@'
+    F'{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}'
+)
+BROKER_URL = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = None
+CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_ENABLE_UTC = True
-CELERY_BROKER_CONNECTION_TIMEOUT = 4.0
-CELERY_TASK_DEFAULT_QUEUE = 'celery'
-CELERY_DEFAULT_QUEUE = CELERY_TASK_DEFAULT_QUEUE
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'sqs://')
-CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_DEFAULT_QUEUE = CELERY_TASK_DEFAULT_QUEUE
-CELERY_ACKS_LATE = True
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    'region': AWS_REGION,
-    'polling_interval': 0.3,
-    'visibility_timeout': 3600,
-    # hang workaround
-    'max_retries': 4,
-    'interval_start': 0,
-    'interval_step': 0.5,
-    'interval_max': 3,
-    'queue_name_prefix': 'celery-',
-}
+CELERY_AMQP_TASK_RESULT_EXPIRES = 18000  # 5 hours.
 CELERY_BROKER_HEARTBEAT = 30
 CELERY_BROKER_HEARTBEAT_CHECKRATE = 2
+CELERY_TASK_ALWAYS_EAGER = (
+    os.environ.get('CELERY_TASK_ALWAYS_EAGER') or 'false'
+).lower() == 'true'
+CELERY_BEAT_SCHEDULE = {
+    'periodic-heartbeat': {
+        'task': 'veems.tasks.task_heartbeat',
+        'schedule': timedelta(seconds=30),
+    },
+}

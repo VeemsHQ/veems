@@ -1,15 +1,18 @@
-from django.conf import settings
+import logging
+
 import boto3
-from celery import shared_task
 
 from . import models
 from .transcoder import manager as transcode_manager
+from ..celery import async_task
 
 ONE_DAY_IN_SECS = 86400
+logger = logging.getLogger(__name__)
 
 
 def _get_presigned_upload_url(*, upload, filename):
-    s3 = boto3.client('s3', endpoint_url=settings.AWS_S3_ENDPOINT_URL)
+    # s3 = boto3.client('s3', endpoint_url=settings.AWS_S3_ENDPOINT_URL)
+    s3 = boto3.client('s3')
     bucket_name = upload.file.field.storage.bucket_name
     object_name = models._upload_file_upload_to(
         instance=upload, filename=filename
@@ -38,7 +41,9 @@ def prepare(filename):
     return upload, video
 
 
-@shared_task()
+@async_task()
 def complete(upload_id):
+    logger.info('Completing Upload...')
     video_id = models.Video.objects.get(upload_id=upload_id).id
     transcode_manager.create_transcodes(video_id=video_id)
+    logger.info('Completed Upload, transcoding started')
