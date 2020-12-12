@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import ANY
 
 import pytest
 
@@ -20,7 +21,7 @@ MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
                 'duration': 10.1,
                 'video_codec': 'h264',
                 'audio_codec': None,
-                'file_size': 54623999,
+                'file_size': ANY,
                 'video_aspect_ratio': '16:9',
             }
         ),
@@ -33,7 +34,7 @@ MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
                 'width': 1080,
                 'video_codec': 'vp9',
                 'audio_codec': 'opus',
-                'file_size': 26813061,
+                'file_size': ANY,
                 'video_aspect_ratio': '9:16',
             },
         ),
@@ -75,142 +76,142 @@ class TestTranscode:
                     'height': 144,
                     'video_codec': 'vp9',
                     'width': 256,
-                    'file_size': 6607,
+                    'file_size': ANY,
                     'video_aspect_ratio': '16:9',
                 }
             ),
-            # (
-            #     constants.VID_1920_X_960, 'webm_1080p', {
-            #         'audio_codec': 'opus',
-            #         'duration': 10,
-            #         'framerate': 30,
-            #         'height': 960,
-            #         'video_codec': 'vp9',
-            #         'width': 1920,
-            #         'file_size': 1919820,
-            #         'video_aspect_ratio': '2:1',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
-            #         'audio_codec': 'opus',
-            #         'duration': 77,
-            #         'framerate': 30,
-            #         'height': 240,
-            #         'video_codec': 'vp9',
-            #         'width': 136,
-            #         'file_size': 2407372,
-            #         'video_aspect_ratio': '9:16',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_30FPS, 'webm_360p', {
-            #         'audio_codec': None,
-            #         'duration': 10,
-            #         'framerate': 30,
-            #         'height': 360,
-            #         'video_codec': 'vp9',
-            #         'width': 640,
-            #         'file_size': 275477,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_30FPS, 'webm_720p', {
-            #         'audio_codec': None,
-            #         'duration': 10,
-            #         'framerate': 30,
-            #         'height': 720,
-            #         'video_codec': 'vp9',
-            #         'width': 1280,
-            #         'file_size': 1106071,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_30FPS, 'webm_1080p', {
-            #         'audio_codec': None,
-            #         'duration': 10,
-            #         'framerate': 30,
-            #         'height': 1080,
-            #         'video_codec': 'vp9',
-            #         'width': 1920,
-            #         'file_size': 2666458,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_30FPS, 'webm_1440p', {
-            #         'audio_codec': None,
-            #         'duration': 10,
-            #         'framerate': 30,
-            #         'height': 1440,
-            #         'video_codec': 'vp9',
-            #         'width': 2560,
-            #         'file_size': 7005631,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_30FPS, 'webm_2160p', {
-            #         'audio_codec': None,
-            #         'duration': 10,
-            #         'framerate': 30,
-            #         'height': 2160,
-            #         'video_codec': 'vp9',
-            #         'width': 3840,
-            #         'file_size': 17327709,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', {
-            #         'audio_codec': 'opus',
-            #         'duration': 77,
-            #         'framerate': 30,
-            #         'height': 360,
-            #         'video_codec': 'vp9',
-            #         'width': 202,
-            #         'file_size': 3604846,
-            #         'video_aspect_ratio': '203:360',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_1080_60FPS, 'webm_360p_high', {
-            #         'audio_codec': 'opus',
-            #         'duration': 12,
-            #         'framerate': 60,
-            #         'height': 360,
-            #         'video_codec': 'vp9',
-            #         'width': 640,
-            #         'file_size': 2490631,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_60FPS, 'webm_360p_high', {
-            #         'audio_codec': 'opus',
-            #         'duration': 13,
-            #         'framerate': 60,
-            #         'height': 360,
-            #         'video_codec': 'vp9',
-            #         'width': 640,
-            #         'file_size': 2338906,
-            #         'video_aspect_ratio': '16:9',
-            #     }
-            # ),
-            # (
-            #     constants.VIDEO_PATH_2160_24FPS, 'webm_360p', {
-            #         'audio_codec': None,
-            #         'duration': 37,
-            #         'framerate': 24,
-            #         'height': 338,
-            #         'video_codec': 'vp9',
-            #         'width': 640,
-            #         'file_size': 1092609,
-            #         'video_aspect_ratio': '320:169',
-            #     }
-            # ),
+            (
+                constants.VID_1920_X_960, 'webm_1080p', {
+                    'audio_codec': 'opus',
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 960,
+                    'video_codec': 'vp9',
+                    'width': 1920,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '2:1',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
+                    'audio_codec': 'opus',
+                    'duration': 77,
+                    'framerate': 30,
+                    'height': 240,
+                    'video_codec': 'vp9',
+                    'width': 136,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '9:16',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_30FPS, 'webm_360p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 360,
+                    'video_codec': 'vp9',
+                    'width': 640,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_30FPS, 'webm_720p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 720,
+                    'video_codec': 'vp9',
+                    'width': 1280,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_30FPS, 'webm_1080p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 1080,
+                    'video_codec': 'vp9',
+                    'width': 1920,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_30FPS, 'webm_1440p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 1440,
+                    'video_codec': 'vp9',
+                    'width': 2560,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_30FPS, 'webm_2160p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 2160,
+                    'video_codec': 'vp9',
+                    'width': 3840,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', {
+                    'audio_codec': 'opus',
+                    'duration': 77,
+                    'framerate': 30,
+                    'height': 360,
+                    'video_codec': 'vp9',
+                    'width': 202,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '203:360',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_1080_60FPS, 'webm_360p_high', {
+                    'audio_codec': 'opus',
+                    'duration': 12,
+                    'framerate': 60,
+                    'height': 360,
+                    'video_codec': 'vp9',
+                    'width': 640,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_60FPS, 'webm_360p_high', {
+                    'audio_codec': 'opus',
+                    'duration': 13,
+                    'framerate': 60,
+                    'height': 360,
+                    'video_codec': 'vp9',
+                    'width': 640,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
+            (
+                constants.VIDEO_PATH_2160_24FPS, 'webm_360p', {
+                    'audio_codec': None,
+                    'duration': 37,
+                    'framerate': 24,
+                    'height': 338,
+                    'video_codec': 'vp9',
+                    'width': 640,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '320:169',
+                }
+            ),
         ]
     )
     def test(

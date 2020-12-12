@@ -72,10 +72,8 @@ class TestUpload:
         upload.refresh_from_db()
 
         assert upload.file.name == f'{upload.id}.mp4'
-        assert upload.file.url.startswith(
-            f'http://localhost:4566/veems-local-uploaded/{upload.id}.mp4'
-            '?AWSAccessKeyId'
-        )
+        assert upload.file.url.startswith('http')
+        assert 'AccessKeyId' in upload.file.url
 
     def test_file_uploaded_outside_the_applocation(self, settings):
         # This tests the flow where the file is uploaded to the storage
@@ -101,7 +99,6 @@ class TestUpload:
         # Check file can be accessed as if it was uploaded within Django
         upload.refresh_from_db()
         assert upload.file.name == uploaded_filename
-        assert upload.file.url.startswith(
-            f'http://localhost:4566/veems-local-uploaded/{upload.id}/'
-            f'video.mp4?AWSAccessKeyId'
-        )
+        assert upload.file.url.startswith('http')
+        assert 'AccessKeyId' in upload.file.url
+        assert upload.id in upload.file.url
