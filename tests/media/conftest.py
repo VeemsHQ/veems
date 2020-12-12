@@ -28,6 +28,17 @@ def simple_uploaded_file():
 
 
 @pytest.fixture
+def simple_uploaded_file_factory():
+    def make(video_path):
+
+        with video_path.open('rb') as file_:
+            file_contents = file_.read()
+        return SimpleUploadedFile(VIDEO_PATH_2160_30FPS.name, file_contents)
+
+    return make
+
+
+@pytest.fixture
 def upload_factory():
     def make(video_path):
         with video_path.open('rb') as file_:

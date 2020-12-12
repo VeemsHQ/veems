@@ -7,7 +7,8 @@ from veems.media import models
 from tests import constants
 
 pytestmark = pytest.mark.django_db
-MODULE = 'veems.media.views'
+MODULE = 'veems.media.api_views'
+VIDEO_PATH = constants.VID_360P_24FPS
 
 
 class TestUploadPrepare:
@@ -48,10 +49,9 @@ class TestUploadPrepare:
 
 class TestUploadComplete:
     def test_put_with_upload_id_triggers_transcoding_process(
-        self, client, settings, simple_uploaded_file, mocker
+        self, client, settings, mocker
     ):
-
-        body = json.dumps({'filename': constants.VID_240P_24FPS.name})
+        body = json.dumps({'filename': VIDEO_PATH.name})
         url = '/api/v1/upload/prepare/'
         response = client.put(url, body, content_type='application/json')
         resp_json = response.json()
@@ -70,33 +70,34 @@ class TestUploadComplete:
 class TestVideo:
     def test_get(
         self, client, video_factory, transcode_job_factory, mocker,
-        simple_uploaded_file
+        simple_uploaded_file_factory
     ):
         video = video_factory(
-            video_path=constants.VIDEO_PATH_2160_30FPS,
+            video_path=VIDEO_PATH,
             description='description',
             tags=['tag1', 'tag2'],
             visibility='draft',
             title='title',
         )
         transcode_job = transcode_job_factory(
-            profile='360p', video_record=video
+            profile='144p', video_record=video
         )
         transcode_job2 = transcode_job_factory(
-            profile='720p', video_record=video
+            profile='360p', video_record=video
         )
+        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
         media_file = models.MediaFile.objects.create(
             video=video,
-            file=simple_uploaded_file,
+            file=file_,
             file_size=1000,
-            width=320,
-            height=240,
+            width=256,
+            height=144,
             duration=10,
             ext='webm',
             container='webm',
             audio_codec='opus',
             video_codec='vp9',
-            name='240p',
+            name='144p',
             framerate=30,
         )
 
@@ -116,17 +117,16 @@ class TestVideo:
                     'created_on': mocker.ANY,
                     'duration': 10,
                     'ext': 'webm',
-                    # TODO: add presigned get url
                     'file': media_file.file.url,
                     'file_size': 1000,
                     'framerate': 30,
-                    'height': 240,
+                    'height': 144,
                     'id': media_file.id,
                     'modified_on': mocker.ANY,
-                    'name': '240p',
+                    'name': '144p',
                     'video': video.id,
                     'video_codec': 'vp9',
-                    'width': 320
+                    'width': 256
                 }
             ],
             'transcode_jobs': [
@@ -137,7 +137,7 @@ class TestVideo:
                     'failure_context': None,
                     'id': transcode_job.id,
                     'modified_on': mocker.ANY,
-                    'profile': '360p',
+                    'profile': '144p',
                     'started_on': mocker.ANY,
                     'status': 'created',
                     'video': video.id
@@ -149,7 +149,7 @@ class TestVideo:
                     'failure_context': None,
                     'id': transcode_job2.id,
                     'modified_on': mocker.ANY,
-                    'profile': '720p',
+                    'profile': '360p',
                     'started_on': mocker.ANY,
                     'status': 'created',
                     'video': video.id
