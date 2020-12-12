@@ -14,6 +14,7 @@ def test_mark_transcode_job_completed(transcode_job_factory):
     updated_job = services.mark_transcode_job_completed(transcode_job=job)
 
     assert updated_job.status == 'completed'
+    assert updated_job.ended_on
     assert updated_job.id == job.id
 
 
@@ -23,6 +24,17 @@ def test_mark_transcode_job_failed(transcode_job_factory):
     updated_job = services.mark_transcode_job_failed(transcode_job=job)
 
     assert updated_job.status == 'failed'
+    assert updated_job.ended_on
+    assert updated_job.id == job.id
+
+
+def test_mark_transcode_job_processing(transcode_job_factory):
+    job = transcode_job_factory(profile='240p')
+
+    updated_job = services.mark_transcode_job_processing(transcode_job=job)
+
+    assert updated_job.status == 'processing'
+    assert updated_job.started_on
     assert updated_job.id == job.id
 
 

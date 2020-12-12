@@ -1,7 +1,6 @@
 import tempfile
 from pathlib import Path
 
-from django.utils import timezone
 from ffprobe import FFProbe
 from django.conf import settings
 
@@ -9,6 +8,7 @@ from .transcoder_executor import ffmpeg as transcode_executor
 from . import transcoder_profiles
 from .. import models
 from ...celery import async_task
+from .. import services
 
 
 def create_transcodes(video_id):
@@ -62,18 +62,12 @@ def _transcode_profile_does_apply(profile_cls, ffprobe_stream):
     return True
 
 
-def _mark_transcode_job_processing(transcode_job):
-    transcode_job.status = 'processing'
-    transcode_job.started_on = timezone.now()
-    transcode_job.save()
-
-
 @async_task()
 def task_transcode(video_id, transcode_job_id):
     video = models.Video.objects.get(id=video_id)
     upload = video.upload
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
-    _mark_transcode_job_processing(transcode_job=transcode_job)
+    services.mark_transcode_job_processing(transcode_job=transcode_job)
     uploaded_file = tempfile.NamedTemporaryFile(
         suffix=Path(upload.file.name).name, delete=False
     )

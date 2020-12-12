@@ -22,6 +22,13 @@ def mark_transcode_job_failed(*, transcode_job, failure_context=None):
     return transcode_job
 
 
+def mark_transcode_job_processing(*, transcode_job):
+    transcode_job.status = 'processing'
+    transcode_job.started_on = timezone.now()
+    transcode_job.save()
+    return transcode_job
+
+
 def persist_media_file(*, video_record, video_path, metadata, profile):
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
