@@ -1,6 +1,7 @@
 from http.client import CREATED, BAD_REQUEST, OK
 import json
 
+import requests
 import pytest
 
 from veems.media import models
@@ -48,7 +49,7 @@ class TestUploadPrepare:
 
 class TestUploadComplete:
     def test_put_with_upload_id_triggers_transcoding_process(
-        self, client, settings, simple_uploaded_file, mocker
+        self, client, settings, simple_uploaded_file
     ):
 
         body = json.dumps({'filename': constants.VID_240P_24FPS.name})
@@ -58,25 +59,15 @@ class TestUploadComplete:
         upload_id = resp_json['upload_id']
         presigned_upload_url = resp_json['presigned_upload_url']
 
-        # Upload the Video file to S3
-        # upload = models.Upload.objects.get(id=upload_id)
-        # upload.file = simple_uploaded_file
-        # upload.save()
-        # TODO: upload file using s3 PUT api
         # Upload the file completely outside of Django
-        import requests
         with constants.VID_240P_24FPS.open('rb') as data:
             resp = requests.put(presigned_upload_url, data)
         assert resp.ok, resp.text
-        # mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
 
         url = f'/api/v1/upload/complete/{upload_id}/'
         response = client.put(url, body, content_type='application/json')
 
         assert response.status_code == OK
-
-        # assert mock_upload_manager.complete.delay.called
-        # mock_upload_manager.complete.delay.assert_called_once_with(upload_id)
 
 
 class TestVideo:
