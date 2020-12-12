@@ -6,7 +6,7 @@ lint:
 .ONESHELL:
 .PHONY: test
 test:
-	pytest --cov=.
+	pytest -n auto --cov=.
 
 .ONESHELL:
 .PHONY: system_install
