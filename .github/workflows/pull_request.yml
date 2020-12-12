@@ -16,6 +16,7 @@ jobs:
         architecture: 'x64'
     - name: Run backend tests
       run: |
+        cp .env.template .env &&
         make install &&
         make start-deps &&
         make test

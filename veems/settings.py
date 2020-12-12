@@ -119,7 +119,6 @@ DATABASES = {
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_S3_USE_SSL = False
-AWS_S3_ENDPOINT_URL = 'http://localhost:4566'
 AWS_S3_ENDPOINT_URL = None
 AWS_STORAGE_BUCKET_NAME = os.environ['BUCKET_STATIC']
 BUCKET_UPLOADS = os.environ['BUCKET_UPLOADS']
@@ -131,9 +130,9 @@ BUCKET_MEDIA_FILES = os.environ[
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
-# STATICFILES_DIRS = (
-#     Path(__file__).parent.parent / 'static',
-# )
+STATICFILES_DIRS = (
+    Path(__file__).parent.parent / 'static',
+)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
