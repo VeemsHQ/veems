@@ -196,7 +196,8 @@ def test_create_transcodes(
     assert executed_profiles == exp_profiles
 
 
-def test_task_transcode(video, mocker):
+def test_task_transcode(video_factory, mocker):
+    video = video_factory(video_path=constants.VID_360P_24FPS)
     mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
     transcode_job = models.TranscodeJob.objects.create(
         video=video,
