@@ -22,14 +22,7 @@ sentry_sdk.init(
 )
 
 app = Celery('veems')
-
-# Using a string here means the worker doesn't have to serialize
-# the configuration object to child processes.
-# - namespace='CELERY' means all celery-related configuration keys
-#   should have a `CELERY_` prefix.
-app.config_from_object('django.conf:settings', namespace='CELERY')
-assert 'sqs' not in app.conf.broker_url
-# Load task modules from all registered Django app configs.
+app.config_from_object('django.conf:settings', namespace='CELERY', force=True)
 app.autodiscover_tasks()
 
 
