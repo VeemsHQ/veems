@@ -94,7 +94,7 @@ Set of the required environment variables for the application, see `.env.templat
 
 ## Running the tests
 
-Start up the supporting docker containers (RabbitMQ, Postgres).
+Start up the supporting docker containers (RabbitMQ, Postgres, Localstack).
 Then run the tests.
 
 ```bash

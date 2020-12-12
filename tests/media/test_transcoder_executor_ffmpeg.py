@@ -12,41 +12,6 @@ MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
 
 
 @pytest.mark.parametrize(
-    'video_path, exp_metadata', [
-        (
-            constants.VIDEO_PATH_2160_30FPS, {
-                'width': 3840,
-                'height': 2160,
-                'framerate': 30,
-                'duration': 10.1,
-                'video_codec': 'h264',
-                'audio_codec': None,
-                'file_size': ANY,
-                'video_aspect_ratio': '16:9',
-            }
-        ),
-        (
-            constants.VIDEO_PATH_1080_30FPS_VERT,
-            {
-                'duration': 77,
-                'framerate': 30,
-                'height': 1920,
-                'width': 1080,
-                'video_codec': 'vp9',
-                'audio_codec': 'opus',
-                'file_size': ANY,
-                'video_aspect_ratio': '9:16',
-            },
-        ),
-    ]
-)
-def test_get_metadata(video_path, exp_metadata):
-    metadata = ffmpeg._get_metadata(video_path=video_path)
-
-    assert metadata == exp_metadata
-
-
-@pytest.mark.parametrize(
     'video_path, exp_offsets', [
         (
             constants.VIDEO_PATH_2160_30FPS_10MIN, (

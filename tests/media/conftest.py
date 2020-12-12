@@ -53,12 +53,12 @@ def video_factory(upload_factory):
 
 @pytest.fixture
 def transcode_job_factory(video):
-    def make(profile, video_record=None):
+    def make(profile, status='created', video_record=None):
         return models.TranscodeJob.objects.create(
             video=video_record or video,
             profile=profile,
             executor='ffmpeg',
-            status='created',
+            status=status,
             started_on=timezone.now(),
         )
 

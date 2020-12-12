@@ -1,15 +1,10 @@
 import tempfile
-import time
 import subprocess
 import logging
 from pathlib import Path
 
-from django.core.files import File
-from django.utils import timezone
-from ffprobe import FFProbe
-
 from .. import transcoder_profiles
-from ... import models
+from ... import services
 from .exceptions import TranscodeException
 
 logger = logging.getLogger(__name__)
@@ -19,12 +14,12 @@ def transcode(*, transcode_job, source_file_path):
     logger.info('Started transcode job %s', transcode_job)
     profile = transcoder_profiles.get_profile(transcode_job.profile)
     try:
-        metadata = _get_metadata(source_file_path)
+        metadata = services.get_metadata(source_file_path)
     except LookupError:
         logger.warning(
             'Failed to get metadata %s', transcode_job, exc_info=True
         )
-        _mark_failed(transcode_job)
+        services.mark_transcode_job_failed(transcode_job=transcode_job)
         return None
     # TODO: correct this res check
     # if (
@@ -46,7 +41,7 @@ def transcode(*, transcode_job, source_file_path):
             transcode_job,
             exc_info=True
         )
-        _mark_completed(transcode_job)
+        services.mark_transcode_job_completed(transcode_job=transcode_job)
         return None
 
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -63,16 +58,18 @@ def transcode(*, transcode_job, source_file_path):
                 transcode_job,
                 exc_info=True
             )
-            _mark_failed(transcode_job, failure_context=exc.stderr)
+            services.mark_transcode_job_failed(
+                transcode_job=transcode_job, failure_context=exc.stderr
+            )
             return None
         else:
             logger.info('FFMPEG transcode done')
-            metadata_transcoded = _get_metadata(output_file_path)
+            metadata_transcoded = services.get_metadata(output_file_path)
             logger.info(
                 'Persisting transcoded video %s %s...', transcode_job,
                 transcode_job.video.id
             )
-            media_file = _persist_media_file(
+            media_file = services.persist_media_file(
                 video_record=transcode_job.video,
                 video_path=output_file_path,
                 metadata=metadata_transcoded,
@@ -82,44 +79,12 @@ def transcode(*, transcode_job, source_file_path):
                 'Persisting thumbnails %s %s...', transcode_job,
                 transcode_job.video.id
             )
-            thumbnail_records = _persist_media_file_thumbs(
+            thumbnail_records = services.persist_media_file_thumbs(
                 media_file_record=media_file, thumbnails=thumbnails
             )
-            _mark_completed(transcode_job)
+            services.mark_transcode_job_completed(transcode_job=transcode_job)
             logger.info('Completed transcode job %s', transcode_job)
             return media_file, thumbnail_records
-
-
-def _get_metadata(video_path):
-    metadata = FFProbe(str(video_path))
-    try:
-        first_stream = metadata.video[0]
-    except IndexError as exc:
-        raise LookupError('Could not get metadata') from exc
-    audio_codec = None
-    if metadata.audio:
-        audio_stream = metadata.audio[0]
-        audio_codec = audio_stream.codec_name
-
-    if first_stream.duration.upper() == 'N/A':
-        duration_str = first_stream.__dict__['TAG:DURATION'].split('.')[0]
-        struct_time = time.strptime(duration_str, '%H:%M:%S')
-        hours = struct_time.tm_hour * 3600
-        mins = struct_time.tm_min * 60
-        seconds = struct_time.tm_sec
-        duration_secs = hours + mins + seconds
-    else:
-        duration_secs = first_stream.duration_seconds()
-    return {
-        'width': int(first_stream.width),
-        'height': int(first_stream.height),
-        'framerate': int(first_stream.framerate),
-        'duration': duration_secs,
-        'video_codec': first_stream.codec_name,
-        'audio_codec': audio_codec,
-        'file_size': video_path.stat().st_size,
-        'video_aspect_ratio': first_stream.display_aspect_ratio,
-    }
 
 
 def _get_thumbnail_time_offsets(video_path):
@@ -128,7 +93,7 @@ def _get_thumbnail_time_offsets(video_path):
 
     https://superuser.com/a/821680/1180593
     """
-    metadata = _get_metadata(video_path=video_path)
+    metadata = services.get_metadata(video_path=video_path)
     one_every_secs = 30
     num_thumbnails = int(max(1, metadata['duration'] / one_every_secs))
     offsets = []
@@ -183,7 +148,7 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
 
 
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
-    meta = _get_metadata(source_file_path)
+    meta = services.get_metadata(source_file_path)
     if meta['width'] > meta['height']:
         scale = f'{profile.width}:-2'
     else:
@@ -219,50 +184,3 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
         raise TranscodeException('No file output from transcode process')
     thumbnails = _ffmpeg_generate_thumbnails(video_file_path=output_file_path)
     return output_file_path, tuple(thumbnails)
-
-
-def _persist_media_file(*, video_record, video_path, metadata, profile):
-    with video_path.open('rb') as file_:
-        return models.MediaFile.objects.create(
-            video=video_record,
-            file=File(file_),
-            name=profile.name,
-            width=metadata['width'],
-            height=metadata['height'],
-            duration=metadata['duration'],
-            ext=video_path.suffix.replace('.', ''),
-            framerate=metadata['framerate'],
-            audio_codec=metadata['audio_codec'],
-            video_codec=metadata['video_codec'],
-            file_size=metadata['file_size'],
-            container=video_path.suffix.replace('.', ''),
-        )
-
-
-def _persist_media_file_thumbs(*, media_file_record, thumbnails):
-    records = []
-    for time_offset_secs, thumb_path in thumbnails:
-        img_meta = _get_metadata(thumb_path)
-        with thumb_path.open('rb') as file_:
-            records.append(models.MediaFileThumbnail.objects.create(
-                media_file=media_file_record,
-                file=File(file_),
-                ext=thumb_path.suffix.replace('.', ''),
-                time_offset_secs=time_offset_secs,
-                width=img_meta['width'],
-                height=img_meta['height'],
-            ))
-    return records
-
-
-def _mark_completed(transcode_job):
-    transcode_job.status = 'completed'
-    transcode_job.ended_on = timezone.now()
-    transcode_job.save()
-
-
-def _mark_failed(transcode_job, failure_context=None):
-    transcode_job.status = 'failed'
-    transcode_job.failure_context = failure_context
-    transcode_job.ended_on = timezone.now()
-    transcode_job.save()
