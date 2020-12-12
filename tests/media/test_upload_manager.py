@@ -11,7 +11,7 @@ def test_prepare():
 
     assert isinstance(upload, models.Upload)
     assert upload.media_type == 'video'
-    assert upload.presigned_upload_url.startswith('http://')
+    assert upload.presigned_upload_url.startswith('http')
     assert isinstance(video, models.Video)
     assert not video.title
     assert video.visibility == 'draft'
@@ -37,8 +37,6 @@ def test_get_presigned_upload_url(settings):
         filename=filename,
     )
 
-    expected_signed_url = (
-        f'http://localhost:4566/{settings.BUCKET_UPLOADS}/'
-        f'{upload.id}.mp4?AWSAccessKeyId='
-    )
-    assert signed_url.startswith(expected_signed_url)
+    assert signed_url.startswith('http')
+    assert 'AccessKeyId' in signed_url
+    assert settings.BUCKET_UPLOADS in signed_url

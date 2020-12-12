@@ -261,7 +261,7 @@ def _mark_completed(transcode_job):
     transcode_job.save()
 
 
-def _mark_failed(transcode_job, failure_context):
+def _mark_failed(transcode_job, failure_context=None):
     transcode_job.status = 'failed'
     transcode_job.failure_context = failure_context
     transcode_job.ended_on = timezone.now()
