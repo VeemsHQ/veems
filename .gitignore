@@ -2,13 +2,16 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.env.fish
+.localstack/
 # C extensions
 *.so
-
+.vscode/
+./media/
 # Distribution / packaging
 .Python
 build/
+./media/
 develop-eggs/
 dist/
 downloads/
