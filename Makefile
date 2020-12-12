@@ -1,10 +1,17 @@
 .ONESHELL:
+.PHONY: lint
 lint:
 	flake8
 
 .ONESHELL:
+.PHONY: test
 test:
 	pytest --cov=.
+
+.ONESHELL:
+.PHONY: test
+install:
+	pip install -r requirements-dev.txt
 
 .ONESHELL:
 start-deps:
@@ -19,3 +26,4 @@ start-deps:
 run:
 	docker-compose build app
 	docker-compose run app
+
