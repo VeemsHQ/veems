@@ -146,6 +146,7 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     'video_filename, exp_profiles', [
         (
             constants.VIDEO_PATH_2160_30FPS, (
+                'webm_144p',
                 'webm_240p',
                 'webm_360p',
                 'webm_720p',
@@ -156,6 +157,7 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
         ),
         (
             constants.VIDEO_PATH_2160_60FPS, (
+                'webm_144p',
                 'webm_240p',
                 'webm_360p_high',
                 'webm_720p_high',
@@ -164,10 +166,13 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
                 'webm_2160p_high',
             )
         ),
-        (constants.VIDEO_PATH_360_60FPS, (
-            'webm_240p',
-            'webm_360p_high',
-        )),
+        (
+            constants.VIDEO_PATH_360_60FPS, (
+                'webm_144p',
+                'webm_240p',
+                'webm_360p_high',
+            )
+        ),
     ]
 )
 def test_create_transcodes(

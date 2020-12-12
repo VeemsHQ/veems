@@ -74,6 +74,8 @@ From within a Python 3.6+ virtualenv (we recommend using [pyenv](https://github.
 make install
 ```
 
+Set of the required environment variables for the application, see `.env.template` for examples. A few of the secrets relating to the hosting provider (ACCESS_KEY_ID, SECRET_ACCESS_KEY) you may need to request values for.
+
 ## Running the tests
 
 Start up the supporting docker containers (RabbitMQ, Postgres).
