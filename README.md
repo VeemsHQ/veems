@@ -13,7 +13,6 @@ We're actively looking for help with both frontend and backend development.
 
 [![https://i.imgur.com/Ujf8Ti8.png](https://i.imgur.com/Ujf8Ti8.png)](https://discord.gg/RjCZMtZ)
 
-
 ## Screenshots
 
 A preview of what we're building.
@@ -30,38 +29,74 @@ Further design materials can be found [here](https://github.com/VeemsHQ/design).
 
 In order of priority.
 
-1. Uploading, transcoding and playback of video content.
-2. User & API authentication.
-3. Creation and management of "Channels".
-4. Channel Dashboard (basics).
+1. Uploading, transcoding of content ✅.
+2. Playback of video content.
+3. User & API authentication.
+4. Creation and management of "Channels".
+5. Channel Dashboard (basics).
     - Video Management.
     - Channel customisation.
-4. Video comments.
-5. Video responses.
-6. Like/dislike videos.
-7. Follow (Subscribe to) a Channel.
-8. Related videos suggestions.
-9. Video categories pages.
+6. Video comments.
+7. Video responses.
+8. Like/dislike videos.
+9. Follow (Subscribe to) a Channel.
+10. Related videos suggestions.
+11. Video categories pages.
     - Sport
     - Comedy
     - etc
-10. Trending videos.
+12. Trending videos.
     - Trending algorithm.
     - Trending section on Homepage.
-11. User notifications.
+13. User notifications.
     - UI notifications.
     - Email notifications.
-12. Sync channel(s) content from YT to Veems automatically.
+14. Sync channel(s) content from YT to Veems automatically.
     - Channel Dashboard, sync configuration.
     - Background sync process.
     - Related user notifications.
-13. Monetization.
+15. Monetization.
     - Revenue share from Premium user accounts.
     - Banner ads.
     - Pre-roll video player ads.
     - Video view validation.
-14. Embeddable video player.
-15. User controlled content hiding. (e.g. Don't show me any cat videos).
-16. User Badges (earned by performing actions on the platform).
+16. Embeddable video player.
+17. User controlled content hiding. (e.g. Don't show me any cat videos).
+18. User Badges (earned by performing actions on the platform).
 
 This section is work-in-progress, more to be added shortly.
+
+## Installation
+
+From within a Python 3.6+ virtualenv (we recommend using [pyenv](https://github.com/pyenv/pyenv) to manage your virtualenvs).
+
+```bash
+make install
+```
+
+## Running the tests
+
+Start up the supporting docker containers (RabbitMQ, Postgres).
+Then run the tests.
+
+```bash
+make start-deps
+make test
+```
+
+## Usage
+
+### Running the webserver
+
+```bash
+make start-deps
+python manage.py migrate --noinput
+python manage.py runserver
+```
+
+### Running the background [Celery](https://docs.celeryproject.org/en/stable/index.html) workers
+
+```bash
+./celeryworker-entrypoint.sh
+./celerybeat-entrypoint.sh
+```

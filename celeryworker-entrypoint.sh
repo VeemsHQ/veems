@@ -1,3 +1,3 @@
 #!/bin/sh
 python manage.py migrate --noinput
-celery -A veems.celery worker --loglevel=info --autoscale=1,3 --queues=$APP_ENV_NAME-queue
+celery -A veems.celery worker --loglevel=info --autoscale=1,3
