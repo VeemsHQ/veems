@@ -9,6 +9,11 @@ test:
 	pytest --cov=.
 
 .ONESHELL:
+.PHONY: system_install
+system_install:
+	apt update && apt install -y ffmpeg
+
+.ONESHELL:
 .PHONY: test
 install:
 	pip install -r requirements-dev.txt

@@ -68,6 +68,22 @@ This section is work-in-progress, more to be added shortly.
 
 ## Installation
 
+First install OS dependencies, ffmpeg and ffprobe.
+
+Linux:
+
+```bash
+sudo apt update
+sudo apt install ffmpeg
+ffmpeg -version
+```
+
+Mac:
+
+```bash
+brew install ffmpeg
+```
+
 From within a Python 3.6+ virtualenv (we recommend using [pyenv](https://github.com/pyenv/pyenv) to manage your virtualenvs).
 
 ```bash

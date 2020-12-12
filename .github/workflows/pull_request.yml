@@ -17,6 +17,9 @@ jobs:
     - name: Run backend tests
       run: |
         cp .env.template .env &&
+        sudo make system_install &&
+        ffprobe --help &&
+        ffmpeg --help &&
         make install &&
         make start-deps &&
         make test
