@@ -68,7 +68,7 @@ This section is work-in-progress, more to be added shortly.
 
 ## Installation
 
-First install OS dependencies, ffmpeg and ffprobe.
+First install OS dependencies, ffmpeg and ffprobe. You will also need Docker.
 
 Linux:
 
