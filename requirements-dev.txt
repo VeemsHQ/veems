@@ -1,10 +1,11 @@
 -r requirements.txt
-flake8
-mccabe
-pep8-naming
-pytest
-pytest-mock
-pytest-django
-ipdb
-rope
-docker-compose
+flake8==3.8.4
+mccabe==0.6.1
+pep8-naming==0.11.1
+pytest==6.1.2
+pytest-mock==3.3.1
+pytest-django==4.1.0
+ipdb==0.13.4
+rope==0.18.0
+docker-compose==1.28.0rc1
+pytest-cov==2.10.1
