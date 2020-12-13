@@ -52,14 +52,16 @@ def persist_media_file_thumbs(*, media_file_record, thumbnails):
     for time_offset_secs, thumb_path in thumbnails:
         img_meta = get_metadata(thumb_path)
         with thumb_path.open('rb') as file_:
-            records.append(models.MediaFileThumbnail.objects.create(
-                media_file=media_file_record,
-                file=File(file_),
-                ext=thumb_path.suffix.replace('.', ''),
-                time_offset_secs=time_offset_secs,
-                width=img_meta['width'],
-                height=img_meta['height'],
-            ))
+            records.append(
+                models.MediaFileThumbnail.objects.create(
+                    media_file=media_file_record,
+                    file=File(file_),
+                    ext=thumb_path.suffix.replace('.', ''),
+                    time_offset_secs=time_offset_secs,
+                    width=img_meta['width'],
+                    height=img_meta['height'],
+                )
+            )
     return records
 
 
@@ -83,6 +85,7 @@ def get_metadata(video_path):
         duration_secs = hours + mins + seconds
     else:
         duration_secs = first_stream.duration_seconds()
+    video_bit_rate = int(video_path.stat().st_size / duration_secs)
     return {
         'width': int(first_stream.width),
         'height': int(first_stream.height),
@@ -92,4 +95,5 @@ def get_metadata(video_path):
         'audio_codec': audio_codec,
         'file_size': video_path.stat().st_size,
         'video_aspect_ratio': first_stream.display_aspect_ratio,
+        'video_bit_rate': video_bit_rate,
     }

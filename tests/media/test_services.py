@@ -50,6 +50,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
                 'audio_codec': None,
                 'file_size': ANY,
                 'video_aspect_ratio': '16:9',
+                'video_bit_rate': 5408316,
             }
         ),
         (
@@ -63,6 +64,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
                 'audio_codec': 'opus',
                 'file_size': ANY,
                 'video_aspect_ratio': '9:16',
+                'video_bit_rate': 348221,
             },
         ),
     ]
