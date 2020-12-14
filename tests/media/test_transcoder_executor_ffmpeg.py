@@ -201,6 +201,10 @@ class TestTranscode:
         assert media_file.ext == 'webm'
         assert media_file.container == 'webm'
         assert media_file.file_size == exp_metadata['file_size']
+        assert media_file.metadata
+        assert sorted(media_file.metadata.keys()) == sorted(
+            ('summary', 'video_stream', 'audio_stream', 'format')
+        )
 
         assert thumbnails
         assert all(

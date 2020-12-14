@@ -72,6 +72,7 @@ class MediaFile(BaseModel):
     video_codec = models.CharField(max_length=50, null=True)
     container = models.CharField(max_length=30, null=True)
     file_size = models.IntegerField()
+    metadata = models.JSONField(null=True)
 
 
 class MediaFileThumbnail(BaseModel):

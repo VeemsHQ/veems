@@ -33,8 +33,10 @@ def transcode(*, transcode_job, source_file_path):
     #     )
     #     _mark_completed(transcode_job)
     #     return None
+    metadata_summary = metadata['summary']
     if not (
-        profile.min_framerate <= metadata['framerate'] <= profile.max_framerate
+        profile.min_framerate <= metadata_summary['framerate'] <=
+        profile.max_framerate
     ):
         logger.warning(
             'Failed profile framerate check %s. Investigate.',
@@ -94,13 +96,14 @@ def _get_thumbnail_time_offsets(video_path):
     https://superuser.com/a/821680/1180593
     """
     metadata = services.get_metadata(video_path=video_path)
+    metadata_summary = metadata['summary']
     one_every_secs = 30
-    num_thumbnails = int(max(1, metadata['duration'] / one_every_secs))
+    num_thumbnails = int(max(1, metadata_summary['duration'] / one_every_secs))
     offsets = []
     for idx in range(num_thumbnails):
         thumb_num = idx + 1
         time_offset = int(
-            (thumb_num - 0.5) * metadata['duration'] / num_thumbnails
+            (thumb_num - 0.5) * metadata_summary['duration'] / num_thumbnails
         )
         offsets.append(time_offset)
     return tuple(offsets)
@@ -149,7 +152,8 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
 
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     meta = services.get_metadata(source_file_path)
-    if meta['width'] > meta['height']:
+    metadata_summary = meta['summary']
+    if metadata_summary['width'] > metadata_summary['height']:
         scale = f'{profile.width}:-2'
     else:
         scale = f'-2:{profile.height}'

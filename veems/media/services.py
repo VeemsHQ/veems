@@ -33,27 +33,29 @@ def mark_transcode_job_processing(*, transcode_job):
 
 
 def persist_media_file(*, video_record, video_path, metadata, profile):
+    metadata_summary = metadata['summary']
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
             video=video_record,
             file=File(file_),
             name=profile.name,
-            width=metadata['width'],
-            height=metadata['height'],
-            duration=metadata['duration'],
+            width=metadata_summary['width'],
+            height=metadata_summary['height'],
+            duration=metadata_summary['duration'],
             ext=video_path.suffix.replace('.', ''),
-            framerate=metadata['framerate'],
-            audio_codec=metadata['audio_codec'],
-            video_codec=metadata['video_codec'],
-            file_size=metadata['file_size'],
+            framerate=metadata_summary['framerate'],
+            audio_codec=metadata_summary['audio_codec'],
+            video_codec=metadata_summary['video_codec'],
+            file_size=metadata_summary['file_size'],
             container=video_path.suffix.replace('.', ''),
+            metadata=metadata,
         )
 
 
 def persist_media_file_thumbs(*, media_file_record, thumbnails):
     records = []
     for time_offset_secs, thumb_path in thumbnails:
-        img_meta = get_metadata(thumb_path)
+        img_meta = get_metadata(thumb_path)['summary']
         with thumb_path.open('rb') as file_:
             records.append(
                 models.MediaFileThumbnail.objects.create(
@@ -105,9 +107,15 @@ def get_metadata(video_path):
     else:
         duration_secs = float(video_stream['duration'])
 
-    framerate = functools.reduce(
-        operator.truediv, map(int, video_stream['avg_frame_rate'].split('/'))
-    )
+    def parse_framerate(framerate_str):
+        return functools.reduce(
+            operator.truediv, map(int, framerate_str.split('/'))
+        )
+
+    try:
+        framerate = parse_framerate(video_stream['avg_frame_rate'])
+    except ZeroDivisionError:
+        framerate = parse_framerate(video_stream['r_frame_rate'])
 
     try:
         audio_codec_name = audio_stream['codec_name']
@@ -117,7 +125,7 @@ def get_metadata(video_path):
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
-        'framerate': int(framerate),
+        'framerate': round(framerate),
         'duration': duration_secs,
         'video_codec': video_stream['codec_name'],
         'audio_codec': audio_codec_name,
