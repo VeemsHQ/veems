@@ -1,8 +1,11 @@
 import time
+import json
+import subprocess
+import functools
+import operator
 
 from django.utils import timezone
 from django.core.files import File
-from ffprobe import FFProbe
 
 from . import models
 
@@ -52,44 +55,79 @@ def persist_media_file_thumbs(*, media_file_record, thumbnails):
     for time_offset_secs, thumb_path in thumbnails:
         img_meta = get_metadata(thumb_path)
         with thumb_path.open('rb') as file_:
-            records.append(models.MediaFileThumbnail.objects.create(
-                media_file=media_file_record,
-                file=File(file_),
-                ext=thumb_path.suffix.replace('.', ''),
-                time_offset_secs=time_offset_secs,
-                width=img_meta['width'],
-                height=img_meta['height'],
-            ))
+            records.append(
+                models.MediaFileThumbnail.objects.create(
+                    media_file=media_file_record,
+                    file=File(file_),
+                    ext=thumb_path.suffix.replace('.', ''),
+                    time_offset_secs=time_offset_secs,
+                    width=img_meta['width'],
+                    height=img_meta['height'],
+                )
+            )
     return records
 
 
-def get_metadata(video_path):
-    metadata = FFProbe(str(video_path))
-    try:
-        first_stream = metadata.video[0]
-    except IndexError as exc:
-        raise LookupError('Could not get metadata') from exc
-    audio_codec = None
-    if metadata.audio:
-        audio_stream = metadata.audio[0]
-        audio_codec = audio_stream.codec_name
+def _ffprobe(file_path):
+    command = (
+        'ffprobe -v quiet -print_format json -show_format -show_streams '
+        f'{file_path}'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and file_path.exists():
+        return json.loads(result.stdout)
+    raise RuntimeError(
+        f'FFProbe failed for {file_path}, output: {result.stderr}'
+    )
 
-    if first_stream.duration.upper() == 'N/A':
-        duration_str = first_stream.__dict__['TAG:DURATION'].split('.')[0]
+
+def get_metadata(video_path):
+    probe_data = _ffprobe(video_path)
+
+    video_stream = [
+        x for x in probe_data['streams'] if x['codec_type'] == 'video'
+    ][0]
+    try:
+        audio_stream = [
+            x for x in probe_data['streams'] if x['codec_type'] == 'audio'
+        ][0]
+    except IndexError:
+        audio_stream = None
+    format_ = probe_data['format']
+
+    if video_stream.get('duration') is None:
+        duration_str = video_stream['tags']['DURATION'].split('.')[0]
         struct_time = time.strptime(duration_str, '%H:%M:%S')
         hours = struct_time.tm_hour * 3600
         mins = struct_time.tm_min * 60
         seconds = struct_time.tm_sec
-        duration_secs = hours + mins + seconds
+        duration_secs = float(hours + mins + seconds)
     else:
-        duration_secs = first_stream.duration_seconds()
-    return {
-        'width': int(first_stream.width),
-        'height': int(first_stream.height),
-        'framerate': int(first_stream.framerate),
+        duration_secs = float(video_stream['duration'])
+
+    framerate = functools.reduce(
+        operator.truediv, map(int, video_stream['avg_frame_rate'].split('/'))
+    )
+
+    try:
+        audio_codec_name = audio_stream['codec_name']
+    except TypeError:
+        audio_codec_name = None
+
+    summary = {
+        'width': int(video_stream['width']),
+        'height': int(video_stream['height']),
+        'framerate': int(framerate),
         'duration': duration_secs,
-        'video_codec': first_stream.codec_name,
-        'audio_codec': audio_codec,
-        'file_size': video_path.stat().st_size,
-        'video_aspect_ratio': first_stream.display_aspect_ratio,
+        'video_codec': video_stream['codec_name'],
+        'audio_codec': audio_codec_name,
+        'file_size': int(format_['size']),
+        'video_aspect_ratio': video_stream['display_aspect_ratio'],
+        'video_bit_rate': int(format_['bit_rate']),
+    }
+    return {
+        'video_stream': video_stream,
+        'audio_stream': audio_stream,
+        'format': format_,
+        'summary': summary,
     }
