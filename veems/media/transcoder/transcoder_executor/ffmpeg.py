@@ -64,6 +64,7 @@ def transcode(*, transcode_job, source_file_path):
             return None
         else:
             logger.info('FFMPEG transcode done')
+            import ipdb; ipdb.set_trace()
             metadata_transcoded = services.get_metadata(output_file_path)
             logger.info(
                 'Persisting transcoded video %s %s...', transcode_job,

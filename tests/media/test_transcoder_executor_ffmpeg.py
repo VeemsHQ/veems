@@ -33,18 +33,18 @@ class TestTranscode:
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name, exp_metadata',
         [
-            (
-                constants.VID_720P_24FPS, 'webm_144p', {
-                    'audio_codec': None,
-                    'duration': 5,
-                    'framerate': 24,
-                    'height': 144,
-                    'video_codec': 'vp9',
-                    'width': 256,
-                    'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
-                }
-            ),
+            # (
+            #     constants.VID_720P_24FPS, 'webm_144p', {
+            #         'audio_codec': None,
+            #         'duration': 5,
+            #         'framerate': 24,
+            #         'height': 144,
+            #         'video_codec': 'vp9',
+            #         'width': 256,
+            #         'file_size': ANY,
+            #         'video_aspect_ratio': '16:9',
+            #     }
+            # ),
             # (
             #     constants.VID_1920_X_960, 'webm_1080p', {
             #         'audio_codec': 'opus',
@@ -129,6 +129,19 @@ class TestTranscode:
             #         'video_aspect_ratio': '16:9',
             #     }
             # ),
+            # TODO: parse /home/amnesia/Downloads/redwoods.mk4
+            (
+                Path('/home/amnesia/Downloads/redwoods.mp4'), 'webm_2160p', {
+                    'audio_codec': None,
+                    'duration': 10,
+                    'framerate': 30,
+                    'height': 2160,
+                    'video_codec': 'vp9',
+                    'width': 3840,
+                    'file_size': ANY,
+                    'video_aspect_ratio': '16:9',
+                }
+            ),
             # (
             #     constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', {
             #         'audio_codec': 'opus',

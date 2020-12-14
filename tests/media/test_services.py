@@ -37,9 +37,12 @@ def test_mark_transcode_job_processing(transcode_job_factory):
     assert updated_job.started_on
     assert updated_job.id == job.id
 
-
+from pathlib import Path
 @pytest.mark.parametrize(
     'video_path, exp_metadata', [
+        # (
+        #     Path('/home/amnesia/Downloads/redwoods.mp4'),{}
+        # ),
         (
             constants.VIDEO_PATH_2160_30FPS, {
                 'width': 3840,

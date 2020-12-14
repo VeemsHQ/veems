@@ -65,7 +65,19 @@ def persist_media_file_thumbs(*, media_file_record, thumbnails):
     return records
 
 
+def _ffprobe_get_streams(file_path):
+    command = (
+        'ffprobe -v quiet -print_format json -show_format -show_streams '
+        f'{file_path}'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and file_path.exists():
+        import ipdb; ipdb.set_trace()
+    pass
+
+
 def get_metadata(video_path):
+    streams = _ffprobe_get_streams(video_path)
     metadata = FFProbe(str(video_path))
     try:
         first_stream = metadata.video[0]
