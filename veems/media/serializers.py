@@ -12,7 +12,7 @@ class MediaFileSerializer(serializers.ModelSerializer):
 class TranscodeJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TranscodeJob
-        exclude = []
+        exclude = ['failure_context']
 
 
 class VideoSerializer(serializers.ModelSerializer):
