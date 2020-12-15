@@ -46,7 +46,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
                 'format': {
                     'bit_rate': '43266533',
                     'duration': '10.100000',
-                    'filename': ANY,
+                    'filename': str(constants.VIDEO_PATH_2160_30FPS),
                     'format_long_name': 'QuickTime / MOV',
                     'format_name': 'mov,mp4,m4a,3gp,3g2,mj2',
                     'nb_programs': 0,
@@ -178,7 +178,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
                 'format': {
                     'bit_rate': '2769908',
                     'duration': '77.441000',
-                    'filename': ANY,
+                    'filename': str(constants.VIDEO_PATH_1080_30FPS_VERT),
                     'format_long_name': 'Matroska / WebM',
                     'format_name': 'matroska,webm',
                     'nb_programs': 0,
@@ -192,9 +192,9 @@ def test_mark_transcode_job_processing(transcode_job_factory):
                 },
                 'summary': {
                     'audio_codec': 'opus',
-                    'duration': 77,
+                    'duration': 77.0,
                     'file_size': 26813061,
-                    'framerate': 29,
+                    'framerate': 30,
                     'height': 1920,
                     'video_aspect_ratio': '9:16',
                     'video_bit_rate': 2769908,
