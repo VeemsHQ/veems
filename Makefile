@@ -11,7 +11,7 @@ test:
 .ONESHELL:
 .PHONY: system_install
 system_install:
-	apt update && apt install -y ffmpeg=4.3.1
+	apt update && apt install -y ffmpeg
 
 .ONESHELL:
 .PHONY: test
