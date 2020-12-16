@@ -78,7 +78,7 @@ def _ffprobe(file_path):
     result = subprocess.run(command.split(), capture_output=True)
     if result.returncode == 0 and file_path.exists():
         return json.loads(result.stdout)
-    raise RuntimeError(
+    raise LookupError(
         f'FFProbe failed for {file_path}, output: {result.stderr}'
     )
 
