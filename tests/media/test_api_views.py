@@ -99,6 +99,7 @@ class TestVideo:
             video_codec='vp9',
             name='144p',
             framerate=30,
+            metadata={'example': 'metadata'},
         )
 
         response = client.get(f'/api/v1/video/{video.id}/')
@@ -109,7 +110,6 @@ class TestVideo:
             'tags': ['tag1', 'tag2'],
             'title': 'title',
             'visibility': 'draft',
-            # TODO: add playlist url
             'media_files': [
                 {
                     'audio_codec': 'opus',
@@ -122,6 +122,7 @@ class TestVideo:
                     'framerate': 30,
                     'height': 144,
                     'id': media_file.id,
+                    'metadata': {'example': 'metadata'},
                     'modified_on': mocker.ANY,
                     'name': '144p',
                     'video': video.id,
@@ -134,7 +135,6 @@ class TestVideo:
                     'created_on': mocker.ANY,
                     'ended_on': None,
                     'executor': 'ffmpeg',
-                    'failure_context': None,
                     'id': transcode_job.id,
                     'modified_on': mocker.ANY,
                     'profile': '144p',
@@ -146,7 +146,6 @@ class TestVideo:
                     'created_on': mocker.ANY,
                     'ended_on': None,
                     'executor': 'ffmpeg',
-                    'failure_context': None,
                     'id': transcode_job2.id,
                     'modified_on': mocker.ANY,
                     'profile': '360p',

@@ -31,8 +31,7 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata',
-        [
+        'source_file_path, transcode_profile_name, exp_metadata', [
             (
                 constants.VID_720P_24FPS, 'webm_144p', {
                     'audio_codec': None,
@@ -201,6 +200,10 @@ class TestTranscode:
         assert media_file.ext == 'webm'
         assert media_file.container == 'webm'
         assert media_file.file_size == exp_metadata['file_size']
+        assert media_file.metadata
+        assert sorted(media_file.metadata.keys()) == sorted(
+            ('summary', 'video_stream', 'audio_stream', 'format')
+        )
 
         assert thumbnails
         assert all(
@@ -266,10 +269,12 @@ class TestTranscode:
         self, transcode_job_factory, mocker
     ):
         mocker.patch(
-            f'{MODULE}.subprocess.run',
-            return_value=mocker.Mock(
-                returncode=1, stderr=b'command error output'
-            )
+            f'{MODULE}._ffmpeg_transcode_video',
+            side_effect=[
+                ffmpeg.TranscodeException(
+                    'msg', stderr='command error output'
+                )
+            ]
         )
         transcode_job = transcode_job_factory(profile='webm_240p')
 
@@ -300,11 +305,13 @@ class TestTranscode:
                                                    ).count()
 
     def test_raises_if_source_file_path_does_not_exist(self, transcode_job):
-        with pytest.raises(OSError):
-            ffmpeg.transcode(
-                transcode_job=transcode_job,
-                source_file_path=Path('not_found')
-            )
+        result_path = ffmpeg.transcode(
+            transcode_job=transcode_job, source_file_path=Path('not_found')
+        )
 
+        assert result_path is None
+        assert transcode_job.status == 'failed'
+        assert transcode_job.ended_on
+        assert transcode_job.failure_context is None
         assert not models.MediaFile.objects.filter(video=transcode_job.video
                                                    ).count()

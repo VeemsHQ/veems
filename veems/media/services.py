@@ -1,8 +1,11 @@
 import time
+import json
+import subprocess
+import functools
+import operator
 
 from django.utils import timezone
 from django.core.files import File
-from ffprobe import FFProbe
 
 from . import models
 
@@ -30,66 +33,109 @@ def mark_transcode_job_processing(*, transcode_job):
 
 
 def persist_media_file(*, video_record, video_path, metadata, profile):
+    metadata_summary = metadata['summary']
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
             video=video_record,
             file=File(file_),
             name=profile.name,
-            width=metadata['width'],
-            height=metadata['height'],
-            duration=metadata['duration'],
+            width=metadata_summary['width'],
+            height=metadata_summary['height'],
+            duration=metadata_summary['duration'],
             ext=video_path.suffix.replace('.', ''),
-            framerate=metadata['framerate'],
-            audio_codec=metadata['audio_codec'],
-            video_codec=metadata['video_codec'],
-            file_size=metadata['file_size'],
+            framerate=metadata_summary['framerate'],
+            audio_codec=metadata_summary['audio_codec'],
+            video_codec=metadata_summary['video_codec'],
+            file_size=metadata_summary['file_size'],
             container=video_path.suffix.replace('.', ''),
+            metadata=metadata,
         )
 
 
 def persist_media_file_thumbs(*, media_file_record, thumbnails):
     records = []
     for time_offset_secs, thumb_path in thumbnails:
-        img_meta = get_metadata(thumb_path)
+        img_meta = get_metadata(thumb_path)['summary']
         with thumb_path.open('rb') as file_:
-            records.append(models.MediaFileThumbnail.objects.create(
-                media_file=media_file_record,
-                file=File(file_),
-                ext=thumb_path.suffix.replace('.', ''),
-                time_offset_secs=time_offset_secs,
-                width=img_meta['width'],
-                height=img_meta['height'],
-            ))
+            records.append(
+                models.MediaFileThumbnail.objects.create(
+                    media_file=media_file_record,
+                    file=File(file_),
+                    ext=thumb_path.suffix.replace('.', ''),
+                    time_offset_secs=time_offset_secs,
+                    width=img_meta['width'],
+                    height=img_meta['height'],
+                )
+            )
     return records
 
 
-def get_metadata(video_path):
-    metadata = FFProbe(str(video_path))
-    try:
-        first_stream = metadata.video[0]
-    except IndexError as exc:
-        raise LookupError('Could not get metadata') from exc
-    audio_codec = None
-    if metadata.audio:
-        audio_stream = metadata.audio[0]
-        audio_codec = audio_stream.codec_name
+def _ffprobe(file_path):
+    command = (
+        'ffprobe -v quiet -print_format json -show_format -show_streams '
+        f'{file_path}'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and file_path.exists():
+        return json.loads(result.stdout)
+    raise LookupError(
+        f'FFProbe failed for {file_path}, output: {result.stderr}'
+    )
 
-    if first_stream.duration.upper() == 'N/A':
-        duration_str = first_stream.__dict__['TAG:DURATION'].split('.')[0]
+
+def get_metadata(video_path):
+    probe_data = _ffprobe(video_path)
+
+    video_stream = [
+        x for x in probe_data['streams'] if x['codec_type'] == 'video'
+    ][0]
+    try:
+        audio_stream = [
+            x for x in probe_data['streams'] if x['codec_type'] == 'audio'
+        ][0]
+    except IndexError:
+        audio_stream = None
+    format_ = probe_data['format']
+
+    if video_stream.get('duration') is None:
+        duration_str = video_stream['tags']['DURATION'].split('.')[0]
         struct_time = time.strptime(duration_str, '%H:%M:%S')
         hours = struct_time.tm_hour * 3600
         mins = struct_time.tm_min * 60
         seconds = struct_time.tm_sec
-        duration_secs = hours + mins + seconds
+        duration_secs = float(hours + mins + seconds)
     else:
-        duration_secs = first_stream.duration_seconds()
-    return {
-        'width': int(first_stream.width),
-        'height': int(first_stream.height),
-        'framerate': int(first_stream.framerate),
+        duration_secs = float(video_stream['duration'])
+
+    def parse_framerate(framerate_str):
+        return functools.reduce(
+            operator.truediv, map(int, framerate_str.split('/'))
+        )
+
+    try:
+        framerate = parse_framerate(video_stream['avg_frame_rate'])
+    except ZeroDivisionError:
+        framerate = parse_framerate(video_stream['r_frame_rate'])
+
+    try:
+        audio_codec_name = audio_stream['codec_name']
+    except TypeError:
+        audio_codec_name = None
+
+    summary = {
+        'width': int(video_stream['width']),
+        'height': int(video_stream['height']),
+        'framerate': round(framerate),
         'duration': duration_secs,
-        'video_codec': first_stream.codec_name,
-        'audio_codec': audio_codec,
-        'file_size': video_path.stat().st_size,
-        'video_aspect_ratio': first_stream.display_aspect_ratio,
+        'video_codec': video_stream['codec_name'],
+        'audio_codec': audio_codec_name,
+        'file_size': int(format_['size']),
+        'video_aspect_ratio': video_stream['display_aspect_ratio'],
+        'video_bit_rate': int(format_['bit_rate']),
+    }
+    return {
+        'video_stream': video_stream,
+        'audio_stream': audio_stream,
+        'format': format_,
+        'summary': summary,
     }
