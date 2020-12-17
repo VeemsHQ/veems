@@ -102,7 +102,7 @@ class MediaFile(BaseModel):
     )
 
 
-class MedaFileSegment(BaseModel):
+class MediaFileSegment(BaseModel):
     media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
     file = models.FileField(
         upload_to=_mediafile_segment_upload_to,

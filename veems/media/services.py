@@ -52,8 +52,19 @@ def persist_media_file(*, video_record, video_path, metadata, profile):
         )
 
 
-def persist_media_file_segments(*, media_file, segments_playlist_file, segments):
-    pass
+def persist_media_file_segments(
+    *, media_file, segments_playlist_file, segments
+):
+    with segments_playlist_file.open('rb') as file_:
+        media_file.hls_playlist_file = File(file_)
+        media_file.save()
+    for segment_path in segments:
+        with segment_path.open('rb') as file_:
+            models.MediaFileSegment.objects.create(
+                media_file=media_file,
+                file=File(file_),
+                segment_number=int(segment_path.stem),
+            )
 
 
 def persist_media_file_thumbs(*, media_file_record, thumbnails):

@@ -78,6 +78,10 @@ def transcode(*, transcode_job, source_file_path):
                 metadata=metadata_transcoded,
                 profile=profile,
             )
+            # TODO:
+            # _create_segments_for_video()
+            # persist_media_file_segments()
+            # Create Master Playlist
             logger.info(
                 'Persisting thumbnails %s %s...', transcode_job,
                 transcode_job.video.id

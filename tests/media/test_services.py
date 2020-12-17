@@ -1,7 +1,9 @@
 import pytest
 from pytest_voluptuous import S
 
-from veems.media import services
+from veems.media import services, models
+from veems.media.transcoder.transcoder_executor import ffmpeg
+from veems.media.transcoder import transcoder_profiles
 from tests import constants
 
 pytestmark = pytest.mark.django_db
@@ -268,3 +270,43 @@ def test_get_metadata(video_path, exp_metadata):
     assert sorted(metadata.keys()) == sorted(
         ('audio_stream', 'video_stream', 'summary', 'format')
     )
+
+
+def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
+    media_file = models.MediaFile.objects.create(
+        video=video,
+        file=simple_uploaded_file,
+        name='360p',
+        ext='webm',
+        file_size=1,
+    )
+    assert not media_file.hls_playlist_file
+    video_path = constants.VIDEO_PATH_1080_30FPS_VERT
+    profile = transcoder_profiles.Webm360p
+
+    segment_hls_playlist, segment_paths = ffmpeg._create_segments_for_video(
+        video_path=video_path,
+        profile=profile,
+        tmp_dir=tmpdir,
+    )
+
+    services.persist_media_file_segments(
+        media_file=media_file,
+        segments_playlist_file=segment_hls_playlist,
+        segments=segment_paths,
+    )
+
+    assert media_file.hls_playlist_file
+    assert media_file.mediafilesegment_set.count() == len(segment_paths)
+    exp_segment_numbers_and_filenames = (
+        (0, f'{media_file.id}/0.ts'), (1, f'{media_file.id}/1.ts'),
+        (2, f'{media_file.id}/2.ts'), (3, f'{media_file.id}/3.ts'),
+        (4, f'{media_file.id}/4.ts'), (5, f'{media_file.id}/5.ts'),
+        (6, f'{media_file.id}/6.ts'), (7, f'{media_file.id}/7.ts'),
+        (8, f'{media_file.id}/8.ts'), (9, f'{media_file.id}/9.ts'),
+        (10, f'{media_file.id}/10.ts'), (11, f'{media_file.id}/11.ts'),
+        (12, f'{media_file.id}/12.ts')
+    )
+    assert tuple(
+        media_file.mediafilesegment_set.values_list('segment_number', 'file')
+    ) == exp_segment_numbers_and_filenames
