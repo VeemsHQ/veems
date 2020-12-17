@@ -11,6 +11,7 @@ MAX_FRAMERATE = 99999999999
 class BaseProfile:
     required_aspect_ratio = None
     format = 'video/webm'
+    segment_duration = 10
 
 
 class Webm144p(BaseProfile):

@@ -49,11 +49,25 @@ class Video(BaseModel):
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
+    # master HLS playlist
+    """
+    #EXTM3U
+    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=670000,RESOLUTION=640x286,CODECS="mp4a.40.2,avc1.77.30",CLOSED-CAPTIONS=NONE
+    https://videos-fms.jwpsrv.com/0_5fdbe624_0xbcae7ced86220f87ab1d5871235f7a648847e373/content/conversions/zWLy8Jer/videos/21ETjILN-1753142.mp4.m3u8
+    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=3400000,RESOLUTION=1920x858,CODECS="mp4a.40.2,avc1.77.30",CLOSED-CAPTIONS=NONE
+    https://videos-fms.jwpsrv.com/0_5fdbe624_0xc58d58eef40e11e0c3b4b9643a181efb7d82fd93/content/conversions/zWLy8Jer/videos/21ETjILN-1703854.mp4.m3u8
+    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1710000,RESOLUTION=1280x572,CODECS="mp4a.40.2,avc1.77.30",CLOSED-CAPTIONS=NONE
+    https://videos-fms.jwpsrv.com/0_5fdbe624_0x78b5d73f8a1012b57d136b6483274a2217b83375/content/conversions/zWLy8Jer/videos/21ETjILN-364768.mp4.m3u8
+    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=380000,RESOLUTION=320x142,CODECS="mp4a.40.2,avc1.77.30",CLOSED-CAPTIONS=NONE
+    https://videos-fms.jwpsrv.com/0_5fdbe624_0x98555078c0222c204484a351db7c340ea098f5ac/content/conversions/zWLy8Jer/videos/21ETjILN-364765.mp4.m3u8
+    #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=120000,CODECS="mp4a.40.2"
+    https://videos-fms.jwpsrv.com/0_5fdbe624_0x74ab8d285779fd68fe82bad669460deca8e00000/content/conversions/zWLy8Jer/videos/21ETjILN-588477.m4a.m3u8
+    """
 
 
 class MediaFile(BaseModel):
     """
-    A format to be linked to a Video.
+    A format/rendition to be linked to a Video.
 
     Either a piece of Audio/Video/Audio+Video.
     """
@@ -73,6 +87,19 @@ class MediaFile(BaseModel):
     container = models.CharField(max_length=30, null=True)
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
+    # rendition HLS playlist
+    """
+    #EXTM3U
+    #EXT-X-VERSION:3
+    #EXT-X-PLAYLIST-TYPE:VOD
+    #EXT-X-MEDIA-SEQUENCE:0
+    #EXT-X-TARGETDURATION:4
+    #EXTINF:4.000,
+    21ETjILN-364765.mp4-1.ts
+    #EXTINF:4.000,
+    21ETjILN-364765.mp4-2.ts
+    #EXTINF:4.000,
+    """
 
 
 class MediaFileThumbnail(BaseModel):
