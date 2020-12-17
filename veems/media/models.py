@@ -27,6 +27,10 @@ def _mediafile_upload_to(instance, filename):
     return f'{instance.id}{Path(filename).suffix}'
 
 
+def _mediafile_hls_playlist_file_upload_to(instance, filename):
+    return f'manifests/{instance.id}_{instance.name}.m3u8'
+
+
 def _mediafile_segment_upload_to(instance, filename):
     # TODO: test
     return f'{instance.media_file.id}/{instance.segment_number}.ts'
@@ -92,22 +96,10 @@ class MediaFile(BaseModel):
     container = models.CharField(max_length=30, null=True)
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
-    hls_playlist = models.TextField(null=True)
-    # rendition HLS playlist
-    """
-    #EXTM3U
-    #EXT-X-VERSION:3
-    #EXT-X-PLAYLIST-TYPE:VOD
-    #EXT-X-MEDIA-SEQUENCE:0
-    #EXT-X-TARGETDURATION:4
-    #EXTINF:4.000,
-    21ETjILN-364765.mp4-1.ts
-    #EXTINF:4.000,
-    21ETjILN-364765.mp4-2.ts
-    #EXTINF:4.000,
-    ...
-    ...
-    """
+    hls_playlist_file = models.FileField(
+        upload_to=_mediafile_hls_playlist_file_upload_to,
+        storage=storage_backends.MediaFileStorage
+    )
 
 
 class MedaFileSegment(BaseModel):

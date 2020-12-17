@@ -52,6 +52,10 @@ def persist_media_file(*, video_record, video_path, metadata, profile):
         )
 
 
+def persist_media_file_segments(*, media_file, segments_playlist_file, segments):
+    pass
+
+
 def persist_media_file_thumbs(*, media_file_record, thumbnails):
     records = []
     for time_offset_secs, thumb_path in thumbnails:
