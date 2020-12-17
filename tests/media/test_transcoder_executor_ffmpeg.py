@@ -2,13 +2,81 @@ from pathlib import Path
 from unittest.mock import ANY
 
 import pytest
+import m3u8
 
 from veems.media.transcoder.transcoder_executor import ffmpeg
-from veems.media import models
+from veems.media import models, services
+from veems.media.transcoder import transcoder_profiles
 from tests import constants
 
 pytestmark = pytest.mark.django_db
 MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
+
+
+def test_create_segments_for_video(tmpdir):
+    video_path = constants.VIDEO_PATH_1080_30FPS_VERT
+    profile = transcoder_profiles.Webm360p
+
+    segment_hls_playlist, segment_paths = ffmpeg._create_segments_for_video(
+        video_path=video_path,
+        profile=profile,
+        tmp_dir=tmpdir,
+    )
+
+    exp_num_segments = 13
+    assert len(segment_paths) == exp_num_segments
+    assert all(p.exists() and isinstance(p, Path) for p in segment_paths)
+    assert isinstance(segment_hls_playlist, Path)
+    assert segment_hls_playlist.exists()
+
+    segment_names_durations = [
+        (p.name, services.get_metadata(p)['summary']['duration'])
+        for p in segment_paths
+    ]
+    exp_segment_names_durations = [
+        ('0.ts', 9.2092), ('1.ts', 3.3033), ('2.ts', 4.337667),
+        ('3.ts', 7.540867), ('4.ts', 4.537867), ('5.ts', 4.6046),
+        ('6.ts', 6.006), ('7.ts', 8.341667), ('8.ts', 3.036367),
+        ('9.ts', 6.773433), ('10.ts', 5.472133), ('11.ts', 8.341667),
+        ('12.ts', 5.9059)
+    ]
+    assert segment_names_durations == exp_segment_names_durations
+    exp_playlist = """
+    #EXTM3U
+    #EXT-X-VERSION:3
+    #EXT-X-TARGETDURATION:9
+    #EXT-X-MEDIA-SEQUENCE:0
+    #EXT-X-PLAYLIST-TYPE:VOD
+    #EXTINF:9.209200,
+    0.ts
+    #EXTINF:3.303300,
+    1.ts
+    #EXTINF:4.337667,
+    2.ts
+    #EXTINF:7.540867,
+    3.ts
+    #EXTINF:4.537867,
+    4.ts
+    #EXTINF:4.604600,
+    5.ts
+    #EXTINF:6.006000,
+    6.ts
+    #EXTINF:8.341667,
+    7.ts
+    #EXTINF:3.036367,
+    8.ts
+    #EXTINF:6.773433,
+    9.ts
+    #EXTINF:5.472133,
+    10.ts
+    #EXTINF:8.341667,
+    11.ts
+    #EXTINF:5.905900,
+    12.ts
+    #EXT-X-ENDLIST
+    """
+    assert m3u8.load(str(segment_hls_playlist)
+                     ).dumps() == m3u8.loads(exp_playlist).dumps()
 
 
 @pytest.mark.parametrize(

@@ -1,6 +1,7 @@
 import tempfile
 import subprocess
 import logging
+import os
 from pathlib import Path
 
 from .. import transcoder_profiles
@@ -87,6 +88,27 @@ def transcode(*, transcode_job, source_file_path):
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             logger.info('Completed transcode job %s', transcode_job)
             return media_file, thumbnail_records
+
+
+def _create_segments_for_video(video_path, profile, tmp_dir):
+    output_playlist_path = Path(tmp_dir) / 'rendition.m3u8'
+    segments_dir = Path(tmp_dir)
+    segment_filename_pattern = str(segments_dir) + '/%d.ts'
+    command = (
+        'ffmpeg '
+        f'-i {video_path} '
+        f'-hls_time {profile.segment_duration} '
+        f'-hls_segment_filename {segment_filename_pattern} '
+        '-hls_playlist_type vod '
+        f'{output_playlist_path}'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode != 0:
+        raise RuntimeError('Failed to create segments')
+    segment_paths = tuple(
+        sorted(segments_dir.glob('*.ts'), key=os.path.getmtime)
+    )
+    return output_playlist_path, segment_paths
 
 
 def _get_thumbnail_time_offsets(video_path):

@@ -27,6 +27,11 @@ def _mediafile_upload_to(instance, filename):
     return f'{instance.id}{Path(filename).suffix}'
 
 
+def _mediafile_segment_upload_to(instance, filename):
+    # TODO: test
+    return f'{instance.media_file.id}/{instance.segment_number}.ts'
+
+
 def _media_file_thumbnail_upload_to(instance, filename):
     return f'{instance.media_file.id}/{instance.id}{Path(filename).suffix}'
 
@@ -87,6 +92,7 @@ class MediaFile(BaseModel):
     container = models.CharField(max_length=30, null=True)
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
+    hls_playlist = models.TextField(null=True)
     # rendition HLS playlist
     """
     #EXTM3U
@@ -99,7 +105,21 @@ class MediaFile(BaseModel):
     #EXTINF:4.000,
     21ETjILN-364765.mp4-2.ts
     #EXTINF:4.000,
+    ...
+    ...
     """
+
+
+class MedaFileSegment(BaseModel):
+    media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
+    file = models.FileField(
+        upload_to=_mediafile_segment_upload_to,
+        storage=storage_backends.MediaFileStorage
+    )
+    segment_number = models.IntegerField()
+
+    class Meta:
+        unique_together = ('media_file', 'segment_number')
 
 
 class MediaFileThumbnail(BaseModel):
