@@ -17,7 +17,9 @@ def test_create_segments_for_video(tmpdir):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
 
-    segment_hls_playlist, segment_paths = ffmpeg._create_segments_for_video(
+    (
+        segment_hls_playlist, segment_paths, codecs_string
+    ) = ffmpeg._create_segments_for_video(
         video_path=video_path,
         profile=profile,
         tmp_dir=tmpdir,
@@ -28,6 +30,8 @@ def test_create_segments_for_video(tmpdir):
     assert all(p.exists() and isinstance(p, Path) for p in segment_paths)
     assert isinstance(segment_hls_playlist, Path)
     assert segment_hls_playlist.exists()
+
+    assert codecs_string == 'avc1.640028,mp4a.40.2'
 
     segment_names_durations = [
         (p.name, services.get_metadata(p)['summary']['duration'])

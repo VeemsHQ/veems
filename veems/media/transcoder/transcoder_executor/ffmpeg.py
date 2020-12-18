@@ -4,6 +4,8 @@ import logging
 import os
 from pathlib import Path
 
+import m3u8
+
 from .. import transcoder_profiles
 from ... import services
 from .exceptions import TranscodeException
@@ -98,11 +100,13 @@ def _create_segments_for_video(video_path, profile, tmp_dir):
     output_playlist_path = Path(tmp_dir) / 'rendition.m3u8'
     segments_dir = Path(tmp_dir)
     segment_filename_pattern = str(segments_dir) + '/%d.ts'
+    tmp_master_file = 'master.m3u8'
     command = (
         'ffmpeg '
         f'-i {video_path} '
         f'-hls_time {profile.segment_duration} '
         f'-hls_segment_filename {segment_filename_pattern} '
+        f'-master_pl_name {tmp_master_file} '
         '-hls_playlist_type vod '
         f'{output_playlist_path}'
     )
@@ -112,7 +116,10 @@ def _create_segments_for_video(video_path, profile, tmp_dir):
     segment_paths = tuple(
         sorted(segments_dir.glob('*.ts'), key=os.path.getmtime)
     )
-    return output_playlist_path, segment_paths
+    master_file = tuple(segments_dir.glob(tmp_master_file))[0]
+    codecs_string = m3u8.load(str(master_file)
+                       ).data['playlists'][0]['stream_info']['codecs']
+    return output_playlist_path, segment_paths, codecs_string
 
 
 def _get_thumbnail_time_offsets(video_path):
