@@ -42,6 +42,8 @@ def get_rendition_playlists(video_record):
 
     # TODO codecs
     # https://developer.apple.com/documentation/http_live_streaming/example_playlists_for_http_live_streaming/creating_a_master_playlist
+
+    # TODO: create .ts files for all renditions in single cmd
     return [
         {
             'width': media_file.width,
