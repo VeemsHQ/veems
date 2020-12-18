@@ -315,7 +315,7 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
 def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
     media_files_to_create = (
         (640, 360, constants.VID_360P_24FPS),
-        (1920, 1920, constants.VIDEO_PATH_1080_60FPS),
+        (1920, 1080, constants.VIDEO_PATH_1080_60FPS),
     )
     for width, height, video_path in media_files_to_create:
         media_file = models.MediaFile.objects.create(
@@ -323,6 +323,7 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
             file=simple_uploaded_file,
             name=f'{height}p',
             ext='webm',
+            framerate=30,
             file_size=1,
             width=width,
             height=height,
@@ -347,15 +348,43 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
     assert len(playlists) == len(media_files_to_create)
     exp_playlists = [
         {
-            'codec': 'h264.avc1.High.30',
             'height': 360,
             'playlist_url': mocker.ANY,
-            'width': 640
+            'width': 640,
+            'name': '360p',
+            'resolution': '640x360',
+            'bandwidth': 182464,
+            'frame_rate': 30,
         }, {
-            'codec': 'h264.avc1.High.42',
-            'height': 1920,
+            'height': 1080,
             'playlist_url': mocker.ANY,
-            'width': 1920
+            'width': 1920,
+            'name': '1080p',
+            'resolution': '1920x1080',
+            'bandwidth': 5127303,
+            'frame_rate': 30,
         }
     ]
     assert playlists == exp_playlists
+
+
+"""
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=2769908,RESOLUTION=1080x1920,NAME="1920"
+hls_1920p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1384954,RESOLUTION=810x1440,NAME="1440"
+hls_1440p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1107963,RESOLUTION=608x1080,NAME="1080"
+hls_1080p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=923302,RESOLUTION=404x720,NAME="720"
+hls_720p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=791402,RESOLUTION=270x480,NAME="480"
+hls_480p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=692477,RESOLUTION=202x360,NAME="360"
+hls_360p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=615535,RESOLUTION=134x240,NAME="240"
+hls_240p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=553981,RESOLUTION=80x144,NAME="144"
+hls_144p.m3u8
+"""

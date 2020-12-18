@@ -12,25 +12,45 @@ from . import models
 
 def get_rendition_playlists(video_record):
 
-    def get_codecs(metadata):
-        vid_meta = metadata['video_stream']
-        codec_name = vid_meta['codec_name']
-        codec_tag_string = vid_meta['codec_tag_string']
-        profile = vid_meta['profile']
-        level = vid_meta['level']
-        return '.'.join((
-            str(codec_name),
-            str(codec_tag_string),
-            str(profile),
-            str(level),
-        ))
+    # def get_codecs(metadata):
+    #     vid_meta = metadata['video_stream']
+    #     codec_name = vid_meta['codec_name']
+    #     codec_tag_string = vid_meta['codec_tag_string']
+    #     profile = vid_meta['profile']
+    #     level = vid_meta['level']
+    #     video_codecs = '.'.join((
+    #         # str(codec_name),
+    #         str(codec_tag_string),
+    #         str(profile),
+    #         str(level),
+    #     ))
+    #     audio_meta = metadata['audio_stream']
+    #     codec_name = audio_meta['codec_name']
+    #     codec_tag_string = audio_meta['codec_tag_string']
+    #     profile = audio_meta['profile']
+    #     try:
+    #         level = audio_meta['level']
+    #     except:
+    #         import ipdb; ipdb.set_trace()
+    #     audio_codecs = '.'.join((
+    #         str(codec_name),
+    #         str(codec_tag_string),
+    #         str(profile),
+    #         str(level),
+    #     ))
+    #     return ','.join((video_codec, audio_codec))
 
+    # TODO codecs
+    # https://developer.apple.com/documentation/http_live_streaming/example_playlists_for_http_live_streaming/creating_a_master_playlist
     return [
         {
             'width': media_file.width,
             'height': media_file.height,
+            'name': media_file.name,
+            'resolution': f'{media_file.width}x{media_file.height}',
             'playlist_url': media_file.hls_playlist_file.url,
-            'codec': get_codecs(media_file.metadata),
+            'bandwidth': int(media_file.metadata['format']['bit_rate']),
+            # 'codec': get_codecs(media_file.metadata),
         } for media_file in video_record.mediafile_set.all()
     ]
 
