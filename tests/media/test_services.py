@@ -310,3 +310,52 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
     assert tuple(
         media_file.mediafilesegment_set.values_list('segment_number', 'file')
     ) == exp_segment_numbers_and_filenames
+
+
+def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
+    media_files_to_create = (
+        (640, 360, constants.VID_360P_24FPS),
+        (1920, 1920, constants.VIDEO_PATH_1080_60FPS),
+    )
+    for width, height, video_path in media_files_to_create:
+        media_file = models.MediaFile.objects.create(
+            video=video,
+            file=simple_uploaded_file,
+            name=f'{height}p',
+            ext='webm',
+            file_size=1,
+            width=width,
+            height=height,
+            metadata=services.get_metadata(video_path),
+        )
+        assert not media_file.hls_playlist_file
+        video_path = constants.VIDEO_PATH_1080_30FPS_VERT
+        profile = transcoder_profiles.Webm360p
+        segment_hls_playlist, segment_paths = ffmpeg._create_segments_for_video(
+            video_path=video_path,
+            profile=profile,
+            tmp_dir=tmpdir,
+        )
+        services.persist_media_file_segments(
+            media_file=media_file,
+            segments_playlist_file=segment_hls_playlist,
+            segments=segment_paths,
+        )
+
+    playlists = services.get_rendition_playlists(video_record=video)
+
+    assert len(playlists) == len(media_files_to_create)
+    exp_playlists = [
+        {
+            'codec': 'h264.avc1.High.30',
+            'height': 360,
+            'playlist_url': mocker.ANY,
+            'width': 640
+        }, {
+            'codec': 'h264.avc1.High.42',
+            'height': 1920,
+            'playlist_url': mocker.ANY,
+            'width': 1920
+        }
+    ]
+    assert playlists == exp_playlists

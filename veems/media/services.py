@@ -10,6 +10,31 @@ from django.core.files import File
 from . import models
 
 
+def get_rendition_playlists(video_record):
+
+    def get_codecs(metadata):
+        vid_meta = metadata['video_stream']
+        codec_name = vid_meta['codec_name']
+        codec_tag_string = vid_meta['codec_tag_string']
+        profile = vid_meta['profile']
+        level = vid_meta['level']
+        return '.'.join((
+            str(codec_name),
+            str(codec_tag_string),
+            str(profile),
+            str(level),
+        ))
+
+    return [
+        {
+            'width': media_file.width,
+            'height': media_file.height,
+            'playlist_url': media_file.hls_playlist_file.url,
+            'codec': get_codecs(media_file.metadata),
+        } for media_file in video_record.mediafile_set.all()
+    ]
+
+
 def mark_transcode_job_completed(*, transcode_job):
     transcode_job.status = 'completed'
     transcode_job.ended_on = timezone.now()
