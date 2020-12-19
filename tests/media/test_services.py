@@ -332,10 +332,12 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
         assert not media_file.hls_playlist_file
         video_path = constants.VIDEO_PATH_1080_30FPS_VERT
         profile = transcoder_profiles.Webm360p
-        segment_hls_playlist, segment_paths = ffmpeg._create_segments_for_video(
-            video_path=video_path,
-            profile=profile,
-            tmp_dir=tmpdir,
+        segment_hls_playlist, segment_paths = (
+            ffmpeg._create_segments_for_video(
+                video_path=video_path,
+                profile=profile,
+                tmp_dir=tmpdir,
+            )
         )
         services.persist_media_file_segments(
             media_file=media_file,

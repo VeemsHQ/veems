@@ -94,6 +94,7 @@ class MediaFile(BaseModel):
     audio_codec = models.CharField(max_length=50, null=True)
     video_codec = models.CharField(max_length=50, null=True)
     container = models.CharField(max_length=30, null=True)
+    codecs_string = models.CharField(max_length=100, null=True)
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
     hls_playlist_file = models.FileField(

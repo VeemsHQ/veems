@@ -17,12 +17,12 @@ def test_create_segments_for_video(tmpdir):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
 
-    (
-        segment_hls_playlist, segment_paths, codecs_string
-    ) = ffmpeg._create_segments_for_video(
-        video_path=video_path,
-        profile=profile,
-        tmp_dir=tmpdir,
+    segment_hls_playlist, segment_paths, codecs_string = (
+        ffmpeg._create_segments_for_video(
+            video_path=video_path,
+            profile=profile,
+            tmp_dir=tmpdir,
+        )
     )
 
     exp_num_segments = 13
@@ -103,7 +103,8 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata', [
+        'source_file_path, transcode_profile_name, exp_metadata',
+        [
             (
                 constants.VID_720P_24FPS, 'webm_144p', {
                     'audio_codec': None,
@@ -114,6 +115,7 @@ class TestTranscode:
                     'width': 256,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -126,6 +128,7 @@ class TestTranscode:
                     'width': 1920,
                     'file_size': ANY,
                     'video_aspect_ratio': '2:1',
+                    'codecs_string': 'avc1.640028,mp4a.40.2'
                 }
             ),
             (
@@ -138,6 +141,7 @@ class TestTranscode:
                     'width': 136,
                     'file_size': ANY,
                     'video_aspect_ratio': '9:16',
+                    'codecs_string': 'avc1.64000c,mp4a.40.2',
                 }
             ),
             (
@@ -150,6 +154,7 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -162,6 +167,7 @@ class TestTranscode:
                     'width': 1280,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -174,6 +180,7 @@ class TestTranscode:
                     'width': 1920,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -186,6 +193,7 @@ class TestTranscode:
                     'width': 2560,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -198,6 +206,7 @@ class TestTranscode:
                     'width': 3840,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -210,6 +219,7 @@ class TestTranscode:
                     'width': 202,
                     'file_size': ANY,
                     'video_aspect_ratio': '203:360',
+                    'codecs_string': 'avc1.64000d,mp4a.40.2',
                 }
             ),
             (
@@ -222,6 +232,7 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -234,6 +245,7 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
+                    'codecs_string': None,
                 }
             ),
             (
@@ -246,6 +258,7 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'video_aspect_ratio': '320:169',
+                    'codecs_string': None,
                 }
             ),
         ]
@@ -269,6 +282,7 @@ class TestTranscode:
         assert media_file.framerate == exp_metadata['framerate']
         assert media_file.audio_codec == exp_metadata['audio_codec']
         assert media_file.video_codec == exp_metadata['video_codec']
+        assert media_file.codecs_string == exp_metadata['codecs_string']
         assert media_file.ext == 'webm'
         assert media_file.container == 'webm'
         assert media_file.file_size == exp_metadata['file_size']
@@ -294,6 +308,12 @@ class TestTranscode:
 
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
+
+        # Check Segments were created
+        assert media_file.mediafilesegment_set.count() > 0
+        for segment in media_file.mediafilesegment_set.all():
+            assert segment.segment_number is not None
+            assert segment.file
 
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name', [

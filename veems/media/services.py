@@ -11,39 +11,6 @@ from . import models
 
 
 def get_rendition_playlists(video_record):
-
-    # def get_codecs(metadata):
-    #     vid_meta = metadata['video_stream']
-    #     codec_name = vid_meta['codec_name']
-    #     codec_tag_string = vid_meta['codec_tag_string']
-    #     profile = vid_meta['profile']
-    #     level = vid_meta['level']
-    #     video_codecs = '.'.join((
-    #         # str(codec_name),
-    #         str(codec_tag_string),
-    #         str(profile),
-    #         str(level),
-    #     ))
-    #     audio_meta = metadata['audio_stream']
-    #     codec_name = audio_meta['codec_name']
-    #     codec_tag_string = audio_meta['codec_tag_string']
-    #     profile = audio_meta['profile']
-    #     try:
-    #         level = audio_meta['level']
-    #     except:
-    #         import ipdb; ipdb.set_trace()
-    #     audio_codecs = '.'.join((
-    #         str(codec_name),
-    #         str(codec_tag_string),
-    #         str(profile),
-    #         str(level),
-    #     ))
-    #     return ','.join((video_codec, audio_codec))
-
-    # TODO codecs
-    # https://developer.apple.com/documentation/http_live_streaming/example_playlists_for_http_live_streaming/creating_a_master_playlist
-
-    # TODO: create .ts files for all renditions in single cmd
     return [
         {
             'width': media_file.width,
@@ -52,9 +19,12 @@ def get_rendition_playlists(video_record):
             'resolution': f'{media_file.width}x{media_file.height}',
             'playlist_url': media_file.hls_playlist_file.url,
             'bandwidth': int(media_file.metadata['format']['bit_rate']),
-            # 'codec': get_codecs(media_file.metadata),
         } for media_file in video_record.mediafile_set.all()
     ]
+
+
+def create_master_playlist(media_file):
+    raise NotImplementedError('ah')
 
 
 def mark_transcode_job_completed(*, transcode_job):
@@ -79,7 +49,9 @@ def mark_transcode_job_processing(*, transcode_job):
     return transcode_job
 
 
-def persist_media_file(*, video_record, video_path, metadata, profile):
+def persist_media_file(
+    *, video_record, video_path, metadata, profile, codecs_string
+):
     metadata_summary = metadata['summary']
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
@@ -96,6 +68,7 @@ def persist_media_file(*, video_record, video_path, metadata, profile):
             file_size=metadata_summary['file_size'],
             container=video_path.suffix.replace('.', ''),
             metadata=metadata,
+            codecs_string=codecs_string,
         )
 
 

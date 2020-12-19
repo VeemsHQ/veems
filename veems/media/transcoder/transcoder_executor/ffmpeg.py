@@ -74,11 +74,24 @@ def transcode(*, transcode_job, source_file_path):
                 'Persisting transcoded video %s %s...', transcode_job,
                 transcode_job.video.id
             )
+            output_playlist_path, segment_paths, codecs_string = (
+                _create_segments_for_video(
+                    video_path=output_file_path,
+                    profile=profile,
+                    tmp_dir=tmp_dir,
+                )
+            )
             media_file = services.persist_media_file(
                 video_record=transcode_job.video,
                 video_path=output_file_path,
                 metadata=metadata_transcoded,
                 profile=profile,
+                codecs_string=codecs_string,
+            )
+            services.persist_media_file_segments(
+                media_file=media_file,
+                segments_playlist_file=output_playlist_path,
+                segments=segment_paths,
             )
             # TODO:
             # _create_segments_for_video()
@@ -117,8 +130,13 @@ def _create_segments_for_video(video_path, profile, tmp_dir):
         sorted(segments_dir.glob('*.ts'), key=os.path.getmtime)
     )
     master_file = tuple(segments_dir.glob(tmp_master_file))[0]
-    codecs_string = m3u8.load(str(master_file)
-                       ).data['playlists'][0]['stream_info']['codecs']
+    try:
+        codecs_string = (
+            m3u8.load(str(master_file))
+            .data['playlists'][0]['stream_info']['codecs']
+        )
+    except IndexError:
+        codecs_string = None
     return output_playlist_path, segment_paths, codecs_string
 
 
