@@ -122,7 +122,7 @@ def _create_segments_for_video(video_path, profile, tmp_dir):
     )
     result = subprocess.run(command.split(), capture_output=True)
     if result.returncode != 0:
-        raise RuntimeError('Failed to create segments')
+        raise RuntimeError(f'Failed to create segments: {result.stderr}')
     segment_paths = tuple(
         sorted(segments_dir.glob('*.ts'), key=os.path.getmtime)
     )

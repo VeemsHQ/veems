@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 from django.utils import timezone
 from ffprobe import FFProbe
@@ -143,7 +145,8 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
 
 
 @pytest.mark.parametrize(
-    'video_filename, exp_profiles', [
+    'video_filename, exp_profiles',
+    [
         (
             constants.VIDEO_PATH_2160_30FPS, (
                 'webm_144p',
@@ -176,24 +179,62 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     ]
 )
 def test_create_transcodes(
-    video_filename, exp_profiles, video_factory, mocker
+    video_filename, exp_profiles, video_factory, mocker, settings
 ):
+    settings.CELERY_TASK_ALWAYS_EAGER = True
     video = video_factory(video_path=video_filename)
-    mock_task_transcode = mocker.patch(f'{MODULE}.task_transcode')
 
-    manager.create_transcodes(video_id=video.id)
+    async_result = manager.create_transcodes(video_id=video.id)
+
+    assert async_result.state == 'SUCCESS'
+
+    # When transcoding is completed, the video and mediafiles under it
+    # should all have playlists generated for them.
+    video.refresh_from_db()
+    assert video.hls_playlist_file
+    for media_file in video.mediafile_set.all():
+        assert media_file.hls_playlist_file
 
     exp_num_jobs = len(exp_profiles)
-    assert models.TranscodeJob.objects.count() == exp_num_jobs
-    assert (
-        models.TranscodeJob.objects.filter(status='created'
-                                           ).count() == exp_num_jobs
-    )
-    assert mock_task_transcode.delay.call_count == exp_num_jobs
     executed_profiles = tuple(
         models.TranscodeJob.objects.values_list('profile', flat=True)
     )
+    assert (
+        models.TranscodeJob.objects.filter(status='completed'
+                                           ).count() == exp_num_jobs
+    )
     assert executed_profiles == exp_profiles
+
+
+class TestTaskOnAllTranscodesCompleted:
+    def test(self, video, mocker):
+        mock_update_video_master_playlist = mocker.patch(
+            f'{MODULE}.services.update_video_master_playlist'
+        )
+
+        manager.task_on_all_transcodes_completed(
+            task_results=[True], video_id=video.id
+        )
+
+        assert mock_update_video_master_playlist.called
+
+    def test_logs_warning_if_not_all_task_results_successful(
+        self, video, mocker, caplog
+    ):
+        mock_update_video_master_playlist = mocker.patch(
+            f'{MODULE}.services.update_video_master_playlist'
+        )
+        caplog.set_level(logging.WARNING)
+
+        manager.task_on_all_transcodes_completed(
+            task_results=[True, None], video_id=video.id
+        )
+
+        assert mock_update_video_master_playlist.called
+        assert (
+            f'Not all transcodes successful for Video {video.id}'
+            in caplog.messages
+        )
 
 
 def test_task_transcode(video_factory, mocker):

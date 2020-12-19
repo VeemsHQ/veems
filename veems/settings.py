@@ -188,7 +188,10 @@ CELERY_BROKER_URL = (
     F'{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}'
 )
 BROKER_URL = CELERY_BROKER_URL
-CELERY_RESULT_BACKEND = None
+CELERY_RESULT_BACKEND = (
+    f"db+postgresql://{os.environ['DB_USER']}:{os.environ['DB_PASS']}"
+    f"@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/{os.environ['DB_NAME']}"
+)
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

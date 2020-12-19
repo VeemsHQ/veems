@@ -232,7 +232,7 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
-                    'codecs_string': None,
+                    'codecs_string': 'avc1.64001f,mp4a.40.2',
                 }
             ),
             (
@@ -245,7 +245,7 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'video_aspect_ratio': '16:9',
-                    'codecs_string': None,
+                    'codecs_string': 'avc1.64001f,mp4a.40.2',
                 }
             ),
             (

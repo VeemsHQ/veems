@@ -192,7 +192,6 @@ def get_metadata(video_path):
         audio_codec_name = audio_stream['codec_name']
     except TypeError:
         audio_codec_name = None
-
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
@@ -201,7 +200,7 @@ def get_metadata(video_path):
         'video_codec': video_stream['codec_name'],
         'audio_codec': audio_codec_name,
         'file_size': int(format_['size']),
-        'video_aspect_ratio': video_stream['display_aspect_ratio'],
+        'video_aspect_ratio': video_stream.get('display_aspect_ratio'),
         'video_bit_rate': int(format_['bit_rate']),
     }
     return {
