@@ -312,7 +312,8 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
     ) == exp_segment_numbers_and_filenames
 
 
-def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
+@pytest.fixture
+def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
     media_files_to_create = (
         (640, 360, constants.VID_360P_24FPS),
         (1920, 1080, constants.VIDEO_PATH_1080_60FPS),
@@ -328,11 +329,12 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
             width=width,
             height=height,
             metadata=services.get_metadata(video_path),
+            codecs_string='avc1.640028,mp4a.40.2',
         )
         assert not media_file.hls_playlist_file
         video_path = constants.VIDEO_PATH_1080_30FPS_VERT
         profile = transcoder_profiles.Webm360p
-        segment_hls_playlist, segment_paths = (
+        segment_hls_playlist, segment_paths, _ = (
             ffmpeg._create_segments_for_video(
                 video_path=video_path,
                 profile=profile,
@@ -344,6 +346,11 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
             segments_playlist_file=segment_hls_playlist,
             segments=segment_paths,
         )
+    return video, media_files_to_create
+
+
+def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
+    video, media_files_to_create = video_with_renditions_and_segments
 
     playlists = services.get_rendition_playlists(video_record=video)
 
@@ -357,6 +364,7 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
             'resolution': '640x360',
             'bandwidth': 182464,
             'frame_rate': 30,
+            'codecs_string': 'avc1.640028,mp4a.40.2',
         }, {
             'height': 1080,
             'playlist_url': mocker.ANY,
@@ -365,28 +373,14 @@ def test_get_rendition_playlists(video, simple_uploaded_file, tmpdir, mocker):
             'resolution': '1920x1080',
             'bandwidth': 5127303,
             'frame_rate': 30,
+            'codecs_string': 'avc1.640028,mp4a.40.2',
         }
     ]
     assert playlists == exp_playlists
+    assert all(p['playlist_url'].startswith('http') for p in playlists)
 
 
-"""
-#EXTM3U
-#EXT-X-VERSION:3
-#EXT-X-STREAM-INF:BANDWIDTH=2769908,RESOLUTION=1080x1920,NAME="1920"
-hls_1920p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=1384954,RESOLUTION=810x1440,NAME="1440"
-hls_1440p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=1107963,RESOLUTION=608x1080,NAME="1080"
-hls_1080p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=923302,RESOLUTION=404x720,NAME="720"
-hls_720p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=791402,RESOLUTION=270x480,NAME="480"
-hls_480p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=692477,RESOLUTION=202x360,NAME="360"
-hls_360p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=615535,RESOLUTION=134x240,NAME="240"
-hls_240p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=553981,RESOLUTION=80x144,NAME="144"
-hls_144p.m3u8
-"""
+def test_create_master_playlist(video_with_renditions_and_segments):
+    video, _ = video_with_renditions_and_segments
+
+    updated_video = services.create_master_playlist(video_record=video)

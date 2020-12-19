@@ -15,7 +15,9 @@ def get_rendition_playlists(video_record):
         {
             'width': media_file.width,
             'height': media_file.height,
+            'frame_rate': media_file.framerate,
             'name': media_file.name,
+            'codecs_string': media_file.codecs_string,
             'resolution': f'{media_file.width}x{media_file.height}',
             'playlist_url': media_file.hls_playlist_file.url,
             'bandwidth': int(media_file.metadata['format']['bit_rate']),
@@ -23,7 +25,7 @@ def get_rendition_playlists(video_record):
     ]
 
 
-def create_master_playlist(media_file):
+def create_master_playlist(video_record):
     raise NotImplementedError('ah')
 
 
