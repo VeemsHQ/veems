@@ -114,6 +114,8 @@ class TestVideo:
                 {
                     'audio_codec': 'opus',
                     'container': 'webm',
+                    'codecs_string': None,
+                    'hls_playlist_file': None,
                     'created_on': mocker.ANY,
                     'duration': 10,
                     'ext': 'webm',
