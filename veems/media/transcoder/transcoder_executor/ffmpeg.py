@@ -93,10 +93,6 @@ def transcode(*, transcode_job, source_file_path):
                 segments_playlist_file=output_playlist_path,
                 segments=segment_paths,
             )
-            # TODO:
-            # _create_segments_for_video()
-            # persist_media_file_segments()
-            # Create Master Playlist
             logger.info(
                 'Persisting thumbnails %s %s...', transcode_job,
                 transcode_job.video.id
@@ -104,6 +100,7 @@ def transcode(*, transcode_job, source_file_path):
             thumbnail_records = services.persist_media_file_thumbs(
                 media_file_record=media_file, thumbnails=thumbnails
             )
+            # TODO: services.regenerate_master_hls_playlist()
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             logger.info('Completed transcode job %s', transcode_job)
             return media_file, thumbnail_records
