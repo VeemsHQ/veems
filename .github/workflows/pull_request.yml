@@ -42,9 +42,7 @@ jobs:
         ADMIN_PASSWORD: password
         APP_ENV_NAME: veems-local
         BUCKET_STATIC: veems-local-static
-        BUCKET_UPLOADS: veems-local-uploaded
-        BUCKET_MEDIA_FILES: veems-local-media-format
-        BUCKET_MEDIA_FILE_THUMBNAILS: veems-local-media-thumbs
+        BUCKET_MEDIA: veems-local-media-format
         RABBITMQ_HOST: localhost
         RABBITMQ_PASS: guest
         RABBITMQ_PORT: 5672

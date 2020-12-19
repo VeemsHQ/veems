@@ -39,4 +39,4 @@ def test_get_presigned_upload_url(settings):
 
     assert signed_url.startswith('http')
     assert 'AccessKeyId' in signed_url
-    assert settings.BUCKET_UPLOADS in signed_url
+    assert settings.BUCKET_MEDIA in signed_url
