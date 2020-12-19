@@ -1,5 +1,8 @@
+import re
+
 import pytest
 from pytest_voluptuous import S
+import m3u8
 
 from veems.media import services, models
 from veems.media.transcoder.transcoder_executor import ffmpeg
@@ -284,7 +287,7 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
 
-    segment_hls_playlist, segment_paths = ffmpeg._create_segments_for_video(
+    segment_hls_playlist, segment_paths, _ = ffmpeg._create_segments_for_video(
         video_path=video_path,
         profile=profile,
         tmp_dir=tmpdir,
@@ -352,7 +355,7 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
 def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
     video, media_files_to_create = video_with_renditions_and_segments
 
-    playlists = services.get_rendition_playlists(video_record=video)
+    playlists = services._get_rendition_playlists(video_record=video)
 
     assert len(playlists) == len(media_files_to_create)
     exp_playlists = [
@@ -380,7 +383,55 @@ def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
     assert all(p['playlist_url'].startswith('http') for p in playlists)
 
 
-def test_create_master_playlist(video_with_renditions_and_segments):
+def test_update_video_master_playlist(
+    video_with_renditions_and_segments, mocker
+):
     video, _ = video_with_renditions_and_segments
 
-    updated_video = services.create_master_playlist(video_record=video)
+    updated_video = services.update_video_master_playlist(video_record=video)
+
+    assert updated_video.hls_playlist_file
+
+    assert updated_video.hls_playlist_file.name
+    assert re.match(
+        'manifests/.+_master.m3u8', updated_video.hls_playlist_file.name
+    )
+    playlist_data = m3u8.loads(
+        updated_video.hls_playlist_file.read().decode()
+    ).data
+    assert playlist_data == {
+        'iframe_playlists': [],
+        'is_endlist': False,
+        'is_i_frames_only': False,
+        'is_independent_segments': False,
+        'is_variant': True,
+        'keys': [],
+        'media': [],
+        'media_sequence': None,
+        'part_inf': {},
+        'playlist_type': None,
+        'playlists': [
+            {
+                'stream_info': {
+                    'bandwidth': 182464,
+                    'closed_captions': 'NONE',
+                    'codecs': 'avc1.640028,mp4a.40.2',
+                    'program_id': 1
+                },
+                'uri': mocker.ANY
+            }, {
+                'stream_info': {
+                    'bandwidth': 5127303,
+                    'closed_captions': 'NONE',
+                    'codecs': 'avc1.640028,mp4a.40.2',
+                    'program_id': 1
+                },
+                'uri': mocker.ANY
+            }
+        ],
+        'rendition_reports': [],
+        'segments': [],
+        'session_data': [],
+        'session_keys': [],
+        'skip': {}
+    }

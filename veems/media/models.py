@@ -31,6 +31,10 @@ def _mediafile_hls_playlist_file_upload_to(instance, filename):
     return f'manifests/{instance.id}_{instance.name}.m3u8'
 
 
+def _video_hls_playlist_file_upload_to(instance, filename):
+    return f'manifests/{instance.id}_master.m3u8'
+
+
 def _mediafile_segment_upload_to(instance, filename):
     # TODO: test
     return f'{instance.media_file.id}/{instance.segment_number}.ts'
@@ -58,6 +62,10 @@ class Video(BaseModel):
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
+    hls_playlist_file = models.FileField(
+        upload_to=_video_hls_playlist_file_upload_to,
+        storage=storage_backends.MediaFileStorage, null=True
+    )
     # master HLS playlist
     """
     #EXTM3U
