@@ -16,13 +16,11 @@ jobs:
         architecture: 'x64'
     - name: Run backend tests
       run: |
-        cp .env.template .env &&
-        sudo make system_install &&
-        ffprobe -version &&
-        ffmpeg -version &&
-        make install &&
-        make start-deps &&
-        make test
+        cp .env.template .env
+        pip install docker-compose
+        docker-compose version
+        docker ps
+        make docker-test
       env:
         DEBUG: true
         SECRET_KEY: SECRET_KEY

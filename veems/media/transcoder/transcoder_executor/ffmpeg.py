@@ -129,8 +129,8 @@ def _create_segments_for_video(video_path, profile, tmp_dir):
     master_file = tuple(segments_dir.glob(tmp_master_file))[0]
     try:
         codecs_string = (
-            m3u8.load(str(master_file))
-            .data['playlists'][0]['stream_info']['codecs']
+            m3u8.load(str(master_file)
+                      ).data['playlists'][0]['stream_info']['codecs']
         )
     except IndexError:
         codecs_string = None
@@ -224,13 +224,15 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     command_2 = f'{base_command} -pass 2 ' f'{output_file_path}'
     result = subprocess.run(command_1.split(), capture_output=True)
     if result.returncode != 0:
+        logger.error('Transcoding failed: %s', result.stderr.decode())
         raise TranscodeException(
-            'Transcoding failed', stderr=result.stderr.decode()
+            f'Transcoding failed', stderr=result.stderr.decode()
         )
     result = subprocess.run(command_2.split(), capture_output=True)
     if result.returncode != 0:
+        logger.error('Transcoding failed: %s', result.stderr.decode())
         raise TranscodeException(
-            'Transcoding failed', stderr=result.stderr.decode()
+            f'Transcoding failed', stderr=result.stderr.decode()
         )
     if not output_file_path.exists():
         raise TranscodeException('No file output from transcode process')

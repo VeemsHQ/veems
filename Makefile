@@ -5,8 +5,8 @@ lint:
 
 .ONESHELL:
 .PHONY: test
-test:
-	pytest -n auto -k 'not TestTranscode' --cov=.
+test: install start-deps
+	pytest -n auto --cov=.
 
 .ONESHELL:
 .PHONY: system_install
@@ -21,8 +21,15 @@ install:
 .ONESHELL:
 start-deps:
 	docker-compose up -d postgres rabbit localstack
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC}
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA}
+	sleep 10
+	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_STATIC}
+	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_MEDIA}
+
+# .ONESHELL:
+# ci-start-deps:
+# 	docker-compose up -d postgres rabbit
+# 	aws s3 mb s3://${BUCKET_STATIC}
+# 	aws s3 mb s3://${BUCKET_MEDIA}
 
 .ONESHELL:
 .PHONY: run

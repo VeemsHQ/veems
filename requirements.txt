@@ -1,7 +1,8 @@
 django==3.1.4
 ffmpeg-python==0.2.0
 ffprobe-python==1.0.3
-celery[librabbitmq]==5.0.4
+amqp==5.0.2
+celery==5.0.4
 psycopg2-binary==2.8.6
 django-storages==1.10.1
 boto3==1.16.35
