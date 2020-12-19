@@ -148,25 +148,11 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     'video_filename, exp_profiles',
     [
         (
-            constants.VIDEO_PATH_2160_30FPS, (
+            constants.VID_720P_24FPS, (
                 'webm_144p',
                 'webm_240p',
                 'webm_360p',
                 'webm_720p',
-                'webm_1080p',
-                'webm_1440p',
-                'webm_2160p',
-            )
-        ),
-        (
-            constants.VIDEO_PATH_2160_60FPS, (
-                'webm_144p',
-                'webm_240p',
-                'webm_360p_high',
-                'webm_720p_high',
-                'webm_1080p_high',
-                'webm_1440p_high',
-                'webm_2160p_high',
             )
         ),
         (

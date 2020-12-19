@@ -6,7 +6,7 @@ lint:
 .ONESHELL:
 .PHONY: test
 test:
-	pytest --cov=.
+	pytest -n auto -k 'not TestTranscode' --cov=.
 
 .ONESHELL:
 .PHONY: system_install
@@ -30,3 +30,7 @@ run:
 	docker-compose build app
 	docker-compose run app
 
+.ONESHELL:
+.PHONY: docker-test
+docker-test:
+	docker-compose build app && docker-compose run app make test

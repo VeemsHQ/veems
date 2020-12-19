@@ -302,13 +302,19 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
     assert media_file.hls_playlist_file
     assert media_file.mediafilesegment_set.count() == len(segment_paths)
     exp_segment_numbers_and_filenames = (
-        (0, f'{media_file.id}/0.ts'), (1, f'{media_file.id}/1.ts'),
-        (2, f'{media_file.id}/2.ts'), (3, f'{media_file.id}/3.ts'),
-        (4, f'{media_file.id}/4.ts'), (5, f'{media_file.id}/5.ts'),
-        (6, f'{media_file.id}/6.ts'), (7, f'{media_file.id}/7.ts'),
-        (8, f'{media_file.id}/8.ts'), (9, f'{media_file.id}/9.ts'),
-        (10, f'{media_file.id}/10.ts'), (11, f'{media_file.id}/11.ts'),
-        (12, f'{media_file.id}/12.ts')
+        (0, f'media_files/segments/{media_file.id}/0.ts'),
+        (1, f'media_files/segments/{media_file.id}/1.ts'),
+        (2, f'media_files/segments/{media_file.id}/2.ts'),
+        (3, f'media_files/segments/{media_file.id}/3.ts'),
+        (4, f'media_files/segments/{media_file.id}/4.ts'),
+        (5, f'media_files/segments/{media_file.id}/5.ts'),
+        (6, f'media_files/segments/{media_file.id}/6.ts'),
+        (7, f'media_files/segments/{media_file.id}/7.ts'),
+        (8, f'media_files/segments/{media_file.id}/8.ts'),
+        (9, f'media_files/segments/{media_file.id}/9.ts'),
+        (10, f'media_files/segments/{media_file.id}/10.ts'),
+        (11, f'media_files/segments/{media_file.id}/11.ts'),
+        (12, f'media_files/segments/{media_file.id}/12.ts')
     )
     assert tuple(
         media_file.mediafilesegment_set.values_list('segment_number', 'file')
