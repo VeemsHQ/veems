@@ -17,12 +17,14 @@ MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
 def test_create_segments_for_video(tmpdir):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
+    media_file_id = 123
 
     segment_hls_playlist, segment_paths, codecs_string = (
         ffmpeg._create_segments_for_video(
             video_path=video_path,
             profile=profile,
             tmp_dir=tmpdir,
+            media_file_id=media_file_id,
         )
     )
 
@@ -46,38 +48,38 @@ def test_create_segments_for_video(tmpdir):
         ('12.ts', 5.9059)
     ]
     assert segment_names_durations == exp_segment_names_durations
-    exp_playlist = """
+    exp_playlist = f"""
     #EXTM3U
     #EXT-X-VERSION:3
     #EXT-X-TARGETDURATION:9
     #EXT-X-MEDIA-SEQUENCE:0
     #EXT-X-PLAYLIST-TYPE:VOD
     #EXTINF:9.209200,
-    0.ts
+    /media_files/segments/{media_file_id}/0.ts
     #EXTINF:3.303300,
-    1.ts
+    /media_files/segments/{media_file_id}/1.ts
     #EXTINF:4.337667,
-    2.ts
+    /media_files/segments/{media_file_id}/2.ts
     #EXTINF:7.540867,
-    3.ts
+    /media_files/segments/{media_file_id}/3.ts
     #EXTINF:4.537867,
-    4.ts
+    /media_files/segments/{media_file_id}/4.ts
     #EXTINF:4.604600,
-    5.ts
+    /media_files/segments/{media_file_id}/5.ts
     #EXTINF:6.006000,
-    6.ts
+    /media_files/segments/{media_file_id}/6.ts
     #EXTINF:8.341667,
-    7.ts
+    /media_files/segments/{media_file_id}/7.ts
     #EXTINF:3.036367,
-    8.ts
+    /media_files/segments/{media_file_id}/8.ts
     #EXTINF:6.773433,
-    9.ts
+    /media_files/segments/{media_file_id}/9.ts
     #EXTINF:5.472133,
-    10.ts
+    /media_files/segments/{media_file_id}/10.ts
     #EXTINF:8.341667,
-    11.ts
+    /media_files/segments/{media_file_id}/11.ts
     #EXTINF:5.905900,
-    12.ts
+    /media_files/segments/{media_file_id}/12.ts
     #EXT-X-ENDLIST
     """
     assert m3u8.load(str(segment_hls_playlist)

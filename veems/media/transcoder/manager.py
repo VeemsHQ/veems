@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_transcodes(video_id):
+    logger.info('Creating transcodes for video %s', video_id)
     video = models.Video.objects.get(id=video_id)
     upload = video.upload
     uploaded_file = tempfile.NamedTemporaryFile(
@@ -76,11 +77,14 @@ def task_transcode(*args, video_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name)
         )
+    # TODO: update playlist:
+    # services.update_video_master_playlist(video_record=video)
     logger.info('Task transcode completed %s %s', video_id, transcode_job_id)
     return True
 
 
 def _get_applicable_transcode_profiles(video_path):
+    # TODO: try with VID_20190713_191324.mp4
     metadata = FFProbe(str(video_path))
     ffprobe_stream = metadata.video[0]
     should_apply = []

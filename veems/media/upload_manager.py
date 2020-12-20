@@ -48,8 +48,9 @@ def complete(upload_id):
     if upload.status == 'completed':
         logger.warning('Upload %s already completed, exiting...', upload.id)
         return None
-    _mark_upload_completed(upload)
     transcode_manager.create_transcodes(video_id=upload.video.id)
+    # TODO: do this using a callback
+    _mark_upload_completed(upload)
     logger.info('Completed Upload, transcoding started')
 
 

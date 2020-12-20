@@ -71,17 +71,6 @@ def transcode(*, transcode_job, source_file_path):
             logger.info('FFMPEG transcode done')
             metadata_transcoded = services.get_metadata(output_file_path)
             logger.info(
-                'Creating segments for video %s %s...', transcode_job,
-                transcode_job.video_id
-            )
-            output_playlist_path, segment_paths, codecs_string = (
-                _create_segments_for_video(
-                    video_path=output_file_path,
-                    profile=profile,
-                    tmp_dir=tmp_dir,
-                )
-            )
-            logger.info(
                 'Persisting transcoded video %s %s...', transcode_job,
                 transcode_job.video_id
             )
@@ -90,8 +79,22 @@ def transcode(*, transcode_job, source_file_path):
                 video_path=output_file_path,
                 metadata=metadata_transcoded,
                 profile=profile,
-                codecs_string=codecs_string,
+                codecs_string=None,
             )
+            logger.info(
+                'Creating segments for video %s %s...', transcode_job,
+                transcode_job.video_id
+            )
+            output_playlist_path, segment_paths, codecs_string = (
+                _create_segments_for_video(
+                    video_path=output_file_path,
+                    profile=profile,
+                    tmp_dir=tmp_dir,
+                    media_file_id=media_file.id,
+                )
+            )
+            media_file.codecs_string = codecs_string
+            media_file.save()
             logger.info(
                 'Persisting transcoded video segments %s %s...', transcode_job,
                 transcode_job.video_id
@@ -113,10 +116,13 @@ def transcode(*, transcode_job, source_file_path):
             return media_file, thumbnail_records
 
 
-def _create_segments_for_video(video_path, profile, tmp_dir):
+def _create_segments_for_video(video_path, profile, tmp_dir, media_file_id):
     output_playlist_path = Path(tmp_dir) / 'rendition.m3u8'
     segments_dir = Path(tmp_dir)
-    segment_filename_pattern = str(segments_dir) + '/%d.ts'
+    playlist_ts_prefix = f'/media_files/segments/{media_file_id}/'
+    segment_filename_pattern = (
+        str(segments_dir) + '/%d.ts'
+    )
     tmp_master_file = 'master.m3u8'
     command = (
         'ffmpeg '
@@ -141,6 +147,18 @@ def _create_segments_for_video(video_path, profile, tmp_dir):
         )
     except IndexError:
         codecs_string = None
+    with output_playlist_path.open('r') as file_:
+        playlist_lines = file_.readlines()
+    new_lines = []
+    for line in playlist_lines:
+        if '.ts' in line:
+            line = f'{playlist_ts_prefix}{line}'
+            new_lines.append(line)
+        else:
+            new_lines.append(line)
+    new_playlist_file_content = ''.join(new_lines)
+    with output_playlist_path.open('w') as file_:
+        file_.write(new_playlist_file_content)
     return output_playlist_path, segment_paths, codecs_string
 
 
