@@ -146,8 +146,7 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
 
 @pytest.mark.xfail
 @pytest.mark.parametrize(
-    'video_filename, exp_profiles',
-    [
+    'video_filename, exp_profiles', [
         (
             constants.VID_720P_24FPS, (
                 'webm_144p',
@@ -224,33 +223,53 @@ class TestTaskOnAllTranscodesCompleted:
         )
 
 
-def test_task_transcode(video_factory, mocker):
-    video = video_factory(video_path=constants.VID_360P_24FPS)
-    mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
-    transcode_job = models.TranscodeJob.objects.create(
-        video=video,
-        profile='webm_360p_high',
-        executor='ffmpeg',
-        status='created',
-        started_on=timezone.now(),
-    )
+class TestTaskTranscode:
+    def test(self, video_factory, mocker):
+        video = video_factory(video_path=constants.VID_360P_24FPS)
+        mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
+        transcode_job = models.TranscodeJob.objects.create(
+            video=video,
+            profile='webm_360p_high',
+            executor='ffmpeg',
+            status='created',
+            started_on=timezone.now(),
+        )
 
-    manager.task_transcode(
-        video_id=video.id, transcode_job_id=transcode_job.id
-    )
+        manager.task_transcode(
+            video_id=video.id, transcode_job_id=transcode_job.id
+        )
 
-    mock_executor.transcode.assert_called_once_with(
-        transcode_job=transcode_job,
-        source_file_path=mocker.ANY,
-    )
-    transcode_job.refresh_from_db()
-    assert transcode_job.status == 'processing'
-    assert transcode_job.started_on
-    # Check that the file sent to the transcode job
-    # is the uploaded file.
-    source_file_path = (
-        mock_executor.transcode.call_args.kwargs['source_file_path']
-    )
-    with source_file_path.open('rb') as file_:
-        file_data = file_.read()
-    assert file_data == video.upload.file.read()
+        mock_executor.transcode.assert_called_once_with(
+            transcode_job=transcode_job,
+            source_file_path=mocker.ANY,
+        )
+        transcode_job.refresh_from_db()
+        assert transcode_job.status == 'processing'
+        assert transcode_job.started_on
+        # Check that the file sent to the transcode job
+        # is the uploaded file.
+        source_file_path = (
+            mock_executor.transcode.call_args.kwargs['source_file_path']
+        )
+        with source_file_path.open('rb') as file_:
+            file_data = file_.read()
+        assert file_data == video.upload.file.read()
+
+    def test_does_nothing_if_transcode_job_alread_completes(
+        self, video_factory, mocker
+    ):
+        video = video_factory(video_path=constants.VID_360P_24FPS)
+        mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
+        transcode_job = models.TranscodeJob.objects.create(
+            video=video,
+            profile='webm_360p_high',
+            executor='ffmpeg',
+            status='completed',
+            started_on=timezone.now(),
+        )
+
+        manager.task_transcode(
+            video_id=video.id, transcode_job_id=transcode_job.id
+        )
+
+        assert not mock_executor.transcode.called

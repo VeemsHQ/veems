@@ -43,9 +43,11 @@ def prepare(filename):
 
 @async_task()
 def complete(upload_id):
-    # TODO: if already done, noop
     logger.info('Completing Upload...')
     upload = models.Upload.objects.get(id=upload_id)
+    if upload.status == 'completed':
+        logger.warning('Upload %s already completed, exiting...', upload.id)
+        return None
     _mark_upload_completed(upload)
     transcode_manager.create_transcodes(video_id=upload.video.id)
     logger.info('Completed Upload, transcoding started')

@@ -60,7 +60,12 @@ def task_transcode(*args, video_id, transcode_job_id):
     video = models.Video.objects.get(id=video_id)
     upload = video.upload
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
-    # TODO: check if already done, and noop
+    if transcode_job.status == 'completed':
+        logger.warning(
+            'Task transcode exited, already completed '
+            'previously %s %s', video_id, transcode_job_id
+        )
+        return True
     services.mark_transcode_job_processing(transcode_job=transcode_job)
     uploaded_file = tempfile.NamedTemporaryFile(
         suffix=Path(upload.file.name).name, delete=False
