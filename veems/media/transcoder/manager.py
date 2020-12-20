@@ -77,8 +77,7 @@ def task_transcode(*args, video_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name)
         )
-    # TODO: update playlist:
-    # services.update_video_master_playlist(video_record=video)
+    services.update_video_master_playlist(video_record=video)
     logger.info('Task transcode completed %s %s', video_id, transcode_job_id)
     return True
 

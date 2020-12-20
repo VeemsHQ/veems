@@ -227,6 +227,9 @@ class TestTaskTranscode:
     def test(self, video_factory, mocker):
         video = video_factory(video_path=constants.VID_360P_24FPS)
         mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
+        mock_update_video_master_playlist = mocker.patch(
+            f'{MODULE}.services.update_video_master_playlist'
+        )
         transcode_job = models.TranscodeJob.objects.create(
             video=video,
             profile='webm_360p_high',
@@ -254,12 +257,18 @@ class TestTaskTranscode:
         with source_file_path.open('rb') as file_:
             file_data = file_.read()
         assert file_data == video.upload.file.read()
+        mock_update_video_master_playlist.assert_called_once_with(
+            video_record=video
+        )
 
     def test_does_nothing_if_transcode_job_alread_completes(
         self, video_factory, mocker
     ):
         video = video_factory(video_path=constants.VID_360P_24FPS)
         mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
+        mock_update_video_master_playlist = mocker.patch(
+            f'{MODULE}.services.update_video_master_playlist'
+        )
         transcode_job = models.TranscodeJob.objects.create(
             video=video,
             profile='webm_360p_high',
@@ -273,3 +282,4 @@ class TestTaskTranscode:
         )
 
         assert not mock_executor.transcode.called
+        assert not mock_update_video_master_playlist.called
