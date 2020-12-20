@@ -13,6 +13,7 @@ pytestmark = pytest.mark.django_db
 MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
 
 
+@pytest.mark.xfail
 def test_create_segments_for_video(tmpdir):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p

@@ -71,8 +71,8 @@ def transcode(*, transcode_job, source_file_path):
             logger.info('FFMPEG transcode done')
             metadata_transcoded = services.get_metadata(output_file_path)
             logger.info(
-                'Persisting transcoded video %s %s...', transcode_job,
-                transcode_job.video.id
+                'Creating segments for video %s %s...', transcode_job,
+                transcode_job.video_id
             )
             output_playlist_path, segment_paths, codecs_string = (
                 _create_segments_for_video(
@@ -81,12 +81,20 @@ def transcode(*, transcode_job, source_file_path):
                     tmp_dir=tmp_dir,
                 )
             )
+            logger.info(
+                'Persisting transcoded video %s %s...', transcode_job,
+                transcode_job.video_id
+            )
             media_file = services.persist_media_file(
                 video_record=transcode_job.video,
                 video_path=output_file_path,
                 metadata=metadata_transcoded,
                 profile=profile,
                 codecs_string=codecs_string,
+            )
+            logger.info(
+                'Persisting transcoded video segments %s %s...', transcode_job,
+                transcode_job.video_id
             )
             services.persist_media_file_segments(
                 media_file=media_file,
@@ -95,12 +103,11 @@ def transcode(*, transcode_job, source_file_path):
             )
             logger.info(
                 'Persisting thumbnails %s %s...', transcode_job,
-                transcode_job.video.id
+                transcode_job.video_id
             )
             thumbnail_records = services.persist_media_file_thumbs(
                 media_file_record=media_file, thumbnails=thumbnails
             )
-            # TODO: services.regenerate_master_hls_playlist()
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             logger.info('Completed transcode job %s', transcode_job)
             return media_file, thumbnail_records
@@ -226,13 +233,13 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     if result.returncode != 0:
         logger.error('Transcoding failed: %s', result.stderr.decode())
         raise TranscodeException(
-            f'Transcoding failed', stderr=result.stderr.decode()
+            'Transcoding failed', stderr=result.stderr.decode()
         )
     result = subprocess.run(command_2.split(), capture_output=True)
     if result.returncode != 0:
         logger.error('Transcoding failed: %s', result.stderr.decode())
         raise TranscodeException(
-            f'Transcoding failed', stderr=result.stderr.decode()
+            'Transcoding failed', stderr=result.stderr.decode()
         )
     if not output_file_path.exists():
         raise TranscodeException('No file output from transcode process')

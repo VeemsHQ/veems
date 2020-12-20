@@ -5,6 +5,7 @@ from django.utils import timezone
 import pytest
 
 from veems.media import models
+from tests import constants
 
 TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
@@ -25,6 +26,20 @@ def simple_uploaded_file():
     with VIDEO_PATH_2160_30FPS.open('rb') as file_:
         file_contents = file_.read()
     return SimpleUploadedFile(VIDEO_PATH_2160_30FPS.name, file_contents)
+
+
+@pytest.fixture
+def master_playlist_file():
+    with constants.MASTER_PLAYLIST.open('rb') as file_:
+        file_contents = file_.read()
+    return SimpleUploadedFile(constants.MASTER_PLAYLIST.name, file_contents)
+
+
+@pytest.fixture
+def rendition_playlist_file():
+    with constants.RENDITION_PLAYLIST.open('rb') as file_:
+        file_contents = file_.read()
+    return SimpleUploadedFile(constants.RENDITION_PLAYLIST.name, file_contents)
 
 
 @pytest.fixture

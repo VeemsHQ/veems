@@ -70,7 +70,8 @@ class TestUploadComplete:
 class TestVideo:
     def test_get(
         self, client, video_factory, transcode_job_factory, mocker,
-        simple_uploaded_file_factory
+        simple_uploaded_file_factory, master_playlist_file,
+        rendition_playlist_file
     ):
         video = video_factory(
             video_path=VIDEO_PATH,
@@ -78,6 +79,7 @@ class TestVideo:
             tags=['tag1', 'tag2'],
             visibility='draft',
             title='title',
+            playlist_file=master_playlist_file,
         )
         transcode_job = transcode_job_factory(
             profile='144p', video_record=video
@@ -89,6 +91,7 @@ class TestVideo:
         media_file = models.MediaFile.objects.create(
             video=video,
             file=file_,
+            playlist_file=rendition_playlist_file,
             file_size=1000,
             width=256,
             height=144,
@@ -110,16 +113,16 @@ class TestVideo:
             'tags': ['tag1', 'tag2'],
             'title': 'title',
             'visibility': 'draft',
+            'playlist_file': mocker.ANY,
             'media_files': [
                 {
                     'audio_codec': 'opus',
                     'container': 'webm',
                     'codecs_string': None,
-                    'hls_playlist_file': None,
+                    'playlist_file': mocker.ANY,
                     'created_on': mocker.ANY,
                     'duration': 10,
                     'ext': 'webm',
-                    'file': media_file.file.url,
                     'file_size': 1000,
                     'framerate': 30,
                     'height': 144,

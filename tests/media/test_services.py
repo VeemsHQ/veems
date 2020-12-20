@@ -283,7 +283,7 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
         ext='webm',
         file_size=1,
     )
-    assert not media_file.hls_playlist_file
+    assert not media_file.playlist_file
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
 
@@ -299,7 +299,7 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
         segments=segment_paths,
     )
 
-    assert media_file.hls_playlist_file
+    assert media_file.playlist_file
     assert media_file.mediafilesegment_set.count() == len(segment_paths)
     exp_segment_numbers_and_filenames = (
         (0, f'media_files/segments/{media_file.id}/0.ts'),
@@ -340,7 +340,7 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
             metadata=services.get_metadata(video_path),
             codecs_string='avc1.640028,mp4a.40.2',
         )
-        assert not media_file.hls_playlist_file
+        assert not media_file.playlist_file
         video_path = constants.VIDEO_PATH_1080_30FPS_VERT
         profile = transcoder_profiles.Webm360p
         segment_hls_playlist, segment_paths, _ = (
@@ -396,14 +396,14 @@ def test_update_video_master_playlist(
 
     updated_video = services.update_video_master_playlist(video_record=video)
 
-    assert updated_video.hls_playlist_file
+    assert updated_video.playlist_file
 
-    assert updated_video.hls_playlist_file.name
+    assert updated_video.playlist_file.name
     assert re.match(
-        'manifests/.+_master.m3u8', updated_video.hls_playlist_file.name
+        'manifests/.+_master.m3u8', updated_video.playlist_file.name
     )
     playlist_data = m3u8.loads(
-        updated_video.hls_playlist_file.read().decode()
+        updated_video.playlist_file.read().decode()
     ).data
     assert playlist_data == {
         'iframe_playlists': [],

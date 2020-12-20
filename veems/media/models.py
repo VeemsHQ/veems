@@ -29,12 +29,12 @@ def _media_file_upload_to(instance, filename):
     return f'media_files/{media_file.id}{Path(filename).suffix}'
 
 
-def _media_file_hls_playlist_file_upload_to(instance, filename):
+def _media_file_playlist_file_upload_to(instance, filename):
     media_file = instance
     return f'manifests/media_files/{media_file.id}_{instance.name}.m3u8'
 
 
-def _video_hls_playlist_file_upload_to(instance, filename):
+def _video_playlist_file_upload_to(instance, filename):
     video = instance
     return f'manifests/videos/{video.id}_master.m3u8'
 
@@ -70,8 +70,8 @@ class Video(BaseModel):
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
-    hls_playlist_file = models.FileField(
-        upload_to=_video_hls_playlist_file_upload_to,
+    playlist_file = models.FileField(
+        upload_to=_video_playlist_file_upload_to,
         storage=STORAGE_BACKEND,
         null=True
     )
@@ -99,8 +99,8 @@ class MediaFile(BaseModel):
     codecs_string = models.CharField(max_length=100, null=True)
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
-    hls_playlist_file = models.FileField(
-        upload_to=_media_file_hls_playlist_file_upload_to,
+    playlist_file = models.FileField(
+        upload_to=_media_file_playlist_file_upload_to,
         storage=STORAGE_BACKEND
     )
 

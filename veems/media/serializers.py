@@ -6,7 +6,7 @@ from . import models
 class MediaFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MediaFile
-        exclude = []
+        exclude = ['file']
 
 
 class TranscodeJobSerializer(serializers.ModelSerializer):
@@ -27,5 +27,5 @@ class VideoSerializer(serializers.ModelSerializer):
         model = models.Video
         fields = [
             'title', 'visibility', 'description', 'tags', 'media_files',
-            'transcode_jobs'
+            'transcode_jobs', 'playlist_file',
         ]

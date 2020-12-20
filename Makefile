@@ -5,7 +5,7 @@ lint:
 
 .ONESHELL:
 .PHONY: test
-test: install start-deps
+test: install start-deps lint
 	pytest -n auto --cov=.
 
 .ONESHELL:
@@ -24,12 +24,6 @@ start-deps:
 	sleep 10
 	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_STATIC}
 	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_MEDIA}
-
-# .ONESHELL:
-# ci-start-deps:
-# 	docker-compose up -d postgres rabbit
-# 	aws s3 mb s3://${BUCKET_STATIC}
-# 	aws s3 mb s3://${BUCKET_MEDIA}
 
 .ONESHELL:
 .PHONY: run

@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
                         upload_to=veems.media.models.
-                        _media_file_hls_playlist_file_upload_to
+                        _media_file_playlist_file_upload_to
                     )
                 ),
             ],
@@ -147,12 +147,12 @@ class Migration(migrations.Migration):
                     )
                 ),
                 (
-                    'hls_playlist_file',
+                    'playlist_file',
                     models.FileField(
                         null=True,
                         storage=veems.media.storage_backends.MediaStorage,
                         upload_to=veems.media.models.
-                        _video_hls_playlist_file_upload_to
+                        _video_playlist_file_upload_to
                     )
                 ),
                 (

@@ -24,7 +24,7 @@ def _get_rendition_playlists(video_record):
             'name': media_file.name,
             'codecs_string': media_file.codecs_string,
             'resolution': f'{media_file.width}x{media_file.height}',
-            'playlist_url': media_file.hls_playlist_file.url,
+            'playlist_url': media_file.playlist_file.url,
             'bandwidth': int(media_file.metadata['format']['bit_rate']),
         } for media_file in video_record.mediafile_set.all()
     ]
@@ -55,7 +55,7 @@ def update_video_master_playlist(video_record):
 
     playlist_str = variant_m3u8.dumps()
     playlist_file = ContentFile(playlist_str.encode())
-    video_record.hls_playlist_file.save('master.m3u8', playlist_file)
+    video_record.playlist_file.save('master.m3u8', playlist_file)
     logger.info(
         'Done creating master playlist for %s. %s renditions', video_record,
         len(playlist_data)
@@ -112,7 +112,7 @@ def persist_media_file_segments(
     *, media_file, segments_playlist_file, segments
 ):
     with segments_playlist_file.open('rb') as file_:
-        media_file.hls_playlist_file = File(file_)
+        media_file.playlist_file = File(file_)
         media_file.save()
     for segment_path in segments:
         with segment_path.open('rb') as file_:
