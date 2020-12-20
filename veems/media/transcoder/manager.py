@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ffprobe import FFProbe
 from django.conf import settings
-from celery import chord
+from celery import chain
 
 from .transcoder_executor import ffmpeg as transcode_executor
 from . import transcoder_profiles
@@ -34,28 +34,33 @@ def create_transcodes(video_id):
             ).id
             task_transcode_args.append((video.id, transcode_job_id))
     tasks = [
-        task_transcode.s(video_id, transcode_job_id)
+        task_transcode.s(video_id=video_id, transcode_job_id=transcode_job_id)
         for video_id, transcode_job_id in task_transcode_args
     ]
+    logger.info(
+        'Created %s transcode tasks for video %s', len(tasks), video_id
+    )
     callback = task_on_all_transcodes_completed.s(video.id)
-    async_result = chord(tasks, callback).delay()
+    async_result = chain(*tasks, callback).delay()
     return async_result
 
 
 @async_task()
 def task_on_all_transcodes_completed(task_results, video_id):
-    if not all(task_results):
+    if not task_results:
         logger.warning('Not all transcodes successful for Video %s', video_id)
     video = models.Video.objects.get(id=video_id)
     services.update_video_master_playlist(video_record=video)
+    logger.info('Transcodes completes callback executed')
 
 
 @async_task()
-def task_transcode(video_id, transcode_job_id):
+def task_transcode(*args, video_id, transcode_job_id):
     logger.info('Task transcode started %s %s', video_id, transcode_job_id)
     video = models.Video.objects.get(id=video_id)
     upload = video.upload
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
+    # TODO: check if already done, and noop
     services.mark_transcode_job_processing(transcode_job=transcode_job)
     uploaded_file = tempfile.NamedTemporaryFile(
         suffix=Path(upload.file.name).name, delete=False

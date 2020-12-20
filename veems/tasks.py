@@ -1,6 +1,6 @@
 import logging
 
-from sheet2doc.celery import app
+from veems.celery import app
 
 logger = logging.getLogger(__name__)
 

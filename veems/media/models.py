@@ -6,6 +6,10 @@ from ..common.models import BaseModel
 from . import storage_backends
 
 STORAGE_BACKEND = storage_backends.MediaStorage
+UPLOAD_CHOICES = (
+    'draft',
+    'completed',
+)
 TRANSCODE_JOB_CHOICES = (
     'created',
     'processing',
@@ -54,10 +58,14 @@ def _media_file_thumbnail_upload_to(instance, filename):
 
 
 class Upload(BaseModel):
-    presigned_upload_url = models.URLField()
-    media_type = models.CharField(max_length=200)
+    presigned_upload_url = models.URLField(max_length=1000)
+    media_type = models.CharField(max_length=500)
     file = models.FileField(
         upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND
+    )
+    status = models.CharField(
+        max_length=10, choices=tuple((c, c) for c in UPLOAD_CHOICES),
+        default='draft',
     )
 
 

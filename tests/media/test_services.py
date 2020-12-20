@@ -420,6 +420,7 @@ def test_update_video_master_playlist(
             {
                 'stream_info': {
                     'bandwidth': 182464,
+                    'resolution': '640x360',
                     'closed_captions': 'NONE',
                     'codecs': 'avc1.640028,mp4a.40.2',
                     'program_id': 1
@@ -428,6 +429,7 @@ def test_update_video_master_playlist(
             }, {
                 'stream_info': {
                     'bandwidth': 5127303,
+                    'resolution': '1920x1080',
                     'closed_captions': 'NONE',
                     'codecs': 'avc1.640028,mp4a.40.2',
                     'program_id': 1

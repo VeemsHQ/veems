@@ -200,7 +200,7 @@ class TestTaskOnAllTranscodesCompleted:
         )
 
         manager.task_on_all_transcodes_completed(
-            task_results=[True], video_id=video.id
+            task_results=True, video_id=video.id
         )
 
         assert mock_update_video_master_playlist.called
@@ -214,7 +214,7 @@ class TestTaskOnAllTranscodesCompleted:
         caplog.set_level(logging.WARNING)
 
         manager.task_on_all_transcodes_completed(
-            task_results=[True, None], video_id=video.id
+            task_results=None, video_id=video.id
         )
 
         assert mock_update_video_master_playlist.called

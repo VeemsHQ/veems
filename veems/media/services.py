@@ -43,6 +43,7 @@ def update_video_master_playlist(video_record):
             item['playlist_url'],
             stream_info={
                 'bandwidth': item['bandwidth'],
+                'resolution': item['resolution'],
                 'codecs': item['codecs_string'],
                 'program_id': 1,
                 'closed_captions': 'NONE',

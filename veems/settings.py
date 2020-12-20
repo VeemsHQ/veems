@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_beat',
+    'django_celery_results',
     'veems.user',
     'veems.media',
 ]
@@ -180,14 +181,12 @@ RABBITMQ_PORT = os.environ['RABBITMQ_PORT']
 RABBITMQ_HOST = os.environ['RABBITMQ_HOST']
 RABBITMQ_VHOST = os.environ['RABBITMQ_VHOST']
 CELERY_BROKER_URL = (
-    f'pyamqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@'
+    f'amqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@'
     F'{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}'
 )
 BROKER_URL = CELERY_BROKER_URL
-CELERY_RESULT_BACKEND = (
-    f"db+postgresql://{os.environ['DB_USER']}:{os.environ['DB_PASS']}"
-    f"@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/{os.environ['DB_NAME']}"
-)
+CELERY_IGNORE_RESULT = False
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -203,3 +202,8 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(seconds=30),
     },
 }
+CELERY_IMPORTS = [
+    'veems.tasks',
+    'veems.media.upload_manager',
+    'veems.media.transcoder.manager',
+]

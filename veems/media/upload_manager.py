@@ -21,16 +21,16 @@ def _get_presigned_upload_url(*, upload, filename):
         ClientMethod='put_object',
         Params={
             'Bucket': bucket_name,
-            'Key': object_name
+            'Key': object_name,
         },
         ExpiresIn=ONE_DAY_IN_SECS,
     )
-    return response
+    return response, object_name
 
 
 def prepare(filename):
     upload = models.Upload.objects.create(media_type='video')
-    upload.presigned_upload_url = _get_presigned_upload_url(
+    upload.presigned_upload_url, upload.file.name = _get_presigned_upload_url(
         upload=upload, filename=filename
     )
     upload.save()
@@ -43,7 +43,14 @@ def prepare(filename):
 
 @async_task()
 def complete(upload_id):
+    # TODO: if already done, noop
     logger.info('Completing Upload...')
-    video_id = models.Video.objects.get(upload_id=upload_id).id
-    transcode_manager.create_transcodes(video_id=video_id)
+    upload = models.Upload.objects.get(id=upload_id)
+    _mark_upload_completed(upload)
+    transcode_manager.create_transcodes(video_id=upload.video.id)
     logger.info('Completed Upload, transcoding started')
+
+
+def _mark_upload_completed(upload):
+    upload.status = 'completed'
+    upload.save()
