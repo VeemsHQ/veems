@@ -98,5 +98,5 @@ class TestUpload:
         upload.refresh_from_db()
         assert upload.file.name == uploaded_filename
         assert upload.file.url.startswith('http')
-        assert 'AccessKeyId' in upload.file.url
+        assert 'AccessKeyId' in upload.file.url, upload.file.url
         assert upload.id in upload.file.url

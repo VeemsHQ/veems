@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_presigned_upload_url(*, upload, filename):
+    # TODO: fix when cdn url in env vars
     s3 = boto3.client('s3', endpoint_url=settings.AWS_S3_ENDPOINT_URL)
     bucket_name = upload.file.field.storage.bucket_name
     object_name = models._upload_file_upload_to(

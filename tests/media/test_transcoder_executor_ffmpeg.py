@@ -106,8 +106,7 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata',
-        [
+        'source_file_path, transcode_profile_name, exp_metadata', [
             (
                 constants.VID_720P_24FPS, 'webm_144p', {
                     'audio_codec': None,
@@ -117,7 +116,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 256,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': None,
                 }
             ),
@@ -126,12 +124,11 @@ class TestTranscode:
                     'audio_codec': 'opus',
                     'duration': 10,
                     'framerate': 30,
-                    'height': 960,
+                    'height': 1080,
                     'video_codec': 'vp9',
-                    'width': 1920,
+                    'width': 2160,
                     'file_size': ANY,
-                    'video_aspect_ratio': '2:1',
-                    'codecs_string': 'avc1.640028,mp4a.40.2'
+                    'codecs_string': 'avc1.640032,mp4a.40.2'
                 }
             ),
             (
@@ -143,7 +140,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 136,
                     'file_size': ANY,
-                    'video_aspect_ratio': '9:16',
                     'codecs_string': 'avc1.64000c,mp4a.40.2',
                 }
             ),
@@ -156,7 +152,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': None,
                 }
             ),
@@ -169,7 +164,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 1280,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': None,
                 }
             ),
@@ -182,7 +176,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 1920,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': None,
                 }
             ),
@@ -195,7 +188,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 2560,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': None,
                 }
             ),
@@ -208,7 +200,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 3840,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': None,
                 }
             ),
@@ -221,7 +212,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 202,
                     'file_size': ANY,
-                    'video_aspect_ratio': '203:360',
                     'codecs_string': 'avc1.64000d,mp4a.40.2',
                 }
             ),
@@ -234,7 +224,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': 'avc1.64001f,mp4a.40.2',
                 }
             ),
@@ -247,7 +236,6 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 640,
                     'file_size': ANY,
-                    'video_aspect_ratio': '16:9',
                     'codecs_string': 'avc1.64001f,mp4a.40.2',
                 }
             ),
@@ -256,11 +244,22 @@ class TestTranscode:
                     'audio_codec': None,
                     'duration': 37,
                     'framerate': 24,
-                    'height': 338,
+                    'height': 360,
                     'video_codec': 'vp9',
-                    'width': 640,
+                    'width': 682,
                     'file_size': ANY,
-                    'video_aspect_ratio': '320:169',
+                    'codecs_string': None,
+                }
+            ),
+            (
+                constants.VID_1280_X_720, 'webm_240p', {
+                    'audio_codec': None,
+                    'duration': 32.0,
+                    'framerate': 25,
+                    'height': 240,
+                    'video_codec': 'vp9',
+                    'width': 426,
+                    'file_size': ANY,
                     'codecs_string': None,
                 }
             ),

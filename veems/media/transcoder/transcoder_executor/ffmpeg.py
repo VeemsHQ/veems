@@ -224,12 +224,7 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
 
 
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
-    meta = services.get_metadata(source_file_path)
-    metadata_summary = meta['summary']
-    if metadata_summary['width'] > metadata_summary['height']:
-        scale = f'{profile.width}:-2'
-    else:
-        scale = f'-2:{profile.height}'
+    scale = f'-2:{profile.height}'
     base_command = (
         f'ffmpeg -y -i {source_file_path} -vf '
         f'scale={scale}  '

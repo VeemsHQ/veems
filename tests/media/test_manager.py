@@ -1,5 +1,3 @@
-import logging
-
 import pytest
 from django.utils import timezone
 from ffprobe import FFProbe
@@ -192,44 +190,10 @@ def test_create_transcodes(
     assert executed_profiles == exp_profiles
 
 
-class TestTaskOnAllTranscodesCompleted:
-    def test(self, video, mocker):
-        mock_update_video_master_playlist = mocker.patch(
-            f'{MODULE}.services.update_video_master_playlist'
-        )
-
-        manager.task_on_all_transcodes_completed(
-            task_results=True, video_id=video.id
-        )
-
-        assert mock_update_video_master_playlist.called
-
-    def test_logs_warning_if_not_all_task_results_successful(
-        self, video, mocker, caplog
-    ):
-        mock_update_video_master_playlist = mocker.patch(
-            f'{MODULE}.services.update_video_master_playlist'
-        )
-        caplog.set_level(logging.WARNING)
-
-        manager.task_on_all_transcodes_completed(
-            task_results=None, video_id=video.id
-        )
-
-        assert mock_update_video_master_playlist.called
-        assert (
-            f'Not all transcodes successful for Video {video.id}'
-            in caplog.messages
-        )
-
-
 class TestTaskTranscode:
     def test(self, video_factory, mocker):
         video = video_factory(video_path=constants.VID_360P_24FPS)
         mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
-        mock_update_video_master_playlist = mocker.patch(
-            f'{MODULE}.services.update_video_master_playlist'
-        )
         transcode_job = models.TranscodeJob.objects.create(
             video=video,
             profile='webm_360p_high',
@@ -257,18 +221,12 @@ class TestTaskTranscode:
         with source_file_path.open('rb') as file_:
             file_data = file_.read()
         assert file_data == video.upload.file.read()
-        mock_update_video_master_playlist.assert_called_once_with(
-            video_record=video
-        )
 
     def test_does_nothing_if_transcode_job_alread_completes(
         self, video_factory, mocker
     ):
         video = video_factory(video_path=constants.VID_360P_24FPS)
         mock_executor = mocker.patch(f'{MODULE}.transcode_executor')
-        mock_update_video_master_playlist = mocker.patch(
-            f'{MODULE}.services.update_video_master_playlist'
-        )
         transcode_job = models.TranscodeJob.objects.create(
             video=video,
             profile='webm_360p_high',
@@ -282,4 +240,3 @@ class TestTaskTranscode:
         )
 
         assert not mock_executor.transcode.called
-        assert not mock_update_video_master_playlist.called

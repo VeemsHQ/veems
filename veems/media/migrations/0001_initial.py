@@ -151,8 +151,6 @@ class Migration(migrations.Migration):
                     models.FileField(
                         null=True,
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models.
-                        _video_playlist_file_upload_to
                     )
                 ),
                 (

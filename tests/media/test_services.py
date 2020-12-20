@@ -1,5 +1,3 @@
-import re
-
 import pytest
 from pytest_voluptuous import S
 import m3u8
@@ -291,6 +289,7 @@ def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
         video_path=video_path,
         profile=profile,
         tmp_dir=tmpdir,
+        media_file_id=media_file.id,
     )
 
     services.persist_media_file_segments(
@@ -348,6 +347,7 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
                 video_path=video_path,
                 profile=profile,
                 tmp_dir=tmpdir,
+                media_file_id=media_file.id,
             )
         )
         services.persist_media_file_segments(
@@ -389,22 +389,14 @@ def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
     assert all(p['playlist_url'].startswith('http') for p in playlists)
 
 
-def test_update_video_master_playlist(
+def test_generate_master_playlist(
     video_with_renditions_and_segments, mocker
 ):
     video, _ = video_with_renditions_and_segments
 
-    updated_video = services.update_video_master_playlist(video_record=video)
+    playlist_str = services.generate_master_playlist(video_id=video.id)
 
-    assert updated_video.playlist_file
-
-    assert updated_video.playlist_file.name
-    assert re.match(
-        'manifests/.+_master.m3u8', updated_video.playlist_file.name
-    )
-    playlist_data = m3u8.loads(
-        updated_video.playlist_file.read().decode()
-    ).data
+    playlist_data = m3u8.loads(playlist_str).data
     assert playlist_data == {
         'iframe_playlists': [],
         'is_endlist': False,

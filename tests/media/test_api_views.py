@@ -2,8 +2,9 @@ from http.client import CREATED, BAD_REQUEST, OK
 import json
 
 import pytest
+import m3u8
 
-from veems.media import models
+from veems.media import models, services
 from tests import constants
 
 pytestmark = pytest.mark.django_db
@@ -70,8 +71,7 @@ class TestUploadComplete:
 class TestVideo:
     def test_get(
         self, client, video_factory, transcode_job_factory, mocker,
-        simple_uploaded_file_factory, master_playlist_file,
-        rendition_playlist_file
+        simple_uploaded_file_factory, rendition_playlist_file
     ):
         video = video_factory(
             video_path=VIDEO_PATH,
@@ -79,7 +79,6 @@ class TestVideo:
             tags=['tag1', 'tag2'],
             visibility='draft',
             title='title',
-            playlist_file=master_playlist_file,
         )
         transcode_job = transcode_job_factory(
             profile='144p', video_record=video
@@ -113,7 +112,7 @@ class TestVideo:
             'tags': ['tag1', 'tag2'],
             'title': 'title',
             'visibility': 'draft',
-            'playlist_file': mocker.ANY,
+            'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
             'media_files': [
                 {
                     'audio_codec': 'opus',
@@ -127,7 +126,9 @@ class TestVideo:
                     'framerate': 30,
                     'height': 144,
                     'id': media_file.id,
-                    'metadata': {'example': 'metadata'},
+                    'metadata': {
+                        'example': 'metadata'
+                    },
                     'modified_on': mocker.ANY,
                     'name': '144p',
                     'video': video.id,
@@ -159,4 +160,69 @@ class TestVideo:
                     'video': video.id
                 },
             ],
+        }
+
+
+class TestVideoPlaylist:
+    def test_get(
+        self, client, video_factory, transcode_job_factory, mocker,
+        simple_uploaded_file_factory, rendition_playlist_file
+    ):
+        video = video_factory(
+            video_path=VIDEO_PATH,
+            description='description',
+            tags=['tag1', 'tag2'],
+            visibility='draft',
+            title='title',
+        )
+        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
+        models.MediaFile.objects.create(
+            video=video,
+            file=file_,
+            playlist_file=rendition_playlist_file,
+            file_size=1000,
+            width=256,
+            height=144,
+            duration=10,
+            ext='webm',
+            container='webm',
+            audio_codec='opus',
+            video_codec='vp9',
+            name='144p',
+            framerate=30,
+            metadata=services.get_metadata(VIDEO_PATH),
+        )
+
+        response = client.get(f'/api/v1/video/{video.id}/playlist.m3u8')
+
+        assert response.status_code == OK
+        resp_text = response.content.decode()
+        assert resp_text.startswith('#EXTM3U')
+        assert m3u8.loads(resp_text).data == {
+            'iframe_playlists': [],
+            'is_endlist': False,
+            'is_i_frames_only': False,
+            'is_independent_segments': False,
+            'is_variant': True,
+            'keys': [],
+            'media': [],
+            'media_sequence': None,
+            'part_inf': {},
+            'playlist_type': None,
+            'playlists': [
+                {
+                    'stream_info': {
+                        'bandwidth': 182464,
+                        'closed_captions': 'NONE',
+                        'program_id': 1,
+                        'resolution': '256x144'
+                    },
+                    'uri': mocker.ANY
+                }
+            ],
+            'rendition_reports': [],
+            'segments': [],
+            'session_data': [],
+            'session_keys': [],
+            'skip': {}
         }

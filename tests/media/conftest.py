@@ -29,13 +29,6 @@ def simple_uploaded_file():
 
 
 @pytest.fixture
-def master_playlist_file():
-    with constants.MASTER_PLAYLIST.open('rb') as file_:
-        file_contents = file_.read()
-    return SimpleUploadedFile(constants.MASTER_PLAYLIST.name, file_contents)
-
-
-@pytest.fixture
 def rendition_playlist_file():
     with constants.RENDITION_PLAYLIST.open('rb') as file_:
         file_contents = file_.read()

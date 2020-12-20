@@ -50,8 +50,6 @@ def create_transcodes(video_id):
 def task_on_all_transcodes_completed(task_results, video_id):
     if not task_results:
         logger.warning('Not all transcodes successful for Video %s', video_id)
-    video = models.Video.objects.get(id=video_id)
-    services.update_video_master_playlist(video_record=video)
     logger.info('Transcodes completes callback executed')
 
 
@@ -77,7 +75,6 @@ def task_transcode(*args, video_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name)
         )
-    services.update_video_master_playlist(video_record=video)
     logger.info('Task transcode completed %s %s', video_id, transcode_job_id)
     return True
 

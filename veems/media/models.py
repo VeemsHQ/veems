@@ -38,11 +38,6 @@ def _media_file_playlist_file_upload_to(instance, filename):
     return f'manifests/media_files/{media_file.id}_{instance.name}.m3u8'
 
 
-def _video_playlist_file_upload_to(instance, filename):
-    video = instance
-    return f'manifests/videos/{video.id}_master.m3u8'
-
-
 def _media_file_segment_upload_to(instance, filename):
     return (
         'media_files/segments/'
@@ -78,11 +73,6 @@ class Video(BaseModel):
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
-    playlist_file = models.FileField(
-        upload_to=_video_playlist_file_upload_to,
-        storage=STORAGE_BACKEND,
-        null=True
-    )
 
 
 class MediaFile(BaseModel):

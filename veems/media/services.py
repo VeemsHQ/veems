@@ -6,16 +6,21 @@ import functools
 import operator
 
 import m3u8
-from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.core.files import File
 
 from . import models
+from .transcoder import transcoder_profiles
 
 logger = logging.getLogger(__name__)
 
 
 def _get_rendition_playlists(video_record):
+    def get_width(height):
+        return [
+            p.width for p in transcoder_profiles.PROFILES if p.height == height
+        ][0]
+
     return [
         {
             'width': media_file.width,
@@ -23,19 +28,22 @@ def _get_rendition_playlists(video_record):
             'frame_rate': media_file.framerate,
             'name': media_file.name,
             'codecs_string': media_file.codecs_string,
-            'resolution': f'{media_file.width}x{media_file.height}',
+            'resolution': (
+                f'{get_width(media_file.height)}x{media_file.height}'
+            ),
             'playlist_url': media_file.playlist_file.url,
             'bandwidth': int(media_file.metadata['format']['bit_rate']),
         } for media_file in video_record.mediafile_set.all()
     ]
 
 
-def update_video_master_playlist(video_record):
+def generate_master_playlist(video_id):
     logger.info(
-        'Creating master playlist for %s',
-        video_record,
+        'Generating master playlist for %s',
+        video_id,
     )
-    playlist_data = _get_rendition_playlists(video_record)
+    video = models.Video.objects.get(id=video_id)
+    playlist_data = _get_rendition_playlists(video)
     variant_m3u8 = m3u8.M3U8()
     for item in playlist_data:
         base_url, uri = item['playlist_url'].rsplit('/', 1)
@@ -53,15 +61,7 @@ def update_video_master_playlist(video_record):
             base_uri=None
         )
         variant_m3u8.add_playlist(playlist)
-
-    playlist_str = variant_m3u8.dumps()
-    playlist_file = ContentFile(playlist_str.encode())
-    video_record.playlist_file.save('master.m3u8', playlist_file)
-    logger.info(
-        'Done creating master playlist for %s. %s renditions', video_record,
-        len(playlist_data)
-    )
-    return video_record
+    return variant_m3u8.dumps()
 
 
 def mark_transcode_job_completed(*, transcode_job):
