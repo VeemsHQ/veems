@@ -5,7 +5,7 @@ lint:
 
 .ONESHELL:
 .PHONY: test
-test:
+test: install start-deps lint
 	pytest -n auto --cov=.
 
 .ONESHELL:
@@ -21,10 +21,9 @@ install:
 .ONESHELL:
 start-deps:
 	docker-compose up -d postgres rabbit localstack
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC}
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_UPLOADS}
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA_FILES}
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA_FILE_THUMBNAILS}
+	sleep 10
+	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_STATIC}
+	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_MEDIA}
 
 .ONESHELL:
 .PHONY: run
@@ -32,3 +31,7 @@ run:
 	docker-compose build app
 	docker-compose run app
 
+.ONESHELL:
+.PHONY: docker-test
+docker-test:
+	docker-compose build app && docker-compose run app make test

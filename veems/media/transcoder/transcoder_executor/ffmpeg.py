@@ -1,7 +1,10 @@
 import tempfile
 import subprocess
 import logging
+import os
 from pathlib import Path
+
+import m3u8
 
 from .. import transcoder_profiles
 from ... import services
@@ -69,17 +72,41 @@ def transcode(*, transcode_job, source_file_path):
             metadata_transcoded = services.get_metadata(output_file_path)
             logger.info(
                 'Persisting transcoded video %s %s...', transcode_job,
-                transcode_job.video.id
+                transcode_job.video_id
             )
             media_file = services.persist_media_file(
                 video_record=transcode_job.video,
                 video_path=output_file_path,
                 metadata=metadata_transcoded,
                 profile=profile,
+                codecs_string=None,
+            )
+            logger.info(
+                'Creating segments for video %s %s...', transcode_job,
+                transcode_job.video_id
+            )
+            output_playlist_path, segment_paths, codecs_string = (
+                _create_segments_for_video(
+                    video_path=output_file_path,
+                    profile=profile,
+                    tmp_dir=tmp_dir,
+                    media_file_id=media_file.id,
+                )
+            )
+            media_file.codecs_string = codecs_string
+            media_file.save()
+            logger.info(
+                'Persisting transcoded video segments %s %s...', transcode_job,
+                transcode_job.video_id
+            )
+            services.persist_media_file_segments(
+                media_file=media_file,
+                segments_playlist_file=output_playlist_path,
+                segments=segment_paths,
             )
             logger.info(
                 'Persisting thumbnails %s %s...', transcode_job,
-                transcode_job.video.id
+                transcode_job.video_id
             )
             thumbnail_records = services.persist_media_file_thumbs(
                 media_file_record=media_file, thumbnails=thumbnails
@@ -87,6 +114,52 @@ def transcode(*, transcode_job, source_file_path):
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             logger.info('Completed transcode job %s', transcode_job)
             return media_file, thumbnail_records
+
+
+def _create_segments_for_video(video_path, profile, tmp_dir, media_file_id):
+    output_playlist_path = Path(tmp_dir) / 'rendition.m3u8'
+    segments_dir = Path(tmp_dir)
+    playlist_ts_prefix = f'/media_files/segments/{media_file_id}/'
+    segment_filename_pattern = (
+        str(segments_dir) + '/%d.ts'
+    )
+    tmp_master_file = 'master.m3u8'
+    command = (
+        'ffmpeg '
+        f'-i {video_path} '
+        f'-hls_time {profile.segment_duration} '
+        f'-hls_segment_filename {segment_filename_pattern} '
+        f'-master_pl_name {tmp_master_file} '
+        '-hls_playlist_type vod '
+        f'{output_playlist_path}'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode != 0:
+        raise RuntimeError(f'Failed to create segments: {result.stderr}')
+    segment_paths = tuple(
+        sorted(segments_dir.glob('*.ts'), key=os.path.getmtime)
+    )
+    master_file = tuple(segments_dir.glob(tmp_master_file))[0]
+    try:
+        codecs_string = (
+            m3u8.load(str(master_file)
+                      ).data['playlists'][0]['stream_info']['codecs']
+        )
+    except IndexError:
+        codecs_string = None
+    with output_playlist_path.open('r') as file_:
+        playlist_lines = file_.readlines()
+    new_lines = []
+    for line in playlist_lines:
+        if '.ts' in line:
+            line = f'{playlist_ts_prefix}{line}'
+            new_lines.append(line)
+        else:
+            new_lines.append(line)
+    new_playlist_file_content = ''.join(new_lines)
+    with output_playlist_path.open('w') as file_:
+        file_.write(new_playlist_file_content)
+    return output_playlist_path, segment_paths, codecs_string
 
 
 def _get_thumbnail_time_offsets(video_path):
@@ -151,12 +224,7 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
 
 
 def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
-    meta = services.get_metadata(source_file_path)
-    metadata_summary = meta['summary']
-    if metadata_summary['width'] > metadata_summary['height']:
-        scale = f'{profile.width}:-2'
-    else:
-        scale = f'-2:{profile.height}'
+    scale = f'-2:{profile.height}'
     base_command = (
         f'ffmpeg -y -i {source_file_path} -vf '
         f'scale={scale}  '
@@ -176,11 +244,13 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
     command_2 = f'{base_command} -pass 2 ' f'{output_file_path}'
     result = subprocess.run(command_1.split(), capture_output=True)
     if result.returncode != 0:
+        logger.error('Transcoding failed: %s', result.stderr.decode())
         raise TranscodeException(
             'Transcoding failed', stderr=result.stderr.decode()
         )
     result = subprocess.run(command_2.split(), capture_output=True)
     if result.returncode != 0:
+        logger.error('Transcoding failed: %s', result.stderr.decode())
         raise TranscodeException(
             'Transcoding failed', stderr=result.stderr.decode()
         )

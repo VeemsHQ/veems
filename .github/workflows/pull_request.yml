@@ -16,37 +16,6 @@ jobs:
         architecture: 'x64'
     - name: Run backend tests
       run: |
-        cp .env.template .env &&
-        sudo make system_install &&
-        ffprobe -version &&
-        ffmpeg -version &&
-        make install &&
-        make start-deps &&
-        make test
-      env:
-        DEBUG: true
-        SECRET_KEY: SECRET_KEY
-        DB_NAME: veems
-        DB_USER: user
-        DB_PASS: pass
-        DB_HOST: localhost
-        DB_PORT: 5432
-        AWS_REGION: us-east-1
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-        CELERY_TASK_ALWAYS_EAGER: false
-        SITE_DOMAIN: localhost:8000
-        ADMIN_USERNAME: admin
-        ADMIN_EMAIL: admin@localhost
-        ADMIN_PASSWORD: password
-        APP_ENV_NAME: veems-local
-        BUCKET_STATIC: veems-local-static
-        BUCKET_UPLOADS: veems-local-uploaded
-        BUCKET_MEDIA_FILES: veems-local-media-format
-        BUCKET_MEDIA_FILE_THUMBNAILS: veems-local-media-thumbs
-        RABBITMQ_HOST: localhost
-        RABBITMQ_PASS: guest
-        RABBITMQ_PORT: 5672
-        RABBITMQ_USER: guest
-        RABBITMQ_VHOST: vhost
+        cp .env.template .env
+        pip install docker-compose
+        make docker-test

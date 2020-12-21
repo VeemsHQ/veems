@@ -1,7 +1,10 @@
 import pytest
 from pytest_voluptuous import S
+import m3u8
 
-from veems.media import services
+from veems.media import services, models
+from veems.media.transcoder.transcoder_executor import ffmpeg
+from veems.media.transcoder import transcoder_profiles
 from tests import constants
 
 pytestmark = pytest.mark.django_db
@@ -268,3 +271,167 @@ def test_get_metadata(video_path, exp_metadata):
     assert sorted(metadata.keys()) == sorted(
         ('audio_stream', 'video_stream', 'summary', 'format')
     )
+
+
+def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
+    media_file = models.MediaFile.objects.create(
+        video=video,
+        file=simple_uploaded_file,
+        name='360p',
+        ext='webm',
+        file_size=1,
+    )
+    assert not media_file.playlist_file
+    video_path = constants.VIDEO_PATH_1080_30FPS_VERT
+    profile = transcoder_profiles.Webm360p
+
+    segment_hls_playlist, segment_paths, _ = ffmpeg._create_segments_for_video(
+        video_path=video_path,
+        profile=profile,
+        tmp_dir=tmpdir,
+        media_file_id=media_file.id,
+    )
+
+    services.persist_media_file_segments(
+        media_file=media_file,
+        segments_playlist_file=segment_hls_playlist,
+        segments=segment_paths,
+    )
+
+    assert media_file.playlist_file
+    assert media_file.mediafilesegment_set.count() == len(segment_paths)
+    exp_segment_numbers_and_filenames = (
+        (0, f'media_files/segments/{media_file.id}/0.ts'),
+        (1, f'media_files/segments/{media_file.id}/1.ts'),
+        (2, f'media_files/segments/{media_file.id}/2.ts'),
+        (3, f'media_files/segments/{media_file.id}/3.ts'),
+        (4, f'media_files/segments/{media_file.id}/4.ts'),
+        (5, f'media_files/segments/{media_file.id}/5.ts'),
+        (6, f'media_files/segments/{media_file.id}/6.ts'),
+        (7, f'media_files/segments/{media_file.id}/7.ts'),
+        (8, f'media_files/segments/{media_file.id}/8.ts'),
+        (9, f'media_files/segments/{media_file.id}/9.ts'),
+        (10, f'media_files/segments/{media_file.id}/10.ts'),
+        (11, f'media_files/segments/{media_file.id}/11.ts'),
+        (12, f'media_files/segments/{media_file.id}/12.ts')
+    )
+    assert tuple(
+        media_file.mediafilesegment_set.values_list('segment_number', 'file')
+    ) == exp_segment_numbers_and_filenames
+
+
+@pytest.fixture
+def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
+    media_files_to_create = (
+        (640, 360, constants.VID_360P_24FPS),
+        (1920, 1080, constants.VIDEO_PATH_1080_60FPS),
+    )
+    for width, height, video_path in media_files_to_create:
+        media_file = models.MediaFile.objects.create(
+            video=video,
+            file=simple_uploaded_file,
+            name=f'{height}p',
+            ext='webm',
+            framerate=30,
+            file_size=1,
+            width=width,
+            height=height,
+            metadata=services.get_metadata(video_path),
+            codecs_string='avc1.640028,mp4a.40.2',
+        )
+        assert not media_file.playlist_file
+        video_path = constants.VIDEO_PATH_1080_30FPS_VERT
+        profile = transcoder_profiles.Webm360p
+        segment_hls_playlist, segment_paths, _ = (
+            ffmpeg._create_segments_for_video(
+                video_path=video_path,
+                profile=profile,
+                tmp_dir=tmpdir,
+                media_file_id=media_file.id,
+            )
+        )
+        services.persist_media_file_segments(
+            media_file=media_file,
+            segments_playlist_file=segment_hls_playlist,
+            segments=segment_paths,
+        )
+    return video, media_files_to_create
+
+
+def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
+    video, media_files_to_create = video_with_renditions_and_segments
+
+    playlists = services._get_rendition_playlists(video_record=video)
+
+    assert len(playlists) == len(media_files_to_create)
+    exp_playlists = [
+        {
+            'height': 360,
+            'playlist_url': mocker.ANY,
+            'width': 640,
+            'name': '360p',
+            'resolution': '640x360',
+            'bandwidth': 182464,
+            'frame_rate': 30,
+            'codecs_string': 'avc1.640028,mp4a.40.2',
+        }, {
+            'height': 1080,
+            'playlist_url': mocker.ANY,
+            'width': 1920,
+            'name': '1080p',
+            'resolution': '1920x1080',
+            'bandwidth': 5127303,
+            'frame_rate': 30,
+            'codecs_string': 'avc1.640028,mp4a.40.2',
+        }
+    ]
+    assert playlists == exp_playlists
+    assert all(p['playlist_url'].startswith('http') for p in playlists)
+
+
+def test_generate_master_playlist(
+    video_with_renditions_and_segments, mocker
+):
+    video, _ = video_with_renditions_and_segments
+
+    playlist_str = services.generate_master_playlist(video_id=video.id)
+
+    playlist_data = m3u8.loads(playlist_str).data
+    assert playlist_data == {
+        'iframe_playlists': [],
+        'is_endlist': False,
+        'is_i_frames_only': False,
+        'is_independent_segments': False,
+        'is_variant': True,
+        'keys': [],
+        'media': [],
+        'media_sequence': None,
+        'part_inf': {},
+        'playlist_type': None,
+        'playlists': [
+            {
+                'stream_info': {
+                    'bandwidth': 182464,
+                    'resolution': '640x360',
+                    'closed_captions': 'NONE',
+                    'codecs': 'avc1.640028,mp4a.40.2',
+                    'program_id': 1
+                },
+                'uri': mocker.ANY
+            }, {
+                'stream_info': {
+                    'bandwidth': 5127303,
+                    'resolution': '1920x1080',
+                    'closed_captions': 'NONE',
+                    'codecs': 'avc1.640028,mp4a.40.2',
+                    'program_id': 1
+                },
+                'uri': mocker.ANY
+            }
+        ],
+        'rendition_reports': [],
+        'segments': [],
+        'session_data': [],
+        'session_keys': [],
+        'skip': {}
+    }

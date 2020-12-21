@@ -29,7 +29,7 @@ Further design materials can be found [here](https://github.com/VeemsHQ/design).
 
 In order of priority.
 
-1. Uploading, transcoding of content ✅.
+1. Uploading, transcoding of content, playlist video packaging ✅.
 2. Playback of video content.
 3. User & API authentication.
 4. Creation and management of "Channels".

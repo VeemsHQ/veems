@@ -1,10 +1,11 @@
 from pathlib import Path
 from http.client import CREATED, BAD_REQUEST, OK
 
+from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import upload_manager, serializers, models
+from . import upload_manager, serializers, models, services
 
 
 @api_view(['PUT'])
@@ -39,3 +40,10 @@ def video(request, video_id):
     video = models.Video.objects.get(id=video_id)
     data = serializers.VideoSerializer(video).data
     return Response(data, status=OK)
+
+
+@api_view(['GET'])
+def video_playlist(request, video_id):
+    playlist_str = services.generate_master_playlist(video_id=video_id)
+    content_type = 'Content-Type: application/vnd.apple.mpegurl'
+    return HttpResponse(playlist_str, status=OK, content_type=content_type)

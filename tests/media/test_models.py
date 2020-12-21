@@ -4,9 +4,20 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 import boto3
 
-from veems.media import models, storage_backends
+from veems.media import models
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def media_file(video, simple_uploaded_file):
+    return models.MediaFile.objects.create(
+        video=video,
+        file=simple_uploaded_file,
+        name='360p',
+        ext='webm',
+        file_size=1,
+    )
 
 
 def test_transcode_job(transcode_job):
@@ -19,33 +30,18 @@ def test_upload_file_upload_to(upload):
         instance=upload, filename='blah.mp4'
     )
 
-    assert result == f'{upload.id}.mp4'
+    assert result == f'uploads/{upload.id}.mp4'
 
 
-def test_mediafile_upload_to(video, simple_uploaded_file):
-    mediafile = models.MediaFile.objects.create(
-        video=video,
-        file=simple_uploaded_file,
-        name='360p',
-        ext='webm',
-        file_size=1,
+def test_media_file_upload_to(media_file):
+    result = models._media_file_upload_to(
+        instance=media_file, filename='360p.webm'
     )
 
-    result = models._mediafile_upload_to(
-        instance=mediafile, filename='360p.webm'
-    )
-
-    assert result == f'{mediafile.id}.webm'
+    assert result == f'media_files/{media_file.id}.webm'
 
 
-def test_media_file_thumbnail_upload_to(video, simple_uploaded_file):
-    media_file = models.MediaFile.objects.create(
-        video=video,
-        file=simple_uploaded_file,
-        name='360p',
-        ext='webm',
-        file_size=1,
-    )
+def test_media_file_thumbnail_upload_to(media_file):
     media_file_thumbnail = models.MediaFileThumbnail.objects.create(
         media_file=media_file, time_offset_secs=1
     )
@@ -54,7 +50,9 @@ def test_media_file_thumbnail_upload_to(video, simple_uploaded_file):
         instance=media_file_thumbnail, filename='something.jpg'
     )
 
-    assert result == f'{media_file.id}/{media_file_thumbnail.id}.jpg'
+    assert result == (
+        f'media_files/thumbnails/{media_file.id}/{media_file_thumbnail.id}.jpg'
+    )
 
 
 class TestUpload:
@@ -71,7 +69,7 @@ class TestUpload:
         upload.save()
         upload.refresh_from_db()
 
-        assert upload.file.name == f'{upload.id}.mp4'
+        assert upload.file.name == f'uploads/{upload.id}.mp4'
         assert upload.file.url.startswith('http')
         assert 'AccessKeyId' in upload.file.url
 
@@ -88,7 +86,7 @@ class TestUpload:
         # Upload the file completely outside of Django
         s3 = boto3.client('s3', endpoint_url=settings.AWS_S3_ENDPOINT_URL)
         s3.upload_fileobj(
-            io.BytesIO(b'data'), storage_backends.UploadStorage.bucket_name,
+            io.BytesIO(b'data'), models.STORAGE_BACKEND.bucket_name,
             uploaded_filename
         )
 
@@ -100,5 +98,5 @@ class TestUpload:
         upload.refresh_from_db()
         assert upload.file.name == uploaded_filename
         assert upload.file.url.startswith('http')
-        assert 'AccessKeyId' in upload.file.url
+        assert 'AccessKeyId' in upload.file.url, upload.file.url
         assert upload.id in upload.file.url

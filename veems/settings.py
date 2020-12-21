@@ -67,7 +67,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'django_celery_beat',
+    'django_celery_results',
     'veems.user',
     'veems.media',
 ]
@@ -77,12 +79,14 @@ AUTH_USER_MODEL = 'user.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'veems.urls'
 
@@ -124,11 +128,8 @@ AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_S3_USE_SSL = False
 AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
 AWS_STORAGE_BUCKET_NAME = os.environ['BUCKET_STATIC']
-BUCKET_UPLOADS = os.environ['BUCKET_UPLOADS']
-BUCKET_MEDIA_FILE_THUMBNAILS = os.environ[
-    'BUCKET_MEDIA_FILE_THUMBNAILS']
-BUCKET_MEDIA_FILES = os.environ[
-    'BUCKET_MEDIA_FILES']
+AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
+BUCKET_MEDIA = os.environ['BUCKET_MEDIA']
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -188,7 +189,8 @@ CELERY_BROKER_URL = (
     F'{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}'
 )
 BROKER_URL = CELERY_BROKER_URL
-CELERY_RESULT_BACKEND = None
+CELERY_IGNORE_RESULT = False
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -204,3 +206,8 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(seconds=30),
     },
 }
+CELERY_IMPORTS = [
+    'veems.tasks',
+    'veems.media.upload_manager',
+    'veems.media.transcoder.manager',
+]

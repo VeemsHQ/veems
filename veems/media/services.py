@@ -1,13 +1,67 @@
 import time
 import json
+import logging
 import subprocess
 import functools
 import operator
 
+import m3u8
 from django.utils import timezone
 from django.core.files import File
 
 from . import models
+from .transcoder import transcoder_profiles
+
+logger = logging.getLogger(__name__)
+
+
+def _get_rendition_playlists(video_record):
+    def get_width(height):
+        return [
+            p.width for p in transcoder_profiles.PROFILES if p.height == height
+        ][0]
+
+    return [
+        {
+            'width': media_file.width,
+            'height': media_file.height,
+            'frame_rate': media_file.framerate,
+            'name': media_file.name,
+            'codecs_string': media_file.codecs_string,
+            'resolution': (
+                f'{get_width(media_file.height)}x{media_file.height}'
+            ),
+            'playlist_url': media_file.playlist_file.url,
+            'bandwidth': int(media_file.metadata['format']['bit_rate']),
+        } for media_file in video_record.mediafile_set.all()
+    ]
+
+
+def generate_master_playlist(video_id):
+    logger.info(
+        'Generating master playlist for %s',
+        video_id,
+    )
+    video = models.Video.objects.get(id=video_id)
+    playlist_data = _get_rendition_playlists(video)
+    variant_m3u8 = m3u8.M3U8()
+    for item in playlist_data:
+        base_url, uri = item['playlist_url'].rsplit('/', 1)
+        playlist = m3u8.Playlist(
+            item['playlist_url'],
+            stream_info={
+                'bandwidth': item['bandwidth'],
+                'resolution': item['resolution'],
+                'codecs': item['codecs_string'],
+                'program_id': 1,
+                'closed_captions': 'NONE',
+                'subtitles': 'NONE'
+            },
+            media=[],
+            base_uri=None
+        )
+        variant_m3u8.add_playlist(playlist)
+    return variant_m3u8.dumps()
 
 
 def mark_transcode_job_completed(*, transcode_job):
@@ -32,7 +86,9 @@ def mark_transcode_job_processing(*, transcode_job):
     return transcode_job
 
 
-def persist_media_file(*, video_record, video_path, metadata, profile):
+def persist_media_file(
+    *, video_record, video_path, metadata, profile, codecs_string
+):
     metadata_summary = metadata['summary']
     with video_path.open('rb') as file_:
         return models.MediaFile.objects.create(
@@ -49,7 +105,23 @@ def persist_media_file(*, video_record, video_path, metadata, profile):
             file_size=metadata_summary['file_size'],
             container=video_path.suffix.replace('.', ''),
             metadata=metadata,
+            codecs_string=codecs_string,
         )
+
+
+def persist_media_file_segments(
+    *, media_file, segments_playlist_file, segments
+):
+    with segments_playlist_file.open('rb') as file_:
+        media_file.playlist_file = File(file_)
+        media_file.save()
+    for segment_path in segments:
+        with segment_path.open('rb') as file_:
+            models.MediaFileSegment.objects.create(
+                media_file=media_file,
+                file=File(file_),
+                segment_number=int(segment_path.stem),
+            )
 
 
 def persist_media_file_thumbs(*, media_file_record, thumbnails):
@@ -121,7 +193,6 @@ def get_metadata(video_path):
         audio_codec_name = audio_stream['codec_name']
     except TypeError:
         audio_codec_name = None
-
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
@@ -130,7 +201,7 @@ def get_metadata(video_path):
         'video_codec': video_stream['codec_name'],
         'audio_codec': audio_codec_name,
         'file_size': int(format_['size']),
-        'video_aspect_ratio': video_stream['display_aspect_ratio'],
+        'video_aspect_ratio': video_stream.get('display_aspect_ratio'),
         'video_bit_rate': int(format_['bit_rate']),
     }
     return {
