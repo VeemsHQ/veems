@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                     'file',
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models._media_file_upload_to
+                        upload_to=veems.media.models._video_rendition_upload_to
                     )
                 ),
                 ('width', models.IntegerField(null=True)),
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
                         upload_to=veems.media.models.
-                        _media_file_playlist_file_upload_to
+                        _video_rendition_playlist_file_upload_to
                     )
                 ),
             ],
@@ -244,7 +244,7 @@ class Migration(migrations.Migration):
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
                         upload_to=veems.media.models.
-                        _media_file_thumbnail_upload_to
+                        _video_rendition_thumbnail_upload_to
                     )
                 ),
                 ('width', models.IntegerField(null=True)),
@@ -297,7 +297,7 @@ class Migration(migrations.Migration):
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
                         upload_to=veems.media.models.
-                        _media_file_segment_upload_to
+                        _video_rendition_segment_upload_to
                     )
                 ),
                 ('segment_number', models.IntegerField()),

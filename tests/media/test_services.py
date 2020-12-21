@@ -41,8 +41,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
 
 
 @pytest.mark.parametrize(
-    'video_path, exp_metadata',
-    [
+    'video_path, exp_metadata', [
         (
             constants.VIDEO_PATH_2160_30FPS,
             S(
@@ -352,62 +351,71 @@ def test_get_metadata(video_path, exp_metadata):
     )
 
 
-def test_persist_media_file_segments(video, simple_uploaded_file, tmpdir):
-    media_file = models.MediaFile.objects.create(
+def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
+    video_rendition = models.VideoRendition.objects.create(
         video=video,
         file=simple_uploaded_file,
         name='360p',
         ext='webm',
         file_size=1,
     )
-    assert not media_file.playlist_file
+    assert not video_rendition.playlist_file
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
 
-    segment_hls_playlist, segment_paths, _ = ffmpeg._create_segments_for_video(
-        video_path=video_path,
-        profile=profile,
-        tmp_dir=tmpdir,
-        media_file_id=media_file.id,
+    segments_playlist_file, segment_paths, _ = (
+        ffmpeg._create_segments_for_video(
+            video_path=video_path,
+            profile=profile,
+            tmp_dir=tmpdir,
+            video_rendition_id=video_rendition.id,
+        )
     )
 
-    services.persist_media_file_segments(
-        media_file=media_file,
-        segments_playlist_file=segment_hls_playlist,
+    services.persist_video_rendition_segments(
+        video_rendition=video_rendition,
+        segments_playlist_file=segments_playlist_file,
         segments=segment_paths,
     )
 
-    assert media_file.playlist_file
-    assert media_file.mediafilesegment_set.count() == len(segment_paths)
+    assert video_rendition.playlist_file
+    assert (
+        video_rendition.videorenditionsegment_set.count() ==
+        len(segment_paths)
+    )
     exp_segment_numbers_and_filenames = (
-        (0, f'media_files/segments/{media_file.id}/0.ts'),
-        (1, f'media_files/segments/{media_file.id}/1.ts'),
-        (2, f'media_files/segments/{media_file.id}/2.ts'),
-        (3, f'media_files/segments/{media_file.id}/3.ts'),
-        (4, f'media_files/segments/{media_file.id}/4.ts'),
-        (5, f'media_files/segments/{media_file.id}/5.ts'),
-        (6, f'media_files/segments/{media_file.id}/6.ts'),
-        (7, f'media_files/segments/{media_file.id}/7.ts'),
-        (8, f'media_files/segments/{media_file.id}/8.ts'),
-        (9, f'media_files/segments/{media_file.id}/9.ts'),
-        (10, f'media_files/segments/{media_file.id}/10.ts'),
-        (11, f'media_files/segments/{media_file.id}/11.ts'),
-        (12, f'media_files/segments/{media_file.id}/12.ts')
+        (0, f'video_renditions/segments/{video_rendition.id}/0.ts'),
+        (1, f'video_renditions/segments/{video_rendition.id}/1.ts'),
+        (2, f'video_renditions/segments/{video_rendition.id}/2.ts'),
+        (3, f'video_renditions/segments/{video_rendition.id}/3.ts'),
+        (4, f'video_renditions/segments/{video_rendition.id}/4.ts'),
+        (5, f'video_renditions/segments/{video_rendition.id}/5.ts'),
+        (6, f'video_renditions/segments/{video_rendition.id}/6.ts'),
+        (7, f'video_renditions/segments/{video_rendition.id}/7.ts'),
+        (8, f'video_renditions/segments/{video_rendition.id}/8.ts'),
+        (9, f'video_renditions/segments/{video_rendition.id}/9.ts'),
+        (10, f'video_renditions/segments/{video_rendition.id}/10.ts'),
+        (11, f'video_renditions/segments/{video_rendition.id}/11.ts'),
+        (12, f'video_renditions/segments/{video_rendition.id}/12.ts')
     )
     assert tuple(
-        media_file.mediafilesegment_set.values_list('segment_number', 'file')
+        video_rendition.videorenditionsegment_set.values_list(
+            'segment_number', 'file'
+        )
     ) == exp_segment_numbers_and_filenames
 
 
 @pytest.fixture
 def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
-    media_files_to_create = (
+    video_renditions_to_create = (
         (640, 360, constants.VID_360P_24FPS, False),
         (640, 360, constants.VID_360P_24FPS, True),
         (1920, 1080, constants.VIDEO_PATH_1080_60FPS, True),
     )
-    for width, height, video_path, create_segments in media_files_to_create:
-        media_file = models.MediaFile.objects.create(
+    for (
+        width, height, video_path, create_segments
+    ) in video_renditions_to_create:
+        video_rendition = models.VideoRendition.objects.create(
             video=video,
             file=simple_uploaded_file,
             name=f'{height}p',
@@ -419,7 +427,7 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
             metadata=services.get_metadata(video_path),
             codecs_string='avc1.640028,mp4a.40.2',
         )
-        assert not media_file.playlist_file
+        assert not video_rendition.playlist_file
         if not create_segments:
             continue
         video_path = constants.VIDEO_PATH_1080_30FPS_VERT
@@ -429,19 +437,19 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
                 video_path=video_path,
                 profile=profile,
                 tmp_dir=tmpdir,
-                media_file_id=media_file.id,
+                video_rendition_id=video_rendition.id,
             )
         )
-        services.persist_media_file_segments(
-            media_file=media_file,
+        services.persist_video_rendition_segments(
+            video_rendition=video_rendition,
             segments_playlist_file=segments_playlist_file,
             segments=segment_paths,
         )
-    return video, media_files_to_create
+    return video, video_renditions_to_create
 
 
 def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
-    video, media_files_to_create = video_with_renditions_and_segments
+    video, video_renditions_to_create = video_with_renditions_and_segments
 
     playlists = services._get_rendition_playlists(video_record=video)
 

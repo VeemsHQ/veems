@@ -172,12 +172,12 @@ def test_create_transcodes(
 
     assert async_result.state == 'SUCCESS'
 
-    # When transcoding is completed, the video and mediafiles under it
+    # When transcoding is completed, the video and renditions under it
     # should all have playlists generated for them.
     video.refresh_from_db()
     assert services.generate_master_playlist(video_id=video.id)
-    for media_file in video.mediafile_set.all():
-        assert media_file.playlist_file
+    for video_rendition in video.videorendition_set.all():
+        assert video_rendition.playlist_file
 
     exp_num_jobs = len(exp_profiles)
     executed_profiles = tuple(

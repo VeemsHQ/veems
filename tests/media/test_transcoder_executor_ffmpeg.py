@@ -17,22 +17,22 @@ MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
 def test_create_segments_for_video(tmpdir):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
-    media_file_id = 123
+    video_rendition_id = 123
 
-    segment_hls_playlist, segment_paths, codecs_string = (
+    segments_playlist_file, segment_paths, codecs_string = (
         ffmpeg._create_segments_for_video(
             video_path=video_path,
             profile=profile,
             tmp_dir=tmpdir,
-            media_file_id=media_file_id,
+            video_rendition_id=video_rendition_id,
         )
     )
 
     exp_num_segments = 13
     assert len(segment_paths) == exp_num_segments
     assert all(p.exists() and isinstance(p, Path) for p in segment_paths)
-    assert isinstance(segment_hls_playlist, Path)
-    assert segment_hls_playlist.exists()
+    assert isinstance(segments_playlist_file, Path)
+    assert segments_playlist_file.exists()
 
     assert codecs_string == 'avc1.640028,mp4a.40.2'
 
@@ -55,34 +55,34 @@ def test_create_segments_for_video(tmpdir):
     #EXT-X-MEDIA-SEQUENCE:0
     #EXT-X-PLAYLIST-TYPE:VOD
     #EXTINF:9.209200,
-    /media_files/segments/{media_file_id}/0.ts
+    /video_renditions/segments/{video_rendition_id}/0.ts
     #EXTINF:3.303300,
-    /media_files/segments/{media_file_id}/1.ts
+    /video_renditions/segments/{video_rendition_id}/1.ts
     #EXTINF:4.337667,
-    /media_files/segments/{media_file_id}/2.ts
+    /video_renditions/segments/{video_rendition_id}/2.ts
     #EXTINF:7.540867,
-    /media_files/segments/{media_file_id}/3.ts
+    /video_renditions/segments/{video_rendition_id}/3.ts
     #EXTINF:4.537867,
-    /media_files/segments/{media_file_id}/4.ts
+    /video_renditions/segments/{video_rendition_id}/4.ts
     #EXTINF:4.604600,
-    /media_files/segments/{media_file_id}/5.ts
+    /video_renditions/segments/{video_rendition_id}/5.ts
     #EXTINF:6.006000,
-    /media_files/segments/{media_file_id}/6.ts
+    /video_renditions/segments/{video_rendition_id}/6.ts
     #EXTINF:8.341667,
-    /media_files/segments/{media_file_id}/7.ts
+    /video_renditions/segments/{video_rendition_id}/7.ts
     #EXTINF:3.036367,
-    /media_files/segments/{media_file_id}/8.ts
+    /video_renditions/segments/{video_rendition_id}/8.ts
     #EXTINF:6.773433,
-    /media_files/segments/{media_file_id}/9.ts
+    /video_renditions/segments/{video_rendition_id}/9.ts
     #EXTINF:5.472133,
-    /media_files/segments/{media_file_id}/10.ts
+    /video_renditions/segments/{video_rendition_id}/10.ts
     #EXTINF:8.341667,
-    /media_files/segments/{media_file_id}/11.ts
+    /video_renditions/segments/{video_rendition_id}/11.ts
     #EXTINF:5.905900,
-    /media_files/segments/{media_file_id}/12.ts
+    /video_renditions/segments/{video_rendition_id}/12.ts
     #EXT-X-ENDLIST
     """
-    assert m3u8.load(str(segment_hls_playlist)
+    assert m3u8.load(str(segments_playlist_file)
                      ).dumps() == m3u8.loads(exp_playlist).dumps()
 
 
@@ -270,37 +270,37 @@ class TestTranscode:
         exp_metadata, mocker
     ):
         transcode_job = transcode_job_factory(profile=transcode_profile_name)
-        media_file, thumbnails = ffmpeg.transcode(
+        video_rendition, thumbnails = ffmpeg.transcode(
             transcode_job=transcode_job, source_file_path=source_file_path
         )
 
         # Check video transcoded & persisted
-        assert isinstance(media_file, models.MediaFile)
-        assert media_file.file
-        assert media_file.name == transcode_profile_name
-        assert media_file.width == exp_metadata['width']
-        assert media_file.height == exp_metadata['height']
-        assert media_file.duration == exp_metadata['duration']
-        assert media_file.framerate == exp_metadata['framerate']
-        assert media_file.audio_codec == exp_metadata['audio_codec']
-        assert media_file.video_codec == exp_metadata['video_codec']
-        assert media_file.codecs_string == exp_metadata['codecs_string']
-        assert media_file.ext == 'webm'
-        assert media_file.container == 'webm'
-        assert media_file.file_size == exp_metadata['file_size']
-        assert media_file.metadata
-        assert sorted(media_file.metadata.keys()) == sorted(
+        assert isinstance(video_rendition, models.VideoRendition)
+        assert video_rendition.file
+        assert video_rendition.name == transcode_profile_name
+        assert video_rendition.width == exp_metadata['width']
+        assert video_rendition.height == exp_metadata['height']
+        assert video_rendition.duration == exp_metadata['duration']
+        assert video_rendition.framerate == exp_metadata['framerate']
+        assert video_rendition.audio_codec == exp_metadata['audio_codec']
+        assert video_rendition.video_codec == exp_metadata['video_codec']
+        assert video_rendition.codecs_string == exp_metadata['codecs_string']
+        assert video_rendition.ext == 'webm'
+        assert video_rendition.container == 'webm'
+        assert video_rendition.file_size == exp_metadata['file_size']
+        assert video_rendition.metadata
+        assert sorted(video_rendition.metadata.keys()) == sorted(
             ('summary', 'video_stream', 'audio_stream', 'format')
         )
 
         assert thumbnails
         assert all(
-            isinstance(t, models.MediaFileThumbnail) for t in thumbnails
+            isinstance(t, models.VideoRenditionThumbnail) for t in thumbnails
         )
         # Check thumbnails created
         assert thumbnails
         for thumbnail_record in thumbnails:
-            assert isinstance(thumbnail_record, models.MediaFileThumbnail)
+            assert isinstance(thumbnail_record, models.VideoRenditionThumbnail)
             assert thumbnail_record.time_offset_secs > 0
             assert thumbnail_record.file
             assert thumbnail_record.file.name.endswith('.jpg')
@@ -312,8 +312,8 @@ class TestTranscode:
         assert transcode_job.ended_on
 
         # Check Segments were created
-        assert media_file.mediafilesegment_set.count() > 0
-        for segment in media_file.mediafilesegment_set.all():
+        assert video_rendition.videorenditionsegment_set.count() > 0
+        for segment in video_rendition.videorenditionsegment_set.all():
             assert segment.segment_number is not None
             assert segment.file
 
@@ -336,8 +336,9 @@ class TestTranscode:
         assert result_path is None
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
-        assert not models.MediaFile.objects.filter(video=transcode_job.video
-                                                   ).count()
+        assert not models.VideoRendition.objects.filter(
+            video=transcode_job.video
+        ).count()
 
     @pytest.mark.parametrize(
         'source_file_path, transcode_profile_name', [
@@ -356,8 +357,9 @@ class TestTranscode:
         assert result_path is None
         assert transcode_job.status == 'completed'
         assert transcode_job.ended_on
-        assert not models.MediaFile.objects.filter(video=transcode_job.video
-                                                   ).count()
+        assert not models.VideoRendition.objects.filter(
+            video=transcode_job.video
+        ).count()
 
     def test_transcode_job_failed_when_ffmpeg_returns_an_error(
         self, transcode_job_factory, mocker
@@ -381,8 +383,9 @@ class TestTranscode:
         assert transcode_job.status == 'failed'
         assert transcode_job.ended_on
         assert transcode_job.failure_context == 'command error output'
-        assert not models.MediaFile.objects.filter(video=transcode_job.video
-                                                   ).count()
+        assert not models.VideoRendition.objects.filter(
+            video=transcode_job.video
+        ).count()
 
     def test_transcode_job_failed_when_video_file_is_not_valid(
         self, transcode_job
@@ -395,8 +398,9 @@ class TestTranscode:
         assert result_path is None
         assert transcode_job.status == 'failed'
         assert transcode_job.ended_on
-        assert not models.MediaFile.objects.filter(video=transcode_job.video
-                                                   ).count()
+        assert not models.VideoRendition.objects.filter(
+            video=transcode_job.video
+        ).count()
 
     def test_raises_if_source_file_path_does_not_exist(self, transcode_job):
         result_path = ffmpeg.transcode(
@@ -407,5 +411,6 @@ class TestTranscode:
         assert transcode_job.status == 'failed'
         assert transcode_job.ended_on
         assert transcode_job.failure_context is None
-        assert not models.MediaFile.objects.filter(video=transcode_job.video
-                                                   ).count()
+        assert not models.VideoRendition.objects.filter(
+            video=transcode_job.video
+        ).count()
