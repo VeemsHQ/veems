@@ -2,7 +2,7 @@ import pytest
 from django.utils import timezone
 from ffprobe import FFProbe
 
-from veems.media import models
+from veems.media import models, services
 from veems.media.transcoder import manager
 from veems.media.transcoder import transcoder_profiles
 from tests import constants
@@ -175,7 +175,7 @@ def test_create_transcodes(
     # When transcoding is completed, the video and mediafiles under it
     # should all have playlists generated for them.
     video.refresh_from_db()
-    assert video.playlist_file
+    assert services.generate_master_playlist(video_id=video.id)
     for media_file in video.mediafile_set.all():
         assert media_file.playlist_file
 

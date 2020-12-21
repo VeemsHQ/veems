@@ -96,8 +96,8 @@ def transcode(*, transcode_job, source_file_path):
             media_file.codecs_string = codecs_string
             media_file.save()
             logger.info(
-                'Persisting transcoded video segments %s %s...', transcode_job,
-                transcode_job.video_id
+                'Persisting transcoded video segments %s %s %s...',
+                len(segment_paths), transcode_job, transcode_job.video_id
             )
             services.persist_media_file_segments(
                 media_file=media_file,
@@ -120,9 +120,7 @@ def _create_segments_for_video(video_path, profile, tmp_dir, media_file_id):
     output_playlist_path = Path(tmp_dir) / 'rendition.m3u8'
     segments_dir = Path(tmp_dir)
     playlist_ts_prefix = f'/media_files/segments/{media_file_id}/'
-    segment_filename_pattern = (
-        str(segments_dir) + '/%d.ts'
-    )
+    segment_filename_pattern = (str(segments_dir) + '/%d.ts')
     tmp_master_file = 'master.m3u8'
     command = (
         'ffmpeg '

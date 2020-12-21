@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ffprobe import FFProbe
 from django.conf import settings
-from celery import chain
+from celery import chord
 
 from .transcoder_executor import ffmpeg as transcode_executor
 from . import transcoder_profiles
@@ -42,7 +42,7 @@ def create_transcodes(video_id):
         'Created %s transcode tasks for video %s', len(tasks), video_id
     )
     callback = task_on_all_transcodes_completed.s(video.id)
-    async_result = chain(*tasks, callback).delay()
+    async_result = chord(tasks, callback).delay()
     return async_result
 
 

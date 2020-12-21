@@ -33,7 +33,8 @@ def _get_rendition_playlists(video_record):
             ),
             'playlist_url': media_file.playlist_file.url,
             'bandwidth': int(media_file.metadata['format']['bit_rate']),
-        } for media_file in video_record.mediafile_set.all()
+        } for media_file in
+        video_record.mediafile_set.all() if media_file.playlist_file
     ]
 
 
@@ -45,6 +46,8 @@ def generate_master_playlist(video_id):
     video = models.Video.objects.get(id=video_id)
     playlist_data = _get_rendition_playlists(video)
     variant_m3u8 = m3u8.M3U8()
+    if not playlist_data:
+        return None
     for item in playlist_data:
         base_url, uri = item['playlist_url'].rsplit('/', 1)
         playlist = m3u8.Playlist(
@@ -170,12 +173,16 @@ def get_metadata(video_path):
     format_ = probe_data['format']
 
     if video_stream.get('duration') is None:
-        duration_str = video_stream['tags']['DURATION'].split('.')[0]
-        struct_time = time.strptime(duration_str, '%H:%M:%S')
-        hours = struct_time.tm_hour * 3600
-        mins = struct_time.tm_min * 60
-        seconds = struct_time.tm_sec
-        duration_secs = float(hours + mins + seconds)
+        try:
+            duration_str = video_stream['tags']['DURATION'].split('.')[0]
+        except KeyError:
+            duration_secs = float(probe_data['format']['duration'])
+        else:
+            struct_time = time.strptime(duration_str, '%H:%M:%S')
+            hours = struct_time.tm_hour * 3600
+            mins = struct_time.tm_min * 60
+            seconds = struct_time.tm_sec
+            duration_secs = float(hours + mins + seconds)
     else:
         duration_secs = float(video_stream['duration'])
 
