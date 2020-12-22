@@ -23,18 +23,18 @@ def _get_rendition_playlists(video_record):
 
     return [
         {
-            'width': media_file.width,
-            'height': media_file.height,
-            'frame_rate': media_file.framerate,
-            'name': media_file.name,
-            'codecs_string': media_file.codecs_string,
+            'width': video_rendition.width,
+            'height': video_rendition.height,
+            'frame_rate': video_rendition.framerate,
+            'name': video_rendition.name,
+            'codecs_string': video_rendition.codecs_string,
             'resolution': (
-                f'{get_width(media_file.height)}x{media_file.height}'
+                f'{get_width(video_rendition.height)}x{video_rendition.height}'
             ),
-            'playlist_url': media_file.playlist_file.url,
-            'bandwidth': int(media_file.metadata['format']['bit_rate']),
-        } for media_file in
-        video_record.mediafile_set.all() if media_file.playlist_file
+            'playlist_url': video_rendition.playlist_file.url,
+            'bandwidth': int(video_rendition.metadata['format']['bit_rate']),
+        } for video_rendition in
+        video_record.videorendition_set.all() if video_rendition.playlist_file
     ]
 
 
@@ -89,12 +89,12 @@ def mark_transcode_job_processing(*, transcode_job):
     return transcode_job
 
 
-def persist_media_file(
+def persist_video_rendition(
     *, video_record, video_path, metadata, profile, codecs_string
 ):
     metadata_summary = metadata['summary']
     with video_path.open('rb') as file_:
-        return models.MediaFile.objects.create(
+        return models.VideoRendition.objects.create(
             video=video_record,
             file=File(file_),
             name=profile.name,
@@ -112,29 +112,29 @@ def persist_media_file(
         )
 
 
-def persist_media_file_segments(
-    *, media_file, segments_playlist_file, segments
+def persist_video_rendition_segments(
+    *, video_rendition, segments_playlist_file, segments
 ):
     with segments_playlist_file.open('rb') as file_:
-        media_file.playlist_file = File(file_)
-        media_file.save()
+        video_rendition.playlist_file = File(file_)
+        video_rendition.save()
     for segment_path in segments:
         with segment_path.open('rb') as file_:
-            models.MediaFileSegment.objects.create(
-                media_file=media_file,
+            models.VideoRenditionSegment.objects.create(
+                video_rendition=video_rendition,
                 file=File(file_),
                 segment_number=int(segment_path.stem),
             )
 
 
-def persist_media_file_thumbs(*, media_file_record, thumbnails):
+def persist_video_rendition_thumbs(*, video_rendition_record, thumbnails):
     records = []
     for time_offset_secs, thumb_path in thumbnails:
         img_meta = get_metadata(thumb_path)['summary']
         with thumb_path.open('rb') as file_:
             records.append(
-                models.MediaFileThumbnail.objects.create(
-                    media_file=media_file_record,
+                models.VideoRenditionThumbnail.objects.create(
+                    video_rendition=video_rendition_record,
                     file=File(file_),
                     ext=thumb_path.suffix.replace('.', ''),
                     time_offset_secs=time_offset_secs,
@@ -192,9 +192,9 @@ def get_metadata(video_path):
         )
 
     try:
-        framerate = parse_framerate(video_stream['avg_frame_rate'])
+        frame_rate = parse_framerate(video_stream['avg_frame_rate'])
     except ZeroDivisionError:
-        framerate = parse_framerate(video_stream['r_frame_rate'])
+        frame_rate = parse_framerate(video_stream['r_frame_rate'])
 
     try:
         audio_codec_name = audio_stream['codec_name']
@@ -203,7 +203,7 @@ def get_metadata(video_path):
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
-        'framerate': round(framerate),
+        'framerate': round(frame_rate),
         'duration': duration_secs,
         'video_codec': video_stream['codec_name'],
         'audio_codec': audio_codec_name,

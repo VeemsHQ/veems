@@ -10,8 +10,8 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def media_file(video, simple_uploaded_file):
-    return models.MediaFile.objects.create(
+def video_rendition(video, simple_uploaded_file):
+    return models.VideoRendition.objects.create(
         video=video,
         file=simple_uploaded_file,
         name='360p',
@@ -33,25 +33,31 @@ def test_upload_file_upload_to(upload):
     assert result == f'uploads/{upload.id}.mp4'
 
 
-def test_media_file_upload_to(media_file):
-    result = models._media_file_upload_to(
-        instance=media_file, filename='360p.webm'
-    )
-
-    assert result == f'media_files/{media_file.id}.webm'
-
-
-def test_media_file_thumbnail_upload_to(media_file):
-    media_file_thumbnail = models.MediaFileThumbnail.objects.create(
-        media_file=media_file, time_offset_secs=1
-    )
-
-    result = models._media_file_thumbnail_upload_to(
-        instance=media_file_thumbnail, filename='something.jpg'
+def test_video_rendition_upload_to(video_rendition):
+    result = models._video_rendition_upload_to(
+        instance=video_rendition, filename='360p.webm'
     )
 
     assert result == (
-        f'media_files/thumbnails/{media_file.id}/{media_file_thumbnail.id}.jpg'
+        f'videos/{video_rendition.video_id}/renditions'
+        f'/{video_rendition.id}/rendition/'
+        f'{video_rendition.id}.webm'
+    )
+
+
+def test_video_rendition_thumbnail_upload_to(video_rendition):
+    video_rendition_thumbnail = models.VideoRenditionThumbnail.objects.create(
+        video_rendition=video_rendition, time_offset_secs=1
+    )
+
+    result = models._video_rendition_thumbnail_upload_to(
+        instance=video_rendition_thumbnail, filename='something.jpg'
+    )
+
+    assert result == (
+        f'videos/{video_rendition_thumbnail.video_rendition.video_id}/'
+        f'renditions/{video_rendition_thumbnail.video_rendition.id}/'
+        f'thumbnails/{video_rendition_thumbnail.id}.jpg'
     )
 
 

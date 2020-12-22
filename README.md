@@ -118,3 +118,11 @@ python manage.py runserver
 ./celeryworker-entrypoint.sh
 ./celerybeat-entrypoint.sh
 ```
+
+## Architectural Concepts
+
+- Upload -- a raw video file upload into the system
+    - Video -- a video, which you can view via the website
+        - Video Rendition -- a version of the Video file at a specific resolution, bitrate, etc. e.g. 1080p
+            - Video Rendition Segment -- a small chunk of the Video Rendition video file to be served to the video player
+            - Video Rendition Thumbnail -- a thumbnail at a certain timestamp within the Video Rendition video file

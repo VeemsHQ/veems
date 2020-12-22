@@ -4,9 +4,9 @@ from django.urls import reverse
 from . import models
 
 
-class MediaFileSerializer(serializers.ModelSerializer):
+class VideoRenditionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.MediaFile
+        model = models.VideoRendition
         exclude = ['file']
 
 
@@ -17,8 +17,8 @@ class TranscodeJobSerializer(serializers.ModelSerializer):
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    media_files = MediaFileSerializer(
-        many=True, read_only=True, source='mediafile_set'
+    video_renditions = VideoRenditionSerializer(
+        many=True, read_only=True, source='videorendition_set'
     )
     transcode_jobs = TranscodeJobSerializer(
         many=True, read_only=True, source='transcodejob_set'
@@ -39,7 +39,7 @@ class VideoSerializer(serializers.ModelSerializer):
             'visibility',
             'description',
             'tags',
-            'media_files',
+            'video_renditions',
             'transcode_jobs',
             'playlist_file',
         ]

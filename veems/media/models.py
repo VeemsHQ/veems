@@ -28,27 +28,44 @@ def _upload_file_upload_to(instance, filename):
     return f'uploads/{upload.id}{Path(filename).suffix}'
 
 
-def _media_file_upload_to(instance, filename):
-    media_file = instance
-    return f'media_files/{media_file.id}{Path(filename).suffix}'
-
-
-def _media_file_playlist_file_upload_to(instance, filename):
-    media_file = instance
-    return f'manifests/media_files/{media_file.id}_{instance.name}.m3u8'
-
-
-def _media_file_segment_upload_to(instance, filename):
+def _video_rendition_upload_to(instance, filename):
+    video_rendition = instance
+    video_id = video_rendition.video_id
     return (
-        'media_files/segments/'
-        f'{instance.media_file.id}/{instance.segment_number}.ts'
+        f'videos/{video_id}/renditions/{video_rendition.id}/rendition/'
+        f'{video_rendition.id}{Path(filename).suffix}'
     )
 
 
-def _media_file_thumbnail_upload_to(instance, filename):
+def _video_rendition_playlist_file_upload_to(instance, filename):
+    video_rendition = instance
+    video_id = video_rendition.video_id
     return (
-        f'media_files/thumbnails/{instance.media_file.id}/'
-        f'{instance.id}{Path(filename).suffix}'
+        f'videos/{video_id}/renditions/{video_rendition.id}/'
+        f'playlists/{video_rendition.id}_{instance.name}.m3u8'
+    )
+
+
+def _video_rendition_segment_upload_to(instance, filename):
+    segment = instance
+    video_rendition = segment.video_rendition
+    video_rendition_id = segment.video_rendition_id
+    video_id = video_rendition.video_id
+
+    return (
+        f'videos/{video_id}/renditions/{video_rendition_id}/'
+        f'segments/{segment.segment_number}.ts'
+    )
+
+
+def _video_rendition_thumbnail_upload_to(instance, filename):
+    thumbnail = instance
+    video_rendition = thumbnail.video_rendition
+    video_rendition_id = thumbnail.video_rendition_id
+    video_id = video_rendition.video_id
+    return (
+        f'videos/{video_id}/renditions/{video_rendition_id}/'
+        f'thumbnails/{thumbnail.id}{Path(filename).suffix}'
     )
 
 
@@ -59,7 +76,8 @@ class Upload(BaseModel):
         upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND
     )
     status = models.CharField(
-        max_length=10, choices=tuple((c, c) for c in UPLOAD_CHOICES),
+        max_length=10,
+        choices=tuple((c, c) for c in UPLOAD_CHOICES),
         default='draft',
     )
 
@@ -75,7 +93,7 @@ class Video(BaseModel):
     tags = ArrayField(models.CharField(max_length=1000), null=True)
 
 
-class MediaFile(BaseModel):
+class VideoRendition(BaseModel):
     """
     A format/rendition to be linked to a Video.
 
@@ -83,7 +101,7 @@ class MediaFile(BaseModel):
     """
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     file = models.FileField(
-        upload_to=_media_file_upload_to, storage=STORAGE_BACKEND
+        upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
@@ -98,26 +116,31 @@ class MediaFile(BaseModel):
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
     playlist_file = models.FileField(
-        upload_to=_media_file_playlist_file_upload_to,
+        upload_to=_video_rendition_playlist_file_upload_to,
         storage=STORAGE_BACKEND
     )
 
 
-class MediaFileSegment(BaseModel):
-    media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
+class VideoRenditionSegment(BaseModel):
+    video_rendition = models.ForeignKey(
+        VideoRendition, on_delete=models.CASCADE
+    )
     file = models.FileField(
-        upload_to=_media_file_segment_upload_to, storage=STORAGE_BACKEND
+        upload_to=_video_rendition_segment_upload_to, storage=STORAGE_BACKEND
     )
     segment_number = models.IntegerField()
 
     class Meta:
-        unique_together = ('media_file', 'segment_number')
+        unique_together = ('video_rendition', 'segment_number')
 
 
-class MediaFileThumbnail(BaseModel):
-    media_file = models.ForeignKey(MediaFile, on_delete=models.CASCADE)
+class VideoRenditionThumbnail(BaseModel):
+    video_rendition = models.ForeignKey(
+        VideoRendition, on_delete=models.CASCADE
+    )
     file = models.FileField(
-        upload_to=_media_file_thumbnail_upload_to, storage=STORAGE_BACKEND
+        upload_to=_video_rendition_thumbnail_upload_to,
+        storage=STORAGE_BACKEND
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)

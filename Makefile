@@ -6,7 +6,8 @@ lint:
 .ONESHELL:
 .PHONY: test
 test: install start-deps lint
-	pytest -n auto --cov=. -vvv
+	pytest -n auto -k 'not TestTranscode' -vvv
+	pytest -k 'TestTranscode' -vvv
 
 .ONESHELL:
 .PHONY: system_install

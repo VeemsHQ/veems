@@ -87,7 +87,7 @@ class TestVideo:
             profile='360p', video_record=video
         )
         file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
-        media_file = models.MediaFile.objects.create(
+        video_rendition = models.VideoRendition.objects.create(
             video=video,
             file=file_,
             playlist_file=rendition_playlist_file,
@@ -113,7 +113,7 @@ class TestVideo:
             'title': 'title',
             'visibility': 'draft',
             'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
-            'media_files': [
+            'video_renditions': [
                 {
                     'audio_codec': 'opus',
                     'container': 'webm',
@@ -125,7 +125,7 @@ class TestVideo:
                     'file_size': 1000,
                     'framerate': 30,
                     'height': 144,
-                    'id': media_file.id,
+                    'id': video_rendition.id,
                     'metadata': {
                         'example': 'metadata'
                     },
@@ -176,7 +176,7 @@ class TestVideoPlaylist:
             title='title',
         )
         file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
-        models.MediaFile.objects.create(
+        models.VideoRendition.objects.create(
             video=video,
             file=file_,
             playlist_file=rendition_playlist_file,

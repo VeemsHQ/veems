@@ -1,6 +1,5 @@
 import pytest
 from django.utils import timezone
-from ffprobe import FFProbe
 
 from veems.media import models, services
 from veems.media.transcoder import manager
@@ -93,6 +92,16 @@ MODULE = 'veems.media.transcoder.manager'
                 'webm_1080p',
             ],
         ),
+        (
+            constants.VID_1080_VERT,
+            [
+                'webm_144p',
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+            ],
+        )
     ]
 )
 def test_get_applicable_transcode_profiles(video_path, exp_profiles):
@@ -132,11 +141,10 @@ def test_get_applicable_transcode_profiles(video_path, exp_profiles):
 )
 def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     video_path = constants.TEST_DATA_DIR / video_filename
-    metadata = FFProbe(str(video_path))
-    ffprobe_stream = metadata.video[0]
+    metadata_summary = services.get_metadata(video_path)['summary']
 
     result = manager._transcode_profile_does_apply(
-        profile_cls=profile_cls, ffprobe_stream=ffprobe_stream
+        profile_cls=profile_cls, metadata_summary=metadata_summary
     )
 
     assert result == exp_result
@@ -172,12 +180,12 @@ def test_create_transcodes(
 
     assert async_result.state == 'SUCCESS'
 
-    # When transcoding is completed, the video and mediafiles under it
+    # When transcoding is completed, the video and renditions under it
     # should all have playlists generated for them.
     video.refresh_from_db()
     assert services.generate_master_playlist(video_id=video.id)
-    for media_file in video.mediafile_set.all():
-        assert media_file.playlist_file
+    for video_rendition in video.videorendition_set.all():
+        assert video_rendition.playlist_file
 
     exp_num_jobs = len(exp_profiles)
     executed_profiles = tuple(
