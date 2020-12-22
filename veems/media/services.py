@@ -192,9 +192,9 @@ def get_metadata(video_path):
         )
 
     try:
-        framerate = parse_framerate(video_stream['avg_frame_rate'])
+        frame_rate = parse_framerate(video_stream['avg_frame_rate'])
     except ZeroDivisionError:
-        framerate = parse_framerate(video_stream['r_frame_rate'])
+        frame_rate = parse_framerate(video_stream['r_frame_rate'])
 
     try:
         audio_codec_name = audio_stream['codec_name']
@@ -203,7 +203,7 @@ def get_metadata(video_path):
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
-        'framerate': round(framerate),
+        'framerate': round(frame_rate),
         'duration': duration_secs,
         'video_codec': video_stream['codec_name'],
         'audio_codec': audio_codec_name,
