@@ -1,4 +1,4 @@
-from http.client import CREATED, BAD_REQUEST, OK
+from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
 import json
 
 import pytest
@@ -226,3 +226,9 @@ class TestVideoPlaylist:
             'session_keys': [],
             'skip': {}
         }
+
+    def test_get_returns_204_if_video_has_no_renditions(self, client, video):
+        response = client.get(f'/api/v1/video/{video.id}/playlist.m3u8')
+
+        assert response.status_code == NO_CONTENT
+        assert response.content.decode() == ''

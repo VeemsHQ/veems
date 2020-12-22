@@ -1,5 +1,5 @@
 from pathlib import Path
-from http.client import CREATED, BAD_REQUEST, OK
+from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
 
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
@@ -45,5 +45,7 @@ def video(request, video_id):
 @api_view(['GET'])
 def video_playlist(request, video_id):
     playlist_str = services.generate_master_playlist(video_id=video_id)
+    if not playlist_str:
+        return HttpResponse('', status=NO_CONTENT)
     content_type = 'Content-Type: application/vnd.apple.mpegurl'
     return HttpResponse(playlist_str, status=OK, content_type=content_type)

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .env.fish
+.env-run.fish
 .localstack/
 # C extensions
 *.so
