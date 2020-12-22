@@ -14,10 +14,13 @@ MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
 
 
 @pytest.mark.xfail
-def test_create_segments_for_video(tmpdir):
+def test_create_segments_for_video(tmpdir, video_with_renditions_and_segments):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
-    video_rendition_id = 123
+    video, _ = video_with_renditions_and_segments
+    video_rendition = video.videorendition_set.first()
+    video_rendition_id = video_rendition.id
+    video_id = video_rendition.video_id
 
     segments_playlist_file, segment_paths, codecs_string = (
         ffmpeg._create_segments_for_video(
@@ -25,6 +28,7 @@ def test_create_segments_for_video(tmpdir):
             profile=profile,
             tmp_dir=tmpdir,
             video_rendition_id=video_rendition_id,
+            video_id=video_id,
         )
     )
 
@@ -55,31 +59,31 @@ def test_create_segments_for_video(tmpdir):
     #EXT-X-MEDIA-SEQUENCE:0
     #EXT-X-PLAYLIST-TYPE:VOD
     #EXTINF:9.209200,
-    /video_renditions/segments/{video_rendition_id}/0.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/0.ts
     #EXTINF:3.303300,
-    /video_renditions/segments/{video_rendition_id}/1.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/1.ts
     #EXTINF:4.337667,
-    /video_renditions/segments/{video_rendition_id}/2.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/2.ts
     #EXTINF:7.540867,
-    /video_renditions/segments/{video_rendition_id}/3.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/3.ts
     #EXTINF:4.537867,
-    /video_renditions/segments/{video_rendition_id}/4.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/4.ts
     #EXTINF:4.604600,
-    /video_renditions/segments/{video_rendition_id}/5.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/5.ts
     #EXTINF:6.006000,
-    /video_renditions/segments/{video_rendition_id}/6.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/6.ts
     #EXTINF:8.341667,
-    /video_renditions/segments/{video_rendition_id}/7.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/7.ts
     #EXTINF:3.036367,
-    /video_renditions/segments/{video_rendition_id}/8.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/8.ts
     #EXTINF:6.773433,
-    /video_renditions/segments/{video_rendition_id}/9.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/9.ts
     #EXTINF:5.472133,
-    /video_renditions/segments/{video_rendition_id}/10.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/10.ts
     #EXTINF:8.341667,
-    /video_renditions/segments/{video_rendition_id}/11.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/11.ts
     #EXTINF:5.905900,
-    /video_renditions/segments/{video_rendition_id}/12.ts
+    /videos/{video_id}/renditions/{video_rendition_id}/segments/12.ts
     #EXT-X-ENDLIST
     """
     assert m3u8.load(str(segments_playlist_file)

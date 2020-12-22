@@ -38,7 +38,11 @@ def test_video_rendition_upload_to(video_rendition):
         instance=video_rendition, filename='360p.webm'
     )
 
-    assert result == f'video_renditions/{video_rendition.id}.webm'
+    assert result == (
+        f'videos/{video_rendition.video_id}/renditions'
+        f'/{video_rendition.id}/rendition/'
+        f'{video_rendition.id}.webm'
+    )
 
 
 def test_video_rendition_thumbnail_upload_to(video_rendition):
@@ -51,8 +55,9 @@ def test_video_rendition_thumbnail_upload_to(video_rendition):
     )
 
     assert result == (
-        'video_renditions/thumbnails/'
-        f'{video_rendition.id}/{video_rendition_thumbnail.id}.jpg'
+        f'videos/{video_rendition_thumbnail.video_rendition.video_id}/'
+        f'renditions/{video_rendition_thumbnail.video_rendition.id}/'
+        f'thumbnails/{video_rendition_thumbnail.id}.jpg'
     )
 
 

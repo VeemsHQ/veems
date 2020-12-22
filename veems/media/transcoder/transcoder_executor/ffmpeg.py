@@ -91,6 +91,7 @@ def transcode(*, transcode_job, source_file_path):
                     profile=profile,
                     tmp_dir=tmp_dir,
                     video_rendition_id=video_rendition.id,
+                    video_id=video_rendition.video_id,
                 )
             )
             video_rendition.codecs_string = codecs_string
@@ -117,11 +118,13 @@ def transcode(*, transcode_job, source_file_path):
 
 
 def _create_segments_for_video(
-    video_path, profile, tmp_dir, video_rendition_id
+    *, video_path, profile, tmp_dir, video_rendition_id, video_id
 ):
     output_playlist_path = Path(tmp_dir) / 'rendition.m3u8'
     segments_dir = Path(tmp_dir)
-    playlist_ts_prefix = f'/video_renditions/segments/{video_rendition_id}/'
+    playlist_ts_prefix = (
+        f'/videos/{video_id}/renditions/{video_rendition_id}/segments/'
+    )
     segment_filename_pattern = (str(segments_dir) + '/%d.ts')
     tmp_master_file = 'master.m3u8'
     command = (

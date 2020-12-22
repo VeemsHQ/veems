@@ -30,27 +30,42 @@ def _upload_file_upload_to(instance, filename):
 
 def _video_rendition_upload_to(instance, filename):
     video_rendition = instance
-    return f'video_renditions/{video_rendition.id}{Path(filename).suffix}'
+    video_id = video_rendition.video_id
+    return (
+        f'videos/{video_id}/renditions/{video_rendition.id}/rendition/'
+        f'{video_rendition.id}{Path(filename).suffix}'
+    )
 
 
 def _video_rendition_playlist_file_upload_to(instance, filename):
     video_rendition = instance
+    video_id = video_rendition.video_id
     return (
-        f'manifests/video_renditions/{video_rendition.id}_{instance.name}.m3u8'
+        f'videos/{video_id}/renditions/{video_rendition.id}/'
+        f'playlists/{video_rendition.id}_{instance.name}.m3u8'
     )
 
 
 def _video_rendition_segment_upload_to(instance, filename):
+    segment = instance
+    video_rendition = segment.video_rendition
+    video_rendition_id = segment.video_rendition_id
+    video_id = video_rendition.video_id
+
     return (
-        'video_renditions/segments/'
-        f'{instance.video_rendition.id}/{instance.segment_number}.ts'
+        f'videos/{video_id}/renditions/{video_rendition_id}/'
+        f'segments/{segment.segment_number}.ts'
     )
 
 
 def _video_rendition_thumbnail_upload_to(instance, filename):
+    thumbnail = instance
+    video_rendition = thumbnail.video_rendition
+    video_rendition_id = thumbnail.video_rendition_id
+    video_id = video_rendition.video_id
     return (
-        f'video_renditions/thumbnails/{instance.video_rendition.id}/'
-        f'{instance.id}{Path(filename).suffix}'
+        f'videos/{video_id}/renditions/{video_rendition_id}/'
+        f'thumbnails/{thumbnail.id}{Path(filename).suffix}'
     )
 
 
