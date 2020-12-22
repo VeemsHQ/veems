@@ -41,7 +41,8 @@ def test_mark_transcode_job_processing(transcode_job_factory):
 
 
 @pytest.mark.parametrize(
-    'video_path, exp_metadata', [
+    'video_path, exp_metadata',
+    [
         (
             constants.VIDEO_PATH_2160_30FPS,
             S(
@@ -263,86 +264,82 @@ def test_mark_transcode_job_processing(transcode_job_factory):
             )
         ),
         (
-            constants.VID_4k_2,
-            S(
-                {
-                    'audio_stream': None,
-                    'format': {
-                        'bit_rate': '12216038',
-                        'duration': '30.233000',
-                        'filename': str(constants.VID_4k_2),
-                        'format_long_name': 'Matroska / WebM',
-                        'format_name': 'matroska,webm',
-                        'nb_programs': 0,
-                        'nb_streams': 1,
-                        'probe_score': 100,
-                        'size': '46165938',
-                        'start_time': '0.000000',
-                        'tags': {
-                            'encoder': 'google/video-file'
-                        }
-                    },
-                    'summary': {
-                        'audio_codec': None,
-                        'duration': 30.233,
-                        'file_size': 46165938,
-                        'framerate': 30,
-                        'height': 2160,
-                        'video_aspect_ratio': '16:9',
-                        'video_bit_rate': 12216038,
-                        'video_codec': 'vp9',
-                        'width': 3840
-                    },
-                    'video_stream': {
-                        'avg_frame_rate': '30/1',
-                        'closed_captions': 0,
-                        'codec_long_name': 'Google VP9',
-                        'codec_name': 'vp9',
-                        'codec_tag': '0x0000',
-                        'codec_tag_string': '[0][0][0][0]',
-                        'codec_time_base': '1/30',
-                        'codec_type': 'video',
-                        'coded_height': 2160,
-                        'coded_width': 3840,
-                        'color_primaries': 'bt709',
-                        'color_range': 'tv',
-                        'color_space': 'bt709',
-                        'color_transfer': 'bt709',
-                        'display_aspect_ratio': '16:9',
-                        'disposition': {
-                            'attached_pic': 0,
-                            'clean_effects': 0,
-                            'comment': 0,
-                            'default': 1,
-                            'dub': 0,
-                            'forced': 0,
-                            'hearing_impaired': 0,
-                            'karaoke': 0,
-                            'lyrics': 0,
-                            'original': 0,
-                            'timed_thumbnails': 0,
-                            'visual_impaired': 0
-                        },
-                        'has_b_frames': 0,
-                        'height': 2160,
-                        'index': 0,
-                        'level': -99,
-                        'pix_fmt': 'yuv420p',
-                        'profile': 'Profile 0',
-                        'r_frame_rate': '30/1',
-                        'refs': 1,
-                        'sample_aspect_ratio': '1:1',
-                        'start_pts': 0,
-                        'start_time': '0.000000',
-                        'tags': {
-                            'language': 'eng'
-                        },
-                        'time_base': '1/1000',
-                        'width': 3840
+            constants.VID_4k_2, {
+                'audio_stream': None,
+                'format': {
+                    'bit_rate': '12216038',
+                    'duration': '30.233000',
+                    'filename': str(constants.VID_4k_2),
+                    'format_long_name': 'Matroska / WebM',
+                    'format_name': 'matroska,webm',
+                    'nb_programs': 0,
+                    'nb_streams': 1,
+                    'probe_score': 100,
+                    'size': '46165938',
+                    'start_time': '0.000000',
+                    'tags': {
+                        'encoder': 'google/video-file'
                     }
                 },
-                required=False
-            )
+                'summary': {
+                    'audio_codec': None,
+                    'duration': 30.233,
+                    'file_size': 46165938,
+                    'framerate': 30,
+                    'height': 2160,
+                    'video_aspect_ratio': '16:9',
+                    'video_bit_rate': 12216038,
+                    'video_codec': 'vp9',
+                    'width': 3840
+                },
+                'video_stream': {
+                    'avg_frame_rate': '30/1',
+                    'closed_captions': 0,
+                    'codec_long_name': 'Google VP9',
+                    'codec_name': 'vp9',
+                    'codec_tag': '0x0000',
+                    'codec_tag_string': '[0][0][0][0]',
+                    'codec_time_base': '1/30',
+                    'codec_type': 'video',
+                    'coded_height': 2160,
+                    'coded_width': 3840,
+                    'color_primaries': 'bt709',
+                    'color_range': 'tv',
+                    'color_space': 'bt709',
+                    'color_transfer': 'bt709',
+                    'display_aspect_ratio': '16:9',
+                    'disposition': {
+                        'attached_pic': 0,
+                        'clean_effects': 0,
+                        'comment': 0,
+                        'default': 1,
+                        'dub': 0,
+                        'forced': 0,
+                        'hearing_impaired': 0,
+                        'karaoke': 0,
+                        'lyrics': 0,
+                        'original': 0,
+                        'timed_thumbnails': 0,
+                        'visual_impaired': 0
+                    },
+                    'has_b_frames': 0,
+                    'height': 2160,
+                    'index': 0,
+                    'level': -99,
+                    'pix_fmt': 'yuv420p',
+                    'profile': 'Profile 0',
+                    'r_frame_rate': '30/1',
+                    'refs': 1,
+                    'sample_aspect_ratio': '1:1',
+                    'start_pts': 0,
+                    'start_time': '0.000000',
+                    'tags': {
+                        'language': 'eng'
+                    },
+                    'time_base': '1/1000',
+                    'width': 3840
+                }
+            }
         )
     ]
 )
