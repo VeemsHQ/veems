@@ -2,7 +2,6 @@ import tempfile
 import logging
 from pathlib import Path
 
-from ffprobe import FFProbe
 from django.conf import settings
 from celery import chord
 
@@ -80,32 +79,30 @@ def task_transcode(*args, video_id, transcode_job_id):
 
 
 def _get_applicable_transcode_profiles(video_path):
-    # TODO: try with VID_20190713_191324.mp4
-    metadata = FFProbe(str(video_path))
-    ffprobe_stream = metadata.video[0]
+    metadata_summary = services.get_metadata(video_path)['summary']
     should_apply = []
     for profile_cls in transcoder_profiles.PROFILES:
         if _transcode_profile_does_apply(
-            profile_cls=profile_cls, ffprobe_stream=ffprobe_stream
+            profile_cls=profile_cls, metadata_summary=metadata_summary
         ):
             should_apply.append(profile_cls)
     return should_apply
 
 
-def _transcode_profile_does_apply(profile_cls, ffprobe_stream):
+def _transcode_profile_does_apply(profile_cls, metadata_summary):
     if (
         profile_cls.required_aspect_ratio
-        and ffprobe_stream.display_aspect_ratio !=
+        and metadata_summary['video_aspect_ratio'] !=
         profile_cls.required_aspect_ratio
     ):
         return False
     if (
-        profile_cls.width > int(ffprobe_stream.width)
-        and profile_cls.height > int(ffprobe_stream.height)
+        profile_cls.width > metadata_summary['width']
+        and profile_cls.height > metadata_summary['height']
     ):
         return False
     if not (
-        profile_cls.min_framerate <= ffprobe_stream.framerate <=
+        profile_cls.min_framerate <= metadata_summary['framerate'] <=
         profile_cls.max_framerate
     ):
         return False
