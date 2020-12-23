@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'veems.user',
     'veems.media',
+    'veems.home',
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -93,7 +94,9 @@ ROOT_URLCONF = 'veems.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            Path(__file__).parent.parent / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
