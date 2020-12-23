@@ -18,7 +18,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_PASSWORD: ${DB_PASS}
   localstack:
-    image: localstack/localstack-full:latest
+    image: localstack/localstack:latest
     container_name: localstack
     ports:
       - "4566:4566"
