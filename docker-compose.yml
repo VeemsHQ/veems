@@ -18,7 +18,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_PASSWORD: ${DB_PASS}
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack-full:latest
     container_name: localstack
     ports:
       - "4566:4566"
@@ -28,8 +28,12 @@ services:
       - SERVICES=s3
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
+      - DEFAULT_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     volumes:
-      - "./.localstack:/tmp/localstack"
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
   app:
     build: .
     ports:
