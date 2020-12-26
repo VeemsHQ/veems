@@ -1,0 +1,126 @@
+{% extends "_base_channel_manager.html" %}
+{% block content %}
+<div class="col d-block d-lg-none">
+    <p class="alert alert-secondary">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a></p>
+</div>
+
+<div class="col-12 col-lg-4 mb-3">
+    <div class="border rounded p-3">
+        <div class="row">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    <h2 class="h5">Last 7 days</h2>
+                </div>
+                <canvas id="weeklyViewsChart" width="100%" height="100%" style="max-height:400px"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 col-lg-4">
+
+    <div class="border rounded p-3">
+        <div class="row">
+            <div class="col">
+                <div>
+                    <h2 class="h5">Channel Analytics</h2>
+                    <p>Current subscribers</p>
+                    <p class="h3">43,404</p>
+                </div>
+                <hr />
+                <div>
+                    <h3 class="h6">Summary</h3>
+                    <p class="text-muted">Last 28 days</p>
+
+                    <div class="metrics-table">
+                        <div class="d-flex flex-row">
+                            <div class="text-muted">Views</div>
+                            <div class="ml-auto">42,304</div>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="text-muted">Watch time (hours)</div>
+                            <div class="ml-auto">433</div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div>
+                    <h3 class="h6">Top videos</h3>
+                    <p class="text-muted">Last 7 days (views)</p>
+
+                    <div class="metrics-table">
+                        <div class="d-flex flex-row">
+                            <div class="text-truncate"><a href="#">A Mom Ate 5 Day Old Sushi 🍣 For Dinner. This Is What
+                                    Happened To Her Brain.</a></div>
+                            <div class="ml-auto">132,333</div>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div><a href="#">Charlie bit my finger</a></div>
+                            <div class="ml-auto">42,304</div>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="text-truncate"><a href="#">What exactly is the goop inside a lava lamp?</a>
+                            </div>
+                            <div class="ml-auto">12,002</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col">
+    <p class="alert alert-secondary d-none d-lg-block">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a></p>
+    <div class="border my-3 rounded p-3">
+        <h4>News</h4>
+        <p>No new updates, but check back regularly to see announcements geared specifically for creators.
+            Also take a look at: </p>
+        <p><a href="#"><img src="/static/social-icons/discord.svg" class="social-icon mr-1" /> Veems on Discord</a></p>
+        <p><a href="#"><img src="/static/social-icons/twitter.svg" class="social-icon mr-1" /> Veems on Twitter</a></p>
+    </div>
+    <div class="border my-3 rounded p-3">
+        <h4>Actions</h4>
+        <div><a href="#" class="btn btn-outline-secondary" data-toggle="modal" data-target="#uploadModal"><i
+                    class="material-icons align-middle">backup</i> Upload
+                Video</a>
+        </div>
+        <div><a href="#" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">sync</i>
+                Sync
+                YouTube
+                Videos</a></div>
+        <div><a href="#" class="mt-2 btn btn-outline-secondary"><i
+                    class="material-icons align-middle">add_circle_outline</i> Create Channel</a></div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+<script>
+    var ctx = document.getElementById('weeklyViewsChart').getContext('2d');
+
+    var weeklyViewsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["Mon", "Tues", "Weds", "Thurs", "Fri", "Sat", "Sun"],
+            datasets: [{
+                label: 'Total Channel Views', // Name the series
+                data: [14040, 14141, 4111, 4544, 47, 5555, 6811], // Specify the data values array
+                fill: true,
+                borderColor: '#2196f3', // Add custom color border (Line)
+                backgroundColor: 'rgb(33,150,243, 0.15)', // Add custom color background (Points and Fill)
+                borderWidth: 1 // Specify bar border width
+            }]
+        },
+        options: {
+            responsive: true, // Instruct chart js to respond nicely.
+            maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height
+        }
+    });
+</script>
+
+{% endblock %}
