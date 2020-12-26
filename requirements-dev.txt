@@ -11,3 +11,4 @@ docker-compose==1.28.0rc1
 pytest-cov==2.10.1
 pytest-xdist[psutil]==2.1.0
 pytest-voluptuous==1.2.0
+brunette==0.2.0
