@@ -6,7 +6,7 @@ from .home import views as home_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home_views.index, name='index'),
+    path('', home_views.IndexView.as_view(), name='index'),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
     path(
         'api/v1/upload/complete/<slug:upload_id>/', api_views.upload_complete

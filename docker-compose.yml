@@ -30,6 +30,10 @@ services:
       - DATA_DIR=/tmp/localstack/data
       - BUCKET_STATIC=${BUCKET_STATIC}
       - BUCKET_MEDIA=${BUCKET_MEDIA}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL}
+      - AWS_REGION=${AWS_REGION}
     volumes:
       - ./aws:/docker-entrypoint-initaws.d
       - './.localstack:/tmp/localstack'
