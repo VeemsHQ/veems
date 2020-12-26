@@ -1,0 +1,85 @@
+{% load static %}
+<div>
+    <h2 class="h5">Basic info</h2>
+    <div class="border mt-3 rounded">
+        <div class="row">
+            <div class="col">
+                <form>
+                    <div class="p-3">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Channel Name</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                placeholder="My Awesome Channel">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">Channel Description</label>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                                placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places."></textarea>
+                        </div>
+                    </div>
+                    <div class="footer bg-secondary p-3">
+                        <div class="d-flex">
+                            <input class="btn btn-primary ml-auto" type="submit" value="Save Changes">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<h2 class="h5 mt-4">Profile picture</h2>
+<p class="text-muted">Your profile picture will appear where your channel is presented
+    on
+    Veems, like next to
+    your videos and comments. Changes that you make here will be reflected across other
+    Google
+    services. </p>
+
+<div class="border mt-3 p-3 rounded">
+    <div class="row">
+        <div class="col-4 col-md-3">
+            <div
+                class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
+                <img class="avatar-large rounded-circle img-fluid"
+                    src="https://camo.githubusercontent.com/e6e6f6e6a6e9636268ea0cbee56b370626a7c0d6d081aeda867a75df108afd2d/687474703a2f2f692e696d6775722e636f6d2f3749707a69416a2e706e67" />
+            </div>
+        </div>
+        <div class="col-8 col-md-9">
+            <p class="text-muted">It's recommended that you use a picture that's at least 98
+                x
+                98 pixels and 4 MB
+                or
+                less. Use a PNG or GIF (no animations) file. Make sure that your picture is
+                SFW.
+            </p>
+            <p>
+                <a href="#" class="btn text-primary btn-outline-primary">Upload</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5 mt-4">Banner image</h2>
+<p class="text-muted">This image will appear across the top of your channel.</p>
+
+<div class="border mt-3 p-3 rounded">
+    <div class="row">
+        <div class="col-6 col-md-5">
+            <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
+                style="min-height:140px">
+                <div style="height: 120px; overflow:hidden" class="border"><img class="img-fluid banner-pic-135"
+                        src="{% static 'images/default_bg.png' %}" /></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-7">
+            <p class="text-muted">For the best results on all devices, use an image that's
+                at
+                least 2048 x 1152
+                pixels
+                and 6 MB or less.</p>
+            <p>
+                <a href="#" class="btn text-primary btn-outline-primary">Upload</a>
+            </p>
+        </div>
+    </div>
+</div>

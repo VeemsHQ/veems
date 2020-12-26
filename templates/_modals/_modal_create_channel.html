@@ -1,0 +1,42 @@
+<div class="modal fade" id="createChannelModal" tabindex="-1" role="dialog" aria-labelledby="createChannelModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createChannelModalLabel">Create a channel</h5>
+            </div>
+            <div class="modal-body d-inline-flex align-items-center justify-content-center">
+
+                <form class="w-100">
+                    <div class="dp-3">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Channel Name</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                placeholder="My Awesome Channel">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">Channel Description</label>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                                placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkboxWW">
+                                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                                <label class="custom-control-label d-flex" for="customCheck1">I'd like to sync videos
+                                    from my YouTube Channel.</label><a href="#">Learn more about channel syncing</a>.
+                            </div>
+                        </div>
+                        <p class="text-muted">
+                            By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
+                        </p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer bg-secondary">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                <a href="/channel" class="btn btn-primary">Create Channel</a>
+            </div>
+        </div>
+    </div>
+</div>

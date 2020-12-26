@@ -1,4 +1,5 @@
-{% extends "_base_channel_manager.html" %}
+{% extends "./_base_channel_manager.html" %}
+{% load static %}
 {% block content %}
 <div class="col d-block d-lg-none">
     <p class="alert alert-secondary">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a></p>
@@ -49,20 +50,12 @@
                     <p class="text-muted">Last 7 days (views)</p>
 
                     <div class="metrics-table">
+                        {% for video in top_videos %}
                         <div class="d-flex flex-row">
-                            <div class="text-truncate"><a href="#">A Mom Ate 5 Day Old Sushi 🍣 For Dinner. This Is What
-                                    Happened To Her Brain.</a></div>
-                            <div class="ml-auto">132,333</div>
+                            <div class="text-truncate"><a href="#">{{video.video_title}}</a></div>
+                            <div class="ml-auto">{{video.views}}</div>
                         </div>
-                        <div class="d-flex flex-row">
-                            <div><a href="#">Charlie bit my finger</a></div>
-                            <div class="ml-auto">42,304</div>
-                        </div>
-                        <div class="d-flex flex-row">
-                            <div class="text-truncate"><a href="#">What exactly is the goop inside a lava lamp?</a>
-                            </div>
-                            <div class="ml-auto">12,002</div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -72,27 +65,8 @@
 
 
 <div class="col">
-    <p class="alert alert-secondary d-none d-lg-block">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a></p>
-    <div class="border my-3 rounded p-3">
-        <h4>News</h4>
-        <p>No new updates, but check back regularly to see announcements geared specifically for creators.
-            Also take a look at: </p>
-        <p><a href="#"><img src="/static/social-icons/discord.svg" class="social-icon mr-1" /> Veems on Discord</a></p>
-        <p><a href="#"><img src="/static/social-icons/twitter.svg" class="social-icon mr-1" /> Veems on Twitter</a></p>
-    </div>
-    <div class="border my-3 rounded p-3">
-        <h4>Actions</h4>
-        <div><a href="#" class="btn btn-outline-secondary" data-toggle="modal" data-target="#uploadModal"><i
-                    class="material-icons align-middle">backup</i> Upload
-                Video</a>
-        </div>
-        <div><a href="#" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">sync</i>
-                Sync
-                YouTube
-                Videos</a></div>
-        <div><a href="#" class="mt-2 btn btn-outline-secondary"><i
-                    class="material-icons align-middle">add_circle_outline</i> Create Channel</a></div>
-    </div>
+
+    {% include './_index_right_col_content.html' %}
 </div>
 {% endblock %}
 

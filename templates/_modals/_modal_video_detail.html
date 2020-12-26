@@ -1,0 +1,123 @@
+
+    <div class="modal fade" id="videoDetailModal" tabindex="-1" role="dialog" aria-labelledby="videoDetailModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-truncate" id="videoDetailModal">{{uploading_title}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row p-3 m-0">
+                    <div class="col p-0 m-0">
+                        <h2 class="h5">Video Details</h2>
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col-8">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlInput1">Title</label>
+                                            <input type="text" class="form-control" id="exampleFormControlInput1"
+                                                placeholder="Add a title that describes your video"
+                                                value="{{uploading_title}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlTextarea1">Description</label>
+                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                                                placeholder="Tell viewers about your video."></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlTextarea1">Thumbnail</label>
+
+                                            <div class="thumbnail-grid card-group" style="min-height:100px">
+                                                <div
+                                                    class="bg-secondary card d-inline-flex align-items-center justify-content-center">
+                                                    <a href="#" class="text-secondary small"><i
+                                                            class="material-icons tidy align-middle text-secondary">add_photo_alternate</i>Upload
+                                                        thumbnail</a>
+                                                </div>
+                                                <div class="bg-secondary card">
+                                                    <img src="https://i.ytimg.com/vi/pJkgymyv0_s/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfMf5cCfG3GSPEB1LkYOuXFvgkOw"
+                                                        class="img-fluid h-100" />
+                                                </div>
+                                                <div
+                                                    class="small bg-secondary card d-inline-flex align-items-center justify-content-center">
+                                                    Generating...
+                                                </div>
+                                                <div
+                                                    class="small bg-secondary card d-inline-flex align-items-center justify-content-center">
+                                                    Generating...
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleFormControlTextarea1">Visibility</label>
+                                            <div class="custom-control custom-radio">
+                                                <input type="radio" id="customRadio1" name="customRadio"
+                                                    class="custom-control-input" checked="checked">
+                                                <label class="custom-control-label"
+                                                    for="customRadio1">Public</label>
+                                            </div>
+                                            <div class="custom-control custom-radio">
+                                                <input type="radio" id="customRadio2" name="customRadio"
+                                                    class="custom-control-input">
+                                                <label class="custom-control-label"
+                                                    for="customRadio2">Private</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlInput111">Tags</label>
+                                            <div>
+                                                <input type="text"
+                                                    placeholder="Up to 3 tags to describe your video."
+                                                    class="form-control tagsinput" id="exampleFormControlInput111">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-4">
+
+                                    <div class="card" style="width: 18rem;">
+                                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                                            style="width: auto; height: 171px">
+                                            Uploading video…
+                                        </div>
+                                        <div class="card-body text-secondary bg-light">
+                                            <p class="card-text">Video link<br /><a
+                                                    href="#">https://veems.com/v/UCASvHD</a></p>
+                                            <p class="card-text text-truncate">Filename<br /><span
+                                                    class="text-dark">{{uploading_filename}}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col">
+
+                        <div class="footer bg-secondary p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="progress w-50">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                        role="progressbar" style="width: 55%;" aria-valuenow="55" aria-valuemin="0"
+                                        aria-valuemax="100">55%</div>
+                                </div>
+                                <div class="ml-2 text-secondary">53% uploaded<span class="ml-2">11 minutes
+                                        left</span></div>
+                                <input class="btn btn-primary ml-auto" type="submit" value="Save">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

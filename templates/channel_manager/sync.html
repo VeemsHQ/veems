@@ -1,0 +1,38 @@
+{% extends "./_base_channel_manager.html" %}
+{% load static %}
+{% block content %}
+<div class="col">
+
+    <div class="d-flex align-items-center">
+        <h2 class="h5 ">Sync Status</h2>
+        <a href="#" data-toggle="modal" data-target="#createSyncModal" class="btn btn-primary ml-auto">Add YouTube Channel</a>
+    </div>
+    <table class="table mt-4">
+        <thead>
+            <tr class="text-muted">
+                <th scope="col">YouTube Channel</th>
+                <th scope="col">Veems Channel</th>
+                <th scope="col">Subscribers</th>
+                <th scope="col">Videos</th>
+                <th scope="col">Synced Videos</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Sync</th>
+            </tr>
+        </thead>
+        {% for sync in syncs %}
+        <tbody class="channel-videos">
+            <tr>
+                <td><a href="#">{{sync.veems_channel_name}}</a></td>
+                <td><a href="#">{{sync.channel_name}}</a></td>
+                <td>{{sync.subscribers}}</td>
+                <td>{{sync.videos}}</td>
+                <td>{{sync.videos_synced}}</td>
+                <td><i class="small material-icons align-middle {{sync.status_class}}">{{sync.status}}</i></td>
+                <td>{{sync.last_sync}}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

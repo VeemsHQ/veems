@@ -1,0 +1,26 @@
+{% extends "./_base_channel_manager.html" %}
+{% load static %}
+{% block content %}
+<div class="col col-lg-8">
+    <div class="border rounded p-3">
+        <div class="row no-gutters my-md-3">
+            <div class="col text-center text-muted">
+                <p><i class="material-icons align-middle text-muted"
+                        style="font-size:1000%; opacity: 0.3">sync</i></p>
+
+                <h2 class="h3">Sync your YouTube channel</h2>
+
+                <p class="text-muted">A complete backup of your YouTube videos.<br/>Everytime you upload to YouTube the video will also be uploaded to Veems.</p>
+                <div class="text-center px-3 my-3">
+                    <div>
+                        <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#createSyncModal">
+                            Add Channel</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -33,7 +33,7 @@ In order of priority.
 2. Playback of video content (backend ✅, frontend).
 3. User & API authentication.
 4. Creation and management of "Channels".
-5. Channel Dashboard (basics).
+5. Channel Manager (basics).
     - Video Management.
     - Channel customisation.
 6. Video comments.
