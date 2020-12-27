@@ -1,0 +1,108 @@
+{% extends "./_base_channel_manager.html" %}
+{% load static %}
+{% block content %}
+<div class="col">
+    <table class="table mt-4">
+        <thead>
+            <tr class="text-muted">
+                <th scope="col">Video</th>
+                <th scope="col">Visibility</th>
+                <th scope="col">Date</th>
+                <th scope="col">Earnings</th>
+                <th scope="col">Views</th>
+                <th scope="col">Comments</th>
+                <th scope="col">Likes/dislikes</th>
+            </tr>
+        </thead>
+        {% for video in videos %}
+        <tbody class="channel-videos">
+            <tr>
+                <td>
+                    {% if video.video_thumb_url %}
+                    <div class="d-flex">
+                        <a href="#" class="thumbnail d-inline-block mr-2">
+                            <img class="card-img-top" src="{{video.video_thumb_url}}">
+                            <div class="overlays">{{video.video_duration}}</div>
+                        </a>
+                        <div class="metadata-container">
+                            <h5 class="m-0 mb-1"><a href="#">{{video.video_title}}</a></h5>
+                            <div class="metadata">
+                                <div class="card-text text-muted text-truncate"><a href="#">Add description</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="d-flex">
+                        <a href="#" class=" thumbnail d-inline-block mr-2">
+                            <div
+                                class="card-img-top d-flex align-items-center justify-content-center h-100 bg-light border">
+                                <i class="material-icons text-secondary" style="font-size:2rem">query_builder</i>
+                            </div>
+                            <div class="overlays">13:03</div>
+                        </a>
+                        <div class="metadata-container d-inline-flex align-items-center">
+                            <a href="#" class="btn" data-toggle="modal" data-target="#videoDetailModal"><i
+                                    class="material-icons text-secondary">create</i></a>
+                            <a href="#" class="btn"><i class="material-icons text-secondary">play_circle_outline</i></a>
+                            <a href="#" class="btn"><i class="material-icons text-secondary">delete</i></a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </td>
+                <td>
+                    <div class="text-muted">Uploading...</div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                            style="width: 55%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
+                    </div>
+                </td>
+                <td>8 Nov 2020<br /><span class="text-muted">Uploaded</span></td>
+                <td class="text-success">{{video.earnings}}</td>
+                <td>{{video.views}}</td>
+                <td>0</td>
+                <td>0/0</td>
+            </tr>
+            <tr class="bg-secondary d-none">
+                <td>
+                    <div class="d-flex">
+                        <a href="#" class=" thumbnail d-inline-block mr-2">
+                            <div
+                                class="card-img-top d-flex align-items-center justify-content-center h-100 bg-light border">
+                                <i class="material-icons text-secondary" style="font-size:2rem">query_builder</i>
+                            </div>
+                            <div class="overlays">13:03</div>
+                        </a>
+                        <div class="metadata-container d-inline-flex align-items-center">
+                            <a href="#" class="btn" data-toggle="modal" data-target="#videoDetailModal"><i
+                                    class="material-icons text-secondary">create</i></a>
+                            <a href="#" class="btn"><i class="material-icons text-secondary">play_circle_outline</i></a>
+                            <a href="#" class="btn"><i class="material-icons text-secondary">delete</i></a>
+                        </div>
+                    </div>
+                </td>
+                <td>Public</td>
+                <td>8 Nov 2020<br /><span class="text-muted">Uploaded</span></td>
+                <td class="text-success">$8.01</td>
+                <td>4,010</td>
+                <td>20</td>
+                <td>42/2</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+</div>
+{% include "../_modals/_modal_video_detail.html" %}
+{% endblock %}
+{% block scripts %}
+<script>
+    // TODO: replace with ReactJS component
+    $(document).ready(function () {
+        $('.tagsinput').tagsinput({
+            maxTags: 3
+        });
+    });
+</script>
+{% endblock %}

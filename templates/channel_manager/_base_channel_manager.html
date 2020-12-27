@@ -1,0 +1,56 @@
+{% extends "../_base.html" %}
+{% load nav_active static %}
+
+
+{% block extra_head %}
+<link href="{% static 'css/bootstrap-tagsinput.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<body class="bg-white">
+
+    <div class="container-fluid middle-col-nomargin">
+
+        <div class="row">
+            {% include "../_top_nav.html" %}
+        </div>
+
+        <div class="row justify-content-around">
+            <div class="col h-100">
+                <div class="title-band d-flex align-items-center mt-5 pt-5 pb-2 px-0 mb-0 border-bottom">
+                    <h1 class="h2 m-0 p-0 d-inline-block">Channel Manager</h1>
+                    <select class="custom-select custom-select-sm d-inline-block w-auto ml-3">
+                        <option selected>Timcast</option>
+                        <option value="1">Timcast IRL</option>
+                        <option value="2">Tim Pool</option>
+                      </select>
+                </div>
+                <div class="flex-row border-bottom mt-0 mb-4">
+                    <ul class="nav settings-nav">
+                        <li class="nav-item">
+                            <a class="nav-link {% nav_active request 'channel-manager-index' %}" href="{% url 'channel-manager-index' %}">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% nav_active request 'channel-manager-videos' %}" href="{% url 'channel-manager-videos' %}">Videos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% nav_active request 'channel-manager-monetization' %}" href="{% url 'channel-manager-monetization' %}">Monetization</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% nav_active request 'channel-manager-customization' %}" href="{% url 'channel-manager-customization' %}">Customization</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% nav_active request 'channel-manager-sync' %}" href="{% url 'channel-manager-sync' %}">Sync</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="row" style="margin-bottom:500px">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

@@ -2,7 +2,7 @@
 <nav class="w-100 navbar navbar-expand-lg d-flex fixed-top navbar-white bg-white shadow">
 
     <div class="col-6 col-md-3 d-flex align-items-center">
-        <a class="navbar-brand bg-white mr-auto mr-lg-0 d-flex flex-fill align-item2s-center" href="/"><img
+        <a class="navbar-brand bg-white mr-auto mr-lg-0 d-flex flex-fill" href="{% url 'index' %}"><img
                 src="{% static 'images/logo.png' %}" class="logo" /><span
                 class="ml-1 small text-uppercase text-muted mt-auto"><b>Alpha</b></span>
         </a>
@@ -21,7 +21,7 @@
     <div class="col-6 col-md-3 d-flex justify-content-end top-nav-right pr-4">
         <a href="#" class="icon-link text-dark d-flex d-md-none justify-content-center ml-3 bg-light rounded-circle "><i
                 class="material-icons align-self-center text-secondary">search</i></a>
-        <a href="#" data-toggle="modal" data-target="#createChannelModal"
+        <a href="#" data-toggle="modal" data-target="#uploadModal"
             class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle "><i
                 class="small material-icons align-self-center">cloud_upload</i></a>
         <a href="#" class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle ">

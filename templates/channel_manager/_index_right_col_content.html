@@ -1,0 +1,21 @@
+{% load static %}
+<p class="alert alert-secondary">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a></p>
+<div class="border my-3 rounded p-3">
+    <h4>News</h4>
+    <p>No new updates, but check back regularly to see announcements geared specifically for creators.
+        Also take a look at: </p>
+    <p><a href="#"><img src="{% static 'images/social-icons/discord.svg' %}" class="social-icon mr-1" /> Veems on Discord</a></p>
+    <p><a href="#"><img src="{% static 'images/social-icons/twitter.svg' %}" class="social-icon mr-1" /> Veems on Twitter</a></p>
+</div>
+<div class="border my-3 rounded p-3">
+    <h4>Actions</h4>
+    <div><a href="#" class="btn btn-outline-secondary" data-toggle="modal" data-target="#uploadModal"><i
+                class="material-icons align-middle">backup</i> Upload
+            Video</a>
+    </div>
+    <div><a href="{% url 'channel-manager-sync' %}" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">sync</i>
+            Sync
+            YouTube
+            Videos</a></div>
+    <div><a href="#" data-toggle="modal" data-target="#createChannelModal" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">add_circle_outline</i> Create Channel</a></div>
+</div>
