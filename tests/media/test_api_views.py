@@ -1,6 +1,7 @@
-from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
+from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT, FORBIDDEN
 import json
 
+from rest_framework.test import APIClient
 import pytest
 import m3u8
 
@@ -12,12 +13,48 @@ MODULE = 'veems.media.api_views'
 VIDEO_PATH = constants.VID_360P_24FPS
 
 
-class TestUploadPrepare:
-    def test_put_with_filename_returns_upload_id(self, client, mocker):
-        body = json.dumps({'filename': 'MyFile.mp4'})
-        url = '/api/v1/upload/prepare/'
+@pytest.fixture
+def api_client(user_factory):
+    client = APIClient()
+    client.force_authenticate(user=user_factory())
+    return client
 
-        response = client.put(url, body, content_type='application/json')
+
+@pytest.fixture
+def api_client_factory(user_factory):
+    def make():
+        client = APIClient()
+        client.force_authenticate(user=user_factory())
+        return client
+
+    return make
+
+
+@pytest.fixture
+def api_client_no_auth():
+    return APIClient()
+
+
+class TestUploadPrepare:
+    URL = '/api/v1/upload/prepare/'
+
+    def test_returns_403_when_auth_headers_not_provided(
+        self, api_client_no_auth
+    ):
+        body = json.dumps({'filename': 'MyFile.mp4'})
+
+        response = api_client_no_auth.put(
+            self.URL, body, content_type='application/json'
+        )
+
+        assert response.status_code == FORBIDDEN
+
+    def test_put_with_filename_returns_upload_id(self, api_client):
+        body = json.dumps({'filename': 'MyFile.mp4'})
+
+        response = api_client.put(
+            self.URL, body, content_type='application/json'
+        )
 
         assert response.status_code == CREATED
         assert models.Upload.objects.count() == 1
@@ -30,37 +67,68 @@ class TestUploadPrepare:
             ),
         }
 
-    def test_put_without_filename_returns_400(self, client):
-        url = '/api/v1/upload/prepare/'
-
-        response = client.put(url, content_type='application/json')
+    def test_put_without_filename_returns_400(self, api_client):
+        response = api_client.put(self.URL, content_type='application/json')
 
         assert response.status_code == BAD_REQUEST
         assert response.json() == {'detail': 'Filename not provided'}
 
-    def test_put_with_invalid_filename_returns_400(self, client):
+    def test_put_with_invalid_filename_returns_400(self, api_client):
         body = json.dumps({'filename': 'MyFile'})
-        url = '/api/v1/upload/prepare/'
 
-        response = client.put(url, body, content_type='application/json')
+        response = api_client.put(
+            self.URL, body, content_type='application/json'
+        )
 
         assert response.status_code == BAD_REQUEST
         assert response.json() == {'detail': 'Filename invalid'}
 
 
 class TestUploadComplete:
-    def test_put_with_upload_id_triggers_transcoding_process(
-        self, client, settings, mocker
-    ):
+    @pytest.fixture
+    def upload_id(self, api_client):
         body = json.dumps({'filename': VIDEO_PATH.name})
         url = '/api/v1/upload/prepare/'
-        response = client.put(url, body, content_type='application/json')
+        response = api_client.put(url, body, content_type='application/json')
         resp_json = response.json()
-        upload_id = resp_json['upload_id']
-        mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
+        return resp_json['upload_id']
+
+    def test_returns_403_when_user_attempts_to_complete_another_users_upload(
+        self, upload_id, api_client_factory
+    ):
+        another_user_api_client = api_client_factory()
+        body = json.dumps({'filename': VIDEO_PATH.name})
 
         url = f'/api/v1/upload/complete/{upload_id}/'
-        response = client.put(url, body, content_type='application/json')
+        response = another_user_api_client.put(
+            url, body, content_type='application/json'
+        )
+
+        assert response.status_code == FORBIDDEN
+        assert response.json() == {
+            'detail': 'You do not have permission to do that'
+        }
+
+    def test_returns_403_when_auth_headers_not_provided(
+        self, api_client_no_auth, upload_id
+    ):
+        body = json.dumps({'filename': 'MyFile.mp4'})
+
+        url = f'/api/v1/upload/complete/{upload_id}/'
+        response = api_client_no_auth.put(
+            url, body, content_type='application/json'
+        )
+
+        assert response.status_code == FORBIDDEN
+
+    def test_put_with_upload_id_triggers_transcoding_process(
+        self, api_client, settings, mocker, upload_id
+    ):
+        mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
+        body = json.dumps({'filename': VIDEO_PATH.name})
+
+        url = f'/api/v1/upload/complete/{upload_id}/'
+        response = api_client.put(url, body, content_type='application/json')
 
         assert response.status_code == OK
 
@@ -70,8 +138,13 @@ class TestUploadComplete:
 
 class TestVideo:
     def test_get(
-        self, client, video_factory, transcode_job_factory, mocker,
-        simple_uploaded_file_factory, rendition_playlist_file
+        self,
+        api_client_no_auth,
+        video_factory,
+        transcode_job_factory,
+        mocker,
+        simple_uploaded_file_factory,
+        rendition_playlist_file,
     ):
         video = video_factory(
             video_path=VIDEO_PATH,
@@ -104,7 +177,7 @@ class TestVideo:
             metadata={'example': 'metadata'},
         )
 
-        response = client.get(f'/api/v1/video/{video.id}/')
+        response = api_client_no_auth.get(f'/api/v1/video/{video.id}/')
 
         assert response.status_code == OK
         assert response.json() == {
@@ -126,14 +199,12 @@ class TestVideo:
                     'framerate': 30,
                     'height': 144,
                     'id': video_rendition.id,
-                    'metadata': {
-                        'example': 'metadata'
-                    },
+                    'metadata': {'example': 'metadata'},
                     'modified_on': mocker.ANY,
                     'name': '144p',
                     'video': video.id,
                     'video_codec': 'vp9',
-                    'width': 256
+                    'width': 256,
                 }
             ],
             'transcode_jobs': [
@@ -146,7 +217,7 @@ class TestVideo:
                     'profile': '144p',
                     'started_on': mocker.ANY,
                     'status': 'created',
-                    'video': video.id
+                    'video': video.id,
                 },
                 {
                     'created_on': mocker.ANY,
@@ -157,7 +228,7 @@ class TestVideo:
                     'profile': '360p',
                     'started_on': mocker.ANY,
                     'status': 'created',
-                    'video': video.id
+                    'video': video.id,
                 },
             ],
         }
@@ -165,8 +236,13 @@ class TestVideo:
 
 class TestVideoPlaylist:
     def test_get(
-        self, client, video_factory, transcode_job_factory, mocker,
-        simple_uploaded_file_factory, rendition_playlist_file
+        self,
+        api_client_no_auth,
+        video_factory,
+        transcode_job_factory,
+        mocker,
+        simple_uploaded_file_factory,
+        rendition_playlist_file,
     ):
         video = video_factory(
             video_path=VIDEO_PATH,
@@ -193,7 +269,9 @@ class TestVideoPlaylist:
             metadata=services.get_metadata(VIDEO_PATH),
         )
 
-        response = client.get(f'/api/v1/video/{video.id}/playlist.m3u8')
+        response = api_client_no_auth.get(
+            f'/api/v1/video/{video.id}/playlist.m3u8'
+        )
 
         assert response.status_code == OK
         resp_text = response.content.decode()
@@ -215,20 +293,24 @@ class TestVideoPlaylist:
                         'bandwidth': 182464,
                         'closed_captions': 'NONE',
                         'program_id': 1,
-                        'resolution': '256x144'
+                        'resolution': '256x144',
                     },
-                    'uri': mocker.ANY
+                    'uri': mocker.ANY,
                 }
             ],
             'rendition_reports': [],
             'segments': [],
             'session_data': [],
             'session_keys': [],
-            'skip': {}
+            'skip': {},
         }
 
-    def test_get_returns_204_if_video_has_no_renditions(self, client, video):
-        response = client.get(f'/api/v1/video/{video.id}/playlist.m3u8')
+    def test_get_returns_204_if_video_has_no_renditions(
+        self, api_client_no_auth, video
+    ):
+        response = api_client_no_auth.get(
+            f'/api/v1/video/{video.id}/playlist.m3u8'
+        )
 
         assert response.status_code == NO_CONTENT
         assert response.content.decode() == ''
