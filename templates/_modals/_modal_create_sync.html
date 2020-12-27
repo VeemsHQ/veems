@@ -6,7 +6,7 @@
                 <h5 class="modal-title" id="createSyncModalLabel">Sync your YouTube Channel to Veems</h5>
             </div>
 
-
+            <!-- TODO: Show this when the sync form has been submitted -->
             <!-- <div class="modal-body d-inline-flex align-items-center justify-content-center text-center">
                 <div>
                     <div class="d-flex align-items-center justify-content-center"><i class="material-icons text-success"
@@ -60,7 +60,7 @@
 
             <div class="modal-footer bg-secondary">
                 <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                <a href="/channel" class="btn btn-primary">Create Channel Sync</a>
+                <a href="{% url 'channel-manager-sync' %}" class="btn btn-primary">Create Channel Sync</a>
             </div>
         </div>
     </div>

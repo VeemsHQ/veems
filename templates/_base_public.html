@@ -12,7 +12,7 @@
             <nav class="col d-flex bg-white sidebar side-nav position-sticky">
                 <ul class="nav flex-column mt-4 px-2">
                     <li class="nav-item">
-                        <a class="nav-link active " href="/">
+                        <a class="nav-link active " href="{% url 'index' %}">
                             <div class="d-inline-flex align-items-center align-self-center">
                                 <span class="d-inline-block"><i
                                         class="small material-icons align-middle">home</i></span>
@@ -21,7 +21,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="/dash/videos">
+                        <a class="nav-link" href="#">
                             <div class="d-inline-flex align-items-center align-self-center">
                                 <span class="d-inline-block"><i
                                         class="small material-icons align-middle">cloud_upload</i></span>
@@ -30,7 +30,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#">
+                        <a class="nav-link" href="#">
                             <div class="d-inline-flex align-items-center align-self-center">
                                 <span class="d-inline-block"><i
                                         class="small material-icons align-middle">mood</i></span>
@@ -39,7 +39,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#">
+                        <a class="nav-link" href="#">
                             <div class="d-inline-flex align-items-center align-self-center">
                                 <span class="d-inline-block"><i
                                         class="small material-icons align-middle">whatshot</i></span>
@@ -48,7 +48,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#">
+                        <a class="nav-link" href="#">
                             <div class="d-inline-flex align-items-center align-self-center">
                                 <span class="d-inline-block"><i
                                         class="small material-icons align-middle">subscriptions</i></span>
@@ -57,7 +57,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#">
+                        <a class="nav-link" href="#">
                             <div class="d-inline-flex align-items-center align-self-center">
                                 <span class="d-inline-block"><i
                                         class="small material-icons align-middle">folder</i></span>
@@ -87,7 +87,6 @@
 
     {% block scripts %}
     {% endblock %}
-
 
     <script>
         // TODO: Maybe use this https://dev.to/jordanfinners/how-html-gives-us-tooltips-for-free-48p
