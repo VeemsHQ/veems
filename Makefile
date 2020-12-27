@@ -5,7 +5,7 @@ lint:
 
 .ONESHELL:
 .PHONY: test
-test: install start-deps lint
+test: install lint
 	pytest -n auto -k 'not TestTranscode' -vvv
 	pytest -k 'TestTranscode' -vvv
 
@@ -20,9 +20,17 @@ install:
 	pip install -r requirements-dev.txt
 
 .ONESHELL:
+make-buckets-remote:
+	aws s3 mb s3://${BUCKET_STATIC}
+	aws s3 mb s3://${BUCKET_MEDIA}
+
+.ONESHELL:
+start-deps-remote:
+	docker-compose up -d postgres rabbit localstack
+
+.ONESHELL:
 start-deps:
 	docker-compose up -d postgres rabbit localstack
-	sleep 10
 	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_STATIC}
 	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_MEDIA}
 

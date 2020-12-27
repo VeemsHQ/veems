@@ -1,0 +1,100 @@
+{% extends "_base.html" %}
+{% block body %}
+
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+
+            {% include "_top_nav.html" %}
+        </div>
+
+        <div class="row d-flex justify-content-around">
+            <nav class="col d-flex bg-white sidebar side-nav position-sticky">
+                <ul class="nav flex-column mt-4 px-2">
+                    <li class="nav-item">
+                        <a class="nav-link active " href="/">
+                            <div class="d-inline-flex align-items-center align-self-center">
+                                <span class="d-inline-block"><i
+                                        class="small material-icons align-middle">home</i></span>
+                                <span class="d-none d-xl-inline-block nav-text ml-2">Home</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/dash/videos">
+                            <div class="d-inline-flex align-items-center align-self-center">
+                                <span class="d-inline-block"><i
+                                        class="small material-icons align-middle">cloud_upload</i></span>
+                                <span class="d-none d-xl-inline-block nav-text ml-2">Upload</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">
+                            <div class="d-inline-flex align-items-center align-self-center">
+                                <span class="d-inline-block"><i
+                                        class="small material-icons align-middle">mood</i></span>
+                                <span class="d-none d-xl-inline-block nav-text ml-2">Invite Friends</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">
+                            <div class="d-inline-flex align-items-center align-self-center">
+                                <span class="d-inline-block"><i
+                                        class="small material-icons align-middle">whatshot</i></span>
+                                <span class="d-none d-xl-inline-block nav-text ml-2">Trending</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">
+                            <div class="d-inline-flex align-items-center align-self-center">
+                                <span class="d-inline-block"><i
+                                        class="small material-icons align-middle">subscriptions</i></span>
+                                <span class="d-none d-xl-inline-block nav-text ml-2">Subscriptions</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">
+                            <div class="d-inline-flex align-items-center align-self-center">
+                                <span class="d-inline-block"><i
+                                        class="small material-icons align-middle">folder</i></span>
+                                <span class="d-none d-xl-inline-block nav-text ml-2">Library</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="alert alert-warning mt-5 my-2 mx-3 text-center py-3 px-3 d-none">
+                    <h6>October Video Contest</h6>
+                    <div class="mt-2 mb-2"><a href="#"><img class="img-fluid"
+                                src="https://i.ytimg.com/vi/zlfKdbWwruY/hqdefault.jpg?sqp=-oaymwEZCOADEI4CSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC6Zx7qpndkhbPi7tJzpijwjSYyGQ" /></a>
+                    </div>
+                    <h6><a href="#">Can you dance?</a></h6>
+                    <p>Veems is proud to present our first monthly video contest.</p>
+                    <p>Inspired by <a href="#" style="color:inherit">Matt Harding</a>.</p>
+                    <p><a href="#">Join the contest now!</a></p>
+                </div>
+            </nav>
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+    </div>
+
+    {% block scripts %}
+    {% endblock %}
+    <script src="https://sheet2api.com/v1/template.js"></script>
+
+    <script>
+        // TODO: Maybe use this https://dev.to/jordanfinners/how-html-gives-us-tooltips-for-free-48p
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+</body>
+
+{% endblock %}

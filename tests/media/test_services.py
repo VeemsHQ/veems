@@ -263,7 +263,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
             )
         ),
         (
-            constants.VID_4k_2, {
+            constants.VID_4k_2, S({
                 'audio_stream': None,
                 'format': {
                     'bit_rate': '12216038',
@@ -338,7 +338,7 @@ def test_mark_transcode_job_processing(transcode_job_factory):
                     'time_base': '1/1000',
                     'width': 3840
                 }
-            }
+            }, required=False)
         )
     ]
 )
