@@ -21,8 +21,9 @@ def video_rendition(video, simple_uploaded_file):
 
 
 def test_transcode_job(transcode_job):
-    assert str(transcode_job
-               ) == (f'<TranscodeJob {transcode_job.id} webm_360p created>')
+    assert str(transcode_job) == (
+        f'<TranscodeJob {transcode_job.id} webm_360p created>'
+    )
 
 
 def test_upload_file_upload_to(upload):
@@ -92,8 +93,9 @@ class TestUpload:
         # Upload the file completely outside of Django
         s3 = boto3.client('s3', endpoint_url=settings.AWS_S3_ENDPOINT_URL)
         s3.upload_fileobj(
-            io.BytesIO(b'data'), models.STORAGE_BACKEND.bucket_name,
-            uploaded_filename
+            io.BytesIO(b'data'),
+            models.STORAGE_BACKEND.bucket_name,
+            uploaded_filename,
         )
 
         # Set the Django file field to point to that file path

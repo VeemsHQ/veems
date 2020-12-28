@@ -33,8 +33,9 @@ def _get_rendition_playlists(video_record):
             ),
             'playlist_url': video_rendition.playlist_file.url,
             'bandwidth': int(video_rendition.metadata['format']['bit_rate']),
-        } for video_rendition in
-        video_record.videorendition_set.all() if video_rendition.playlist_file
+        }
+        for video_rendition in video_record.videorendition_set.all()
+        if video_rendition.playlist_file
     ]
 
 
@@ -58,10 +59,10 @@ def generate_master_playlist(video_id):
                 'codecs': item['codecs_string'],
                 'program_id': 1,
                 'closed_captions': 'NONE',
-                'subtitles': 'NONE'
+                'subtitles': 'NONE',
             },
             media=[],
-            base_uri=None
+            base_uri=None,
         )
         variant_m3u8.add_playlist(playlist)
     return variant_m3u8.dumps()

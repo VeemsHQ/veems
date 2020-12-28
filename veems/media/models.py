@@ -101,6 +101,7 @@ class VideoRendition(BaseModel):
 
     Either a piece of Audio/Video/Audio+Video.
     """
+
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     file = models.FileField(
         upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND
@@ -119,7 +120,7 @@ class VideoRendition(BaseModel):
     metadata = models.JSONField(null=True)
     playlist_file = models.FileField(
         upload_to=_video_rendition_playlist_file_upload_to,
-        storage=STORAGE_BACKEND
+        storage=STORAGE_BACKEND,
     )
 
 
@@ -141,8 +142,7 @@ class VideoRenditionThumbnail(BaseModel):
         VideoRendition, on_delete=models.CASCADE
     )
     file = models.FileField(
-        upload_to=_video_rendition_thumbnail_upload_to,
-        storage=STORAGE_BACKEND
+        upload_to=_video_rendition_thumbnail_upload_to, storage=STORAGE_BACKEND
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)

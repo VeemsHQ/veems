@@ -50,7 +50,7 @@ def async_task(**kwargs):
         base_kwargs = dict(
             ignore_result=False,
             base=NamedTask,
-            autoretry_for=(Exception, ),
+            autoretry_for=(Exception,),
             retry_backoff=2,
             retry_kwargs={'max_retries': 3},
             acks_late=True,

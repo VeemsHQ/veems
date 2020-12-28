@@ -145,9 +145,7 @@ BUCKET_STATIC_CUSTOM_DOMAIN = os.environ.get('BUCKET_STATIC_CUSTOM_DOMAIN')
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
-STATICFILES_DIRS = (
-    Path(__file__).parent.parent / 'static',
-)
+STATICFILES_DIRS = (Path(__file__).parent.parent / 'static',)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -167,16 +165,13 @@ AUTH_PASSWORD_VALIDATORS = [
         ),
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -207,7 +202,7 @@ RABBITMQ_HOST = os.environ['RABBITMQ_HOST']
 RABBITMQ_VHOST = os.environ['RABBITMQ_VHOST']
 CELERY_BROKER_URL = (
     f'amqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@'
-    F'{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}'
+    f'{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}'
 )
 BROKER_URL = CELERY_BROKER_URL
 CELERY_IGNORE_RESULT = False

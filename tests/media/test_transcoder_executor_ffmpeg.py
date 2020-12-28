@@ -22,14 +22,16 @@ def test_create_segments_for_video(tmpdir, video_with_renditions_and_segments):
     video_rendition_id = video_rendition.id
     video_id = video_rendition.video_id
 
-    segments_playlist_file, segment_paths, codecs_string = (
-        ffmpeg._create_segments_for_video(
-            video_path=video_path,
-            profile=profile,
-            tmp_dir=tmpdir,
-            video_rendition_id=video_rendition_id,
-            video_id=video_id,
-        )
+    (
+        segments_playlist_file,
+        segment_paths,
+        codecs_string,
+    ) = ffmpeg._create_segments_for_video(
+        video_path=video_path,
+        profile=profile,
+        tmp_dir=tmpdir,
+        video_rendition_id=video_rendition_id,
+        video_id=video_id,
     )
 
     exp_num_segments = 13
@@ -45,11 +47,19 @@ def test_create_segments_for_video(tmpdir, video_with_renditions_and_segments):
         for p in segment_paths
     ]
     exp_segment_names_durations = [
-        ('0.ts', 9.2092), ('1.ts', 3.3033), ('2.ts', 4.337667),
-        ('3.ts', 7.540867), ('4.ts', 4.537867), ('5.ts', 4.6046),
-        ('6.ts', 6.006), ('7.ts', 8.341667), ('8.ts', 3.036367),
-        ('9.ts', 6.773433), ('10.ts', 5.472133), ('11.ts', 8.341667),
-        ('12.ts', 5.9059)
+        ('0.ts', 9.2092),
+        ('1.ts', 3.3033),
+        ('2.ts', 4.337667),
+        ('3.ts', 7.540867),
+        ('4.ts', 4.537867),
+        ('5.ts', 4.6046),
+        ('6.ts', 6.006),
+        ('7.ts', 8.341667),
+        ('8.ts', 3.036367),
+        ('9.ts', 6.773433),
+        ('10.ts', 5.472133),
+        ('11.ts', 8.341667),
+        ('12.ts', 5.9059),
     ]
     assert segment_names_durations == exp_segment_names_durations
     exp_playlist = f"""
@@ -86,21 +96,45 @@ def test_create_segments_for_video(tmpdir, video_with_renditions_and_segments):
     /videos/{video_id}/renditions/{video_rendition_id}/segments/12.ts
     #EXT-X-ENDLIST
     """
-    assert m3u8.load(str(segments_playlist_file)
-                     ).dumps() == m3u8.loads(exp_playlist).dumps()
+    assert (
+        m3u8.load(str(segments_playlist_file)).dumps()
+        == m3u8.loads(exp_playlist).dumps()
+    )
 
 
 @pytest.mark.parametrize(
-    'video_path, exp_offsets', [
+    'video_path, exp_offsets',
+    [
         (
-            constants.VIDEO_PATH_2160_30FPS_10MIN, (
-                15, 46, 77, 108, 139, 171, 202, 233, 264, 295, 326, 357, 388,
-                419, 450, 481, 513, 544, 575, 606, 637
-            )
-        ), (constants.VIDEO_PATH_2160_30FPS, (5, )),
-        (constants.VID_1920_X_960, (5, )),
-        (constants.VIDEO_PATH_1080_30FPS_VERT, (19, 57))
-    ]
+            constants.VIDEO_PATH_2160_30FPS_10MIN,
+            (
+                15,
+                46,
+                77,
+                108,
+                139,
+                171,
+                202,
+                233,
+                264,
+                295,
+                326,
+                357,
+                388,
+                419,
+                450,
+                481,
+                513,
+                544,
+                575,
+                606,
+                637,
+            ),
+        ),
+        (constants.VIDEO_PATH_2160_30FPS, (5,)),
+        (constants.VID_1920_X_960, (5,)),
+        (constants.VIDEO_PATH_1080_30FPS_VERT, (19, 57)),
+    ],
 )
 def test_get_thumbnail_time_offsets(video_path, exp_offsets):
     time_offsets = ffmpeg._get_thumbnail_time_offsets(video_path=video_path)
@@ -110,9 +144,12 @@ def test_get_thumbnail_time_offsets(video_path, exp_offsets):
 
 class TestTranscode:
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name, exp_metadata', [
+        'source_file_path, transcode_profile_name, exp_metadata',
+        [
             (
-                constants.VID_720P_24FPS, 'webm_144p', {
+                constants.VID_720P_24FPS,
+                'webm_144p',
+                {
                     'audio_codec': None,
                     'duration': 5,
                     'framerate': 24,
@@ -121,10 +158,12 @@ class TestTranscode:
                     'width': 256,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VID_1920_X_960, 'webm_1080p', {
+                constants.VID_1920_X_960,
+                'webm_1080p',
+                {
                     'audio_codec': 'opus',
                     'duration': 10,
                     'framerate': 30,
@@ -132,11 +171,13 @@ class TestTranscode:
                     'video_codec': 'vp9',
                     'width': 2160,
                     'file_size': ANY,
-                    'codecs_string': 'avc1.640032,mp4a.40.2'
-                }
+                    'codecs_string': 'avc1.640032,mp4a.40.2',
+                },
             ),
             (
-                constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_240p', {
+                constants.VIDEO_PATH_1080_30FPS_VERT,
+                'webm_240p',
+                {
                     'audio_codec': 'opus',
                     'duration': 77,
                     'framerate': 30,
@@ -145,10 +186,12 @@ class TestTranscode:
                     'width': 136,
                     'file_size': ANY,
                     'codecs_string': 'avc1.64000c,mp4a.40.2',
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_30FPS, 'webm_360p', {
+                constants.VIDEO_PATH_2160_30FPS,
+                'webm_360p',
+                {
                     'audio_codec': None,
                     'duration': 10,
                     'framerate': 30,
@@ -157,10 +200,12 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_30FPS, 'webm_720p', {
+                constants.VIDEO_PATH_2160_30FPS,
+                'webm_720p',
+                {
                     'audio_codec': None,
                     'duration': 10,
                     'framerate': 30,
@@ -169,10 +214,12 @@ class TestTranscode:
                     'width': 1280,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_30FPS, 'webm_1080p', {
+                constants.VIDEO_PATH_2160_30FPS,
+                'webm_1080p',
+                {
                     'audio_codec': None,
                     'duration': 10,
                     'framerate': 30,
@@ -181,10 +228,12 @@ class TestTranscode:
                     'width': 1920,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_30FPS, 'webm_1440p', {
+                constants.VIDEO_PATH_2160_30FPS,
+                'webm_1440p',
+                {
                     'audio_codec': None,
                     'duration': 10,
                     'framerate': 30,
@@ -193,10 +242,12 @@ class TestTranscode:
                     'width': 2560,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_30FPS, 'webm_2160p', {
+                constants.VIDEO_PATH_2160_30FPS,
+                'webm_2160p',
+                {
                     'audio_codec': None,
                     'duration': 10,
                     'framerate': 30,
@@ -205,10 +256,12 @@ class TestTranscode:
                     'width': 3840,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_1080_30FPS_VERT, 'webm_360p', {
+                constants.VIDEO_PATH_1080_30FPS_VERT,
+                'webm_360p',
+                {
                     'audio_codec': 'opus',
                     'duration': 77,
                     'framerate': 30,
@@ -217,10 +270,12 @@ class TestTranscode:
                     'width': 202,
                     'file_size': ANY,
                     'codecs_string': 'avc1.64000d,mp4a.40.2',
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_1080_60FPS, 'webm_360p_high', {
+                constants.VIDEO_PATH_1080_60FPS,
+                'webm_360p_high',
+                {
                     'audio_codec': 'opus',
                     'duration': 12,
                     'framerate': 60,
@@ -229,10 +284,12 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'codecs_string': 'avc1.64001f,mp4a.40.2',
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_60FPS, 'webm_360p_high', {
+                constants.VIDEO_PATH_2160_60FPS,
+                'webm_360p_high',
+                {
                     'audio_codec': 'opus',
                     'duration': 13,
                     'framerate': 60,
@@ -241,10 +298,12 @@ class TestTranscode:
                     'width': 640,
                     'file_size': ANY,
                     'codecs_string': 'avc1.64001f,mp4a.40.2',
-                }
+                },
             ),
             (
-                constants.VIDEO_PATH_2160_24FPS, 'webm_360p', {
+                constants.VIDEO_PATH_2160_24FPS,
+                'webm_360p',
+                {
                     'audio_codec': None,
                     'duration': 37,
                     'framerate': 24,
@@ -253,10 +312,12 @@ class TestTranscode:
                     'width': 682,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
             (
-                constants.VID_1280_X_720, 'webm_240p', {
+                constants.VID_1280_X_720,
+                'webm_240p',
+                {
                     'audio_codec': None,
                     'duration': 32.0,
                     'framerate': 25,
@@ -265,13 +326,17 @@ class TestTranscode:
                     'width': 426,
                     'file_size': ANY,
                     'codecs_string': None,
-                }
+                },
             ),
-        ]
+        ],
     )
     def test(
-        self, transcode_job_factory, transcode_profile_name, source_file_path,
-        exp_metadata, mocker
+        self,
+        transcode_job_factory,
+        transcode_profile_name,
+        source_file_path,
+        exp_metadata,
+        mocker,
     ):
         transcode_job = transcode_job_factory(profile=transcode_profile_name)
         video_rendition, thumbnails = ffmpeg.transcode(
@@ -322,12 +387,13 @@ class TestTranscode:
             assert segment.file
 
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name', [
+        'source_file_path, transcode_profile_name',
+        [
             (constants.VIDEO_PATH_360_60FPS, 'webm_720p'),
             (constants.VIDEO_PATH_360_60FPS, 'webm_1080p'),
             (constants.VIDEO_PATH_360_60FPS, 'webm_2160p'),
             (constants.VIDEO_PATH_1080_60FPS, 'webm_2160p'),
-        ]
+        ],
     )
     def test_cannot_transcode_into_resolution_higher_than_source_file(
         self, source_file_path, transcode_profile_name, transcode_job_factory
@@ -345,10 +411,11 @@ class TestTranscode:
         ).count()
 
     @pytest.mark.parametrize(
-        'source_file_path, transcode_profile_name', [
+        'source_file_path, transcode_profile_name',
+        [
             (constants.VIDEO_PATH_1080_60FPS, 'webm_720p'),
             (constants.VIDEO_PATH_2160_30FPS, 'webm_720p_high'),
-        ]
+        ],
     )
     def test_cannot_transcode_into_different_framerate(
         self, source_file_path, transcode_profile_name, transcode_job_factory
@@ -371,16 +438,14 @@ class TestTranscode:
         mocker.patch(
             f'{MODULE}._ffmpeg_transcode_video',
             side_effect=[
-                ffmpeg.TranscodeException(
-                    'msg', stderr='command error output'
-                )
-            ]
+                ffmpeg.TranscodeException('msg', stderr='command error output')
+            ],
         )
         transcode_job = transcode_job_factory(profile='webm_240p')
 
         result_path = ffmpeg.transcode(
             transcode_job=transcode_job,
-            source_file_path=constants.VIDEO_PATH_1080_30FPS_VERT
+            source_file_path=constants.VIDEO_PATH_1080_30FPS_VERT,
         )
 
         assert result_path is None
@@ -396,7 +461,7 @@ class TestTranscode:
     ):
         result_path = ffmpeg.transcode(
             transcode_job=transcode_job,
-            source_file_path=constants.INVALID_VIDEO_PATH
+            source_file_path=constants.INVALID_VIDEO_PATH,
         )
 
         assert result_path is None
