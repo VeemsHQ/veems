@@ -5,30 +5,16 @@ from veems.channel import services
 pytestmark = pytest.mark.django_db
 
 
-def test_create_channel(user):
-    record = services.create_channel(
-        name='My Channel',
-        user=user,
-        description='x' * 5000,
-        sync_videos_interested=True,
-    )
-
-    assert isinstance(record, services.models.Channel)
-    assert record.name == 'My Channel'
-    assert record.user == user
-    assert record.description == 'x' * 5000
-    assert record.sync_videos_interested is True
+def test_create_channel(user, channel):
+    assert isinstance(channel, services.models.Channel)
+    assert channel.name == 'My Channel'
+    assert channel.user == user
+    assert channel.description == 'x' * 5000
+    assert channel.sync_videos_interested is True
 
 
-def test_get_channel(user):
-    existing_channel = services.create_channel(
-        name='My Channel',
-        user=user,
-        description='x' * 5000,
-        sync_videos_interested=True,
-    )
+def test_get_channel(user, channel):
+    record = services.get_channel(id=channel.id)
 
-    record = services.get_channel(id=existing_channel.id)
-
-    assert record.id == existing_channel.id
+    assert record.id == channel.id
     assert isinstance(record, services.models.Channel)
