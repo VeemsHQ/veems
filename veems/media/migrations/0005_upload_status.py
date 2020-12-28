@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 choices=[('draft', 'draft'), ('completed', 'completed')],
                 default='draft',
-                max_length=10
+                max_length=10,
             ),
         ),
     ]

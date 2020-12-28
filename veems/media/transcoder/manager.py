@@ -60,8 +60,9 @@ def task_transcode(*args, video_id, transcode_job_id):
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
     if transcode_job.status == 'completed':
         logger.warning(
-            'Task transcode exited, already completed '
-            'previously %s %s', video_id, transcode_job_id
+            'Task transcode exited, already completed ' 'previously %s %s',
+            video_id,
+            transcode_job_id,
         )
         return True
     services.mark_transcode_job_processing(transcode_job=transcode_job)
@@ -72,7 +73,7 @@ def task_transcode(*args, video_id, transcode_job_id):
         file_.write(upload.file.read())
         transcode_executor.transcode(
             transcode_job=transcode_job,
-            source_file_path=Path(uploaded_file.name)
+            source_file_path=Path(uploaded_file.name),
         )
     logger.info('Task transcode completed %s %s', video_id, transcode_job_id)
     return True
@@ -92,8 +93,8 @@ def _get_applicable_transcode_profiles(video_path):
 def _transcode_profile_does_apply(profile_cls, metadata_summary):
     if (
         profile_cls.required_aspect_ratio
-        and metadata_summary['video_aspect_ratio'] !=
-        profile_cls.required_aspect_ratio
+        and metadata_summary['video_aspect_ratio']
+        != profile_cls.required_aspect_ratio
     ):
         return False
     if (
@@ -102,8 +103,9 @@ def _transcode_profile_does_apply(profile_cls, metadata_summary):
     ):
         return False
     if not (
-        profile_cls.min_framerate <= metadata_summary['framerate'] <=
-        profile_cls.max_framerate
+        profile_cls.min_framerate
+        <= metadata_summary['framerate']
+        <= profile_cls.max_framerate
     ):
         return False
     return True

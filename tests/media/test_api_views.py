@@ -1,4 +1,11 @@
-from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT, FORBIDDEN
+from http.client import (
+    CREATED,
+    BAD_REQUEST,
+    OK,
+    NO_CONTENT,
+    FORBIDDEN,
+    NOT_FOUND,
+)
 import json
 
 from rest_framework.test import APIClient
@@ -15,17 +22,19 @@ VIDEO_PATH = constants.VID_360P_24FPS
 
 @pytest.fixture
 def api_client(user_factory):
+    user = user_factory()
     client = APIClient()
-    client.force_authenticate(user=user_factory())
-    return client
+    client.force_authenticate(user=user)
+    return client, user
 
 
 @pytest.fixture
 def api_client_factory(user_factory):
     def make():
+        user = user_factory()
         client = APIClient()
-        client.force_authenticate(user=user_factory())
-        return client
+        client.force_authenticate(user=user)
+        return client, user
 
     return make
 
@@ -39,26 +48,33 @@ class TestUploadPrepare:
     URL = '/api/v1/upload/prepare/'
 
     def test_returns_403_when_auth_headers_not_provided(
-        self, api_client_no_auth
+        self, api_client_no_auth, channel
     ):
-        body = json.dumps({'filename': 'MyFile.mp4'})
+        api_client = api_client_no_auth
+        body = json.dumps({'filename': 'MyFile.mp4', 'channel_id': channel.id})
 
-        response = api_client_no_auth.put(
+        response = api_client.put(
             self.URL, body, content_type='application/json'
         )
 
         assert response.status_code == FORBIDDEN
+        assert models.Upload.objects.count() == 0
+        assert models.Video.objects.count() == 0
 
-    def test_put_with_filename_returns_upload_id(self, api_client):
-        body = json.dumps({'filename': 'MyFile.mp4'})
+    def test_put_with_filename_returns_upload_id(
+        self, api_client, channel_factory
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        body = json.dumps({'filename': 'MyFile.mp4', 'channel_id': channel.id})
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
         )
 
         assert response.status_code == CREATED
-        assert models.Upload.objects.count() == 1
-        assert models.Video.objects.count() == 1
+        assert models.Upload.objects.filter(channel__user=user).count() == 1
+        assert models.Video.objects.filter(channel__user=user).count() == 1
         assert response.json() == {
             'upload_id': models.Upload.objects.first().id,
             'video_id': models.Video.objects.first().id,
@@ -67,14 +83,55 @@ class TestUploadPrepare:
             ),
         }
 
-    def test_put_without_filename_returns_400(self, api_client):
-        response = api_client.put(self.URL, content_type='application/json')
+    def test_returns_403_when_attempting_to_upload_to_another_users_channel(
+        self, user_factory, api_client, channel_factory
+    ):
+        api_client, user = api_client
+        another_user = user_factory()
+        channel = channel_factory(user=another_user)
+        body = json.dumps({'filename': 'MyFile.mp4', 'channel_id': channel.id})
+
+        response = api_client.put(
+            self.URL, body, content_type='application/json'
+        )
+
+        assert response.status_code == NOT_FOUND
+        assert response.json() == {'detail': 'Not found.'}
+
+    def test_put_without_channel_id_returns_400(
+        self,
+        api_client,
+    ):
+        api_client, user = api_client
+        body = json.dumps({'filename': 'MyFile.mp4'})
+
+        response = api_client.put(
+            self.URL, body, content_type='application/json'
+        )
+
+        assert response.status_code == BAD_REQUEST
+        assert response.json() == {'detail': 'channel_id not provided'}
+
+    def test_put_without_filename_returns_400(
+        self, api_client, channel_factory
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        body = json.dumps({'channel_id': channel.id})
+
+        response = api_client.put(
+            self.URL, body, content_type='application/json'
+        )
 
         assert response.status_code == BAD_REQUEST
         assert response.json() == {'detail': 'Filename not provided'}
 
-    def test_put_with_invalid_filename_returns_400(self, api_client):
-        body = json.dumps({'filename': 'MyFile'})
+    def test_put_with_invalid_filename_returns_400(
+        self, api_client, channel_factory
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        body = json.dumps({'filename': 'MyFile', 'channel_id': channel.id})
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
@@ -86,17 +143,39 @@ class TestUploadPrepare:
 
 class TestUploadComplete:
     @pytest.fixture
-    def upload_id(self, api_client):
-        body = json.dumps({'filename': VIDEO_PATH.name})
+    def upload_id(self, api_client, channel_factory):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        body = json.dumps(
+            {'filename': VIDEO_PATH.name, 'channel_id': channel.id}
+        )
         url = '/api/v1/upload/prepare/'
         response = api_client.put(url, body, content_type='application/json')
         resp_json = response.json()
         return resp_json['upload_id']
 
-    def test_returns_403_when_user_attempts_to_complete_another_users_upload(
+    def test_put_with_upload_id_triggers_transcoding_process(
+        self, api_client, settings, mocker, upload_id, channel_factory
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
+        body = json.dumps(
+            {'filename': VIDEO_PATH.name, 'channel_id': channel.id}
+        )
+
+        url = f'/api/v1/upload/complete/{upload_id}/'
+        response = api_client.put(url, body, content_type='application/json')
+
+        assert response.status_code == OK
+
+        assert mock_upload_manager.complete.delay.called
+        mock_upload_manager.complete.delay.assert_called_once_with(upload_id)
+
+    def test_returns_404_when_user_attempts_to_complete_another_users_upload(
         self, upload_id, api_client_factory
     ):
-        another_user_api_client = api_client_factory()
+        another_user_api_client, _ = api_client_factory()
         body = json.dumps({'filename': VIDEO_PATH.name})
 
         url = f'/api/v1/upload/complete/{upload_id}/'
@@ -104,10 +183,8 @@ class TestUploadComplete:
             url, body, content_type='application/json'
         )
 
-        assert response.status_code == FORBIDDEN
-        assert response.json() == {
-            'detail': 'You do not have permission to do that'
-        }
+        assert response.status_code == NOT_FOUND
+        assert response.json() == {'detail': 'Not found.'}
 
     def test_returns_403_when_auth_headers_not_provided(
         self, api_client_no_auth, upload_id
@@ -120,20 +197,6 @@ class TestUploadComplete:
         )
 
         assert response.status_code == FORBIDDEN
-
-    def test_put_with_upload_id_triggers_transcoding_process(
-        self, api_client, settings, mocker, upload_id
-    ):
-        mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
-        body = json.dumps({'filename': VIDEO_PATH.name})
-
-        url = f'/api/v1/upload/complete/{upload_id}/'
-        response = api_client.put(url, body, content_type='application/json')
-
-        assert response.status_code == OK
-
-        assert mock_upload_manager.complete.delay.called
-        mock_upload_manager.complete.delay.assert_called_once_with(upload_id)
 
 
 class TestVideo:

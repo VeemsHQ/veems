@@ -12,19 +12,30 @@ MODULE = 'veems.media.transcoder.manager'
 
 
 @pytest.mark.parametrize(
-    'video_path, exp_profiles', [
+    'video_path, exp_profiles',
+    [
         (
             constants.VID_2160P_30FPS,
             [
-                'webm_144p', 'webm_240p', 'webm_360p', 'webm_720p',
-                'webm_1080p', 'webm_1440p', 'webm_2160p'
+                'webm_144p',
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+                'webm_1440p',
+                'webm_2160p',
             ],
         ),
         (
             constants.VID_2160P_24FPS,
             [
-                'webm_144p', 'webm_240p', 'webm_360p', 'webm_720p',
-                'webm_1080p', 'webm_1440p', 'webm_2160p'
+                'webm_144p',
+                'webm_240p',
+                'webm_360p',
+                'webm_720p',
+                'webm_1080p',
+                'webm_1440p',
+                'webm_2160p',
             ],
         ),
         (
@@ -101,8 +112,8 @@ MODULE = 'veems.media.transcoder.manager'
                 'webm_720p',
                 'webm_1080p',
             ],
-        )
-    ]
+        ),
+    ],
 )
 def test_get_applicable_transcode_profiles(video_path, exp_profiles):
     profiles = manager._get_applicable_transcode_profiles(
@@ -113,7 +124,8 @@ def test_get_applicable_transcode_profiles(video_path, exp_profiles):
 
 
 @pytest.mark.parametrize(
-    'video_filename, profile_cls, exp_result', [
+    'video_filename, profile_cls, exp_result',
+    [
         ('2160p_30fps.mp4', transcoder_profiles.Webm360p, True),
         ('2160p_30fps.mp4', transcoder_profiles.Webm720p, True),
         ('2160p_30fps.mp4', transcoder_profiles.Webm1080p, True),
@@ -137,7 +149,7 @@ def test_get_applicable_transcode_profiles(video_path, exp_profiles):
         ('1080p_60fps.mp4', transcoder_profiles.Webm720p, False),
         ('1080p_60fps.mp4', transcoder_profiles.Webm1080p, False),
         ('1080p_60fps.mp4', transcoder_profiles.Webm2160p, False),
-    ]
+    ],
 )
 def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     video_path = constants.TEST_DATA_DIR / video_filename
@@ -152,23 +164,26 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
 
 @pytest.mark.xfail
 @pytest.mark.parametrize(
-    'video_filename, exp_profiles', [
+    'video_filename, exp_profiles',
+    [
         (
-            constants.VID_720P_24FPS, (
+            constants.VID_720P_24FPS,
+            (
                 'webm_144p',
                 'webm_240p',
                 'webm_360p',
                 'webm_720p',
-            )
+            ),
         ),
         (
-            constants.VIDEO_PATH_360_60FPS, (
+            constants.VIDEO_PATH_360_60FPS,
+            (
                 'webm_144p',
                 'webm_240p',
                 'webm_360p_high',
-            )
+            ),
         ),
-    ]
+    ],
 )
 def test_create_transcodes(
     video_filename, exp_profiles, video_factory, mocker, settings
@@ -192,8 +207,8 @@ def test_create_transcodes(
         models.TranscodeJob.objects.values_list('profile', flat=True)
     )
     assert (
-        models.TranscodeJob.objects.filter(status='completed'
-                                           ).count() == exp_num_jobs
+        models.TranscodeJob.objects.filter(status='completed').count()
+        == exp_num_jobs
     )
     assert executed_profiles == exp_profiles
 
@@ -223,9 +238,9 @@ class TestTaskTranscode:
         assert transcode_job.started_on
         # Check that the file sent to the transcode job
         # is the uploaded file.
-        source_file_path = (
-            mock_executor.transcode.call_args.kwargs['source_file_path']
-        )
+        source_file_path = mock_executor.transcode.call_args.kwargs[
+            'source_file_path'
+        ]
         with source_file_path.open('rb') as file_:
             file_data = file_.read()
         assert file_data == video.upload.file.read()

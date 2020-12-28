@@ -14,8 +14,8 @@ VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
 
 
 @pytest.fixture
-def upload(upload_factory, user):
-    return upload_factory(user=user, video_path=VIDEO_PATH_2160_30FPS)
+def upload(upload_factory):
+    return upload_factory(video_path=VIDEO_PATH_2160_30FPS)
 
 
 @pytest.fixture
@@ -49,15 +49,15 @@ def simple_uploaded_file_factory():
 
 
 @pytest.fixture
-def upload_factory():
-    def make(video_path, user):
+def upload_factory(channel):
+    def make(video_path):
         with video_path.open('rb') as file_:
             file_contents = file_.read()
         upload = models.Upload.objects.create(
             presigned_upload_url='htts://example.com/s3-blah',
             media_type='video',
             file=SimpleUploadedFile(video_path.name, file_contents),
-            user=user,
+            channel=channel,
         )
         return upload
 
@@ -65,10 +65,12 @@ def upload_factory():
 
 
 @pytest.fixture
-def video_factory(upload_factory, user):
+def video_factory(upload_factory, channel):
     def make(video_path, **kwargs):
-        upload = upload_factory(user=user, video_path=video_path)
-        return models.Video.objects.create(upload=upload, **kwargs)
+        upload = upload_factory(video_path=video_path)
+        return models.Video.objects.create(
+            upload=upload, channel=channel, **kwargs
+        )
 
     return make
 

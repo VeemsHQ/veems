@@ -1,9 +1,9 @@
 from pathlib import Path
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
+from ..channel.models import Channel
 from . import storage_backends
 
 STORAGE_BACKEND = storage_backends.MediaStorage
@@ -71,7 +71,7 @@ def _video_rendition_thumbnail_upload_to(instance, filename):
 
 
 class Upload(BaseModel):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     presigned_upload_url = models.URLField(max_length=1000)
     media_type = models.CharField(max_length=500)
     file = models.FileField(
@@ -86,6 +86,7 @@ class Upload(BaseModel):
 
 class Video(BaseModel):
     upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     visibility = models.CharField(
         max_length=10,
@@ -101,6 +102,7 @@ class VideoRendition(BaseModel):
 
     Either a piece of Audio/Video/Audio+Video.
     """
+
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     file = models.FileField(
         upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND
@@ -119,7 +121,7 @@ class VideoRendition(BaseModel):
     metadata = models.JSONField(null=True)
     playlist_file = models.FileField(
         upload_to=_video_rendition_playlist_file_upload_to,
-        storage=STORAGE_BACKEND
+        storage=STORAGE_BACKEND,
     )
 
 
@@ -141,8 +143,7 @@ class VideoRenditionThumbnail(BaseModel):
         VideoRendition, on_delete=models.CASCADE
     )
     file = models.FileField(
-        upload_to=_video_rendition_thumbnail_upload_to,
-        storage=STORAGE_BACKEND
+        upload_to=_video_rendition_thumbnail_upload_to, storage=STORAGE_BACKEND
     )
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)

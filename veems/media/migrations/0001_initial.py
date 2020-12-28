@@ -25,23 +25,23 @@ class Migration(migrations.Migration):
                         editable=False,
                         max_length=12,
                         primary_key=True,
-                        serialize=False
-                    )
+                        serialize=False,
+                    ),
                 ),
                 (
                     'created_on',
-                    models.DateTimeField(auto_now_add=True, db_index=True)
+                    models.DateTimeField(auto_now_add=True, db_index=True),
                 ),
                 (
                     'modified_on',
-                    models.DateTimeField(auto_now=True, db_index=True)
+                    models.DateTimeField(auto_now=True, db_index=True),
                 ),
                 (
                     'file',
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models._video_rendition_upload_to
-                    )
+                        upload_to=veems.media.models._video_rendition_upload_to,
+                    ),
                 ),
                 ('width', models.IntegerField(null=True)),
                 ('height', models.IntegerField(null=True)),
@@ -59,9 +59,8 @@ class Migration(migrations.Migration):
                     'hls_playlist_file',
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models.
-                        _video_rendition_playlist_file_upload_to
-                    )
+                        upload_to=veems.media.models._video_rendition_playlist_file_upload_to,
+                    ),
                 ),
             ],
             options={
@@ -79,16 +78,16 @@ class Migration(migrations.Migration):
                         editable=False,
                         max_length=12,
                         primary_key=True,
-                        serialize=False
-                    )
+                        serialize=False,
+                    ),
                 ),
                 (
                     'created_on',
-                    models.DateTimeField(auto_now_add=True, db_index=True)
+                    models.DateTimeField(auto_now_add=True, db_index=True),
                 ),
                 (
                     'modified_on',
-                    models.DateTimeField(auto_now=True, db_index=True)
+                    models.DateTimeField(auto_now=True, db_index=True),
                 ),
                 ('presigned_upload_url', models.URLField()),
                 ('media_type', models.CharField(max_length=200)),
@@ -96,8 +95,8 @@ class Migration(migrations.Migration):
                     'file',
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models._upload_file_upload_to
-                    )
+                        upload_to=veems.media.models._upload_file_upload_to,
+                    ),
                 ),
             ],
             options={
@@ -115,27 +114,28 @@ class Migration(migrations.Migration):
                         editable=False,
                         max_length=12,
                         primary_key=True,
-                        serialize=False
-                    )
+                        serialize=False,
+                    ),
                 ),
                 (
                     'created_on',
-                    models.DateTimeField(auto_now_add=True, db_index=True)
+                    models.DateTimeField(auto_now_add=True, db_index=True),
                 ),
                 (
                     'modified_on',
-                    models.DateTimeField(auto_now=True, db_index=True)
+                    models.DateTimeField(auto_now=True, db_index=True),
                 ),
                 ('title', models.CharField(max_length=500)),
                 (
                     'visibility',
                     models.CharField(
                         choices=[
-                            ('private', 'private'), ('public', 'public'),
-                            ('unlisted', 'unlisted')
+                            ('private', 'private'),
+                            ('public', 'public'),
+                            ('unlisted', 'unlisted'),
                         ],
-                        max_length=10
-                    )
+                        max_length=10,
+                    ),
                 ),
                 ('description', models.TextField(max_length=5000)),
                 (
@@ -143,23 +143,23 @@ class Migration(migrations.Migration):
                     django.contrib.postgres.fields.ArrayField(
                         base_field=models.CharField(max_length=1000),
                         null=True,
-                        size=None
-                    )
+                        size=None,
+                    ),
                 ),
                 (
                     'playlist_file',
                     models.FileField(
                         null=True,
                         storage=veems.media.storage_backends.MediaStorage,
-                    )
+                    ),
                 ),
                 (
                     'upload',
                     models.OneToOneField(
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        to='media.upload'
-                    )
+                        to='media.upload',
+                    ),
                 ),
             ],
             options={
@@ -177,16 +177,16 @@ class Migration(migrations.Migration):
                         editable=False,
                         max_length=12,
                         primary_key=True,
-                        serialize=False
-                    )
+                        serialize=False,
+                    ),
                 ),
                 (
                     'created_on',
-                    models.DateTimeField(auto_now_add=True, db_index=True)
+                    models.DateTimeField(auto_now_add=True, db_index=True),
                 ),
                 (
                     'modified_on',
-                    models.DateTimeField(auto_now=True, db_index=True)
+                    models.DateTimeField(auto_now=True, db_index=True),
                 ),
                 ('profile', models.CharField(max_length=100)),
                 ('executor', models.CharField(max_length=20)),
@@ -196,10 +196,11 @@ class Migration(migrations.Migration):
                         choices=[
                             ('created', 'created'),
                             ('processing', 'processing'),
-                            ('completed', 'completed'), ('failed', 'failed')
+                            ('completed', 'completed'),
+                            ('failed', 'failed'),
                         ],
-                        max_length=10
-                    )
+                        max_length=10,
+                    ),
                 ),
                 ('started_on', models.DateTimeField(db_index=True, null=True)),
                 ('ended_on', models.DateTimeField(db_index=True, null=True)),
@@ -209,8 +210,8 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        to='media.video'
-                    )
+                        to='media.video',
+                    ),
                 ),
             ],
             options={
@@ -228,24 +229,23 @@ class Migration(migrations.Migration):
                         editable=False,
                         max_length=12,
                         primary_key=True,
-                        serialize=False
-                    )
+                        serialize=False,
+                    ),
                 ),
                 (
                     'created_on',
-                    models.DateTimeField(auto_now_add=True, db_index=True)
+                    models.DateTimeField(auto_now_add=True, db_index=True),
                 ),
                 (
                     'modified_on',
-                    models.DateTimeField(auto_now=True, db_index=True)
+                    models.DateTimeField(auto_now=True, db_index=True),
                 ),
                 (
                     'file',
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models.
-                        _video_rendition_thumbnail_upload_to
-                    )
+                        upload_to=veems.media.models._video_rendition_thumbnail_upload_to,
+                    ),
                 ),
                 ('width', models.IntegerField(null=True)),
                 ('height', models.IntegerField(null=True)),
@@ -255,8 +255,8 @@ class Migration(migrations.Migration):
                     'media_file',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to='media.mediafile'
-                    )
+                        to='media.mediafile',
+                    ),
                 ),
             ],
             options={
@@ -281,32 +281,31 @@ class Migration(migrations.Migration):
                         editable=False,
                         max_length=12,
                         primary_key=True,
-                        serialize=False
-                    )
+                        serialize=False,
+                    ),
                 ),
                 (
                     'created_on',
-                    models.DateTimeField(auto_now_add=True, db_index=True)
+                    models.DateTimeField(auto_now_add=True, db_index=True),
                 ),
                 (
                     'modified_on',
-                    models.DateTimeField(auto_now=True, db_index=True)
+                    models.DateTimeField(auto_now=True, db_index=True),
                 ),
                 (
                     'file',
                     models.FileField(
                         storage=veems.media.storage_backends.MediaStorage,
-                        upload_to=veems.media.models.
-                        _video_rendition_segment_upload_to
-                    )
+                        upload_to=veems.media.models._video_rendition_segment_upload_to,
+                    ),
                 ),
                 ('segment_number', models.IntegerField()),
                 (
                     'media_file',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to='media.mediafile'
-                    )
+                        to='media.mediafile',
+                    ),
                 ),
             ],
             options={

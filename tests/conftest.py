@@ -23,11 +23,19 @@ def user(user_factory):
 
 
 @pytest.fixture
-def channel(user):
-    return services.create_channel(
-        name='My Channel',
-        user=user,
-        description='x' * 5000,
-        sync_videos_interested=True,
-        language='en',
-    )
+def channel_factory():
+    def make(*, user):
+        return services.create_channel(
+            name='My Channel',
+            user=user,
+            description='x' * 5000,
+            sync_videos_interested=True,
+            language='en',
+        )
+
+    return make
+
+
+@pytest.fixture
+def channel(user, channel_factory):
+    return channel_factory(user=user)

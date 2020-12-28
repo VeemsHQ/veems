@@ -12,7 +12,8 @@ class LoginRequiredTemplateView(TemplateView):
 
 
 class ChannelManagerTemplateView(
-    GlobalContextMixin, LoginRequiredTemplateView,
+    GlobalContextMixin,
+    LoginRequiredTemplateView,
 ):
     pass
 
