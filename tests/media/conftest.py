@@ -1,10 +1,8 @@
 from pathlib import Path
-from uuid import uuid4
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 import pytest
-from django.contrib.auth import get_user_model
 
 from veems.media.transcoder import transcoder_profiles
 from veems.media.transcoder.transcoder_executor import ffmpeg
@@ -13,23 +11,6 @@ from tests import constants
 
 TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
-
-
-@pytest.fixture
-def user_factory():
-    def make():
-        user = get_user_model().objects.create(
-            username=f'user{str(uuid4())[:5]}',
-        )
-        user.set_password(f'password{str(uuid4())}')
-        return user
-
-    return make
-
-
-@pytest.fixture
-def user(user_factory):
-    return user_factory()
 
 
 @pytest.fixture
