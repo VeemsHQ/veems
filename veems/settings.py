@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     'veems.user',
     'veems.media',
     'veems.home',
+    'veems.channel_manager',
+    'veems.channel',
 ]
 
 AUTH_USER_MODEL = 'user.User'
