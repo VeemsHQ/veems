@@ -29,9 +29,9 @@ Further design materials can be found [here](https://github.com/VeemsHQ/design).
 
 In order of priority.
 
-1. Uploading, transcoding of content, playlist video packaging ✅.
-2. Playback of video content (backend ✅, frontend).
-3. User & API authentication.
+1. Uploading, transcoding of content, playlist video packaging (backend ✅, frontend ⏳).
+2. Playback of video content (backend ✅, frontend ⏳).
+3. User & API authentication (backend ✅, frontend ⏳).
 4. Creation and management of "Channels".
 5. Channel Manager (basics).
     - Video Management.

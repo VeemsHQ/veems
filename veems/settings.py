@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_celery_beat',
     'django_celery_results',
+    'rest_framework',
     'veems.common',
     'veems.user',
     'veems.media',
@@ -147,6 +148,16 @@ STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
 STATICFILES_DIRS = (
     Path(__file__).parent.parent / 'static',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {

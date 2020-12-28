@@ -1,9 +1,16 @@
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from ..stub_data import VIDEOS, CHANNEL_SYNCS
 
 
-class IndexView(TemplateView):
+@method_decorator(login_required, name='dispatch')
+class LoginRequiredTemplateView(TemplateView):
+    pass
+
+
+class IndexView(LoginRequiredTemplateView):
     template_name = 'channel_manager/index.html'
 
     def get_context_data(self):
@@ -11,11 +18,11 @@ class IndexView(TemplateView):
         return data
 
 
-class IndexBlankView(TemplateView):
+class IndexBlankView(LoginRequiredTemplateView):
     template_name = 'channel_manager/index_blank.html'
 
 
-class VideosView(TemplateView):
+class VideosView(LoginRequiredTemplateView):
     template_name = 'channel_manager/videos.html'
 
     def get_context_data(self):
@@ -23,7 +30,7 @@ class VideosView(TemplateView):
         return data
 
 
-class MonetizationView(TemplateView):
+class MonetizationView(LoginRequiredTemplateView):
     template_name = 'channel_manager/monetization.html'
 
     def get_context_data(self):
@@ -31,11 +38,11 @@ class MonetizationView(TemplateView):
         return data
 
 
-class CustomizationView(TemplateView):
+class CustomizationView(LoginRequiredTemplateView):
     template_name = 'channel_manager/customization.html'
 
 
-class SyncView(TemplateView):
+class SyncView(LoginRequiredTemplateView):
     template_name = 'channel_manager/sync.html'
 
     def get_context_data(self):
@@ -43,5 +50,5 @@ class SyncView(TemplateView):
         return data
 
 
-class SyncBlankView(TemplateView):
+class SyncBlankView(LoginRequiredTemplateView):
     template_name = 'channel_manager/sync-blank.html'

@@ -6,8 +6,8 @@ pytestmark = pytest.mark.django_db
 MODULE = 'veems.media.upload_manager'
 
 
-def test_prepare():
-    upload, video = upload_manager.prepare(filename='MyFile.mp4')
+def test_prepare(user):
+    upload, video = upload_manager.prepare(user=user, filename='MyFile.mp4')
 
     assert isinstance(upload, models.Upload)
     assert upload.media_type == 'video'
@@ -44,9 +44,9 @@ class TestComplete:
         assert video.upload.status == 'completed'
 
 
-def test_get_presigned_upload_url(settings):
+def test_get_presigned_upload_url(settings, user):
     filename = 'MyFile.mp4'
-    upload = models.Upload.objects.create(media_type='video')
+    upload = models.Upload.objects.create(user=user, media_type='video')
 
     signed_url, object_key = upload_manager._get_presigned_upload_url(
         upload=upload,

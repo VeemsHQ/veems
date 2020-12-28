@@ -1,6 +1,7 @@
 from pathlib import Path
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
 from . import storage_backends
@@ -70,6 +71,7 @@ def _video_rendition_thumbnail_upload_to(instance, filename):
 
 
 class Upload(BaseModel):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     presigned_upload_url = models.URLField(max_length=1000)
     media_type = models.CharField(max_length=500)
     file = models.FileField(
