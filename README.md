@@ -5,6 +5,8 @@
 The code powering https://veems.tv.
 A next generation video sharing platform, with freedom of speech values.
 
+![https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg](https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg)
+
 ## Contributing
 
 We're actively looking for help with both frontend and backend development.
@@ -103,6 +105,12 @@ make test
 ```
 
 ## Usage
+
+### Importing seed data
+
+```bash
+python manage.py import_seed_data
+```
 
 ### Running the webserver
 

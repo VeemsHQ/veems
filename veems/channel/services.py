@@ -20,3 +20,8 @@ def create_channel(
 
 def get_channel(id):
     return models.Channel.objects.get(id=id)
+
+
+def get_channels():
+    # TODO: test
+    return models.Channel.objects.all()
