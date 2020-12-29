@@ -5,7 +5,6 @@ from rest_framework.views import exception_handler
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 
-TOO_MANY_REQUESTS = 429
 logger = logging.getLogger(__name__)
 
 
