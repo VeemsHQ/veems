@@ -1,3 +1,5 @@
 exclude_patterns:
 - "static/js/bootstrap-tagsinput.js"
 - "**/migrations/*.py"
+- "tests/**/*.py"
+- "tests/*.py"
