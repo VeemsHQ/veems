@@ -83,7 +83,7 @@ class TestUploadPrepare:
             ),
         }
 
-    def test_returns_403_when_attempting_to_upload_to_another_users_channel(
+    def test_returns_404_when_attempting_to_upload_to_another_users_channel(
         self, user_factory, api_client, channel_factory
     ):
         api_client, user = api_client
