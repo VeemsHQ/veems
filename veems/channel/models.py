@@ -17,3 +17,6 @@ class Channel(BaseModel):
         blank=False,
         default=None,
     )
+
+    def __str__(self):
+        return f'<{self.__class__.__name__} {self.id} {self.name}>'
