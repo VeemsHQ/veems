@@ -24,4 +24,4 @@ class Migration(migrations.Migration):
         ('user', '0001_initial'),
     ]
 
-    operations = [migrations.RunPython(create_superuser)]
+    operations = [migrations.RunPython(create_superuser, migrations.RunPython.noop)]
