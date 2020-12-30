@@ -1,4 +1,4 @@
-from ..stub_data import CHANNELS
+from ..channel import services as channel_services
 
 
 class GlobalContextMixin:
@@ -7,5 +7,7 @@ class GlobalContextMixin:
             context = super().get_context_data(*args, **kwargs)
         except AttributeError:
             context = {}
-        context['channels'] = CHANNELS
+        context['channels'] = channel_services.get_channels(
+            user_id=self.request.user.id
+        )
         return context

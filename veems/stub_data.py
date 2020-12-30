@@ -6,13 +6,6 @@ def earnings():
     return f'${randint(10, 500)}.{randint(10,50)}'
 
 
-CHANNELS = (
-    {'id': str(uuid4())[:20], 'name': 'Timcast'},
-    {'id': str(uuid4())[:20], 'name': 'Timcast IRL'},
-    {'id': str(uuid4())[:20], 'name': 'Tim Pool'},
-)
-
-
 CHANNEL_SYNCS = [
     {
         'veems_channel_name': 'SunlessKhan',

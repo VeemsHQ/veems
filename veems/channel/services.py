@@ -22,6 +22,9 @@ def get_channel(id):
     return models.Channel.objects.get(id=id)
 
 
-def get_channels():
+def get_channels(user_id=None):
     # TODO: test
-    return models.Channel.objects.all()
+    filters = {}
+    if user_id:
+        filters['user_id'] = user_id
+    return models.Channel.objects.filter(**filters)
