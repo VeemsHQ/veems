@@ -3,7 +3,6 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
 from ..stub_data import VIDEOS, CHANNEL_SYNCS
-from ..common.views import GlobalContextMixin
 
 
 @method_decorator(login_required, name='dispatch')
@@ -12,7 +11,6 @@ class LoginRequiredTemplateView(TemplateView):
 
 
 class ChannelManagerTemplateView(
-    GlobalContextMixin,
     LoginRequiredTemplateView,
 ):
     pass

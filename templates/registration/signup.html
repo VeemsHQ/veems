@@ -1,0 +1,28 @@
+{% extends '_base_public.html' %}
+
+{% load static %}
+{% block description %}Login to sheet2api.{% endblock %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+
+
+<main class="mx-auto col d-flex w-100 py-3 middle-col justify-content-between">
+  <div class="d-flex pt-2 w-100">
+    <div class="col p-0 m-0">
+
+      {% include '_modals/_modal_create_account.html' with show_on_load=1 %}
+        {% comment %} <h2>Sign up</h2>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit">Sign up</button>
+        </form> {% endcomment %}
+
+    </div>
+  </div>
+</main>
+{% endblock %}
+

@@ -1,13 +1,29 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.contrib.auth import views
 
 from .media import api_views
 from .home import views as home_views
+from .user import forms as user_forms, views as user_views
 from .channel_manager import views as channel_manager_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_views.IndexView.as_view(), name='index'),
+    path(
+        'accounts/signup/',
+        user_views.signup,
+        name='signup',
+    ),
+    path(
+        'accounts/login/',
+        views.LoginView.as_view(
+            authentication_form=user_forms.CustomAuthenticationForm
+        ),
+        name='login',
+    ),
+    path('accounts/', include('django.contrib.auth.urls')),
     path(
         'channel/',
         channel_manager_views.IndexView.as_view(),

@@ -1,7 +1,5 @@
 from django.views.generic import TemplateView
 
-from ..common.views import GlobalContextMixin
 
-
-class IndexView(GlobalContextMixin, TemplateView):
+class IndexView(TemplateView):
     template_name = 'home/index.html'

@@ -1,0 +1,13 @@
+{% extends 'base_public.html' %}
+
+{% block title %}You've been logged out{% endblock %}
+
+{% block content %}
+<div class="container d-flex w-100 h-100 pt-3 pb-3 mx-auto flex-column">
+  <div class="col-12 shadow-sm bg-white border rounded p-4">
+    <h1>Logged out</h1>
+    <p>You've been logged out.</p>
+    <p><a href="{% url 'view-index' %}">Return to the homepage</a>.</p>
+  </div>
+</div>
+{% endblock %}
