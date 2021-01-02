@@ -4,10 +4,20 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth import logout as logout_
+from django.contrib.auth import views
 
 from . import forms
 
 logger = logging.getLogger(__name__)
+
+
+class CustomLoginView(views.LoginView):
+    form_class = forms.CustomAuthenticationForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['login_form'] = context.pop('form')
+        return context
 
 
 def signup(request):

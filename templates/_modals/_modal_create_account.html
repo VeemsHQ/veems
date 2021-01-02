@@ -1,8 +1,7 @@
-{% if show_on_load %}
-<div class="modal fade show d-block" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-    {% else %}
-<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-{% endif %}
+<div
+class="modal fade {% if show_on_load %}show d-block{% endif %}" id="registerModal" tabindex="-1" role="dialog" data-keyboard="true" aria-labelledby="registerModalLabel" aria-hidden="true"
+style="{% if show_on_load %}position: inherit{% endif %}"
+>
     <div class="modal-dialog model-dialog-narrow modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">

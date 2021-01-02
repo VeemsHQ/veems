@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views
 
 from .media import api_views
 from .home import views as home_views
-from .user import forms as user_forms, views as user_views
+from .user import views as user_views
 from .channel_manager import views as channel_manager_views
 
 
@@ -23,9 +22,7 @@ urlpatterns = [
     ),
     path(
         'accounts/login/',
-        views.LoginView.as_view(
-            authentication_form=user_forms.CustomAuthenticationForm
-        ),
+        user_views.CustomLoginView.as_view(),
         name='login',
     ),
     path('accounts/', include('django.contrib.auth.urls')),
