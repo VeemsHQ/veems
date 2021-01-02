@@ -13,11 +13,7 @@ class Channel(BaseModel):
     description = models.TextField(max_length=5000)
     sync_videos_interested = models.BooleanField()
     language = models.CharField(
-        max_length=2,
-        validators=(validators.validate_language,),
-        null=False,
-        blank=False,
-        default=None,
+        max_length=2, validators=(validators.validate_language,), default=None
     )
 
     def __str__(self):
