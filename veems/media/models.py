@@ -71,7 +71,9 @@ def _video_rendition_thumbnail_upload_to(instance, filename):
 
 
 class Upload(BaseModel):
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    channel = models.ForeignKey(
+        Channel, on_delete=models.CASCADE, related_name='uploads'
+    )
     presigned_upload_url = models.URLField(max_length=1000)
     media_type = models.CharField(max_length=500)
     file = models.FileField(
@@ -92,7 +94,9 @@ class Upload(BaseModel):
 
 class Video(BaseModel):
     upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    channel = models.ForeignKey(
+        Channel, on_delete=models.CASCADE, related_name='videos'
+    )
     title = models.CharField(max_length=500)
     visibility = models.CharField(
         max_length=10,

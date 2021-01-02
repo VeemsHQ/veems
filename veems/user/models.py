@@ -6,14 +6,14 @@ from ..common.models import BaseModel
 
 
 class User(BaseModel, AbstractUser):
-    email = models.EmailField(_('email address'), null=False, unique=True)
+    email = models.EmailField(_('email address'), unique=True)
     username = models.CharField(
         _('username'),
         max_length=150,
         unique=False,
         null=True, blank=True,
     )
-    sync_videos_interested = models.BooleanField(null=False, default=False)
+    sync_videos_interested = models.BooleanField(default=False)
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'email'
 

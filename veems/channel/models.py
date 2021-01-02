@@ -6,10 +6,12 @@ from ..common import validators
 
 
 class Channel(BaseModel):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name='channels'
+    )
     name = models.CharField(max_length=60)
     description = models.TextField(max_length=5000)
-    sync_videos_interested = models.BooleanField(null=False)
+    sync_videos_interested = models.BooleanField()
     language = models.CharField(
         max_length=2,
         validators=(validators.validate_language,),
