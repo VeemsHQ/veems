@@ -37,6 +37,7 @@ class TestSignup:
         )
         assert get_user_model().objects.get(
             email=valid_data['email'],
+            username=valid_data['email'],
             sync_videos_interested=valid_data['sync_videos_interested'],
         )
 
@@ -51,6 +52,7 @@ class TestSignup:
         assert response.url == next_path
         assert get_user_model().objects.get(
             email=valid_data['email'],
+            username=valid_data['email'],
             sync_videos_interested=valid_data['sync_videos_interested'],
         )
 

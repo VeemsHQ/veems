@@ -43,7 +43,7 @@ class UserEmailField(forms.EmailField):
 
 class CustomUserCreationForm(UserCreationForm):
     email = UserEmailField()
-    sync_videos_interested = forms.BooleanField(required=True)
+    sync_videos_interested = forms.BooleanField(required=False)
 
     class Meta:
         model = get_user_model()

@@ -8,8 +8,6 @@ def global_context(request):
     context['channels'] = channel_services.get_channels(
         user_id=request.user.id
     )
-    context['login_form'] = user_forms.CustomAuthenticationForm(
-        request, prefix='login'
-    )
+    context['login_form'] = user_forms.CustomAuthenticationForm(request)
     context['next'] = request.GET.get('next') or ''
     return context

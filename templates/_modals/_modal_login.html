@@ -20,6 +20,7 @@ style="{% if show_on_load %}position: inherit{% endif %}"
                             <p class="alert alert-danger">{{error}}</p>
                             {% endfor %}
                             {% endfor %}
+
                             {% for field in login_form %}
                             <div class="form-group">
                                 {{ field }}
