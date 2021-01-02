@@ -3,7 +3,7 @@ from ..user import forms as user_forms
 
 
 def global_context(request):
-    # TODO: test
+    """Context which is applied to all views."""
     context = {}
     context['channels'] = channel_services.get_channels(
         user_id=request.user.id
