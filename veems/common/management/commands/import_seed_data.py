@@ -18,6 +18,7 @@ def _run():
             email=row['user']['email'],
         )
         user.set_password(row['user']['password'])
+        user.save()
         for channel in row['channels']:
             channel_services.create_channel(
                 name=channel['name'],

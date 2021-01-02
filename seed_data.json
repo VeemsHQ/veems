@@ -1,7 +1,7 @@
 [{
 	"user": {
-		"username": "testuser1",
-		"email": "testuser1@veems.tv",
+		"username": null,
+		"email": "testuser0@veems.tv",
 		"password": "password"
 	},
 	"channels": [{
