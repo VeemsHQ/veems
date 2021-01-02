@@ -8,7 +8,6 @@ from http.client import (
 )
 import json
 
-from rest_framework.test import APIClient
 import pytest
 import m3u8
 
@@ -18,30 +17,6 @@ from tests import constants
 pytestmark = pytest.mark.django_db
 MODULE = 'veems.media.api_views'
 VIDEO_PATH = constants.VID_360P_24FPS
-
-
-@pytest.fixture
-def api_client(user_factory):
-    user = user_factory()
-    client = APIClient()
-    client.force_authenticate(user=user)
-    return client, user
-
-
-@pytest.fixture
-def api_client_factory(user_factory):
-    def make():
-        user = user_factory()
-        client = APIClient()
-        client.force_authenticate(user=user)
-        return client, user
-
-    return make
-
-
-@pytest.fixture
-def api_client_no_auth():
-    return APIClient()
 
 
 class TestUploadPrepare:

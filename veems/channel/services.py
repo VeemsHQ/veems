@@ -18,8 +18,11 @@ def create_channel(
     )
 
 
-def get_channel(id):
-    return models.Channel.objects.get(id=id)
+def get_channel(id, user_id=None):
+    filters = {'id': id}
+    if user_id:
+        filters['user_id'] = user_id
+    return models.Channel.objects.get(**filters)
 
 
 def get_channels(user_id=None):

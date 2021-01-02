@@ -1,6 +1,8 @@
 from uuid import uuid4
+
 import pytest
 from django.contrib.auth import get_user_model
+from rest_framework.test import APIClient
 
 from veems.channel import services
 
@@ -42,3 +44,27 @@ def channel_factory():
 @pytest.fixture
 def channel(user, channel_factory):
     return channel_factory(user=user)
+
+
+@pytest.fixture
+def api_client(user_factory):
+    user = user_factory()
+    client = APIClient()
+    client.force_authenticate(user=user)
+    return client, user
+
+
+@pytest.fixture
+def api_client_factory(user_factory):
+    def make():
+        user = user_factory()
+        client = APIClient()
+        client.force_authenticate(user=user)
+        return client, user
+
+    return make
+
+
+@pytest.fixture
+def api_client_no_auth():
+    return APIClient()
