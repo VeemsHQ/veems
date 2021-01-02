@@ -8,8 +8,11 @@ from veems.channel import services
 @pytest.fixture
 def user_factory():
     def make():
+        unique = f'user{str(uuid4())[:5]}'
+        email = f'{unique}@veems.tv'
         user = get_user_model().objects.create(
-            username=f'user{str(uuid4())[:5]}',
+            username=email,
+            email=email,
         )
         user.set_password(f'password{str(uuid4())}')
         return user

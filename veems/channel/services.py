@@ -23,7 +23,6 @@ def get_channel(id):
 
 
 def get_channels(user_id=None):
-    # TODO: test
     filters = {}
     if user_id:
         filters['user_id'] = user_id
