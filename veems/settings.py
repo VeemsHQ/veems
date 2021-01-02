@@ -239,3 +239,5 @@ CELERY_IMPORTS = [
     'veems.media.upload_manager',
     'veems.media.transcoder.manager',
 ]
+
+DEFAULT_POST_SIGNUP_REDIRECT_VIEW_NAME = 'index'

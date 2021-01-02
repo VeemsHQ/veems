@@ -13,6 +13,7 @@ class User(BaseModel, AbstractUser):
         unique=False,
         null=True, blank=True,
     )
+    sync_videos_interested = models.BooleanField(null=False, default=False)
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'email'
 
