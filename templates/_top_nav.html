@@ -29,6 +29,7 @@
 
         {% if request.user.is_authenticated %}
         <a href="{% url 'channel-manager-index' %}" class="ml-3 rounded-circle d-flex justify-content-center avatar">
+            <!-- TODO: update this image to one provided by the backend -->
             <img class="d-block rounded-circle align-self-center" src="https://i.imgur.com/AhSGyhc.png" /></a>
         {% else %}
             <a href="{% url 'login' %}" data-toggle="modal" data-target="#loginModal" class="ml-3 d-flex justify-content-center btn btn-outline-primary">Sign in</a>
