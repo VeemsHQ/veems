@@ -11,5 +11,5 @@ def global_context(request):
     context['login_form'] = user_forms.CustomAuthenticationForm(
         request, prefix='login'
     )
-    context['next'] = request.GET.get('next')
+    context['next'] = request.GET.get('next') or ''
     return context

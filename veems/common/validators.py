@@ -6,4 +6,4 @@ def validate_language(value):
     try:
         languages.get(alpha2=value)
     except KeyError as exc:
-        raise ValidationError('fdf') from exc
+        raise ValidationError('Invalid language') from exc
