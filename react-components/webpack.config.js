@@ -7,7 +7,7 @@ const nodeSass = require('node-sass')
 module.exports = {
   devtool: 'source-map',
   entry: {
-    magna: './react-components/src/bundle.js',
+    app: './react-components/src/bundle.js',
     // styles: './core/sass/main.scss',
   },
   output: {
@@ -97,6 +97,6 @@ module.exports = {
       // copy assets needed by CSS files as they are not automatically moved to dist foler by React
       { from: 'react-components/assets/stylesheet-assets/', to: '../../static/images/' },
     ]),
-    new RemovePlugin({ after: { include: ['./react-components/dist/images/', './react-components/dist/fonts/', './react-components/dist/styles.js','./react-components/dist/styles.js.map', './react-components/dist/magna.css', './react-components/dist/magna.css.map'] } }),
+    new RemovePlugin({ after: { include: ['./react-components/dist/images/', './react-components/dist/fonts/', './react-components/dist/styles.js','./react-components/dist/styles.js.map', './react-components/dist/app.css', './react-components/dist/app.css.map'] } }),
   ],
 }
