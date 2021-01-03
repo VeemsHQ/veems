@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     'veems.user',
     'veems.media',
     'veems.home',
+    'veems.channel_manager',
+    'veems.channel',
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -106,6 +108,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'veems.common.context_processors.global_context'
             ],
         },
     },
@@ -148,6 +151,9 @@ STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
 STATICFILES_DIRS = (Path(__file__).parent.parent / 'static',)
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': (
+        'veems.common.exception_handler.api_exception_handler'
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     ),
@@ -233,3 +239,7 @@ CELERY_IMPORTS = [
     'veems.media.upload_manager',
     'veems.media.transcoder.manager',
 ]
+
+DEFAULT_POST_SIGNUP_REDIRECT_VIEW_NAME = 'index'
+LOGIN_REDIRECT_URL = 'index'
+DEFAULT_POST_LOGOUT_REDIRECT_VIEW_NAME = 'index'

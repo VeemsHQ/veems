@@ -1,9 +1,25 @@
+<p align="center">
+<img src="https://i.imgur.com/H1rXKKv.png" width="300"/>
+</p>
+
+<hr>
+
 # veems
 
 **An open-source platform for online video.**
 
 The code powering https://veems.tv.
 A next generation video sharing platform, with freedom of speech values.
+
+![https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg](https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg)
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/5924e6affd4354f0af97/maintainability)](https://codeclimate.com/github/VeemsHQ/veems/maintainability)
+
+## Stay in touch
+
+- [Twitter](https://twitter.com/veemshq)
+- [Discord](https://discord.gg/RjCZMtZ)
+- [Twitch.tv](https://www.twitch.tv/richardarpanet)
 
 ## Contributing
 
@@ -32,7 +48,7 @@ In order of priority.
 1. Uploading, transcoding of content, playlist video packaging (backend ✅, frontend ⏳).
 2. Playback of video content (backend ✅, frontend ⏳).
 3. User & API authentication (backend ✅, frontend ⏳).
-4. Creation and management of "Channels".
+4. Creation and management of "Channels" (backend ✅, frontend ⏳).
 5. Channel Manager (basics).
     - Video Management.
     - Channel customisation.
@@ -104,10 +120,17 @@ make test
 
 ## Usage
 
+### Importing seed data
+
+```bash
+python manage.py import_seed_data
+```
+
 ### Running the webserver
 
 ```bash
 make start-deps
+python manage.py collectstatic --noinput
 python manage.py migrate --noinput
 python manage.py runserver
 ```
@@ -121,8 +144,9 @@ python manage.py runserver
 
 ## Architectural Concepts
 
-- **Upload** -- a raw video file upload into the system
-    - **Video** -- a video, which you can view via the website
-        - **Video Rendition** -- a version of the Video file at a specific resolution, bitrate, etc. e.g. 1080p
-            - **Video Rendition Segment** -- a small chunk of the Video Rendition video file to be served to the video player
-            - **Video Rendition Thumbnail** -- a thumbnail at a certain timestamp within the Video Rendition video file
+- **Channel** -- a Channel containing many Videos.
+    - **Upload** -- a raw video file upload into the system
+        - **Video** -- a video, which you can view via the website
+            - **Video Rendition** -- a version of the Video file at a specific resolution, bitrate, etc. e.g. 1080p
+                - **Video Rendition Segment** -- a small chunk of the Video Rendition video file to be served to the video player
+                - **Video Rendition Thumbnail** -- a thumbnail at a certain timestamp within the Video Rendition video file

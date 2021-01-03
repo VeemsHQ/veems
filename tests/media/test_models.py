@@ -63,9 +63,11 @@ def test_video_rendition_thumbnail_upload_to(video_rendition):
 
 
 class TestUpload:
-    def test_set_file_using_uploaded_file(self):
+    def test_set_file_using_uploaded_file(self, channel):
         upload = models.Upload.objects.create(
-            presigned_upload_url='https://example.com', media_type='video'
+            presigned_upload_url='https://example.com',
+            media_type='video',
+            channel=channel,
         )
         file_ = SimpleUploadedFile(
             'video.mp4',
@@ -80,12 +82,14 @@ class TestUpload:
         assert upload.file.url.startswith('http')
         assert 'AccessKeyId' in upload.file.url
 
-    def test_file_uploaded_outside_the_applocation(self, settings):
+    def test_file_uploaded_outside_the_applocation(self, settings, channel):
         # This tests the flow where the file is uploaded to the storage
         # bucket completely outside of the application itself
         # (on the client side using pre-signed-url upload process
         upload = models.Upload.objects.create(
-            presigned_upload_url='https://example.com', media_type='video'
+            presigned_upload_url='https://example.com',
+            media_type='video',
+            channel=channel,
         )
 
         uploaded_filename = f'{upload.id}/video.mp4'

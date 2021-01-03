@@ -3,10 +3,8 @@ from pathlib import Path
 from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
 
 from django.http import HttpResponse
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 
 from . import upload_manager, serializers, models, services
@@ -23,10 +21,18 @@ def upload_prepare(request):
         return Response(
             {'detail': 'Filename not provided'}, status=BAD_REQUEST
         )
+    try:
+        channel_id = request.data['channel_id']
+    except KeyError:
+        return Response(
+            {'detail': 'channel_id not provided'}, status=BAD_REQUEST
+        )
     if not Path(filename).suffix:
         return Response({'detail': 'Filename invalid'}, status=BAD_REQUEST)
     upload, video = upload_manager.prepare(
-        user=request.user, filename=filename
+        user=request.user,
+        filename=filename,
+        channel_id=channel_id,
     )
     return Response(
         {
@@ -40,15 +46,8 @@ def upload_prepare(request):
 
 @api_view(['PUT'])
 def upload_complete(request, upload_id):
-    try:
-        models.Upload.objects.get(id=upload_id, user_id=request.user.id)
-    except ObjectDoesNotExist:
-        logger.warning(
-            'User %s attempted to complete upload %s',
-            request.user.id,
-            upload_id,
-        )
-        raise PermissionDenied(detail='You do not have permission to do that')
+    # Verify the auth'd user owns this upload.
+    models.Upload.objects.get(id=upload_id, channel__user_id=request.user.id)
     upload_manager.complete.delay(upload_id)
     return Response({}, status=OK)
 

@@ -20,9 +20,9 @@
                 <div class="title-band d-flex align-items-center mt-5 pt-5 pb-2 px-0 mb-0 border-bottom">
                     <h1 class="h2 m-0 p-0 d-inline-block">Channel Manager</h1>
                     <select class="custom-select custom-select-sm d-inline-block w-auto ml-3">
-                        <option selected>Timcast</option>
-                        <option value="1">Timcast IRL</option>
-                        <option value="2">Tim Pool</option>
+                        {% for channel in channels %}
+                        <option value="{{channel.id}}">{{channel.name}}</option>
+                        {% endfor %}
                       </select>
                 </div>
                 <div class="flex-row border-bottom mt-0 mb-4">

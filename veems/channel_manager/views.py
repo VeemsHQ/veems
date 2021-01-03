@@ -10,45 +10,55 @@ class LoginRequiredTemplateView(TemplateView):
     pass
 
 
-class IndexView(LoginRequiredTemplateView):
+class ChannelManagerTemplateView(
+    LoginRequiredTemplateView,
+):
+    pass
+
+
+class IndexView(ChannelManagerTemplateView):
     template_name = 'channel_manager/index.html'
 
-    def get_context_data(self):
-        data = {'top_videos': VIDEOS[:3]}
-        return data
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['top_videos'] = VIDEOS[:3]
+        return context
 
 
-class IndexBlankView(LoginRequiredTemplateView):
+class IndexBlankView(ChannelManagerTemplateView):
     template_name = 'channel_manager/index_blank.html'
 
 
-class VideosView(LoginRequiredTemplateView):
+class VideosView(ChannelManagerTemplateView):
     template_name = 'channel_manager/videos.html'
 
-    def get_context_data(self):
-        data = {'videos': VIDEOS[:6]}
-        return data
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['videos'] = VIDEOS[:6]
+        return context
 
 
-class MonetizationView(LoginRequiredTemplateView):
+class MonetizationView(ChannelManagerTemplateView):
     template_name = 'channel_manager/monetization.html'
 
-    def get_context_data(self):
-        data = {'videos': VIDEOS[:5]}
-        return data
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['videos'] = VIDEOS[:6]
+        return context
 
 
-class CustomizationView(LoginRequiredTemplateView):
+class CustomizationView(ChannelManagerTemplateView):
     template_name = 'channel_manager/customization.html'
 
 
-class SyncView(LoginRequiredTemplateView):
+class SyncView(ChannelManagerTemplateView):
     template_name = 'channel_manager/sync.html'
 
-    def get_context_data(self):
-        data = {'syncs': CHANNEL_SYNCS}
-        return data
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['syncs'] = CHANNEL_SYNCS
+        return context
 
 
-class SyncBlankView(LoginRequiredTemplateView):
+class SyncBlankView(ChannelManagerTemplateView):
     template_name = 'channel_manager/sync-blank.html'

@@ -1,9 +1,9 @@
 from pathlib import Path
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
+from ..channel.models import Channel
 from . import storage_backends
 
 STORAGE_BACKEND = storage_backends.MediaStorage
@@ -71,7 +71,9 @@ def _video_rendition_thumbnail_upload_to(instance, filename):
 
 
 class Upload(BaseModel):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    channel = models.ForeignKey(
+        Channel, on_delete=models.CASCADE, related_name='uploads'
+    )
     presigned_upload_url = models.URLField(max_length=1000)
     media_type = models.CharField(max_length=500)
     file = models.FileField(
@@ -83,9 +85,18 @@ class Upload(BaseModel):
         default='draft',
     )
 
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} {self.id} '
+            f'{self.channel_id} {self.status}>'
+        )
+
 
 class Video(BaseModel):
     upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
+    channel = models.ForeignKey(
+        Channel, on_delete=models.CASCADE, related_name='videos'
+    )
     title = models.CharField(max_length=500)
     visibility = models.CharField(
         max_length=10,
@@ -93,6 +104,12 @@ class Video(BaseModel):
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.channel_id} {self.title}>'
+        )
 
 
 class VideoRendition(BaseModel):
@@ -123,6 +140,12 @@ class VideoRendition(BaseModel):
         storage=STORAGE_BACKEND,
     )
 
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.name} {self.width} {self.height}>'
+        )
+
 
 class VideoRenditionSegment(BaseModel):
     video_rendition = models.ForeignKey(
@@ -132,6 +155,12 @@ class VideoRenditionSegment(BaseModel):
         upload_to=_video_rendition_segment_upload_to, storage=STORAGE_BACKEND
     )
     segment_number = models.IntegerField()
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.video_rendition_id} {self.segment_number}>'
+        )
 
     class Meta:
         unique_together = ('video_rendition', 'segment_number')
@@ -148,6 +177,12 @@ class VideoRenditionThumbnail(BaseModel):
     height = models.IntegerField(null=True)
     time_offset_secs = models.IntegerField(null=True)
     ext = models.CharField(max_length=4, null=False)
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.width} {self.height}>'
+        )
 
 
 class TranscodeJob(BaseModel):
