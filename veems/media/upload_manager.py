@@ -28,9 +28,10 @@ def _get_presigned_upload_url(*, upload, filename):
     return response, object_name
 
 
-def prepare(*, user, filename):
+def prepare(*, user, filename, channel_id):
     logger.info('Preparing new upload for user %s...', user.id)
-    upload = models.Upload.objects.create(user=user, media_type='video')
+    channel = models.Channel.objects.get(id=channel_id, user=user)
+    upload = models.Upload.objects.create(media_type='video', channel=channel)
     upload.presigned_upload_url, upload.file.name = _get_presigned_upload_url(
         upload=upload, filename=filename
     )
@@ -38,6 +39,7 @@ def prepare(*, user, filename):
     video = models.Video.objects.create(
         upload=upload,
         visibility='draft',
+        channel=channel,
     )
     logger.info(
         'Done preparing upload for user %s, draft video %s', user.id, video.id

@@ -5,11 +5,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="{% block description %}Default description.{% endblock %}">
+    <meta name="title" content="Veems">
     <meta name="author" content="">
-
-    <title>Veems</title>
-
+    <title>{% block title %}Your world in video{% endblock %} | Veems</title>
     <link href="{% static 'css/bootstrap-custom.css' %}" rel="stylesheet">
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
     <link href="{% static 'css/comments.css' %}" rel="stylesheet">

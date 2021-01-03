@@ -1,10 +1,8 @@
 from pathlib import Path
-from uuid import uuid4
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 import pytest
-from django.contrib.auth import get_user_model
 
 from veems.media.transcoder import transcoder_profiles
 from veems.media.transcoder.transcoder_executor import ffmpeg
@@ -16,25 +14,8 @@ VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
 
 
 @pytest.fixture
-def user_factory():
-    def make():
-        user = get_user_model().objects.create(
-            username=f'user{str(uuid4())[:5]}',
-        )
-        user.set_password(f'password{str(uuid4())}')
-        return user
-
-    return make
-
-
-@pytest.fixture
-def user(user_factory):
-    return user_factory()
-
-
-@pytest.fixture
-def upload(upload_factory, user):
-    return upload_factory(user=user, video_path=VIDEO_PATH_2160_30FPS)
+def upload(upload_factory):
+    return upload_factory(video_path=VIDEO_PATH_2160_30FPS)
 
 
 @pytest.fixture
@@ -68,15 +49,15 @@ def simple_uploaded_file_factory():
 
 
 @pytest.fixture
-def upload_factory():
-    def make(video_path, user):
+def upload_factory(channel):
+    def make(video_path):
         with video_path.open('rb') as file_:
             file_contents = file_.read()
         upload = models.Upload.objects.create(
             presigned_upload_url='htts://example.com/s3-blah',
             media_type='video',
             file=SimpleUploadedFile(video_path.name, file_contents),
-            user=user,
+            channel=channel,
         )
         return upload
 
@@ -84,10 +65,12 @@ def upload_factory():
 
 
 @pytest.fixture
-def video_factory(upload_factory, user):
+def video_factory(upload_factory, channel):
     def make(video_path, **kwargs):
-        upload = upload_factory(user=user, video_path=video_path)
-        return models.Video.objects.create(upload=upload, **kwargs)
+        upload = upload_factory(video_path=video_path)
+        return models.Video.objects.create(
+            upload=upload, channel=channel, **kwargs
+        )
 
     return make
 

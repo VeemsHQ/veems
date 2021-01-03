@@ -1,13 +1,32 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from .media import api_views
 from .home import views as home_views
+from .user import views as user_views
 from .channel_manager import views as channel_manager_views
+from .channel import api_views as channel_api_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_views.IndexView.as_view(), name='index'),
+    path(
+        'accounts/signup/',
+        user_views.signup,
+        name='signup',
+    ),
+    path(
+        'accounts/logout/',
+        user_views.logout,
+        name='logout',
+    ),
+    path(
+        'accounts/login/',
+        user_views.CustomLoginView.as_view(),
+        name='login',
+    ),
+    path('accounts/', include('django.contrib.auth.urls')),
     path(
         'channel/',
         channel_manager_views.IndexView.as_view(),
@@ -42,6 +61,11 @@ urlpatterns = [
         'channel/sync-blank/',
         channel_manager_views.SyncBlankView.as_view(),
         name='channel-manager-sync-blank',
+    ),
+    path('api/v1/channel/', channel_api_views.ChannelAPIView.as_view()),
+    path(
+        'api/v1/channel/<slug:channel_id>/',
+        channel_api_views.ChannelDetailAPIView.as_view(),
     ),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
     path(
