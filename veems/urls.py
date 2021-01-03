@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 from django_registration.backends.activation.views import (
-    RegistrationView, ActivationView
+    RegistrationView,
+    ActivationView,
 )
 
 from .media import api_views
@@ -14,11 +16,6 @@ from .channel import api_views as channel_api_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_views.IndexView.as_view(), name='index'),
-    path(
-        'accounts/signup/',
-        user_views.signup,
-        name='signup',
-    ),
     path(
         'accounts/logout/',
         user_views.logout,
@@ -35,6 +32,13 @@ urlpatterns = [
             form_class=user_forms.CustomRegistrationForm,
         ),
         name='django_registration_register',
+    ),
+    path(
+        'accounts/activate/complete/',
+        TemplateView.as_view(
+            template_name='django_registration/activation_complete.html'
+        ),
+        name='django_registration_activation_complete',
     ),
     path(
         'accounts/activate/<str:activation_key>/',

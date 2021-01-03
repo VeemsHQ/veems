@@ -245,8 +245,7 @@ CELERY_IMPORTS = [
     'veems.media.transcoder.manager',
 ]
 
-DEFAULT_POST_SIGNUP_REDIRECT_VIEW_NAME = 'index'
-LOGIN_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = 'channel-manager-index'
 DEFAULT_POST_LOGOUT_REDIRECT_VIEW_NAME = 'index'
 
 REGISTRATION_OPEN = True

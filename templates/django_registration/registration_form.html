@@ -1,16 +1,49 @@
-{% extends '_base_public.html' %}
+{% extends '_page_with_static_modal.html' %}
 
-{% load static %}
-{% block description %}Signup.{% endblock %}
-{% block title %}Signup{% endblock %}
+{% block description %}Create your Veems Account{% endblock %}
+{% block title %}Create your Veems Account{% endblock %}
 
-{% block content %}
-<main class="mx-auto col d-flex w-100 py-3 middle-col justify-content-between">
-  <div class="d-flex pt-2 w-100">
-    <div class="col p-0 m-0">
-      {% include '_modals/_modal_create_account.html' with show_on_load=1 %}
-    </div>
-  </div>
-</main>
+{% block modal_title %}
+Create your Veems Account
 {% endblock %}
 
+{% block modal_content %}
+<form id="signup-form" method="post" action="{% url 'django_registration_register' %}?next={{next}}" class="w-100">
+  {% csrf_token %}
+  <div class="dp-3">
+      {% for field, errors in form.errors.items %}
+      {% for error in errors %}
+      <p class="alert alert-danger">{{error}}</p>
+      {% endfor %}
+      {% endfor %}
+      <div class="form-group">
+          <input type="email" class="form-control" id="id_email" name="email" placeholder="Your email address" required>
+          <div class="mt-1 mx-2 text-muted" style="font-size: 0.9em">You'll need to confirm that
+              this email belongs to you.</div>
+      </div>
+      <div class="form-group row">
+          <div class="col pr-0">
+              <input type="password" class="form-control" placeholder="Password" id="id_password1" name="password1" required>
+          </div>
+          <div class="col">
+              <input type="password" class="form-control" placeholder="Confirm" id="id_password2" name="password2" required>
+          </div>
+      </div>
+      <div class="form-group">
+          <label class="custom-control custom-checkbox d-flex align-items-center">
+              <input type="checkbox" class="custom-control-input" id="id_sync_videos_interested" name="sync_videos_interested">
+              <span class="custom-control-label">Bring over my YouTube channel videos</span>
+              <i class="material-icons align-self-center ml-1" style="font-size:1.3em"
+                  data-toggle="tooltip" data-placement="top"
+                  title="Check this if you're interested in syncing all of your YouTube channel(s) videos over to Veems, for free!">help</i>
+          </label>
+      </div>
+      <p class="text-muted mt-1 mx-2 text-muted">By creating an account, you agree to our <a
+              href="#">Terms & Conditions</a> and <a href="#">Community Guidelines</a>.</p>
+      <div class="form-group d-flex flex-row align-items-center justify-content-center">
+          <button type="submit" class="btn btn-primary">Create Account</button>
+          <a href="{% url 'login' %}" class="ml-3 text-muted btn">Sign in instead</a>
+      </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,1 +1,22 @@
-activation_complete
+{% extends '_page_with_static_modal.html' %}
+
+{% block description %}Account Activation Complete{% endblock %}
+{% block title %}Account Activation Complete{% endblock %}
+
+{% block modal_title %}
+Account Activation Complete
+{% endblock %}
+
+{% block modal_content %}
+
+<div class=" w-100">
+    <p class="alert alert-success mb-0">Congratulations, your account has been activated!</p>
+    <div class="mt-4">
+        <div class="d-flex flex-row align-items-center justify-content-center">
+            <div>
+                <a href="{% url 'channel-manager-index' %}" class="btn btn-primary">Go to Channel Manager</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

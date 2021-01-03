@@ -41,9 +41,7 @@ style="{% if show_on_load %}position: inherit{% endif %}"
                 <div
                     class="w-100 py-4 border-top px-3 bg-secondary d-flex flex-column align-items-center justify-content-center">
                     <div class="h4 mb-3">Don't have a Veems account yet?</div>
-                    <a href="{% url 'signup' %}?next={{next}}" class="btn btn-primary" data-toggle="modal"
-                        data-target="#registerModal">Create your
-                        Veems account now</a>
+                    <a href="{% url 'django_registration_register' %}?next={{next}}" class="btn btn-primary">Create your Veems account now</a>
                 </div>
             </div>
         </div>
