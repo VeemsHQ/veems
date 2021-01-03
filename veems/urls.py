@@ -5,6 +5,7 @@ from .media import api_views
 from .home import views as home_views
 from .user import views as user_views
 from .channel_manager import views as channel_manager_views
+from .channel import api_views as channel_api_views
 
 
 urlpatterns = [
@@ -60,6 +61,11 @@ urlpatterns = [
         'channel/sync-blank/',
         channel_manager_views.SyncBlankView.as_view(),
         name='channel-manager-sync-blank',
+    ),
+    path('api/v1/channel/', channel_api_views.ChannelAPIView.as_view()),
+    path(
+        'api/v1/channel/<slug:channel_id>/',
+        channel_api_views.ChannelDetailAPIView.as_view(),
     ),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
     path(

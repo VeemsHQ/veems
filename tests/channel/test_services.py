@@ -13,15 +13,21 @@ def test_create_channel(user, channel):
     assert channel.sync_videos_interested is True
 
 
-def test_get_channel(user, channel):
-    record = services.get_channel(id=channel.id)
+class TestGetChannel:
+    def test(self, user, channel):
+        record = services.get_channel(id=channel.id)
 
-    assert record.id == channel.id
-    assert isinstance(record, services.models.Channel)
+        assert record.id == channel.id
+        assert isinstance(record, services.models.Channel)
+
+    def test_with_user_id(self, user, channel):
+        record = services.get_channel(id=channel.id, user_id=user.id)
+
+        assert record.id == channel.id
+        assert isinstance(record, services.models.Channel)
 
 
 class TestGetChannels:
-
     def test(self, user_factory, channel_factory):
         channel_factory(user=user_factory())
         channel_factory(user=user_factory())
