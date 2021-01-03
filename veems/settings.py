@@ -31,6 +31,10 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ['DEBUG'].lower() == 'true'
+if DEBUG is False:
+    HOST_SCHEME = 'https://'
+else:
+    HOST_SCHEME = 'http://'
 
 ALLOWED_HOSTS = []
 
@@ -108,7 +112,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'veems.common.context_processors.global_context'
+                'django_settings_export.settings_export',
+                'veems.common.context_processors.global_context',
             ],
         },
     },
@@ -243,3 +248,19 @@ CELERY_IMPORTS = [
 DEFAULT_POST_SIGNUP_REDIRECT_VIEW_NAME = 'index'
 LOGIN_REDIRECT_URL = 'index'
 DEFAULT_POST_LOGOUT_REDIRECT_VIEW_NAME = 'index'
+
+REGISTRATION_OPEN = True
+ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
+
+SITE_DOMAIN = os.environ['SITE_DOMAIN']
+SENDGRID_API_KEY = os.environ.get('EMAIL_SERVICE_API_KEY')
+if SENDGRID_API_KEY:
+    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+DEFAULT_FROM_EMAIL = 'support@veems.tv'
+
+
+SETTINGS_EXPORT = [
+    'SITE_DOMAIN',
+    'HOST_SCHEME',
+]

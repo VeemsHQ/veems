@@ -10,7 +10,7 @@ style="{% if show_on_load %}position: inherit{% endif %}"
             <div class="modal-body p-0">
                 <div class="p-3 w-100 d-inline-flex flex-column align-items-center justify-content-center">
 
-                    <form id="signup-form" method="post" action="{% url 'signup' %}?next={{next}}" class="w-100">
+                    <form id="signup-form" method="post" action="{% url 'django_registration_register' %}?next={{next}}" class="w-100">
                         {% csrf_token %}
                         <div class="dp-3">
                             {% for field, errors in form.errors.items %}

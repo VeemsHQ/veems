@@ -1,0 +1,5 @@
+Thanks for joining Veems!
+
+Please click the link below to activate your account:
+
+{{settings.HOST_SCHEME}}{{settings.SITE_DOMAIN}}{% url 'django_registration_activate' activation_key %}

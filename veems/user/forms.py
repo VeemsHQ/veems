@@ -2,6 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django_registration.forms import RegistrationForm
 from django.utils.translation import gettext_lazy as _
 
 
@@ -48,3 +49,8 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = get_user_model()
         fields = ('email', 'sync_videos_interested')
+
+
+class CustomRegistrationForm(RegistrationForm):
+    class Meta(RegistrationForm.Meta):
+        model = get_user_model()
