@@ -1,14 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import ReactDOM from 'react-dom'
 
 // Redux
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-// Components
-import Play from '../Utilities/Play';
 
 // Styling
 export const Container = styled.div`
@@ -21,24 +18,23 @@ export const Container = styled.div`
     padding: 100px 10% 100px 10%;
 `;
 
-export const Upload = ({
+export const Hello = ({
   children,
   ...props
 }) => {
   return (
     <Container {...props}>
-      {children}
-      <Play />
+      Hello world, I'm a React Component
     </Container>
   );
 };
 
 /** Props Types */
-Upload.propTypes = {
+Hello.propTypes = {
 };
 
 /** Default Props. */
-Upload.defaultProps = {
+Hello.defaultProps = {
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -48,4 +44,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(Upload);
+// No idea what this does
+// export default connect(null, mapDispatchToProps)(Hello);
+
+export const createHello = ({ element, ...params }) => {
+    ReactDOM.render(<Hello {...params} />, element)
+  }

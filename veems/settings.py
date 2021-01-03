@@ -148,7 +148,10 @@ BUCKET_STATIC_CUSTOM_DOMAIN = os.environ.get('BUCKET_STATIC_CUSTOM_DOMAIN')
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
-STATICFILES_DIRS = (Path(__file__).parent.parent / 'static',)
+STATICFILES_DIRS = (
+    Path(__file__).parent.parent / 'static',
+    Path(__file__).parent.parent / 'react-components/dist/',
+)
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': (
