@@ -6,7 +6,9 @@
     <div class="d-flex pt-2 w-100">
         <div class="col p-0 m-0">
             <div class="title-band mt-2 py-2 px-0 mx-3 mb-3 border-bottom">
-                <h3 class="m-0 p-0">Hello world</h3>
+                <div id="hello-app-root">
+                    <h3 class="m-0 p-0">Hello world</h3>
+                </div>
             </div>
         </div>
     </div>
@@ -14,4 +16,15 @@
 </main>
 
 
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+    app.createHello({
+        element: document.getElementById('hello-app-root'),
+    })
+</script>
 {% endblock %}
