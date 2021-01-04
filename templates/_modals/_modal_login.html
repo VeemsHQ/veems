@@ -32,7 +32,7 @@ style="{% if show_on_load %}position: inherit{% endif %}"
 
                             <div class="form-group d-flex flex-row align-items-center justify-content-center">
                                 <button type="submit" class="btn btn-primary">Sign in</button>
-                                <a href="#" class="ml-3 text-muted btn">Forgot your password?</a>
+                                <a href="{% url 'password_reset' %}" class="ml-3 text-muted btn">Forgot your password?</a>
                             </div>
                         </div>
                     </form>
