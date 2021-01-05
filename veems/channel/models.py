@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.db import models
 from django.contrib.auth import get_user_model
 
