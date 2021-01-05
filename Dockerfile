@@ -12,5 +12,6 @@ ADD . /opt/app
 WORKDIR /opt/app
 ENV PYTHONPATH="${PYTHONPATH}:."
 EXPOSE 8000
-CMD find /src/**/* -name .git -type d -exec rm -rf {} +
+RUN find /src/**/* -name .git -type d -exec rm -rf {} +
+RUN chmod +x *.sh
 CMD ["sh", "run.sh"]
