@@ -37,8 +37,8 @@ start-deps:
 .ONESHELL:
 .PHONY: run
 run:
-	docker-compose build app
-	docker-compose run app
+	docker-compose build app_local
+	docker-compose run app_local
 
 .ONESHELL:
 .PHONY: docker-test
