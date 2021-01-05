@@ -17,4 +17,5 @@ iso-639==0.4.5
 django-registration==3.1.1
 django-sendgrid-v5==0.9.0
 django-settings-export==1.2.1
-uwsgi
+uWSGI==2.0.19.1
+django-crispy-forms==1.10.0
