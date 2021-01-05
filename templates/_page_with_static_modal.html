@@ -1,0 +1,32 @@
+{% extends '_base_public.html' %}
+
+{% block content %}
+<main class="mx-auto col d-flex w-100 py-3 middle-col justify-content-between">
+    <div class="d-flex pt-2 w-100">
+        <div class="col p-0 m-0">
+
+            <div class="modal fadeshow d-block" id="registerModal" tabindex="-1" role="dialog" data-keyboard="true"
+                aria-labelledby="registerModalLabel" aria-hidden="true" style="position: inherit">
+                <div class="modal-dialog model-dialog-narrow modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="registerModalLabel">{% block modal_title %}{% endblock %}</h5>
+                        </div>
+                        <div class="modal-body p-0">
+                            <div class="p-3 w-100 d-inline-flex flex-column align-items-center justify-content-center">
+                                {% block modal_content %}{% endblock %}
+                            </div>
+                        </div>
+                        {% block modal_footer %}
+
+                        {% endblock %}
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+{% endblock %}
