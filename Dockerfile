@@ -13,4 +13,4 @@ WORKDIR /opt/app
 ENV PYTHONPATH="${PYTHONPATH}:."
 EXPOSE 8000
 RUN chmod +x *.sh
-CMD ["sh", "run.sh"]
+CMD ["bash", "run.sh"]
