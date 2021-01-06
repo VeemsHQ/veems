@@ -43,7 +43,6 @@ services:
     ports:
       - "8000:8000"
     command: ./run.sh
-    network_mode: host
     environment:
       - DEBUG=${DEBUG}
       - SECRET_KEY=${SECRET_KEY}
