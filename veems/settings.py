@@ -36,7 +36,7 @@ if DEBUG is False:
 else:
     HOST_SCHEME = 'http://'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOGGING = {
     'version': 1,
