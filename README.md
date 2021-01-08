@@ -135,6 +135,15 @@ python manage.py migrate --noinput
 python manage.py runserver
 ```
 
+Via docker:
+
+```bash
+make run
+```
+
+Then visit http://localhost:8000/
+
+
 ### Running the background [Celery](https://docs.celeryproject.org/en/stable/index.html) workers
 
 ```bash

@@ -79,34 +79,9 @@ services:
     ports:
       - "8000:8000"
     command: ./run.sh
-    network_mode: host
-    environment:
-      - DEBUG=${DEBUG}
-      - SECRET_KEY=${SECRET_KEY}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_HOST=localhost
-      - DB_PORT=${DB_PORT}
-      - AWS_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
-      - CELERY_TASK_ALWAYS_EAGER=${CELERY_TASK_ALWAYS_EAGER}
-      - SITE_DOMAIN=${SITE_DOMAIN}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - APP_ENV_NAME=${APP_ENV_NAME}
-      - BUCKET_STATIC=${BUCKET_STATIC}
-      - BUCKET_MEDIA=${BUCKET_MEDIA}
-      - RABBITMQ_HOST=localhost
-      - RABBITMQ_PASS=${RABBITMQ_PASS}
-      - RABBITMQ_PORT=${RABBITMQ_PORT}
-      - RABBITMQ_USER=${RABBITMQ_USER}
-      - RABBITMQ_VHOST=${RABBITMQ_VHOST}
-      - BUCKET_STATIC_CUSTOM_DOMAIN=${BUCKET_STATIC_CUSTOM_DOMAIN}
-      - BUCKET_MEDIA_CUSTOM_DOMAIN=${BUCKET_MEDIA_CUSTOM_DOMAIN}
+    container_name: app_local
+    env_file:
+      - .env
     depends_on:
       - localstack
       - postgres
