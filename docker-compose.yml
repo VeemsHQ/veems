@@ -79,6 +79,19 @@ services:
     ports:
       - "8000:8000"
     command: ./run.sh
+    container_name: app_local
+    env_file:
+      - .env
+    depends_on:
+      - localstack
+      - postgres
+      - rabbit
+  app_test:
+    build: .
+    ports:
+      - "8000:8000"
+    command: make test
+    container_name: app_test
     network_mode: host
     environment:
       - DEBUG=${DEBUG}
@@ -92,6 +105,7 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL}
       - CELERY_TASK_ALWAYS_EAGER=${CELERY_TASK_ALWAYS_EAGER}
       - SITE_DOMAIN=${SITE_DOMAIN}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -105,8 +119,7 @@ services:
       - RABBITMQ_PORT=${RABBITMQ_PORT}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_VHOST=${RABBITMQ_VHOST}
-      - BUCKET_STATIC_CUSTOM_DOMAIN=${BUCKET_STATIC_CUSTOM_DOMAIN}
-      - BUCKET_MEDIA_CUSTOM_DOMAIN=${BUCKET_MEDIA_CUSTOM_DOMAIN}
+      - EMAIL_SERVICE_API_KEY=${EMAIL_SERVICE_API_KEY}
     depends_on:
       - localstack
       - postgres
