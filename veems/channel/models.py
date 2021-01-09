@@ -45,7 +45,6 @@ class Channel(BaseModel):
     @property
     def avatar_image_url(self):
         if not self.avatar_image:
-            # TODO: add img
             return static('images/defaults/avatar.svg')
         return self.avatar_image.url
 
