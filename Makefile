@@ -6,8 +6,8 @@ lint:
 .ONESHELL:
 .PHONY: test
 test: install lint
-	pytest -n auto -k 'not TestTranscode' -vvv
 	pytest -k 'TestTranscode' -vvv
+	pytest -n auto -k 'not TestTranscode' -vvv
 
 .ONESHELL:
 .PHONY: system_install

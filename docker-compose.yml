@@ -99,7 +99,7 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
-      - DB_HOST=postgres
+      - DB_HOST=localhost
       - DB_PORT=${DB_PORT}
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
@@ -113,7 +113,7 @@ services:
       - APP_ENV_NAME=${APP_ENV_NAME}
       - BUCKET_STATIC=${BUCKET_STATIC}
       - BUCKET_MEDIA=${BUCKET_MEDIA}
-      - RABBITMQ_HOST=rabbit
+      - RABBITMQ_HOST=localhost
       - RABBITMQ_PASS=${RABBITMQ_PASS}
       - RABBITMQ_PORT=${RABBITMQ_PORT}
       - RABBITMQ_USER=${RABBITMQ_USER}
