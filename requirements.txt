@@ -20,3 +20,4 @@ django-settings-export==1.2.1
 uWSGI==2.0.19.1
 django-crispy-forms==1.10.0
 Pillow==8.1.0
+django-imagekit==4.0.2

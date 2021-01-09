@@ -3,6 +3,8 @@ from django.templatetags.static import static
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from ..common.models import BaseModel
 from ..common import validators
@@ -13,7 +15,9 @@ STORAGE_BACKEND = storage_backends.MediaStorage
 
 def _channel_avatar_image_upload_to(instance, filename):
     channel = instance
-    return f'channels/profile_images/{channel.id}{Path(filename).suffix}'
+    return (
+        f'channels/avatar_images/original/{channel.id}{Path(filename).suffix}'
+    )
 
 
 def _channel_banner_image_upload_to(instance, filename):
@@ -34,7 +38,18 @@ class Channel(BaseModel):
     avatar_image = models.ImageField(
         upload_to=_channel_avatar_image_upload_to,
         storage=STORAGE_BACKEND,
-        null=True,
+    )
+    avatar_image_small = ImageSpecField(
+        source='avatar_image',
+        processors=[ResizeToFill(44, 44)],
+        format='JPEG',
+        options={'quality': 70},
+    )
+    avatar_image_large = ImageSpecField(
+        source='avatar_image',
+        processors=[ResizeToFill(88, 88)],
+        format='JPEG',
+        options={'quality': 85},
     )
     banner_image = models.ImageField(
         upload_to=_channel_banner_image_upload_to,
@@ -47,6 +62,18 @@ class Channel(BaseModel):
         if not self.avatar_image:
             return static('images/defaults/avatar.svg')
         return self.avatar_image.url
+
+    @property
+    def avatar_image_small_url(self):
+        if not self.avatar_image_small:
+            return static('images/defaults/avatar.svg')
+        return self.avatar_image_small.url
+
+    @property
+    def avatar_image_large_url(self):
+        if not self.avatar_image_large:
+            return static('images/defaults/avatar.svg')
+        return self.avatar_image_large.url
 
     @property
     def banner_image_url(self):

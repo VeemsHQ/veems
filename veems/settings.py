@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'rest_framework',
+    'imagekit',
     'veems.common',
     'veems.user',
     'veems.media',
