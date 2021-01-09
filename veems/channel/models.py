@@ -1,4 +1,5 @@
 from pathlib import Path
+from django.templatetags.static import static
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -31,15 +32,28 @@ class Channel(BaseModel):
         max_length=2, validators=(validators.validate_language,), default=None
     )
     avatar_image = models.ImageField(
-        upload_to=_channel_avatar_image_upload_to, storage=STORAGE_BACKEND,
+        upload_to=_channel_avatar_image_upload_to,
+        storage=STORAGE_BACKEND,
         null=True,
     )
     banner_image = models.ImageField(
-        upload_to=_channel_banner_image_upload_to, storage=STORAGE_BACKEND,
+        upload_to=_channel_banner_image_upload_to,
+        storage=STORAGE_BACKEND,
         null=True,
     )
 
-    # TODO: add default images
+    @property
+    def avatar_image_url(self):
+        if not self.avatar_image:
+            # TODO: add img
+            return static('images/defaults/avatar.svg')
+        return self.avatar_image.url
+
+    @property
+    def banner_image_url(self):
+        if not self.banner_image:
+            return static('images/defaults/channel-banner-image.png')
+        return self.banner_image.url
 
     def __str__(self):
         return f'<{self.__class__.__name__} {self.id} {self.name}>'
