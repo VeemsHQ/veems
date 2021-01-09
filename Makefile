@@ -43,4 +43,5 @@ run:
 .ONESHELL:
 .PHONY: docker-test
 docker-test:
-	docker-compose build app && docker-compose run app make test
+	docker-compose build app_test
+	docker-compose run app_test
