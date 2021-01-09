@@ -26,6 +26,9 @@ def _channel_banner_image_upload_to(instance, filename):
 
 
 class Channel(BaseModel):
+    _DEFAULT_AVATAR_PATH = 'images/defaults/avatar.svg'
+    _DEFAULT_BANNER_PATH = 'images/defaults/channel-banner-image.png'
+
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='channels'
     )
@@ -56,30 +59,37 @@ class Channel(BaseModel):
         storage=STORAGE_BACKEND,
         null=True,
     )
+    banner_image_large = ImageSpecField(
+        source='banner_image',
+        # TODO: resize to maximum of
+        processors=[ResizeToFill(2560, 1440)],
+        format='JPEG',
+        options={'quality': 85},
+    )
 
     @property
     def avatar_image_url(self):
         if not self.avatar_image:
-            return static('images/defaults/avatar.svg')
+            return static(self._DEFAULT_AVATAR_PATH)
         return self.avatar_image.url
 
     @property
     def avatar_image_small_url(self):
         if not self.avatar_image_small:
-            return static('images/defaults/avatar.svg')
+            return static(self._DEFAULT_AVATAR_PATH)
         return self.avatar_image_small.url
 
     @property
     def avatar_image_large_url(self):
         if not self.avatar_image_large:
-            return static('images/defaults/avatar.svg')
+            return static(self._DEFAULT_AVATAR_PATH)
         return self.avatar_image_large.url
 
     @property
-    def banner_image_url(self):
-        if not self.banner_image:
-            return static('images/defaults/channel-banner-image.png')
-        return self.banner_image.url
+    def banner_image_large_url(self):
+        if not self.banner_image_large:
+            return static(self._DEFAULT_BANNER_PATH)
+        return self.banner_image_large.url
 
     def __str__(self):
         return f'<{self.__class__.__name__} {self.id} {self.name}>'

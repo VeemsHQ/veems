@@ -22,10 +22,10 @@ def simple_uploaded_img_file():
 
 @pytest.fixture
 def simple_uploaded_img_file_factory():
-    def make():
-        with EXAMPLE_IMG.open('rb') as file_:
+    def make(path=EXAMPLE_IMG):
+        with path.open('rb') as file_:
             file_contents = file_.read()
-        return SimpleUploadedFile(EXAMPLE_IMG.name, file_contents)
+        return SimpleUploadedFile(path.name, file_contents)
     return make
 
 
