@@ -68,6 +68,9 @@ class Channel(BaseModel):
         options={'quality': 85},
     )
 
+    def __str__(self):
+        return f'<{self.__class__.__name__} {self.id} {self.name}>'
+
     @property
     def avatar_image_url(self):
         if not self.avatar_image:
@@ -91,6 +94,3 @@ class Channel(BaseModel):
         if not self.banner_image_large:
             return static(self._DEFAULT_BANNER_PATH)
         return self.banner_image_large.url
-
-    def __str__(self):
-        return f'<{self.__class__.__name__} {self.id} {self.name}>'
