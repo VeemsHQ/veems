@@ -26,6 +26,7 @@ class TestCreateChannel:
         )
 
         assert isinstance(channel, services.models.Channel)
+        assert channel.is_selected is True
         assert channel.name == 'My Channel'
         assert channel.user == user
         assert channel.description == 'x' * 5000
@@ -152,3 +153,33 @@ def test_set_channel_banner_image(user, channel_factory):
 
         assert updated.banner_image
         assert 'defaults/' not in updated.banner_image.name
+
+
+class TestUpdateChannel:
+    def test(self, channel, channel_factory):
+        another_channel = channel_factory(user=channel.user, is_selected=True)
+        updated = services.update_channel(
+            channel=channel, is_selected=True, name='test'
+        )
+
+        assert updated.name == 'test'
+        assert updated.is_selected is True
+        another_channel.refresh_from_db()
+        # Is deselected
+        assert another_channel.is_selected is False
+
+    def test_cannot_update_user(self, channel, user_factory):
+        with pytest.raises(RuntimeError):
+            services.update_channel(
+                channel=channel,
+                is_selected=True,
+                name='test',
+                user=user_factory(),
+            )
+
+
+def test_get_selected_channel_id(user, channel_factory):
+    selected_channel = channel_factory(user=user, is_selected=True)
+    channel_factory(user=user, is_selected=False)
+
+    assert services.get_selected_channel_id(user=user) == selected_channel.id
