@@ -4,7 +4,7 @@ from django.templatetags.static import static
 from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
+from imagekit.processors import ResizeToFill, ResizeToFit
 
 from ..common.models import BaseModel
 from ..common import validators
@@ -62,8 +62,7 @@ class Channel(BaseModel):
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
-        # TODO: resize to maximum of
-        processors=[ResizeToFill(2560, 1440)],
+        processors=[ResizeToFit(2560, 1440)],
         format='JPEG',
         options={'quality': 85},
     )

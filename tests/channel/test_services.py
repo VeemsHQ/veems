@@ -61,7 +61,7 @@ class TestCreateChannel:
             pass
         assert channel.banner_image_large.url == channel.banner_image_large_url
         assert channel.banner_image_large.width == 2560
-        assert channel.banner_image_large.height == 1440
+        assert channel.banner_image_large.height == 423
 
     def test_without_images(self, user):
         channel = services.create_channel(
