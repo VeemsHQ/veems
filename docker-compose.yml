@@ -86,3 +86,41 @@ services:
       - localstack
       - postgres
       - rabbit
+  app_test:
+    build: .
+    ports:
+      - "8000:8000"
+    command: make test
+    container_name: app_test
+    network_mode: host
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_HOST=localhost
+      - DB_PORT=${DB_PORT}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL}
+      - CELERY_TASK_ALWAYS_EAGER=${CELERY_TASK_ALWAYS_EAGER}
+      - SITE_DOMAIN=${SITE_DOMAIN}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - APP_ENV_NAME=${APP_ENV_NAME}
+      - BUCKET_STATIC=${BUCKET_STATIC}
+      - BUCKET_MEDIA=${BUCKET_MEDIA}
+      - RABBITMQ_HOST=localhost
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST}
+      - EMAIL_SERVICE_API_KEY=${EMAIL_SERVICE_API_KEY}
+    depends_on:
+      - localstack
+      - postgres
+      - rabbit

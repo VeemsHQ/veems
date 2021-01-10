@@ -6,8 +6,8 @@ lint:
 .ONESHELL:
 .PHONY: test
 test: install lint
+	pytest -n auto -k 'TestTranscode' -vvv
 	pytest -n auto -k 'not TestTranscode' -vvv
-	pytest -k 'TestTranscode' -vvv
 
 .ONESHELL:
 .PHONY: system_install
@@ -43,4 +43,5 @@ run:
 .ONESHELL:
 .PHONY: docker-test
 docker-test:
-	docker-compose build app && docker-compose run app make test
+	docker-compose build app_test
+	docker-compose run app_test
