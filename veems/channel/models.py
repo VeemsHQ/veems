@@ -16,13 +16,13 @@ STORAGE_BACKEND = storage_backends.MediaStorage
 def _channel_avatar_image_upload_to(instance, filename):
     channel = instance
     return (
-        f'channels/avatar_images/original/{channel.id}{Path(filename).suffix}'
+        f'channels/avatar-images/original/{channel.id}{Path(filename).suffix}'
     )
 
 
 def _channel_banner_image_upload_to(instance, filename):
     channel = instance
-    return f'channels/banner_images/{channel.id}{Path(filename).suffix}'
+    return f'channels/banner-images/{channel.id}{Path(filename).suffix}'
 
 
 class Channel(BaseModel):

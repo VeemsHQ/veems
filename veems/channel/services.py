@@ -27,3 +27,17 @@ def get_channels(user_id=None):
     if user_id:
         filters['user_id'] = user_id
     return models.Channel.objects.filter(**filters)
+
+
+def set_channel_avatar_image(*, channel, avatar_image):
+    # TODO:
+    channel.avatar_image = avatar_image
+    channel.save()
+    return channel
+
+
+def set_channel_banner_image(*, channel, banner_image):
+    # TODO:
+    channel.banner_image = banner_image
+    channel.save()
+    return channel
