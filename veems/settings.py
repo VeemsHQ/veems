@@ -156,8 +156,6 @@ BUCKET_STATIC_CUSTOM_DOMAIN = os.environ.get('BUCKET_STATIC_CUSTOM_DOMAIN')
 DEFAULT_FILE_STORAGE = 'veems.common.storage_backends.CustomS3Boto3Storage'
 STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 
-# IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = 'veems.common.imagekit.FixJustInTime'
-
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
 STATICFILES_DIRS = (Path(__file__).parent.parent / 'static',)
 
