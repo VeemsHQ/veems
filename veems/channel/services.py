@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 def create_channel(*, name, user, **kwargs):
-    # TODO: test with img
     logger.info('Creating new channel: %s for user %s', name, user.id)
     return models.Channel.objects.create(
         name=name,
@@ -30,14 +29,12 @@ def get_channels(user_id=None):
 
 
 def set_channel_avatar_image(*, channel, avatar_image):
-    # TODO:
     channel.avatar_image = avatar_image
     channel.save()
     return channel
 
 
 def set_channel_banner_image(*, channel, banner_image):
-    # TODO:
     channel.banner_image = banner_image
     channel.save()
     return channel

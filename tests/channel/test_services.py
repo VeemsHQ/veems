@@ -1,16 +1,17 @@
 from pathlib import Path
 
 import pytest
+from django.core.files import File
 
 from veems.channel import services
 
 pytestmark = pytest.mark.django_db
 TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 EXAMPLE_BANNER_IMG = TEST_DATA_DIR / 'example-banner.jpeg'
+EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
 
 
 class TestCreateChannel:
-
     def test(self, user, simple_uploaded_img_file_factory):
         channel = services.create_channel(
             name='My Channel',
@@ -125,3 +126,29 @@ class TestGetChannels:
 
         assert len(records) == 2
         assert all(c.user_id == user.id for c in records)
+
+
+def test_set_channel_avatar_image(user, channel_factory):
+    channel = channel_factory(user=user, avatar_image=None, banner_image=None)
+
+    with EXAMPLE_IMG.open('rb') as file_:
+
+        updated = services.set_channel_avatar_image(
+            channel=channel, avatar_image=File(file_)
+        )
+
+        assert updated.avatar_image
+        assert 'defaults/' not in updated.avatar_image.name
+
+
+def test_set_channel_banner_image(user, channel_factory):
+    channel = channel_factory(user=user, avatar_image=None, banner_image=None)
+
+    with EXAMPLE_BANNER_IMG.open('rb') as file_:
+
+        updated = services.set_channel_banner_image(
+            channel=channel, banner_image=File(file_)
+        )
+
+        assert updated.banner_image
+        assert 'defaults/' not in updated.banner_image.name
