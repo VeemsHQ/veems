@@ -86,6 +86,9 @@ services:
       - localstack
       - postgres
       - rabbit
+    volumes:
+      - ./react-components:/opt/app/react-components/
+      - ./templates:/opt/app/templates/
   app_test:
     build: .
     ports:

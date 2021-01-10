@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 export const Hello = () => {
     return (
         <div>
-            Hello world, I'm a React Component
+            Hello world, I'm a React Component2
         </div>
     );
 };
