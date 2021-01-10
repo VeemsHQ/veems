@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'rest_framework',
+    'imagekit',
     'veems.common',
     'veems.user',
     'veems.media',
@@ -152,8 +153,9 @@ BUCKET_MEDIA_CUSTOM_DOMAIN = os.environ.get('BUCKET_MEDIA_CUSTOM_DOMAIN')
 BUCKET_MEDIA_DEFAULT_ACL = None
 BUCKET_STATIC_CUSTOM_DOMAIN = os.environ.get('BUCKET_STATIC_CUSTOM_DOMAIN')
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'veems.common.storage_backends.CustomS3Boto3Storage'
+STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
 STATICFILES_DIRS = (Path(__file__).parent.parent / 'static',)
 

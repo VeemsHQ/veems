@@ -11,6 +11,7 @@ from tests import constants
 
 TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
+EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
 
 
 @pytest.fixture
