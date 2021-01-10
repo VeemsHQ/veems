@@ -58,6 +58,7 @@ class Channel(BaseModel):
         upload_to=_channel_banner_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
+        blank=True,
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
