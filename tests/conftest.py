@@ -51,7 +51,7 @@ def user(user_factory):
 
 @pytest.fixture
 def channel_factory():
-    def make(*, user, avatar_image=None, banner_image=None):
+    def make(*, user, avatar_image=None, banner_image=None, is_selected=True):
         return services.create_channel(
             name='My Channel',
             user=user,
@@ -60,6 +60,7 @@ def channel_factory():
             language='en',
             avatar_image=avatar_image,
             banner_image=banner_image,
+            is_selected=is_selected,
         )
 
     return make

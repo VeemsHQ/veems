@@ -4,7 +4,7 @@ from django.templatetags.static import static
 from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
+from imagekit.processors import ResizeToFill, ResizeToFit
 
 from ..common.models import BaseModel
 from ..common import validators
@@ -32,9 +32,9 @@ class Channel(BaseModel):
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='channels'
     )
-    name = models.CharField(max_length=60)
+    name = models.CharField(max_length=60, db_index=True)
     description = models.TextField(max_length=5000)
-    sync_videos_interested = models.BooleanField()
+    sync_videos_interested = models.BooleanField(db_index=True)
     language = models.CharField(
         max_length=2, validators=(validators.validate_language,), default=None
     )
@@ -62,11 +62,13 @@ class Channel(BaseModel):
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
-        # TODO: resize to maximum of
-        processors=[ResizeToFill(2560, 1440)],
+        processors=[ResizeToFit(2560, 1440)],
         format='JPEG',
         options={'quality': 85},
     )
+    # User may have many Channels, but only one may be selected
+    # at any one time.
+    is_selected = models.BooleanField(default=False, db_index=True)
 
     def __str__(self):
         return f'<{self.__class__.__name__} {self.id} {self.name}>'
