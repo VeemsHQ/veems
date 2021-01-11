@@ -81,8 +81,8 @@ def api_client(user_factory):
 
 @pytest.fixture
 def api_client_factory(user_factory):
-    def make():
-        user = user_factory()
+    def make(user=None):
+        user = user or user_factory()
         client = APIClient()
         client.force_authenticate(user=user)
         return client, user

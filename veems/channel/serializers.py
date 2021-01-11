@@ -1,10 +1,9 @@
-from rest_framework import serializers
-
 from . import models
 from . import services
+from ..common.serializers import CustomModelSerializer
 
 
-class ChannelSerializer(serializers.ModelSerializer):
+class ChannelSerializer(CustomModelSerializer):
     class Meta:
         model = models.Channel
         fields = (
@@ -42,7 +41,7 @@ class ChannelSerializer(serializers.ModelSerializer):
         return services.create_channel(**validated_data)
 
 
-class ChannelAvatarSerializer(serializers.ModelSerializer):
+class ChannelAvatarSerializer(CustomModelSerializer):
     class Meta:
         model = models.Channel
         fields = (
@@ -51,7 +50,7 @@ class ChannelAvatarSerializer(serializers.ModelSerializer):
         )
 
 
-class ChannelBannerSerializer(serializers.ModelSerializer):
+class ChannelBannerSerializer(CustomModelSerializer):
     class Meta:
         model = models.Channel
         fields = (

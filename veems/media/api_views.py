@@ -3,9 +3,10 @@ from pathlib import Path
 from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
 
 from django.http import HttpResponse
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
 from . import upload_manager, serializers, models, services
 
@@ -52,12 +53,27 @@ def upload_complete(request, upload_id):
     return Response({}, status=OK)
 
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def video(request, video_id):
-    video = models.Video.objects.get(id=video_id)
-    data = serializers.VideoSerializer(video).data
-    return Response(data, status=OK)
+class VideoAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, video_id, format=None):
+        video = models.Video.objects.get(id=video_id)
+        data = serializers.VideoSerializer(video).data
+        return Response(data, status=OK)
+
+    def put(self, request, video_id, format=None):
+        video = models.Video.objects.get(
+            id=video_id, channel__user_id=request.user.id
+        )
+        serializer = serializers.VideoSerializer(
+            video, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            video = serializer.save()
+            serializer = serializers.VideoSerializer(video)
+            return Response(serializer.data)
+        else:
+            return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
 
 
 @api_view(['GET'])
