@@ -26,7 +26,7 @@ export const API = axios.create({
 
 const getServerURL = async () => {
   // todo.
-  return 0;
+  return 'http://localhost:8000/';
 }
 
 /**
@@ -34,22 +34,20 @@ const getServerURL = async () => {
  * Send a create channel request
  * @return Should return successful
  * @param {string} name - Channel name
- * @param {string} user - User object of type {id, name}
  * @param {string} description - Channel description
  * @param {boolean} syncVideosInterested - 
  * @param {string} language - 
  * @throw Should return error
  */
-const createChannel = async ( name, user, description, syncVideosInterested, language ) => {
+const createChannel = async ( name, description, syncVideosInterested, language ) => {
   const data = {
     name,
-    user,
     description,
     sync_videos_interested: syncVideosInterested,
     language,
   };
   try {
-    const res = await API.post(await getServerURL(), data);
+    const res = await API.post(`${await getServerURL()}'/api/v1/channel/`, data);
     return res;
   } catch (err) {
     return err;
@@ -61,17 +59,15 @@ const createChannel = async ( name, user, description, syncVideosInterested, lan
  * Send a get channel request
  * @return Should return successful
  * @param {number} channelId - Required channelId
- * @param {number} userId - (optional) Relevent userId
  * @throw Should return error
  */
-const getChannel = async ( channelId, userId ) => {
+const getChannel = async ( channelId ) => {
   const data = {
     id : channelId,
-    ...(userId && {user_id: userId}),
   };
   
   try {
-    const res = await API.get(await getServerURL(), data);
+    const res = await API.get(`${await getServerURL()}/api/v1/channel/${channelId}`);
     return res;
   } catch (err) {
     return err;
