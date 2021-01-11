@@ -1,9 +1,14 @@
-from http.client import OK, NOT_FOUND, CREATED, BAD_REQUEST
+from http.client import OK, NOT_FOUND, CREATED, BAD_REQUEST, FORBIDDEN
+from pathlib import Path
 
 from pytest_voluptuous import S
+from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 
 pytestmark = pytest.mark.django_db
+TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
+EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
+EXAMPLE_BANNER_IMG = TEST_DATA_DIR / 'example-banner.jpeg'
 
 
 def test_get_channels(api_client, channel_factory, user_factory):
@@ -180,3 +185,146 @@ class TestUpdateChannel:
                 'modified_on': str,
             }
         )
+
+
+class TestChannelAvatarAPIView:
+    def test_get(self, api_client, channel_factory):
+        api_client, user = api_client
+        channel = channel_factory(user=user, avatar_image=None)
+
+        response = api_client.get(f'/api/v1/channel/{channel.id}/avatar')
+
+        assert response.status_code == OK
+
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'avatar_image_small_url': str,
+                'avatar_image_large_url': str,
+            }
+        )
+        assert resp_json['avatar_image_small_url'].startswith('http://')
+        assert resp_json['avatar_image_large_url'].startswith('http://')
+        # Check returned defaults
+        assert 'defaults/' in resp_json['avatar_image_small_url']
+        assert 'defaults/' in resp_json['avatar_image_large_url']
+
+    def test_post(self, api_client, channel_factory):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+
+        with EXAMPLE_IMG.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = api_client.post(
+                f'/api/v1/channel/{channel.id}/avatar', data=form_data
+            )
+
+        assert response.status_code == OK
+
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'avatar_image_small_url': str,
+                'avatar_image_large_url': str,
+            }
+        )
+        assert resp_json['avatar_image_small_url'].startswith('http://')
+        assert resp_json['avatar_image_large_url'].startswith('http://')
+
+    def test_post_returns_404_when_attempting_to_update_other_users_avatar(
+        self, api_client, channel_factory, user_factory
+    ):
+        api_client, user = api_client
+        another_user = user_factory()
+        channel = channel_factory(user=another_user)
+
+        with EXAMPLE_IMG.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = api_client.post(
+                f'/api/v1/channel/{channel.id}/avatar', data=form_data
+            )
+
+        assert response.status_code == NOT_FOUND
+
+    def test_post_returns_403_unauthenticated(
+        self, client, api_client, channel_factory
+    ):
+        _, user = api_client
+        channel = channel_factory(user=user)
+
+        with EXAMPLE_IMG.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = client.post(
+                f'/api/v1/channel/{channel.id}/avatar', data=form_data
+            )
+
+        assert response.status_code == FORBIDDEN
+
+
+class TestChannelBannerAPIView:
+    def test_get(self, api_client, channel_factory):
+        api_client, user = api_client
+        channel = channel_factory(user=user, banner_image=None)
+
+        response = api_client.get(f'/api/v1/channel/{channel.id}/banner')
+
+        assert response.status_code == OK
+
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'banner_image_large_url': str,
+            }
+        )
+        assert resp_json['banner_image_large_url'].startswith('http://')
+        # Check returned defaults
+        assert 'defaults/' in resp_json['banner_image_large_url']
+
+    def test_post(self, api_client, channel_factory):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+
+        with EXAMPLE_BANNER_IMG.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = api_client.post(
+                f'/api/v1/channel/{channel.id}/banner', data=form_data
+            )
+
+        assert response.status_code == OK
+
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'banner_image_large_url': str,
+            }
+        )
+        assert resp_json['banner_image_large_url'].startswith('http://')
+
+    def test_post_returns_404_when_attempting_to_update_other_users_banner(
+        self, api_client, channel_factory, user_factory
+    ):
+        api_client, user = api_client
+        another_user = user_factory()
+        channel = channel_factory(user=another_user)
+
+        with EXAMPLE_BANNER_IMG.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = api_client.post(
+                f'/api/v1/channel/{channel.id}/banner', data=form_data
+            )
+
+        assert response.status_code == NOT_FOUND
+
+    def test_post_returns_403_unauthenticated(
+        self, client, api_client, channel_factory
+    ):
+        _, user = api_client
+        channel = channel_factory(user=user)
+
+        with EXAMPLE_BANNER_IMG.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = client.post(
+                f'/api/v1/channel/{channel.id}/banner', data=form_data
+            )
+
+        assert response.status_code == FORBIDDEN

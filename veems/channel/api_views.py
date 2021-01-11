@@ -40,3 +40,35 @@ class ChannelDetailAPIView(APIView):
             return Response(serializer.data)
         else:
             return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
+
+
+class ChannelAvatarAPIView(APIView):
+    def get(self, request, channel_id, format=None):
+        channel = services.get_channel(id=channel_id)
+        serializer = serializers.ChannelAvatarSerializer(channel)
+        return Response(serializer.data)
+
+    def post(self, request, channel_id, format=None):
+        channel = services.get_channel(id=channel_id, user_id=request.user.id)
+        avatar_image = request.data['file']
+        channel = services.set_channel_avatar_image(
+            channel=channel, avatar_image=avatar_image
+        )
+        serializer = serializers.ChannelAvatarSerializer(channel)
+        return Response(serializer.data)
+
+
+class ChannelBannerAPIView(APIView):
+    def get(self, request, channel_id, format=None):
+        channel = services.get_channel(id=channel_id)
+        serializer = serializers.ChannelBannerSerializer(channel)
+        return Response(serializer.data)
+
+    def post(self, request, channel_id, format=None):
+        channel = services.get_channel(id=channel_id, user_id=request.user.id)
+        banner_image = request.data['file']
+        channel = services.set_channel_banner_image(
+            channel=channel, banner_image=banner_image
+        )
+        serializer = serializers.ChannelBannerSerializer(channel)
+        return Response(serializer.data)

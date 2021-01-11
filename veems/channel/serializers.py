@@ -33,3 +33,20 @@ class ChannelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = services.create_channel(**validated_data)
         return instance
+
+
+class ChannelAvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Channel
+        fields = (
+            'avatar_image_small_url',
+            'avatar_image_large_url',
+        )
+
+
+class ChannelBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Channel
+        fields = (
+            'banner_image_large_url',
+        )

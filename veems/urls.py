@@ -87,6 +87,14 @@ urlpatterns = [
         'api/v1/channel/<slug:channel_id>/',
         channel_api_views.ChannelDetailAPIView.as_view(),
     ),
+    path(
+        'api/v1/channel/<slug:channel_id>/avatar',
+        channel_api_views.ChannelAvatarAPIView.as_view(),
+    ),
+    path(
+        'api/v1/channel/<slug:channel_id>/banner',
+        channel_api_views.ChannelBannerAPIView.as_view(),
+    ),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
     path(
         'api/v1/upload/complete/<slug:upload_id>/', api_views.upload_complete
