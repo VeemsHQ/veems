@@ -321,7 +321,7 @@ class TestVideo:
         expected_video_resp_json.update(payload)
         assert response.json() == expected_video_resp_json
 
-    def test_put_cannot_update_channel_attribute(
+    def test_put_cannot_update_channel(
         self,
         video_with_transcodes,
         channel_factory,
