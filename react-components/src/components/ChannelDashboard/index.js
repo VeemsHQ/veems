@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 // Components
-import Overview from './Overview';
+import Overview from './overview';
 
 // api
 import { createChannel } from '../../api/api';
@@ -17,7 +17,7 @@ export const ChannelDashboard = ({
   element,
   ...params
 }) => {
-  
+
   const handleCreateChannel = (name, desc, bSync) => {
     // TODO: Set active channel and store ID. If bSync then enable correct tab
     createChannel(name, desc, bSync);

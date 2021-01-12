@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 
 // Styling
-/* Todo: Move all embedded css into here so we can properly pass and use props 
+/* Todo: Move all embedded css into here so we can properly pass and use props
   and remove all ugly className syntax.
 */
 
