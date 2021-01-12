@@ -1,9 +1,12 @@
 from . import models
 from . import services
 from ..common.serializers import CustomModelSerializer
+from ..media.serializers import VideoSerializer
 
 
 class ChannelSerializer(CustomModelSerializer):
+    videos = VideoSerializer(many=True, read_only=True)
+
     class Meta:
         model = models.Channel
         fields = (
@@ -16,6 +19,7 @@ class ChannelSerializer(CustomModelSerializer):
             'created_on',
             'modified_on',
             'is_selected',
+            'videos',
         )
 
     def update(self, instance, validated_data):
@@ -37,6 +41,22 @@ class ChannelSerializer(CustomModelSerializer):
 
     def create(self, validated_data):
         return services.create_channel(**validated_data)
+
+
+class ChannelSlimSerializer(ChannelSerializer):
+    class Meta:
+        model = models.Channel
+        fields = (
+            'id',
+            'user',
+            'name',
+            'description',
+            'sync_videos_interested',
+            'language',
+            'created_on',
+            'modified_on',
+            'is_selected',
+        )
 
 
 class ChannelAvatarSerializer(CustomModelSerializer):

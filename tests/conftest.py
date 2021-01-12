@@ -126,7 +126,7 @@ def video_with_transcodes_factory(
         transcode_job2 = transcode_job_factory(
             profile='360p', video_record=video
         )
-        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
+        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH_2160_30FPS)
         video_rendition = models.VideoRendition.objects.create(
             video=video,
             file=file_,

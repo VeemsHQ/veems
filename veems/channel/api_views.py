@@ -9,15 +9,15 @@ from . import services, serializers
 class ChannelAPIView(APIView):
     def get(self, request, format=None):
         channels = services.get_channels(user_id=request.user.id)
-        serializer = serializers.ChannelSerializer(channels, many=True)
+        serializer = serializers.ChannelSlimSerializer(channels, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
         request.data['user'] = request.user.id
-        serializer = serializers.ChannelSerializer(data=request.data)
+        serializer = serializers.ChannelSlimSerializer(data=request.data)
         if serializer.is_valid():
             channel = serializer.save()
-            serializer = serializers.ChannelSerializer(channel)
+            serializer = serializers.ChannelSlimSerializer(channel)
             return Response(serializer.data, status=CREATED)
         else:
             return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)

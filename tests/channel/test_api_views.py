@@ -50,7 +50,8 @@ def test_get_channel(
     response = api_client.get(f'/api/v1/channel/{channel.id}/')
 
     assert response.status_code == OK
-    assert response.json() == S(
+    resp_json = response.json()
+    assert resp_json == S(
         {
             'id': channel.id,
             'user': user.id,
@@ -61,8 +62,25 @@ def test_get_channel(
             'created_on': str,
             'modified_on': str,
             'is_selected': bool,
+            'videos': list,
         }
     )
+    assert len(resp_json['videos']) == 1
+    assert resp_json['videos'][0] == S(
+        {
+            'id': str,
+            'channel': str,
+            'description': str,
+            'tags': list,
+            'title': str,
+            'visibility': str,
+            'playlist_file': str,
+            'video_renditions': list,
+            'transcode_jobs': list,
+        }
+    )
+    assert resp_json['videos'][0]['video_renditions']
+    assert resp_json['videos'][0]['transcode_jobs']
 
 
 class TestCreateChannel:
@@ -149,6 +167,7 @@ class TestUpdateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': body.get('is_selected', channel.is_selected),
+                'videos': list,
             }
         )
         num_selected_channels = len(
@@ -208,6 +227,7 @@ class TestUpdateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': True,
+                'videos': list,
             }
         )
 
