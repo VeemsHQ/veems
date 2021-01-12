@@ -40,9 +40,12 @@ def test_get_channels(api_client, channel_factory, user_factory):
     assert all(c['id'] in exp_channels for c in response.json())
 
 
-def test_get_channel(api_client, channel_factory):
+def test_get_channel(
+    api_client, channel_factory, video_with_transcodes_factory
+):
     api_client, user = api_client
     channel = channel_factory(user=user)
+    video_with_transcodes_factory(channel=channel)
 
     response = api_client.get(f'/api/v1/channel/{channel.id}/')
 
