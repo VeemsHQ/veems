@@ -39,12 +39,11 @@ const getServerURL = async () => {
  * @param {string} language - 
  * @throw Should return error
  */
-const createChannel = async ( name, description, syncVideosInterested, language ) => {
+const createChannel = async ( name, description, syncVideosInterested ) => {
   const data = {
     name,
     description,
     sync_videos_interested: syncVideosInterested,
-    language,
   };
   try {
     const res = await API.post(`${await getServerURL()}'/api/v1/channel/`, data);

@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
   devtool: 'source-map',
   entry: {
+    polyfill: 'babel-polyfill',
     app: './react-components/src/bundle.js',
   },
   output: {

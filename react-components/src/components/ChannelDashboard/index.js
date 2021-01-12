@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import styled from 'styled-components';
-import Chart from 'chart.js';
 
 // Redux
 import { connect } from 'react-redux';
@@ -10,6 +8,9 @@ import { bindActionCreators } from 'redux';
 // Components
 import Overview from './Overview';
 
+// api
+import { createChannel } from '../../api/api';
+
 // Styling
 
 export const ChannelDashboard = ({
@@ -17,9 +18,14 @@ export const ChannelDashboard = ({
   ...params
 }) => {
   
+  const handleCreateChannel = (name, desc, bSync) => {
+    // TODO: Set active channel and store ID. If bSync then enable correct tab
+    createChannel(name, desc, bSync);
+  };
+
   const DashContainer = () => {
     return (
-      <Overview />
+      <Overview onCreateChannel={handleCreateChannel}/>
     );
   };
 
