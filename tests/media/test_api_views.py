@@ -341,6 +341,28 @@ class TestVideo:
 
         assert response.status_code == BAD_REQUEST
 
+    def test_put_cannot_update_upload(
+        self,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+        upload_factory,
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+        other_users_channel = channel_factory(user=user_factory())
+        other_upload = upload_factory(channel_=other_users_channel)
+
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'upload': other_upload.id,
+            },
+            format='json',
+        )
+
+        assert response.status_code == BAD_REQUEST
+
     def test_put_cannot_update_another_users_video(
         self,
         mocker,

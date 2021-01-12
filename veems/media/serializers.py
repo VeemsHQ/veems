@@ -48,6 +48,7 @@ class VideoSerializer(CustomModelSerializer):
         ]
         extra_kwargs = {
             'channel': {'read_only': True},
+            'upload': {'read_only': True},
             'video_renditions': {'read_only': True},
             'transcode_jobs': {'read_only': True},
             'playlist_file': {'read_only': True},

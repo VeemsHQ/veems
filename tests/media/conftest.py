@@ -51,14 +51,15 @@ def simple_uploaded_file_factory():
 
 @pytest.fixture
 def upload_factory(channel):
-    def make(video_path):
+    def make(video_path=VIDEO_PATH_2160_30FPS, channel_=None):
         with video_path.open('rb') as file_:
             file_contents = file_.read()
+        channel_ = channel_ or channel
         upload = models.Upload.objects.create(
             presigned_upload_url='htts://example.com/s3-blah',
             media_type='video',
             file=SimpleUploadedFile(video_path.name, file_contents),
-            channel=channel,
+            channel=channel_,
         )
         return upload
 
