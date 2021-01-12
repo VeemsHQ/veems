@@ -16,23 +16,30 @@ class ChannelSerializer(serializers.ModelSerializer):
             'language',
             'created_on',
             'modified_on',
+            'is_selected',
         )
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get(
+        name = validated_data.get('name', instance.name)
+        is_selected = validated_data.get('is_selected', instance.is_selected)
+        description = validated_data.get(
             'description', instance.description
         )
-        instance.sync_videos_interested = validated_data.get(
+        sync_videos_interested = validated_data.get(
             'sync_videos_interested', instance.sync_videos_interested
         )
-        instance.language = validated_data.get('language', instance.language)
-        instance.save()
-        return instance
+        language = validated_data.get('language', instance.language)
+        return services.update_channel(
+            channel=instance,
+            language=language,
+            is_selected=is_selected,
+            sync_videos_interested=sync_videos_interested,
+            description=description,
+            name=name,
+        )
 
     def create(self, validated_data):
-        instance = services.create_channel(**validated_data)
-        return instance
+        return services.create_channel(**validated_data)
 
 
 class ChannelAvatarSerializer(serializers.ModelSerializer):

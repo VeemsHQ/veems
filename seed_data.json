@@ -7,14 +7,17 @@
 	"channels": [{
 		"name": "Timcast",
 		"description": "Example channel description",
-		"sync_videos_interested": true
+		"sync_videos_interested": true,
+		"is_selected": false
 	}, {
 		"name": "Timcast IRL",
 		"description": "Example channel description",
-		"sync_videos_interested": true
+		"sync_videos_interested": true,
+		"is_selected": true
 	}, {
 		"name": "Tim Pool",
 		"description": "Example channel description",
-		"sync_videos_interested": false
+		"sync_videos_interested": false,
+		"is_selected": false
 	}]
 }]

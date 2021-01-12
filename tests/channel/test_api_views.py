@@ -5,6 +5,8 @@ from pytest_voluptuous import S
 from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 
+from veems.channel import services
+
 pytestmark = pytest.mark.django_db
 TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
@@ -32,6 +34,7 @@ def test_get_channels(api_client, channel_factory, user_factory):
             'language': 'en',
             'created_on': str,
             'modified_on': str,
+            'is_selected': bool,
         }
     )
     assert all(c['id'] in exp_channels for c in response.json())
@@ -54,24 +57,28 @@ def test_get_channel(api_client, channel_factory):
             'language': 'en',
             'created_on': str,
             'modified_on': str,
+            'is_selected': bool,
         }
     )
 
 
 class TestCreateChannel:
-    def test(self, api_client):
+    @pytest.mark.parametrize('is_selected', [True, False])
+    def test(self, api_client, is_selected):
         api_client, user = api_client
 
         body = {
             'name': 'my channel',
             'description': 'my desc',
             'sync_videos_interested': True,
+            'is_selected': is_selected,
             'language': 'es',
         }
         response = api_client.post('/api/v1/channel/', body, format='json')
 
         assert response.status_code == CREATED
-        assert response.json() == S(
+        resp_json = response.json()
+        assert resp_json == S(
             {
                 'id': str,
                 'user': user.id,
@@ -81,6 +88,7 @@ class TestCreateChannel:
                 'language': body['language'],
                 'created_on': str,
                 'modified_on': str,
+                'is_selected': is_selected,
             }
         )
 
@@ -110,11 +118,15 @@ class TestUpdateChannel:
                 'description': 'new desc',
                 'language': 'fr',
             },
+            {
+                'is_selected': True,
+            },
         ],
     )
     def test(self, api_client, channel_factory, body):
         api_client, user = api_client
-        channel = channel_factory(user=user)
+        channel_factory(user=user, is_selected=True)
+        channel = channel_factory(user=user, is_selected=False)
 
         response = api_client.put(
             f'/api/v1/channel/{channel.id}/', body, format='json'
@@ -133,8 +145,17 @@ class TestUpdateChannel:
                 'language': body.get('language', str),
                 'created_on': str,
                 'modified_on': str,
+                'is_selected': body.get('is_selected', channel.is_selected),
             }
         )
+        num_selected_channels = len(
+            tuple(
+                c
+                for c in services.get_channels(user_id=user.id)
+                if c.is_selected
+            )
+        )
+        assert num_selected_channels == 1
 
     def test_returns_404_when_attempting_to_update_someone_elses_channel(
         self, api_client, channel_factory, user_factory
@@ -183,6 +204,7 @@ class TestUpdateChannel:
                 'language': channel.language,
                 'created_on': str,
                 'modified_on': str,
+                'is_selected': True,
             }
         )
 

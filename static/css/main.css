@@ -535,3 +535,9 @@ hr {
 .metrics-table {
     line-height: 2;
 }
+
+.thumbnail-grid .card {
+    width: 100px;
+    height: 100px;
+
+}
