@@ -11,7 +11,8 @@ class User(BaseModel, AbstractUser):
         _('username'),
         max_length=150,
         unique=False,
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
     sync_videos_interested = models.BooleanField(default=False)
     REQUIRED_FIELDS = []

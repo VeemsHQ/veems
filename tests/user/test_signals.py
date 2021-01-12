@@ -19,5 +19,6 @@ def test_login_on_activation(mocker):
 
     assert mock_login.called
     mock_login.assert_called_once_with(
-        mock_request, mock_user,
+        mock_request,
+        mock_user,
     )

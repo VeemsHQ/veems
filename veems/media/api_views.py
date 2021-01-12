@@ -53,7 +53,7 @@ def upload_complete(request, upload_id):
     return Response({}, status=OK)
 
 
-class VideoAPIView(APIView):
+class VideoDetailAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, video_id, format=None):

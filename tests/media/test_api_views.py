@@ -174,55 +174,17 @@ class TestUploadComplete:
         assert response.status_code == FORBIDDEN
 
 
-class TestVideo:
+class TestVideoDetail:
     @pytest.fixture
     def video_with_transcodes(
         self,
-        video_factory,
-        transcode_job_factory,
-        simple_uploaded_file_factory,
-        rendition_playlist_file,
+        video_with_transcodes_factory,
         api_client_factory,
+        channel,
     ):
-        video = video_factory(
-            video_path=VIDEO_PATH,
-            description='description',
-            tags=['tag1', 'tag2'],
-            visibility='draft',
-            title='title',
-        )
-        transcode_job = transcode_job_factory(
-            profile='144p', video_record=video
-        )
-        transcode_job2 = transcode_job_factory(
-            profile='360p', video_record=video
-        )
-        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
-        video_rendition = models.VideoRendition.objects.create(
-            video=video,
-            file=file_,
-            playlist_file=rendition_playlist_file,
-            file_size=1000,
-            width=256,
-            height=144,
-            duration=10,
-            ext='webm',
-            container='webm',
-            audio_codec='opus',
-            video_codec='vp9',
-            name='144p',
-            framerate=30,
-            metadata={'example': 'metadata'},
-        )
-        api_client, _ = api_client_factory(user=video.channel.user)
-        return {
-            'video': video,
-            'transcode_job': transcode_job,
-            'transcode_job2': transcode_job2,
-            'video_rendition': video_rendition,
-            'user': video.channel.user,
-            'api_client': api_client,
-        }
+        video_data = video_with_transcodes_factory(channel=channel)
+        api_client, _ = api_client_factory(user=video_data['user'])
+        return {**video_data, **{'api_client': api_client}}
 
     @pytest.fixture
     def expected_video_resp_json(self, video_with_transcodes, mocker):

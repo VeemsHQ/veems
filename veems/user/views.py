@@ -7,6 +7,7 @@ from django.contrib.auth import logout as logout_
 from django.contrib.auth import views
 
 from . import forms
+
 # Importing signals module to register the signals
 from . import signals  # noqa
 

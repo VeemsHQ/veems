@@ -7,10 +7,13 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
 from veems.channel import services
+from veems.media import models
+from tests import constants
 
 
 TEST_DATA_DIR = Path(__file__).parent / 'test_data'
 EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
+VIDEO_PATH = constants.VID_360P_24FPS
 
 
 @pytest.fixture
@@ -26,6 +29,7 @@ def simple_uploaded_img_file_factory():
         with path.open('rb') as file_:
             file_contents = file_.read()
         return SimpleUploadedFile(path.name, file_contents)
+
     return make
 
 
@@ -93,3 +97,54 @@ def api_client_factory(user_factory):
 @pytest.fixture
 def api_client_no_auth():
     return APIClient()
+
+
+@pytest.fixture
+def video_with_transcodes_factory(
+    video_factory,
+    transcode_job_factory,
+    simple_uploaded_file_factory,
+    rendition_playlist_file,
+):
+    def make(channel):
+        user = channel.user
+        video = video_factory(
+            channel_=channel,
+            video_path=VIDEO_PATH,
+            description='description',
+            tags=['tag1', 'tag2'],
+            visibility='draft',
+            title='title',
+        )
+        transcode_job = transcode_job_factory(
+            profile='144p', video_record=video
+        )
+        transcode_job2 = transcode_job_factory(
+            profile='360p', video_record=video
+        )
+        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
+        video_rendition = models.VideoRendition.objects.create(
+            video=video,
+            file=file_,
+            playlist_file=rendition_playlist_file,
+            file_size=1000,
+            width=256,
+            height=144,
+            duration=10,
+            ext='webm',
+            container='webm',
+            audio_codec='opus',
+            video_codec='vp9',
+            name='144p',
+            framerate=30,
+            metadata={'example': 'metadata'},
+        )
+        return {
+            'video': video,
+            'transcode_job': transcode_job,
+            'transcode_job2': transcode_job2,
+            'video_rendition': video_rendition,
+            'user': user,
+        }
+
+    return make

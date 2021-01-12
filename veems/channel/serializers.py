@@ -21,9 +21,7 @@ class ChannelSerializer(CustomModelSerializer):
     def update(self, instance, validated_data):
         name = validated_data.get('name', instance.name)
         is_selected = validated_data.get('is_selected', instance.is_selected)
-        description = validated_data.get(
-            'description', instance.description
-        )
+        description = validated_data.get('description', instance.description)
         sync_videos_interested = validated_data.get(
             'sync_videos_interested', instance.sync_videos_interested
         )
@@ -53,6 +51,4 @@ class ChannelAvatarSerializer(CustomModelSerializer):
 class ChannelBannerSerializer(CustomModelSerializer):
     class Meta:
         model = models.Channel
-        fields = (
-            'banner_image_large_url',
-        )
+        fields = ('banner_image_large_url',)

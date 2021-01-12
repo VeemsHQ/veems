@@ -68,10 +68,11 @@ def upload_factory(channel):
 
 @pytest.fixture
 def video_factory(upload_factory, channel):
-    def make(video_path, **kwargs):
+    def make(video_path, channel_=None, **kwargs):
+        channel_ = channel_ or channel
         upload = upload_factory(video_path=video_path)
         return models.Video.objects.create(
-            upload=upload, channel=channel, **kwargs
+            upload=upload, channel=channel_, **kwargs
         )
 
     return make
