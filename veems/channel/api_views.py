@@ -1,4 +1,4 @@
-from http.client import BAD_REQUEST, CREATED
+from http.client import CREATED
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,12 +15,10 @@ class ChannelAPIView(APIView):
     def post(self, request, format=None):
         request.data['user'] = request.user.id
         serializer = serializers.ChannelSlimSerializer(data=request.data)
-        if serializer.is_valid():
-            channel = serializer.save()
-            serializer = serializers.ChannelSlimSerializer(channel)
-            return Response(serializer.data, status=CREATED)
-        else:
-            return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.save()
+        serializer = serializers.ChannelSlimSerializer(channel)
+        return Response(serializer.data, status=CREATED)
 
 
 class ChannelDetailAPIView(APIView):
@@ -34,12 +32,10 @@ class ChannelDetailAPIView(APIView):
         serializer = serializers.ChannelSerializer(
             channel, data=request.data, partial=True
         )
-        if serializer.is_valid():
-            channel = serializer.save()
-            serializer = serializers.ChannelSerializer(channel)
-            return Response(serializer.data)
-        else:
-            return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.save()
+        serializer = serializers.ChannelSerializer(channel)
+        return Response(serializer.data)
 
 
 class ChannelAvatarAPIView(APIView):

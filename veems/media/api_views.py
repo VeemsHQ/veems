@@ -68,12 +68,10 @@ class VideoDetailAPIView(APIView):
         serializer = serializers.VideoSerializer(
             video, data=request.data, partial=True
         )
-        if serializer.is_valid():
-            video = serializer.save()
-            serializer = serializers.VideoSerializer(video)
-            return Response(serializer.data)
-        else:
-            return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        video = serializer.save()
+        serializer = serializers.VideoSerializer(video)
+        return Response(serializer.data)
 
 
 @api_view(['GET'])
