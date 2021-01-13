@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import "regenerator-runtime/runtime.js";
 
 // Styling
-/* Todo: Move all embedded css into here so we can properly pass and use props 
+/* Todo: Move all embedded css into here so we can properly pass and use props
   and remove all ugly className syntax.
 */
 
