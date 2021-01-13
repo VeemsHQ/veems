@@ -11,7 +11,7 @@ import axios from 'axios';
 
 export const API = axios.create({
   timeout: 5000,
-  headers: { 'Content-Type': 'text/plain' },
+  headers: { 'Content-Type': 'application/json' },
   transformRequest: [function preTransformData(data) {
     // Todo: Add some outgoing error checks to server
     return JSON.stringify(data);
