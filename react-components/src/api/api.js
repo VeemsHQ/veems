@@ -8,10 +8,11 @@ import axios from 'axios';
  * @param {string} headers - Any additional headers we want to send infront of all server requests.
  * {@link https://github.com/axios/axios}
  */
-
 export const API = axios.create({
   timeout: 5000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json',
+              'X-CSRFTOKEN': window.CSRF_TOKEN,
+  },
   transformRequest: [function preTransformData(data) {
     // Todo: Add some outgoing error checks to server
     return JSON.stringify(data);
@@ -44,6 +45,7 @@ const createChannel = async ( name, description, syncVideosInterested ) => {
     name,
     description,
     sync_videos_interested: syncVideosInterested,
+    language: 'en',
   };
   try {
     const res = await API.post(`${await getServerURL()}/api/v1/channel/`, data);
