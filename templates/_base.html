@@ -42,6 +42,7 @@
     {% else %}
     window.SELECTED_CHANNEL_ID;
     {% endif %}
+    window.CSRF_TOKEN = "{{ csrf_token }}";
 </script>
 
 {% include "./_modals/_modal_create_channel.html" %}
