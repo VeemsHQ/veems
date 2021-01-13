@@ -2,21 +2,22 @@ from rest_framework import serializers
 from django.urls import reverse
 
 from . import models
+from ..common.serializers import CustomModelSerializer
 
 
-class VideoRenditionSerializer(serializers.ModelSerializer):
+class VideoRenditionSerializer(CustomModelSerializer):
     class Meta:
         model = models.VideoRendition
         exclude = ['file']
 
 
-class TranscodeJobSerializer(serializers.ModelSerializer):
+class TranscodeJobSerializer(CustomModelSerializer):
     class Meta:
         model = models.TranscodeJob
         exclude = ['failure_context']
 
 
-class VideoSerializer(serializers.ModelSerializer):
+class VideoSerializer(CustomModelSerializer):
     video_renditions = VideoRenditionSerializer(
         many=True, read_only=True, source='videorendition_set'
     )
@@ -35,6 +36,8 @@ class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Video
         fields = [
+            'id',
+            'channel',
             'title',
             'visibility',
             'description',
@@ -43,3 +46,10 @@ class VideoSerializer(serializers.ModelSerializer):
             'transcode_jobs',
             'playlist_file',
         ]
+        extra_kwargs = {
+            'channel': {'read_only': True},
+            'upload': {'read_only': True},
+            'video_renditions': {'read_only': True},
+            'transcode_jobs': {'read_only': True},
+            'playlist_file': {'read_only': True},
+        }

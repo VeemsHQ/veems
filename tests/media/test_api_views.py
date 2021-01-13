@@ -174,51 +174,27 @@ class TestUploadComplete:
         assert response.status_code == FORBIDDEN
 
 
-class TestVideo:
-    def test_get(
+class TestVideoDetail:
+    @pytest.fixture
+    def video_with_transcodes(
         self,
-        api_client_no_auth,
-        video_factory,
-        transcode_job_factory,
-        mocker,
-        simple_uploaded_file_factory,
-        rendition_playlist_file,
+        video_with_transcodes_factory,
+        api_client_factory,
+        channel,
     ):
-        video = video_factory(
-            video_path=VIDEO_PATH,
-            description='description',
-            tags=['tag1', 'tag2'],
-            visibility='draft',
-            title='title',
-        )
-        transcode_job = transcode_job_factory(
-            profile='144p', video_record=video
-        )
-        transcode_job2 = transcode_job_factory(
-            profile='360p', video_record=video
-        )
-        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
-        video_rendition = models.VideoRendition.objects.create(
-            video=video,
-            file=file_,
-            playlist_file=rendition_playlist_file,
-            file_size=1000,
-            width=256,
-            height=144,
-            duration=10,
-            ext='webm',
-            container='webm',
-            audio_codec='opus',
-            video_codec='vp9',
-            name='144p',
-            framerate=30,
-            metadata={'example': 'metadata'},
-        )
+        video_data = video_with_transcodes_factory(channel=channel)
+        api_client, _ = api_client_factory(user=video_data['user'])
+        return {**video_data, **{'api_client': api_client}}
 
-        response = api_client_no_auth.get(f'/api/v1/video/{video.id}/')
-
-        assert response.status_code == OK
-        assert response.json() == {
+    @pytest.fixture
+    def expected_video_resp_json(self, video_with_transcodes, mocker):
+        video = video_with_transcodes['video']
+        transcode_job = video_with_transcodes['transcode_job']
+        transcode_job2 = video_with_transcodes['transcode_job2']
+        video_rendition = video_with_transcodes['video_rendition']
+        return {
+            'id': video.id,
+            'channel': video.channel.id,
             'description': 'description',
             'tags': ['tag1', 'tag2'],
             'title': 'title',
@@ -270,6 +246,122 @@ class TestVideo:
                 },
             ],
         }
+
+    def test_get(
+        self,
+        api_client_no_auth,
+        mocker,
+        video_with_transcodes,
+        expected_video_resp_json,
+    ):
+        video = video_with_transcodes['video']
+
+        response = api_client_no_auth.get(f'/api/v1/video/{video.id}/')
+
+        assert response.status_code == OK
+        assert response.json() == expected_video_resp_json
+
+    def test_put(
+        self, mocker, video_with_transcodes, expected_video_resp_json
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+
+        payload = {
+            'title': 'new title',
+            'visibility': 'public',
+            'description': 'new description',
+            'tags': ['new', 'tags'],
+        }
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            payload,
+            format='json',
+        )
+
+        assert response.status_code == OK
+        expected_video_resp_json.update(payload)
+        assert response.json() == expected_video_resp_json
+
+    def test_put_cannot_update_channel(
+        self,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+        other_users_channel = channel_factory(user=user_factory())
+
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'channel': other_users_channel.id,
+            },
+            format='json',
+        )
+
+        assert response.status_code == BAD_REQUEST
+
+    def test_put_cannot_update_upload(
+        self,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+        upload_factory,
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+        other_users_channel = channel_factory(user=user_factory())
+        other_upload = upload_factory(channel_=other_users_channel)
+
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'upload': other_upload.id,
+            },
+            format='json',
+        )
+
+        assert response.status_code == BAD_REQUEST
+
+    def test_put_cannot_update_another_users_video(
+        self,
+        mocker,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+        api_client_factory,
+    ):
+        video = video_with_transcodes['video']
+        other_user_api_client, _ = api_client_factory(user=user_factory())
+
+        response = other_user_api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'title': 'new title',
+            },
+            format='json',
+        )
+
+        assert response.status_code == NOT_FOUND
+
+    def test_put_without_auth_returns_403(
+        self,
+        api_client_no_auth,
+        video_with_transcodes,
+    ):
+        video = video_with_transcodes['video']
+
+        response = api_client_no_auth.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'title': 'new title',
+            },
+            format='json',
+        )
+
+        assert response.status_code == FORBIDDEN
 
 
 class TestVideoPlaylist:

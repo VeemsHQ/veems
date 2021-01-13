@@ -5,6 +5,7 @@ __pycache__/
 .env.fish
 .env-run.fish
 .localstack/
+staticfiles/
 # C extensions
 *.so
 .vscode/

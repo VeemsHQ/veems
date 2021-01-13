@@ -1,4 +1,4 @@
-from http.client import BAD_REQUEST, CREATED
+from http.client import CREATED
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,18 +9,16 @@ from . import services, serializers
 class ChannelAPIView(APIView):
     def get(self, request, format=None):
         channels = services.get_channels(user_id=request.user.id)
-        serializer = serializers.ChannelSerializer(channels, many=True)
+        serializer = serializers.ChannelSlimSerializer(channels, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
         request.data['user'] = request.user.id
-        serializer = serializers.ChannelSerializer(data=request.data)
-        if serializer.is_valid():
-            channel = serializer.save()
-            serializer = serializers.ChannelSerializer(channel)
-            return Response(serializer.data, status=CREATED)
-        else:
-            return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
+        serializer = serializers.ChannelSlimSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.save()
+        serializer = serializers.ChannelSlimSerializer(channel)
+        return Response(serializer.data, status=CREATED)
 
 
 class ChannelDetailAPIView(APIView):
@@ -34,12 +32,10 @@ class ChannelDetailAPIView(APIView):
         serializer = serializers.ChannelSerializer(
             channel, data=request.data, partial=True
         )
-        if serializer.is_valid():
-            channel = serializer.save()
-            serializer = serializers.ChannelSerializer(channel)
-            return Response(serializer.data)
-        else:
-            return Response({'detail': 'Invalid payload'}, status=BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.save()
+        serializer = serializers.ChannelSerializer(channel)
+        return Response(serializer.data)
 
 
 class ChannelAvatarAPIView(APIView):

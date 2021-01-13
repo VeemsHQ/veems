@@ -40,14 +40,18 @@ def test_get_channels(api_client, channel_factory, user_factory):
     assert all(c['id'] in exp_channels for c in response.json())
 
 
-def test_get_channel(api_client, channel_factory):
+def test_get_channel(
+    api_client, channel_factory, video_with_transcodes_factory
+):
     api_client, user = api_client
     channel = channel_factory(user=user)
+    video_with_transcodes_factory(channel=channel)
 
     response = api_client.get(f'/api/v1/channel/{channel.id}/')
 
     assert response.status_code == OK
-    assert response.json() == S(
+    resp_json = response.json()
+    assert resp_json == S(
         {
             'id': channel.id,
             'user': user.id,
@@ -58,8 +62,25 @@ def test_get_channel(api_client, channel_factory):
             'created_on': str,
             'modified_on': str,
             'is_selected': bool,
+            'videos': list,
         }
     )
+    assert len(resp_json['videos']) == 1
+    assert resp_json['videos'][0] == S(
+        {
+            'id': str,
+            'channel': str,
+            'description': str,
+            'tags': list,
+            'title': str,
+            'visibility': str,
+            'playlist_file': str,
+            'video_renditions': list,
+            'transcode_jobs': list,
+        }
+    )
+    assert resp_json['videos'][0]['video_renditions']
+    assert resp_json['videos'][0]['transcode_jobs']
 
 
 class TestCreateChannel:
@@ -102,7 +123,10 @@ class TestCreateChannel:
         response = api_client.post('/api/v1/channel/', body, format='json')
 
         assert response.status_code == BAD_REQUEST
-        assert response.json() == {'detail': 'Invalid payload'}
+        assert response.json() == {
+            'description': ['This field is required.'],
+            'sync_videos_interested': ['This field is required.']
+        }
 
 
 class TestUpdateChannel:
@@ -146,6 +170,7 @@ class TestUpdateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': body.get('is_selected', channel.is_selected),
+                'videos': list,
             }
         )
         num_selected_channels = len(
@@ -205,6 +230,7 @@ class TestUpdateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': True,
+                'videos': list,
             }
         )
 
