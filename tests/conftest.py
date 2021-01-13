@@ -59,11 +59,19 @@ def user(user_factory):
 
 @pytest.fixture
 def channel_factory():
-    def make(*, user, avatar_image=None, banner_image=None, is_selected=True):
+    def make(
+        *,
+        user,
+        description=None,
+        name=None,
+        avatar_image=None,
+        banner_image=None,
+        is_selected=True,
+    ):
         return channel_services.create_channel(
-            name='My Channel',
+            name=name or 'My Channel',
             user=user,
-            description='x' * 5000,
+            description=description or 'x' * 5000,
             sync_videos_interested=True,
             language='en',
             avatar_image=avatar_image,

@@ -6,7 +6,7 @@ from django_registration.backends.activation.views import (
     ActivationView,
 )
 
-from .media import api_views
+from .media import api_views, views as media_views
 from .home import views as home_views
 from .user import views as user_views, forms as user_forms
 from .channel_manager import views as channel_manager_views
@@ -16,6 +16,11 @@ from .channel import api_views as channel_api_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_views.IndexView.as_view(), name='index'),
+    path(
+        'v/<slug:video_id>/',
+        media_views.VideoView.as_view(),
+        name='view-video',
+    ),
     path(
         'accounts/logout/',
         user_views.logout,
