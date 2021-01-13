@@ -26,7 +26,7 @@ export const API = axios.create({
 
 const getServerURL = async () => {
   // todo.
-  return 'http://localhost:8000/';
+  return 'http://localhost:8000';
 }
 
 /**
@@ -46,7 +46,7 @@ const createChannel = async ( name, description, syncVideosInterested ) => {
     sync_videos_interested: syncVideosInterested,
   };
   try {
-    const res = await API.post(`${await getServerURL()}'/api/v1/channel/`, data);
+    const res = await API.post(`${await getServerURL()}/api/v1/channel/`, data);
     return res;
   } catch (err) {
     return err;

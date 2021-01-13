@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
+import "regenerator-runtime/runtime.js";
 
 // Styling
 /* Todo: Move all embedded css into here so we can properly pass and use props 
