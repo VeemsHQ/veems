@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+
 import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+
 import "regenerator-runtime/runtime.js";
 
 // Styling
@@ -8,52 +11,55 @@ import "regenerator-runtime/runtime.js";
 */
 
 export const CreateChannelButton = ({
-  onChannelCreate,
+  onCreateChannel,
 }) => {
   const [showChannelModal, setShowChannelModal] = useState(false);
 
-  const [channelName, setChannelName] = useState('My Awesome Channel');
-  const [channelDescription, setChannelDescription] = useState('Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.');
+  const [channelName, setChannelName] = useState('');
+  const [channelDescription, setChannelDescription] = useState('');
   const [channelSync, setChannelSync] = useState(false);
 
   const createChannelHandler = () => {
     setShowChannelModal(false);
     // Todo: Add some warnings to form validation for failed create.
-    onChannelCreate(channelName, channelDescription, channelSync);
+    onCreateChannel(channelName, channelDescription, channelSync);
   };
 
   const renderModal = () => {
     return (
       <>
         <Modal show={showChannelModal} onHide={() => setShowChannelModal(false)}>
+        <Form>
+
           <Modal.Header closeButton>
             <Modal.Title>Create a channel</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <div className="form-group">
-                <label>Channel Name</label>
-                <input placeholder={channelName} onInput={e => setChannelName(e.target.value)} type="text" className="form-control" id="customInput2"
-                    placeholder="My Awesome Channel" />
-            </div>
-            <div className="form-group">
-                <label>Channel Description</label>
-                <textarea placeholder={channelDescription} onInput={e => setChannelDescription(e.target.value)} className="form-control" rows="3" id="customTextArea2"></textarea>
-            </div>
-            <div className="form-group">
-                <div className="custom-control custom-checkboxWW">
-                    <input onChange={e => {setChannelSync(e.target.value)}} type="checkbox" className="custom-control-input" id="customCheck2" />
-                    <label className="custom-control-label d-flex">I'd like to sync videos
-                        from my YouTube Channel.</label><a href="#">Learn more about channel syncing</a>.
-                </div>
-            </div>
-            <p className="text-muted">
-                By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-                <button onClick={() => setShowChannleModal(false)} type="button" className="btn btn-light">Cancel</button>
-                <a href="#" onClick={() => createChannelHandler()} className="btn btn-primary">Create Channel</a>
-          </Modal.Footer>
+                
+           <Modal.Body>
+
+              <Form.Group>
+                <Form.Label>Channel Name</Form.Label>
+                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" placeholder={channelName} />
+              </Form.Group>
+
+              <Form.Group controlId="exampleForm.ControlTextarea1">
+                <Form.Label>Channel Description</Form.Label>
+                <Form.Control onChange={e => setChannelDescription(e.target.value)} as="textarea" rows={3} placeholder={'Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.'} />
+              </Form.Group>
+
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Check onChange={e => {setChannelSync(e.target.value === 'on' ? true : false)}} type="checkbox" label="I'd like to sync videos from my YouTube Channel." />
+                <a href="#">Learn more about channel syncing</a>
+              </Form.Group>
+
+            </Modal.Body>
+
+            <Modal.Footer>
+              <button onClick={() => setShowChannleModal(false)} type="button" className="btn btn-light">Cancel</button>
+              <a href="#" onClick={() => createChannelHandler()} className="btn btn-primary">Create Channel</a>
+            </Modal.Footer>
+
+          </Form>
         </Modal>
       </>
     )
@@ -69,3 +75,5 @@ export const CreateChannelButton = ({
 };
 
 export default CreateChannelButton;
+
+

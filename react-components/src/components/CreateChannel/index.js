@@ -24,8 +24,11 @@ export const CreateChannel = ({
 }) => {
 
   const handleCreateChannel = (name, desc, bSync) => {
-    // TODO: Set active channel and store ID. If bSync then enable correct tab
+    // TODO: Set active channel and store ID. 
     createChannelRequest(name, desc, bSync);
+    // If bSync then enable correct tab
+    if (bSync)
+      window.location.pathname = '/channel/sync/';
   };
 
   const ButtonContainer = () => {
