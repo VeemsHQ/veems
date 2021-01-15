@@ -1,14 +1,11 @@
-@import url("https://fonts.googleapis.com/css?family=Oswald:400,500|Merriweather:300,400,500");
 /* Set the idle overlay to transparent white */
+
+:root {
+	--player-light-blue: #92dce5;
+}
 
 .jwplayer.jw-skin-alaska.jw-state-idle .jw-controls {
 	background: rgba(255, 255, 255, 0.7);
-}
-
-/* Add border to accentuate white controls */
-
-.jwplayer.jw-skin-alaska .jw-controls {
-	/* border: 1px solid #1e1e1e; */
 }
 
 /* Hide titles on complete */
@@ -89,7 +86,7 @@
 }
 
 .jwplayer.jw-skin-alaska.jw-state-idle .jw-display-controls .jw-display-icon-container:hover {
-	background-color: #92dce5;
+	background-color: var(--player-light-blue);
 }
 
 .jwplayer.jw-skin-alaska.jw-state-idle .jw-display-controls .jw-display-icon-container .jw-icon:hover {
@@ -111,7 +108,11 @@
 }
 
 .jwplayer.jw-skin-alaska .jw-display-controls .jw-display-icon-container .jw-icon:hover {
-	color: #92dce5;
+	color: var(--player-light-blue);
+}
+
+.jwplayer.jw-skin-alaska .jw-flag-dragging {
+	color: var(--player-light-blue);
 }
 
 .jwplayer.jw-skin-alaska.jw-state-paused .jw-controls {
@@ -155,7 +156,6 @@
 	color: #1e1e1e;
 	text-align: center;
 	text-transform: uppercase;
-	font-family: "Oswald", sans-serif;
 	font-weight: 500;
 	padding-bottom: 15px;
 	transition: transform 0.35s;
@@ -234,7 +234,7 @@
 }
 
 .jwplayer.jw-skin-alaska .jw-controlbar .jw-button-container .jw-button-color:hover {
-	color: #92dce5;
+	color: var(--player-light-blue);
 }
 
 /* Move tooltips closer to control bar with inline timeslider, change colors, round corners, remove shadow */
@@ -246,17 +246,21 @@
 
 .jwplayer.jw-skin-alaska .jw-controlbar .jw-tooltip.jw-open {
 	border-radius: 5px;
-	color: #92dce5;
+	color: var(--player-light-blue);
+}
+
+.jwplayer.jw-skin-alaska .jw-settings-topbar-buttons .jw-tooltip-captions .jw-text,
+.jwplayer.jw-skin-alaska .jw-settings-topbar-buttons .jw-tooltip-quality .jw-text,
+.jwplayer.jw-skin-alaska .jw-time-tip .jw-reset {
+	border-radius: 3px;
+	background-color: #eee;
+	color: #222;
 }
 
 .jwplayer.jw-skin-alaska .jw-controlbar .jw-tooltip .jw-text {
-	background-color: #92dce5;
+	background-color: var(--player-light-blue);
 	border-radius: 5px;
 	border: 0;
-}
-
-.jwplayer.jw-skin-alaska .jw-controlbar .jw-text {
-	color: #eeeeee;
 }
 
 .jwplayer.jw-skin-alaska .jw-volume-tip, .jwplayer.jw-skin-alaska .jw-time-tip {
@@ -315,13 +319,13 @@
 }
 
 /* Custom */
-.jw-svg-icon-play path {
+/* .jw-svg-icon-play path {
 	display: none;
-}
+} */
 
-.jw-svg-icon-play {
+/* .jw-svg-icon-play {
 	background-image: url('play.png');
 	background-position: center center;
 	background-size: contain;
 	background-repeat: no-repeat;
-}
+} */

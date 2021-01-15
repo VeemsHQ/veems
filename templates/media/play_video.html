@@ -630,12 +630,19 @@
         const playerInstance = jwplayer('main-video-player').setup({
             file: '{{video_playlist_url|safe}}',
             autostart: true,
+            displaytitle: false,
             responsive: true,
+            stretching: "uniform",
+            playbackRateControls: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2],
             aspectratio: "16:9",
             skin: {
                 name: 'alaska',
-                url: "{% static 'css/alaska.css' %}"
+                url: "{% static 'css/player.css' %}"
             }
+            {% comment %} Add logo only on embedded player {% endcomment %}
+            {% comment %} logo: {
+                file: "{% static 'images/logo.png' %}"
+            }, {% endcomment %}
         });
     </script>
 {% endblock %}
