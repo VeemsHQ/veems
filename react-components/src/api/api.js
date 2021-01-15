@@ -40,7 +40,7 @@ const getServerURL = async () => {
  * @param {string} language - 
  * @throw Should return error
  */
-const createChannel = async ( name, description, syncVideosInterested ) => {
+const createChannelRequest = async ( name, description, syncVideosInterested ) => {
   const data = {
     name,
     description,
@@ -62,7 +62,7 @@ const createChannel = async ( name, description, syncVideosInterested ) => {
  * @param {number} channelId - Required channelId
  * @throw Should return error
  */
-const getChannel = async ( channelId ) => {
+const getChannelRequest = async ( channelId ) => {
   const data = {
     id : channelId,
   };
@@ -76,6 +76,6 @@ const getChannel = async ( channelId ) => {
 };
 
 export {
-  createChannel,
-  getChannel,
+  createChannelRequest,
+  getChannelRequest,
 };

@@ -7,7 +7,7 @@ import "regenerator-runtime/runtime.js";
   and remove all ugly className syntax.
 */
 
-export const ChannelCreate = ({
+export const CreateChannelButton = ({
   onChannelCreate,
 }) => {
   const [showChannelModal, setShowChannelModal] = useState(false);
@@ -68,4 +68,4 @@ export const ChannelCreate = ({
 
 };
 
-export default ChannelCreate;
+export default CreateChannelButton;
