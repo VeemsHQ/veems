@@ -222,3 +222,7 @@ def get_metadata(video_path):
 
 def get_video(id):
     return models.Video.objects.get(id=id)
+
+
+def get_popular_videos():
+    return models.Video.objects.order_by('-created_on')

@@ -118,14 +118,14 @@ def video_with_transcodes_factory(
     simple_uploaded_file_factory,
     rendition_playlist_file,
 ):
-    def make(channel):
+    def make(channel, visibility='draft'):
         user = channel.user
         video = video_factory(
             channel_=channel,
             video_path=VIDEO_PATH,
             description='description',
             tags=['tag1', 'tag2'],
-            visibility='draft',
+            visibility=visibility,
             title='title',
         )
         transcode_job = transcode_job_factory(
@@ -135,10 +135,19 @@ def video_with_transcodes_factory(
             profile='360p', video_record=video
         )
         file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH_2160_30FPS)
+        playlist_file = rendition_playlist_file.close()
+        try:
+            playlist_file = rendition_playlist_file.open()
+        except ValueError:
+            rendition_playlist_file.close()
+        try:
+            rendition_playlist_file.seek(0)
+        except ValueError:
+            pass
         video_rendition = models.VideoRendition.objects.create(
             video=video,
-            file=file_,
-            playlist_file=rendition_playlist_file,
+            file=file_.open(),
+            playlist_file=playlist_file,
             file_size=1000,
             width=256,
             height=144,
@@ -227,10 +236,10 @@ def video_factory(upload_factory, channel):
 
 
 @pytest.fixture
-def transcode_job_factory(video):
+def transcode_job_factory(request):
     def make(profile, status='created', video_record=None):
         return models.TranscodeJob.objects.create(
-            video=video_record or video,
+            video=video_record or request.getfixturevalue('video'),
             profile=profile,
             executor='ffmpeg',
             status=status,

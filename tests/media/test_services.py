@@ -538,3 +538,21 @@ def test_get_video(video):
 
     assert isinstance(result, models.Video)
     assert result == video
+
+
+def test_get_popular_videos(
+    video_with_transcodes_factory, channel_factory, user_factory
+):
+    for _ in range(3):
+        video_with_transcodes_factory(
+            channel=channel_factory(user=user_factory()),
+            visibility='public',
+        )
+
+    records = services.get_popular_videos()
+
+    assert all(isinstance(r, models.Video) for r in records)
+    assert len(records) == 3
+    assert (
+        records[0].created_on > records[1].created_on > records[2].created_on
+    )
