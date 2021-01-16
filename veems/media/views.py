@@ -10,6 +10,7 @@ class VideoView(TemplateView):
     def get_context_data(self, *args, video_id, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         video = services.get_video(id=video_id)
+        context['video_rendition_count'] = video.videorendition_set.count()
         context['video_id'] = video.id
         context['video_title'] = video.title
         context['video_description'] = video.description

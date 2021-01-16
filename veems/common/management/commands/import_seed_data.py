@@ -33,6 +33,7 @@ def _run():
                 language='en',
                 user=user,
             )
+            print('Created Channel', channel_record.id)
             for video in channel['videos']:
                 path = Path(video['path'])
                 upload, video_record = upload_manager.prepare(
@@ -41,6 +42,7 @@ def _run():
                 video_record.title = video['title']
                 video_record.description = video['description']
                 video_record.save()
+                print('Created Video', video_record.id)
                 with path.open('rb') as file_:
                     # Upload the file completely outside of Django
                     resp = requests.put(

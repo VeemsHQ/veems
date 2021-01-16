@@ -23,6 +23,7 @@ class TestVideoView:
         assert response.status_code == OK
         assert response.context['video_id'] == video.id
         assert response.context['video_title'] == video.title
+        assert response.context['video_rendition_count'] == 1
         assert response.context['video_description'] == video.description
         assert (
             response.context['video_created_date'] == video.created_on.date()

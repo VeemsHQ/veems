@@ -116,7 +116,8 @@
 }
 
 .jwplayer.jw-skin-alaska.jw-state-paused .jw-controls {
-	background-color: rgba(147, 221, 230, 0.3);
+	/* background-color: rgba(147, 221, 230, 0.3); */
+	background-color: rgba(0, 0, 0, .1);
 }
 
 /* Customize font style and positioning for titles */
@@ -131,7 +132,7 @@
 
 /* Enlarge preview image & add shift transitions with class 'slide' (applied on mouseenter) */
 
-.jwplayer.jw-skin-alaska .jw-preview {
+/* .jwplayer.jw-skin-alaska .jw-preview {
 	width: calc(100% + 50px);
 	background-size: calc(100% + 60px);
 	transition: opacity 0.35s, transform 0.35s;
@@ -146,7 +147,7 @@
 
 .jwplayer.jw-skin-alaska.jw-state-complete:hover .jw-preview {
 	transform: translate3d(-40px, 0, 0);
-}
+} */
 
 /* Apply new styles to video title and description, handle transitions */
 
