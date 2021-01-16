@@ -5,7 +5,7 @@ from . import services
 
 
 class VideoView(TemplateView):
-    template_name = 'media/play_video.html'
+    template_name = 'media/video.html'
 
     def get_context_data(self, *args, video_id, **kwargs):
         context = super().get_context_data(*args, **kwargs)
