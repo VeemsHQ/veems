@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.urls import reverse
+from django.contrib.humanize.templatetags.humanize import naturaltime
 
 from . import models
 from ..common.serializers import CustomModelSerializer
@@ -39,6 +40,15 @@ class VideoSerializer(CustomModelSerializer):
     comment_count = serializers.SerializerMethodField(
         method_name='get_comment_count'
     )
+    time_ago_human = serializers.SerializerMethodField(
+        method_name='get_time_ago_human'
+    )
+    channel_name = serializers.SerializerMethodField(
+        method_name='get_channel_name'
+    )
+    channel_id = serializers.SerializerMethodField(
+        method_name='get_channel_id'
+    )
 
     def get_playlist_file(self, instance):
         video_id = instance.id
@@ -57,6 +67,15 @@ class VideoSerializer(CustomModelSerializer):
     def get_comment_count(self, instance):
         return 0
 
+    def get_time_ago_human(self, instance):
+        return naturaltime(instance.created_on)
+
+    def get_channel_name(self, instance):
+        return instance.channel.name
+
+    def get_channel_id(self, instance):
+        return instance.channel_id
+
     class Meta:
         model = models.Video
         fields = [
@@ -73,6 +92,10 @@ class VideoSerializer(CustomModelSerializer):
             'created_date',
             'view_count',
             'comment_count',
+            'thumbnail',
+            'time_ago_human',
+            'channel_name',
+            'channel_id',
         ]
         extra_kwargs = {
             'channel': {'read_only': True},
@@ -84,4 +107,7 @@ class VideoSerializer(CustomModelSerializer):
             'created_date': {'read_only': True},
             'view_count': {'read_only': True},
             'comment_count': {'read_only': True},
+            'time_ago_human': {'read_only': True},
+            'channel_name': {'read_only': True},
+            'channel_id': {'read_only': True},
         }

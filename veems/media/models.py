@@ -1,6 +1,7 @@
 from pathlib import Path
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.templatetags.static import static
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
@@ -104,6 +105,17 @@ class Video(BaseModel):
     )
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
+    # TODO: add duration
+
+    # TODO: add middle of video thumbnail, small, medium, large
+    def thumbnail(self):
+        try:
+            rendition = self.videorendition_set.first()
+            return rendition.videorenditionthumbnail_set.first().file.url
+        except Exception:
+            return static(
+                'images/player/error-video-processing-simple-480p.png'
+            )
 
     def __str__(self):
         return (
