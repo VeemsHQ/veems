@@ -218,3 +218,7 @@ def get_metadata(video_path):
         'format': format_,
         'summary': summary,
     }
+
+
+def get_video(id):
+    return models.Video.objects.get(id=id)

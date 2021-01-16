@@ -6,3 +6,7 @@ class MediaStorage(S3Boto3Storage):
     bucket_name = settings.BUCKET_MEDIA
     custom_domain = settings.BUCKET_MEDIA_CUSTOM_DOMAIN
     default_acl = settings.BUCKET_MEDIA_DEFAULT_ACL
+
+
+class MediaStoragePublic(MediaStorage):
+    default_acl = 'public-read'

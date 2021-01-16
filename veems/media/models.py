@@ -152,7 +152,8 @@ class VideoRenditionSegment(BaseModel):
         VideoRendition, on_delete=models.CASCADE
     )
     file = models.FileField(
-        upload_to=_video_rendition_segment_upload_to, storage=STORAGE_BACKEND
+        upload_to=_video_rendition_segment_upload_to,
+        storage=storage_backends.MediaStoragePublic,
     )
     segment_number = models.IntegerField()
 

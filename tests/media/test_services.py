@@ -531,3 +531,10 @@ class TestGeneratePlaylist:
         playlist_str = services.generate_master_playlist(video_id=video.id)
 
         assert playlist_str is None
+
+
+def test_get_video(video):
+    result = services.get_video(id=video.id)
+
+    assert isinstance(result, models.Video)
+    assert result == video
