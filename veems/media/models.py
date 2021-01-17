@@ -102,7 +102,7 @@ class Upload(BaseModel):
 
 
 class Video(BaseModel):
-    upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
+    upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE, blank=True)
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='videos'
     )
@@ -113,7 +113,7 @@ class Video(BaseModel):
         db_index=True,
         default='public',
     )
-    is_viewable = models.BooleanField(default=False, null=False, db_index=True)
+    is_viewable = models.BooleanField(default=False, db_index=True)
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
     framerate = models.IntegerField(null=True)
