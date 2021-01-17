@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 RUN apt-get update && apt-get install -y --no-install-recommends git gcc \
 libc6-dev build-essential libcurl4-openssl-dev libssl-dev ffmpeg && \

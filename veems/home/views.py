@@ -12,7 +12,7 @@ class IndexView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         videos_popular = media_services.get_popular_videos()
-        videos_popular = media_serializers.VideoSerializer(
+        videos_popular = media_serializers.VideoSlimSerializer(
             videos_popular, many=True
         ).data
         context['videos_popular'] = videos_popular

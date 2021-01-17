@@ -84,6 +84,7 @@ class Upload(BaseModel):
         max_length=10,
         choices=tuple((c, c) for c in UPLOAD_CHOICES),
         default='draft',
+        db_index=True,
     )
 
     def __str__(self):
@@ -102,10 +103,13 @@ class Video(BaseModel):
     visibility = models.CharField(
         max_length=10,
         choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
+        db_index=True, default='public',
     )
+    is_viewable = models.BooleanField(default=False, null=False, db_index=True)
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
-    # TODO: add duration
+    framerate = models.IntegerField(null=True)
+    duration = models.IntegerField(null=True, default=0)
 
     # TODO: add middle of video thumbnail, small, medium, large
     def thumbnail(self):
@@ -203,7 +207,8 @@ class TranscodeJob(BaseModel):
     profile = models.CharField(max_length=100)
     executor = models.CharField(max_length=20)
     status = models.CharField(
-        max_length=10, choices=tuple((c, c) for c in TRANSCODE_JOB_CHOICES)
+        max_length=10, choices=tuple((c, c) for c in TRANSCODE_JOB_CHOICES),
+        db_index=True
     )
     started_on = models.DateTimeField(db_index=True, null=True)
     ended_on = models.DateTimeField(db_index=True, null=True)

@@ -8,6 +8,7 @@ from http.client import (
 )
 import json
 
+from pytest_voluptuous import S
 import pytest
 import m3u8
 
@@ -189,24 +190,32 @@ class TestVideoDetail:
     @pytest.fixture
     def expected_video_resp_json(self, video_with_transcodes, mocker):
         video = video_with_transcodes['video']
-        transcode_job = video_with_transcodes['transcode_job']
-        transcode_job2 = video_with_transcodes['transcode_job2']
         video_rendition = video_with_transcodes['video_rendition']
-        return {
+        return S({
             'id': video.id,
             'channel': video.channel.id,
             'description': 'description',
             'tags': ['tag1', 'tag2'],
             'title': 'title',
             'visibility': 'draft',
+            'video_renditions_count': int,
+            'duration': int,
+            'view_count': int,
+            'thumbnail': str,
+            'channel_id': str,
+            'channel_name': str,
+            'comment_count': int,
+            'created_date': str,
+            'duration_human': str,
             'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
+            'time_ago_human': str,
             'video_renditions': [
                 {
                     'audio_codec': 'opus',
                     'container': 'webm',
                     'codecs_string': None,
-                    'playlist_file': mocker.ANY,
-                    'created_on': mocker.ANY,
+                    'playlist_file': None,
+                    'created_on': str,
                     'duration': 10,
                     'ext': 'webm',
                     'file_size': 1000,
@@ -214,7 +223,7 @@ class TestVideoDetail:
                     'height': 144,
                     'id': video_rendition.id,
                     'metadata': {'example': 'metadata'},
-                    'modified_on': mocker.ANY,
+                    'modified_on': str,
                     'name': '144p',
                     'video': video.id,
                     'video_codec': 'vp9',
@@ -223,29 +232,29 @@ class TestVideoDetail:
             ],
             'transcode_jobs': [
                 {
-                    'created_on': mocker.ANY,
+                    'created_on': str,
                     'ended_on': None,
                     'executor': 'ffmpeg',
-                    'id': transcode_job.id,
-                    'modified_on': mocker.ANY,
-                    'profile': '144p',
-                    'started_on': mocker.ANY,
+                    'id': str,
+                    'modified_on': str,
+                    'profile': str,
+                    'started_on': str,
                     'status': 'created',
                     'video': video.id,
                 },
                 {
-                    'created_on': mocker.ANY,
+                    'created_on': str,
                     'ended_on': None,
                     'executor': 'ffmpeg',
-                    'id': transcode_job2.id,
-                    'modified_on': mocker.ANY,
-                    'profile': '360p',
-                    'started_on': mocker.ANY,
+                    'id': str,
+                    'modified_on': str,
+                    'profile': str,
+                    'started_on': str,
                     'status': 'created',
                     'video': video.id,
                 },
             ],
-        }
+        })
 
     def test_get(
         self,
@@ -280,7 +289,7 @@ class TestVideoDetail:
         )
 
         assert response.status_code == OK
-        expected_video_resp_json.update(payload)
+        expected_video_resp_json = expected_video_resp_json.extend(payload)
         assert response.json() == expected_video_resp_json
 
     def test_put_cannot_update_channel(

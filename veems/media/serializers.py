@@ -1,3 +1,5 @@
+import time
+
 from rest_framework import serializers
 from django.urls import reverse
 from django.contrib.humanize.templatetags.humanize import naturaltime
@@ -49,6 +51,9 @@ class VideoSerializer(CustomModelSerializer):
     channel_id = serializers.SerializerMethodField(
         method_name='get_channel_id'
     )
+    duration_human = serializers.SerializerMethodField(
+        method_name='get_duration_human'
+    )
 
     def get_playlist_file(self, instance):
         video_id = instance.id
@@ -76,6 +81,12 @@ class VideoSerializer(CustomModelSerializer):
     def get_channel_id(self, instance):
         return instance.channel_id
 
+    def get_duration_human(self, instance):
+        assert instance.duration is not None
+        return time.strftime(
+            '%H:%M:%S', time.gmtime(instance.duration)
+        ).removeprefix('00:')
+
     class Meta:
         model = models.Video
         fields = [
@@ -96,6 +107,8 @@ class VideoSerializer(CustomModelSerializer):
             'time_ago_human',
             'channel_name',
             'channel_id',
+            'duration',
+            'duration_human',
         ]
         extra_kwargs = {
             'channel': {'read_only': True},
@@ -110,4 +123,30 @@ class VideoSerializer(CustomModelSerializer):
             'time_ago_human': {'read_only': True},
             'channel_name': {'read_only': True},
             'channel_id': {'read_only': True},
+            'duration': {'read_only': True},
+            'duration_human': {'read_only': True},
         }
+
+
+class VideoSlimSerializer(VideoSerializer):
+    class Meta:
+        model = VideoSerializer.Meta.model
+        fields = [
+            'id',
+            'channel',
+            'title',
+            'visibility',
+            'description',
+            'tags',
+            'video_renditions_count',
+            'created_date',
+            'view_count',
+            'comment_count',
+            'thumbnail',
+            'time_ago_human',
+            'channel_name',
+            'channel_id',
+            'duration',
+            'duration_human',
+        ]
+        extra_kwargs = VideoSerializer.Meta.extra_kwargs

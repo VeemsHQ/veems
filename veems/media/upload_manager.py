@@ -36,11 +36,7 @@ def prepare(*, user, filename, channel_id):
         upload=upload, filename=filename
     )
     upload.save()
-    video = models.Video.objects.create(
-        upload=upload,
-        visibility='draft',
-        channel=channel,
-    )
+    video = models.Video.objects.create(upload=upload, channel=channel)
     logger.info(
         'Done preparing upload for user %s, draft video %s', user.id, video.id
     )

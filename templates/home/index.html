@@ -9,20 +9,22 @@
             </div>
 
             <div class="video-grid px-2 m-0 card-group d-flex flex-wrap">
-            {% for video in videos_popular %}
+                {% for video in videos_popular %}
                 <div class="card mt-1">
                     <a href="{% url 'view-video' video.id %}" class="thumbnail">
                         <img class="card-img-top" src="{{video.thumbnail}}">
-                        <div class="overlays">0:00</div>
+                        <div class="overlays">{{video.duration_human}}</div>
                     </a>
                     <div class="card-body pl-0 pt-2 pr-3 pb-3">
-                        <h5 style="font-size:0.9rem" class="m-0"><a href="{% url 'view-video' video.id %}">{{video.title}}</a></h5>
+                        <h5 style="font-size:0.9rem" class="m-0"><a
+                                href="{% url 'view-video' video.id %}">{{video.title}}</a></h5>
                         <div class="metadata">
                             <div class="w-100">
                                 <div class="card-text text-muted mt-1"><a href="#">{{video.channel_name}}</a></div>
                             </div>
                             <div class="w-100">
-                                <div class="card-text text-muted">{{video.view_count}} views • {{video.time_ago_human}}</div>
+                                <div class="card-text text-muted">{{video.view_count}} views • {{video.time_ago_human}}
+                                </div>
                             </div>
                         </div>
                     </div>

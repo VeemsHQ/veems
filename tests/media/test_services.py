@@ -543,16 +543,37 @@ def test_get_video(video):
 def test_get_popular_videos(
     video_with_transcodes_factory, channel_factory, user_factory
 ):
-    for _ in range(3):
+    visibility_values = (
+        'private',
+        'public',
+        'public',
+        'public',
+        'public',
+        'unlisted',
+    )
+    is_viewable_values = (False, False, True, True, True, True)
+    for visibility, is_viewable in zip(visibility_values, is_viewable_values):
         video_with_transcodes_factory(
             channel=channel_factory(user=user_factory()),
-            visibility='public',
+            visibility=visibility,
+            is_viewable=is_viewable,
         )
 
     records = services.get_popular_videos()
 
     assert all(isinstance(r, models.Video) for r in records)
     assert len(records) == 3
+    assert all(
+        r.visibility == 'public' and r.is_viewable is True for r in records
+    )
     assert (
         records[0].created_on > records[1].created_on > records[2].created_on
     )
+
+
+def test_mark_video_as_viewable(video_factory):
+    video = video_factory(is_viewable=False)
+
+    updated_video = services.mark_video_as_viewable(video=video)
+
+    assert updated_video.is_viewable is True

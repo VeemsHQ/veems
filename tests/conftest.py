@@ -118,7 +118,7 @@ def video_with_transcodes_factory(
     simple_uploaded_file_factory,
     rendition_playlist_file,
 ):
-    def make(channel, visibility='draft'):
+    def make(channel, visibility='draft', **video_kwargs):
         user = channel.user
         video = video_factory(
             channel_=channel,
@@ -127,6 +127,9 @@ def video_with_transcodes_factory(
             tags=['tag1', 'tag2'],
             visibility=visibility,
             title='title',
+            duration=10,
+            framerate=30,
+            **video_kwargs,
         )
         transcode_job = transcode_job_factory(
             profile='144p', video_record=video
@@ -207,11 +210,11 @@ def simple_uploaded_file_factory():
 
 
 @pytest.fixture
-def upload_factory(channel):
+def upload_factory(request):
     def make(video_path=VIDEO_PATH_2160_30FPS, channel_=None):
         with video_path.open('rb') as file_:
             file_contents = file_.read()
-        channel_ = channel_ or channel
+        channel_ = channel_ or request.getfixturevalue('channel')
         upload = models.Upload.objects.create(
             presigned_upload_url='htts://example.com/s3-blah',
             media_type='video',
@@ -224,9 +227,9 @@ def upload_factory(channel):
 
 
 @pytest.fixture
-def video_factory(upload_factory, channel):
-    def make(video_path, channel_=None, **kwargs):
-        channel_ = channel_ or channel
+def video_factory(upload_factory, request):
+    def make(video_path=VIDEO_PATH, channel_=None, **kwargs):
+        channel_ = channel_ or request.getfixturevalue('channel')
         upload = upload_factory(video_path=video_path)
         return models.Video.objects.create(
             upload=upload, channel=channel_, **kwargs

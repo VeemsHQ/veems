@@ -75,6 +75,12 @@ def mark_transcode_job_completed(*, transcode_job):
     return transcode_job
 
 
+def mark_video_as_viewable(*, video):
+    video.is_viewable = True
+    video.save()
+    return video
+
+
 def mark_transcode_job_failed(*, transcode_job, failure_context=None):
     transcode_job.status = 'failed'
     transcode_job.failure_context = failure_context
@@ -225,4 +231,6 @@ def get_video(id):
 
 
 def get_popular_videos():
-    return models.Video.objects.order_by('-created_on')
+    return models.Video.objects.filter(
+        is_viewable=True, visibility='public'
+    ).order_by('-created_on')
