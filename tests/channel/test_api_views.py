@@ -30,14 +30,18 @@ def test_get_channels(api_client, channel_factory, user_factory):
             'user': user.id,
             'name': str,
             'description': str,
-            'sync_videos_interested': True,
+            'sync_videos_interested': bool,
             'language': 'en',
-            'created_on': str,
             'modified_on': str,
             'is_selected': bool,
             'followers_count': int,
             'avatar_image_small_url': str,
+            'avatar_image_large_url': str,
             'banner_image_small_url': str,
+            'banner_image_large_url': str,
+            'has_banner': bool,
+            'created_on': str,
+            'created_date': str,
         }
     )
     assert all(c['id'] in exp_channels for c in response.json())
@@ -60,15 +64,19 @@ def test_get_channel(
             'user': user.id,
             'name': str,
             'description': str,
-            'sync_videos_interested': True,
+            'sync_videos_interested': bool,
             'language': 'en',
-            'created_on': str,
             'modified_on': str,
             'is_selected': bool,
-            'videos': list,
             'followers_count': int,
             'avatar_image_small_url': str,
+            'avatar_image_large_url': str,
             'banner_image_small_url': str,
+            'banner_image_large_url': str,
+            'has_banner': bool,
+            'created_on': str,
+            'created_date': str,
+            'videos': list,
         }
     )
     assert len(resp_json['videos']) == 1
@@ -123,12 +131,16 @@ class TestCreateChannel:
                 'description': body['description'],
                 'sync_videos_interested': body['sync_videos_interested'],
                 'language': body['language'],
-                'created_on': str,
                 'modified_on': str,
                 'is_selected': is_selected,
                 'followers_count': int,
+                'avatar_image_large_url': str,
                 'avatar_image_small_url': str,
                 'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
             }
         )
 
@@ -144,7 +156,7 @@ class TestCreateChannel:
         assert response.status_code == BAD_REQUEST
         assert response.json() == {
             'description': ['This field is required.'],
-            'sync_videos_interested': ['This field is required.']
+            'sync_videos_interested': ['This field is required.'],
         }
 
 
@@ -191,8 +203,13 @@ class TestUpdateChannel:
                 'is_selected': body.get('is_selected', channel.is_selected),
                 'videos': list,
                 'followers_count': int,
+                'avatar_image_large_url': str,
                 'avatar_image_small_url': str,
                 'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
             }
         )
         num_selected_channels = len(
@@ -254,8 +271,13 @@ class TestUpdateChannel:
                 'is_selected': True,
                 'videos': list,
                 'followers_count': int,
+                'avatar_image_large_url': str,
                 'avatar_image_small_url': str,
                 'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
             }
         )
 

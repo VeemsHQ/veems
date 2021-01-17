@@ -17,12 +17,10 @@ class TestIndexView:
             description='My Channel Desc',
         )
         video_with_transcodes_factory(
-            channel=channel, visibility='public',
-            is_viewable=True
+            channel=channel, visibility='public', is_viewable=True
         )
         video_with_transcodes_factory(
-            channel=channel, visibility='public',
-            is_viewable=True
+            channel=channel, visibility='public', is_viewable=True
         )
 
         response = client.get('/')

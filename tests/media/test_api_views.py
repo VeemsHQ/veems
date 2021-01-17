@@ -191,70 +191,72 @@ class TestVideoDetail:
     def expected_video_resp_json(self, video_with_transcodes, mocker):
         video = video_with_transcodes['video']
         video_rendition = video_with_transcodes['video_rendition']
-        return S({
-            'id': video.id,
-            'channel': video.channel.id,
-            'description': 'description',
-            'tags': ['tag1', 'tag2'],
-            'title': 'title',
-            'visibility': 'draft',
-            'video_renditions_count': int,
-            'duration': int,
-            'view_count': int,
-            'default_thumbnail_image_small_url': str,
-            'channel_id': str,
-            'channel_name': str,
-            'comment_count': int,
-            'created_date': str,
-            'duration_human': str,
-            'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
-            'time_ago_human': str,
-            'video_renditions': [
-                {
-                    'audio_codec': 'opus',
-                    'container': 'webm',
-                    'codecs_string': None,
-                    'playlist_file': None,
-                    'created_on': str,
-                    'duration': 10,
-                    'ext': 'webm',
-                    'file_size': 1000,
-                    'framerate': 30,
-                    'height': 144,
-                    'id': video_rendition.id,
-                    'metadata': {'example': 'metadata'},
-                    'modified_on': str,
-                    'name': '144p',
-                    'video': video.id,
-                    'video_codec': 'vp9',
-                    'width': 256,
-                }
-            ],
-            'transcode_jobs': [
-                {
-                    'created_on': str,
-                    'ended_on': None,
-                    'executor': 'ffmpeg',
-                    'id': str,
-                    'modified_on': str,
-                    'profile': str,
-                    'started_on': str,
-                    'status': 'created',
-                    'video': video.id,
-                },
-                {
-                    'created_on': str,
-                    'ended_on': None,
-                    'executor': 'ffmpeg',
-                    'id': str,
-                    'modified_on': str,
-                    'profile': str,
-                    'started_on': str,
-                    'status': 'created',
-                    'video': video.id,
-                },
-            ],
-        })
+        return S(
+            {
+                'id': video.id,
+                'channel': video.channel.id,
+                'description': 'description',
+                'tags': ['tag1', 'tag2'],
+                'title': 'title',
+                'visibility': 'draft',
+                'video_renditions_count': int,
+                'duration': int,
+                'view_count': int,
+                'default_thumbnail_image_small_url': str,
+                'channel_id': str,
+                'channel_name': str,
+                'comment_count': int,
+                'created_date': str,
+                'duration_human': str,
+                'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
+                'time_ago_human': str,
+                'video_renditions': [
+                    {
+                        'audio_codec': 'opus',
+                        'container': 'webm',
+                        'codecs_string': None,
+                        'playlist_file': None,
+                        'created_on': str,
+                        'duration': 10,
+                        'ext': 'webm',
+                        'file_size': 1000,
+                        'framerate': 30,
+                        'height': 144,
+                        'id': video_rendition.id,
+                        'metadata': {'example': 'metadata'},
+                        'modified_on': str,
+                        'name': '144p',
+                        'video': video.id,
+                        'video_codec': 'vp9',
+                        'width': 256,
+                    }
+                ],
+                'transcode_jobs': [
+                    {
+                        'created_on': str,
+                        'ended_on': None,
+                        'executor': 'ffmpeg',
+                        'id': str,
+                        'modified_on': str,
+                        'profile': str,
+                        'started_on': str,
+                        'status': 'created',
+                        'video': video.id,
+                    },
+                    {
+                        'created_on': str,
+                        'ended_on': None,
+                        'executor': 'ffmpeg',
+                        'id': str,
+                        'modified_on': str,
+                        'profile': str,
+                        'started_on': str,
+                        'status': 'created',
+                        'video': video.id,
+                    },
+                ],
+            }
+        )
 
     def test_get(
         self,
@@ -322,7 +324,7 @@ class TestVideoDetail:
         video = video_with_transcodes['video']
         api_client = video_with_transcodes['api_client']
         other_users_channel = channel_factory(user=user_factory())
-        other_upload = upload_factory(channel_=other_users_channel)
+        other_upload = upload_factory(channel=other_users_channel)
 
         response = api_client.put(
             f'/api/v1/video/{video.id}/',

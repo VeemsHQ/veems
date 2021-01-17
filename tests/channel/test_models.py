@@ -55,6 +55,6 @@ class TestChannel:
         assert not channel.banner_image
         assert channel.banner_image_large_url
         assert (
-            'defaults/channel-banner-image.png'
+            'defaults/channel-banner-image-large.png'
             in channel.banner_image_large_url
         )

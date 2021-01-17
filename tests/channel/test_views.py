@@ -34,6 +34,7 @@ class TestChannelIndexView:
         )
         assert dict(response.context['channel']) == S(
             {
+                'avatar_image_large_url': str,
                 'avatar_image_small_url': str,
                 'banner_image_large_url': str,
                 'banner_image_small_url': str,
@@ -77,6 +78,7 @@ class TestChannelAboutView:
         assert response.status_code == OK
         assert dict(response.context['channel']) == S(
             {
+                'avatar_image_large_url': str,
                 'avatar_image_small_url': str,
                 'banner_image_large_url': str,
                 'banner_image_small_url': str,
