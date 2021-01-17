@@ -39,6 +39,7 @@ class ChannelSerializer(CustomModelSerializer):
             'videos',
             'followers_count',
             'avatar_image_small_url',
+            'avatar_image_large_url',
             'banner_image_small_url',
             'banner_image_large_url',
             'created_date',
@@ -47,6 +48,7 @@ class ChannelSerializer(CustomModelSerializer):
         extra_kwargs = {
             'followers_count': {'read_only': True},
             'avatar_image_small_url': {'read_only': True},
+            'avatar_image_large_url': {'read_only': True},
             'banner_image_small_url': {'read_only': True},
             'banner_image_large_url': {'read_only': True},
             'created_date': {'read_only': True},
@@ -92,6 +94,7 @@ class ChannelSlimSerializer(ChannelSerializer):
             'is_selected',
             'followers_count',
             'avatar_image_small_url',
+            'avatar_image_large_url',
             'banner_image_small_url',
             'banner_image_large_url',
             'created_date',
@@ -100,6 +103,7 @@ class ChannelSlimSerializer(ChannelSerializer):
         extra_kwargs = {
             'followers_count': {'read_only': True},
             'avatar_image_small_url': {'read_only': True},
+            'avatar_image_large_url': {'read_only': True},
             'banner_image_small_url': {'read_only': True},
             'banner_image_large_url': {'read_only': True},
             'created_date': {'read_only': True},
