@@ -102,7 +102,9 @@ class Upload(BaseModel):
 
 
 class Video(BaseModel):
-    upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE, blank=True)
+    upload = models.OneToOneField(
+        Upload, null=True, on_delete=models.CASCADE, blank=True
+    )
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='videos'
     )
