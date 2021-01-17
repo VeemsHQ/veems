@@ -10,7 +10,7 @@ from .media import api_views, views as media_views
 from .home import views as home_views
 from .user import views as user_views, forms as user_forms
 from .channel_manager import views as channel_manager_views
-from .channel import api_views as channel_api_views
+from .channel import api_views as channel_api_views, views as channel_views
 
 
 urlpatterns = [
@@ -20,6 +20,16 @@ urlpatterns = [
         'v/<slug:video_id>/',
         media_views.VideoView.as_view(),
         name='view-video',
+    ),
+    path(
+        'c/<slug:channel_id>/',
+        channel_views.ChannelIndexView.as_view(),
+        name='view-channel',
+    ),
+    path(
+        'c/<slug:channel_id>/about/',
+        channel_views.ChannelAboutView.as_view(),
+        name='view-channel-about',
     ),
     path(
         'accounts/logout/',

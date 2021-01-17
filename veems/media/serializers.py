@@ -82,7 +82,6 @@ class VideoSerializer(CustomModelSerializer):
         return instance.channel_id
 
     def get_duration_human(self, instance):
-        assert instance.duration is not None
         return time.strftime(
             '%H:%M:%S', time.gmtime(instance.duration)
         ).removeprefix('00:')

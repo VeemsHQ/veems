@@ -1,0 +1,119 @@
+{% extends '_base_public.html' %}
+{% block title %}{{channel.name}}{% endblock %}
+{% block description %}{{channel.name}}{% endblock %}
+{% block content %}
+
+<main class="mx-auto col w-100 py-0 middle-col bg-secondary">
+  <div class="row bg-light">
+    <div class="w-100 p-0 d-flex flex-column">
+      {% if channel.has_banner %}
+      <img class="channel-banner-full" src="{{channel.banner_image_small_url}}" />
+      {% endif %}
+      <div class="container-fluid py-3">
+        <div class="d-lg-flex text-center text-lg-left">
+          <div>
+            <img src="{{channel.avatar_image_small_url}}" class="profile-pic profile-pic-100" />
+          </div>
+          <div class="w-100 ml-0 ml-lg-3">
+            <div class="mt-3 mb-2">
+              <h1 class="h3 mb-0">{{channel.name}}</h1>
+            </div>
+            <div class="font-weight-normal">
+              <span class="font-weight-bold">{{channel.followers_count}}</span> followers · joined
+              <span data-toggle="tooltip" data-placement="bottom" title=""
+                data-original-title="06 November 2020 at 10:38:40"
+                class="font-weight-bold">{{channel.created_date}}</span>
+            </div>
+            <div class="d-flex mt-2">
+              <div class="mx-auto mx-lg-0 ml-lg-auto">
+                {% if is_owner %}
+                <a href="{% url 'channel-manager-customization' %}"
+                  class="btn btn-primary d-block d-sm-inline my-1 my-sm-0">Customise Channel</a>
+                <a href="{% url 'channel-manager-videos' %}"
+                  class="btn btn-primary d-block d-sm-inline my-1 my-sm-0">Manage Videos</a>
+                {% endif %}
+                {% include '_btn_follow.html' %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div
+        class="flex-row box-shadow-bottom d-flex justify-content-center justify-content-md-between align-items-center">
+        <ul class="nav settings-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'view-channel' channel.id %}">Videos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'view-channel-about' channel.id %}">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row no-gutters my-md-3">
+    <div class="col">
+      <div class="posts">
+        <div class="row no-gutters">
+          <div class="col">
+            {% if channel_videos %}
+            <div class="video-grid px-2 m-0 card-group d-flex flex-wrap">
+              {% for video in channel_videos %}
+              <div class="card mt-1">
+                <a href="{% url 'view-video' video.id %}" class="thumbnail">
+                  <img class="card-img-top" src="{{video.default_thumbnail_image_small_url}}" />
+                  <div class="overlays">{{video.duration_human}}</div>
+                </a>
+                <div class="card-body pl-0 pt-2 pr-3 pb-3">
+                  <h5 style="font-size: 0.9rem" class="m-0">
+                    <a href="{% url 'view-video' video.id %}">{{video.title}}</a>
+                  </h5>
+                  <div class="metadata">
+                    <div class="w-100">
+                      <div class="card-text text-muted mt-1">
+                        <a href="#">{{video.channel_name}}</a>
+                      </div>
+                    </div>
+                    <div class="w-100">
+                      <div class="card-text text-muted">
+                        {{video.view_count}} views • {{video.time_ago_human}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-3 px-3 my-3">
+              <span class="fa-stack fa-2x text-muted mb-4">
+                <i class="fas fa-square text-gray-500 opacity-25 fa-stack-2x"></i>
+                <i class="fas text-gray-500 fa-ghost fa-stack-1x text-lg"></i>
+              </span>
+              <h2 class="h5">Upload a video to get started</h2>
+              <p class="text-muted mb-md-3">Videos that you upload will show up here.</p>
+              <div>
+                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal"><i
+                    class="material-icons align-middle">backup</i> Upload Video</a>
+              </div>
+              <div class="mt-5">
+                <p class="text-muted">Have a YouTube account and would like to bring over your videos to
+                  Veems?</p>
+                <a href="#" class="btn btn-secondary"><i class="material-icons align-middle">sync</i>
+                  Sync YouTube Videos</a>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

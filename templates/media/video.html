@@ -46,7 +46,7 @@
                                         src="{{channel.avatar_image_small_url}}" />
                                 </a></span>
                             <span class="ml-2">
-                                <a href="#" class="font-weight-bold text-dark">{{channel.name}}</a>
+                                <a href="{% url 'view-channel' channel.id %}" class="font-weight-bold text-dark">{{channel.name}}</a>
                                 <span class="d-block">{{channel.followers_count}} followers</span>
                             </span>
                         </div>

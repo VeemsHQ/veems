@@ -20,7 +20,7 @@
                                 href="{% url 'view-video' video.id %}">{{video.title}}</a></h5>
                         <div class="metadata">
                             <div class="w-100">
-                                <div class="card-text text-muted mt-1"><a href="#">{{video.channel_name}}</a></div>
+                                <div class="card-text text-muted mt-1"><a href="{% url 'view-channel' video.channel_id %}">{{video.channel_name}}</a></div>
                             </div>
                             <div class="w-100">
                                 <div class="card-text text-muted">{{video.view_count}} views • {{video.time_ago_human}}

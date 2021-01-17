@@ -11,9 +11,18 @@ class ChannelSerializer(CustomModelSerializer):
     followers_count = serializers.SerializerMethodField(
         method_name='get_followers_count'
     )
+    created_date = serializers.SerializerMethodField(
+        method_name='get_created_date'
+    )
+    has_banner = serializers.SerializerMethodField(
+        method_name='get_has_banner'
+    )
 
     def get_followers_count(self, instance):
         return 0
+
+    def get_has_banner(self, instance):
+        return bool(instance.banner_image)
 
     class Meta:
         model = models.Channel
@@ -31,11 +40,17 @@ class ChannelSerializer(CustomModelSerializer):
             'followers_count',
             'avatar_image_small_url',
             'banner_image_small_url',
+            'banner_image_large_url',
+            'created_date',
+            'has_banner',
         )
         extra_kwargs = {
             'followers_count': {'read_only': True},
             'avatar_image_small_url': {'read_only': True},
             'banner_image_small_url': {'read_only': True},
+            'banner_image_large_url': {'read_only': True},
+            'created_date': {'read_only': True},
+            'has_banner': {'read_only': True},
         }
 
     def update(self, instance, validated_data):
@@ -58,6 +73,9 @@ class ChannelSerializer(CustomModelSerializer):
     def create(self, validated_data):
         return services.create_channel(**validated_data)
 
+    def get_created_date(self, instance):
+        return instance.created_on.date()
+
 
 class ChannelSlimSerializer(ChannelSerializer):
     class Meta:
@@ -75,11 +93,17 @@ class ChannelSlimSerializer(ChannelSerializer):
             'followers_count',
             'avatar_image_small_url',
             'banner_image_small_url',
+            'banner_image_large_url',
+            'created_date',
+            'has_banner',
         )
         extra_kwargs = {
             'followers_count': {'read_only': True},
             'avatar_image_small_url': {'read_only': True},
             'banner_image_small_url': {'read_only': True},
+            'banner_image_large_url': {'read_only': True},
+            'created_date': {'read_only': True},
+            'has_banner': {'read_only': True},
         }
 
 
