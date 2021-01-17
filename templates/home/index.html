@@ -1,12 +1,35 @@
 {% extends '_base_public.html' %}
-
 {% block content %}
 
 <main class="mx-auto col d-flex w-100 py-3 middle-col justify-content-between">
     <div class="d-flex pt-2 w-100">
         <div class="col p-0 m-0">
             <div class="title-band mt-2 py-2 px-0 mx-3 mb-3 border-bottom">
-                <h3 class="m-0 p-0">Hello world</h3>
+                <h3 class="m-0 p-0">Popular</h3>
+            </div>
+
+            <div class="video-grid px-2 m-0 card-group d-flex flex-wrap">
+                {% for video in videos_popular %}
+                <div class="card mt-1">
+                    <a href="{% url 'view-video' video.id %}" class="thumbnail">
+                        <img class="card-img-top" src="{{video.default_thumbnail_image_small_url}}">
+                        <div class="overlays">{{video.duration_human}}</div>
+                    </a>
+                    <div class="card-body pl-0 pt-2 pr-3 pb-3">
+                        <h5 style="font-size:0.9rem" class="m-0"><a
+                                href="{% url 'view-video' video.id %}">{{video.title}}</a></h5>
+                        <div class="metadata">
+                            <div class="w-100">
+                                <div class="card-text text-muted mt-1"><a href="#">{{video.channel_name}}</a></div>
+                            </div>
+                            <div class="w-100">
+                                <div class="card-text text-muted">{{video.view_count}} views • {{video.time_ago_human}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

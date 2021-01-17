@@ -35,6 +35,9 @@ def test_get_channels(api_client, channel_factory, user_factory):
             'created_on': str,
             'modified_on': str,
             'is_selected': bool,
+            'followers_count': int,
+            'avatar_image_small_url': str,
+            'banner_image_small_url': str,
         }
     )
     assert all(c['id'] in exp_channels for c in response.json())
@@ -63,6 +66,9 @@ def test_get_channel(
             'modified_on': str,
             'is_selected': bool,
             'videos': list,
+            'followers_count': int,
+            'avatar_image_small_url': str,
+            'banner_image_small_url': str,
         }
     )
     assert len(resp_json['videos']) == 1
@@ -77,6 +83,16 @@ def test_get_channel(
             'playlist_file': str,
             'video_renditions': list,
             'transcode_jobs': list,
+            'video_renditions_count': int,
+            'created_date': str,
+            'view_count': int,
+            'comment_count': int,
+            'default_thumbnail_image_small_url': str,
+            'time_ago_human': str,
+            'channel_name': str,
+            'channel_id': str,
+            'duration': int,
+            'duration_human': str,
         }
     )
     assert resp_json['videos'][0]['video_renditions']
@@ -110,6 +126,9 @@ class TestCreateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': is_selected,
+                'followers_count': int,
+                'avatar_image_small_url': str,
+                'banner_image_small_url': str,
             }
         )
 
@@ -171,6 +190,9 @@ class TestUpdateChannel:
                 'modified_on': str,
                 'is_selected': body.get('is_selected', channel.is_selected),
                 'videos': list,
+                'followers_count': int,
+                'avatar_image_small_url': str,
+                'banner_image_small_url': str,
             }
         )
         num_selected_channels = len(
@@ -231,6 +253,9 @@ class TestUpdateChannel:
                 'modified_on': str,
                 'is_selected': True,
                 'videos': list,
+                'followers_count': int,
+                'avatar_image_small_url': str,
+                'banner_image_small_url': str,
             }
         )
 

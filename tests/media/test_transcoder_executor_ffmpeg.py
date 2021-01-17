@@ -362,6 +362,13 @@ class TestTranscode:
             ('summary', 'video_stream', 'audio_stream', 'format')
         )
 
+        # Check video is also updated
+        video = video_rendition.video
+        assert video.duration == video_rendition.duration
+        assert video.framerate == video_rendition.framerate
+        assert video.is_viewable is True
+        assert video.default_thumbnail_image
+
         assert thumbnails
         assert all(
             isinstance(t, models.VideoRenditionThumbnail) for t in thumbnails

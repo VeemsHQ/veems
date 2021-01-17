@@ -21,7 +21,13 @@
 		"description": "Example channel description",
 		"sync_videos_interested": true,
 		"is_selected": true,
-		"videos": []
+		"videos": [
+			{
+				"title": "This is a test video, hello world",
+				"description": "Here is a video description.",
+				"path": "tests/test_data/1920x960.mp4"
+			}
+		]
 	}, {
 		"name": "Tim Pool",
 		"description": "Example channel description",

@@ -13,4 +13,4 @@ def test_run():
 
     assert get_user_model().objects.filter(is_superuser=True).count() == 2
     assert len(channel_services.get_channels()) == 3
-    assert Video.objects.count() == 1
+    assert Video.objects.count() == 2

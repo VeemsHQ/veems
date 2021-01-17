@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 import m3u8
+from django.core.files import File
 
 from .. import transcoder_profiles
 from ... import services
@@ -83,6 +84,19 @@ def transcode(*, transcode_job, source_file_path):
                 profile=profile,
                 codecs_string=None,
             )
+            if not (
+                transcode_job.video.duration and transcode_job.video.framerate
+            ):
+                logger.info(
+                    'Updating video %s metadata...', transcode_job.video_id
+                )
+                transcode_job.video.duration = video_rendition.duration
+                transcode_job.video.framerate = video_rendition.framerate
+                transcode_job.video.save()
+            else:
+                logger.info(
+                    'Video metadata already set %s', transcode_job.video_id
+                )
             logger.info(
                 'Creating segments for video %s %s...',
                 transcode_job,
@@ -121,6 +135,13 @@ def transcode(*, transcode_job, source_file_path):
                 video_rendition_record=video_rendition, thumbnails=thumbnails
             )
             services.mark_transcode_job_completed(transcode_job=transcode_job)
+            services.mark_video_as_viewable(video=transcode_job.video)
+
+            default_thumbnail_image = thumbnail_records[0].file
+            with default_thumbnail_image.open('rb') as file_:
+                transcode_job.video.default_thumbnail_image = File(file_)
+                transcode_job.video.save()
+
             logger.info('Completed transcode job %s', transcode_job)
             return video_rendition, thumbnail_records
 

@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from . import models
 from . import services
 from ..common.serializers import CustomModelSerializer
@@ -6,6 +8,12 @@ from ..media.serializers import VideoSerializer
 
 class ChannelSerializer(CustomModelSerializer):
     videos = VideoSerializer(many=True, read_only=True)
+    followers_count = serializers.SerializerMethodField(
+        method_name='get_followers_count'
+    )
+
+    def get_followers_count(self, instance):
+        return 0
 
     class Meta:
         model = models.Channel
@@ -20,7 +28,15 @@ class ChannelSerializer(CustomModelSerializer):
             'modified_on',
             'is_selected',
             'videos',
+            'followers_count',
+            'avatar_image_small_url',
+            'banner_image_small_url',
         )
+        extra_kwargs = {
+            'followers_count': {'read_only': True},
+            'avatar_image_small_url': {'read_only': True},
+            'banner_image_small_url': {'read_only': True},
+        }
 
     def update(self, instance, validated_data):
         name = validated_data.get('name', instance.name)
@@ -56,7 +72,15 @@ class ChannelSlimSerializer(ChannelSerializer):
             'created_on',
             'modified_on',
             'is_selected',
+            'followers_count',
+            'avatar_image_small_url',
+            'banner_image_small_url',
         )
+        extra_kwargs = {
+            'followers_count': {'read_only': True},
+            'avatar_image_small_url': {'read_only': True},
+            'banner_image_small_url': {'read_only': True},
+        }
 
 
 class ChannelAvatarSerializer(CustomModelSerializer):

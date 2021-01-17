@@ -298,17 +298,27 @@ body {
 
 .video-grid .thumbnail {
     position: relative;
+    background: #000;
 }
 
 .video-grid h5 a:hover {
     text-decoration: none;
 }
 
+.video-grid .thumbnail img {
+    display: block;
+    max-width: 240px;
+    height: 134px;
+    width: auto;
+    margin: 0 auto;
+}
+
+
 .video-grid .thumbnail .overlays {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     background: #000;
     color: #fff;
     padding: 1px 3px;
