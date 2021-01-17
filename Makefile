@@ -47,6 +47,12 @@ run:
 	docker-compose run --service-port app_local
 
 .ONESHELL:
+.PHONY: run
+run_seed:
+	docker-compose build app_local
+	docker-compose run --service-port app_local make install && make reset
+
+.ONESHELL:
 .PHONY: docker-test
 docker-test:
 	docker-compose build app_test
