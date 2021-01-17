@@ -103,7 +103,7 @@ class VideoSerializer(CustomModelSerializer):
             'created_date',
             'view_count',
             'comment_count',
-            'thumbnail',
+            'default_thumbnail_image_small_url',
             'time_ago_human',
             'channel_name',
             'channel_id',
@@ -125,6 +125,7 @@ class VideoSerializer(CustomModelSerializer):
             'channel_id': {'read_only': True},
             'duration': {'read_only': True},
             'duration_human': {'read_only': True},
+            'default_thumbnail_image_small_url': {'read_only': True},
         }
 
 
@@ -142,7 +143,7 @@ class VideoSlimSerializer(VideoSerializer):
             'created_date',
             'view_count',
             'comment_count',
-            'thumbnail',
+            'default_thumbnail_image_small_url',
             'time_ago_human',
             'channel_name',
             'channel_id',

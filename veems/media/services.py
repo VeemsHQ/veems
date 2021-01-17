@@ -234,3 +234,10 @@ def get_popular_videos():
     return models.Video.objects.filter(
         is_viewable=True, visibility='public'
     ).order_by('-created_on')
+
+
+def create_video(*, upload):
+    return models.Video.objects.create(
+        upload_id=upload.id,
+        channel_id=upload.channel_id,
+    )

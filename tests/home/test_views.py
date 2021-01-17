@@ -43,7 +43,7 @@ class TestIndexView:
                 'duration': int,
                 'duration_human': str,
                 'tags': ['tag1', 'tag2'],
-                'thumbnail': str,
+                'default_thumbnail_image_small_url': str,
                 'time_ago_human': str,
                 'title': str,
                 'video_renditions_count': int,

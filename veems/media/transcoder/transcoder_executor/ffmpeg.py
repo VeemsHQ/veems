@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 import m3u8
+from django.core.files import File
 
 from .. import transcoder_profiles
 from ... import services
@@ -135,6 +136,12 @@ def transcode(*, transcode_job, source_file_path):
             )
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             services.mark_video_as_viewable(video=transcode_job.video)
+
+            default_thumbnail_image = thumbnail_records[0].file
+            with default_thumbnail_image.open('rb') as file_:
+                transcode_job.video.default_thumbnail_image = File(file_)
+                transcode_job.video.save()
+
             logger.info('Completed transcode job %s', transcode_job)
             return video_rendition, thumbnail_records
 

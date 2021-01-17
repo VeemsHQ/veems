@@ -12,7 +12,7 @@
                 {% for video in videos_popular %}
                 <div class="card mt-1">
                     <a href="{% url 'view-video' video.id %}" class="thumbnail">
-                        <img class="card-img-top" src="{{video.thumbnail}}">
+                        <img class="card-img-top" src="{{video.default_thumbnail_image_small_url}}">
                         <div class="overlays">{{video.duration_human}}</div>
                     </a>
                     <div class="card-body pl-0 pt-2 pr-3 pb-3">

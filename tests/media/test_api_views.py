@@ -201,7 +201,7 @@ class TestVideoDetail:
             'video_renditions_count': int,
             'duration': int,
             'view_count': int,
-            'thumbnail': str,
+            'default_thumbnail_image_small_url': str,
             'channel_id': str,
             'channel_name': str,
             'comment_count': int,

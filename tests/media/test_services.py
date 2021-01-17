@@ -577,3 +577,12 @@ def test_mark_video_as_viewable(video_factory):
     updated_video = services.mark_video_as_viewable(video=video)
 
     assert updated_video.is_viewable is True
+
+
+def test_create_video(upload):
+    video = services.create_video(upload=upload)
+
+    assert video.channel == upload.channel
+    assert video.upload == upload
+    assert not video.default_thumbnail_image
+    assert video.default_thumbnail_image_small_url

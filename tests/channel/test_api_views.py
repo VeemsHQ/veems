@@ -87,7 +87,7 @@ def test_get_channel(
             'created_date': str,
             'view_count': int,
             'comment_count': int,
-            'thumbnail': str,
+            'default_thumbnail_image_small_url': str,
             'time_ago_human': str,
             'channel_name': str,
             'channel_id': str,
