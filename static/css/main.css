@@ -306,6 +306,10 @@ body {
     width: auto;
 }
 
+.video-title {
+    font-size: 0.99rem;
+}
+
 .search-results .card {
     background: transparent;
     border: 0;
@@ -324,7 +328,7 @@ body {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     background: #000;
     color: #fff;
     padding: 1px 3px;
