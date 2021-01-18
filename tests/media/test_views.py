@@ -39,10 +39,10 @@ class TestVideoView:
         assert channel_ctx['followers_count'] == 0
         assert channel_ctx['description'] == channel.description
         assert (
-            channel_ctx['avatar_image_small_url']
-            == channel.avatar_image_small_url
+            channel_ctx['avatar_image_small_url'].split('?')[0]
+            == channel.avatar_image_small_url.split('?')[0]
         )
         assert (
-            channel_ctx['banner_image_small_url']
-            == channel.banner_image_small_url
+            channel_ctx['banner_image_small_url'].split('?')[0]
+            == channel.banner_image_small_url.split('?')[0]
         )
