@@ -1,17 +1,17 @@
 {% extends '_base_public.html' %}
 
 {% block content %}
-<main class="mx-auto col d-flex w-100 py-3 middle-col justify-content-between">
+<main class="mx-auto col d-flex w-100 py-3 middle-col-narrow justify-content-between">
     <div class="pt-2 w-100">
         <div class="col border-bottom mb-3">
         <div
             class="flex-row box-shadow-bottom d-flex justify-content-center justify-content-md-between align-items-center">
             <ul class="nav settings-nav">
             <li class="nav-item">
-                <a class="nav-link active" href="">Videos (2)</a>
+                <a class="nav-link {% if video_results %}active{% endif %}" href="{% url 'search' search_query %}?type=videos">Videos (2)</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="">Channels (5)</a>
+                <a class="nav-link {% if channel_results %}active{% endif %}" href="{% url 'search' search_query %}?type=channels">Channels (5)</a>
             </li>
             </ul>
         </div>
@@ -28,8 +28,7 @@
                         <div class="h5"><a href="{% url 'view-video' video.id %}">{{video.title}}</a></div>
                         <div class="metadata">
                             <div class="w-100">
-                                <div class="text-muted">{{video.view_count}} views • {{video.time_ago_human}}
-                                </div>
+                                <div class="text-muted">{{video.view_count}} views • {{video.time_ago_human}}</div>
                             </div>
                             <div class="w-100 d-flex flex-row align-items-center py-1">
                                 <span><a href="{% url 'view-channel' video.channel_id %}" class="rounded-circle d-flex justify-content-center avatar-small">
@@ -38,9 +37,31 @@
                                     </a></span>
                                 <span class="ml-2"><a href="{% url 'view-channel' video.channel_id %}" class="text-muted">{{video.channel_name}}</a></span>
                             </div>
-                            <div class="w-100">
+                            <div class="w-100 d-none d-sm-block">
                                 <div class="text-muted mt-1">{{video.description|truncatechars:120}}</div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% for channel in channel_results %}
+                <div class="mt-1 mb-3 d-flex w-100">
+                    <a href="#" class="rounded-circle d-flex justify-content-center avatar-large">
+                        <img class="d-block rounded-circle align-self-center"
+                            src="{{channel.avatar_image_large_url}}" />
+                    </a>
+                    <div class="py-1 px-3 w-100">
+                        <div class="h5"><a href="#">{{channel.name}}</a></div>
+                        <div class="metadata d-flex">
+                            <div>
+                            <div class="w-100">
+                                <div class="text-muted">{{channel.followers_count}} followers • {{channel.videos_count}} videos</div>
+                            </div>
+                            <div class="w-100">
+                                <div class="text-muted mt-1">{{channel.description|truncatechars:120}}</div>
+                            </div></div>
+                             <div class="d-none d-sm-block ml-auto">{% include '_btn_follow.html' %}</div>
                         </div>
                     </div>
                 </div>

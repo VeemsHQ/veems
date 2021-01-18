@@ -76,6 +76,12 @@ body {
     max-width: 1754px;
 }
 
+.middle-col-narrow {
+    margin-top: 70px;
+    min-width: 300px;
+    max-width: 1280px;
+}
+
 .video-info {
     font-size: 1rem
 }
@@ -290,8 +296,8 @@ body {
 }
 
 .avatar-large img {
-    max-width: 140px;
-    max-height: 140px;
+    width: 140px;
+    height: 140px;
 }
 
 .video-grid .card {
