@@ -6,16 +6,31 @@ from django_registration.backends.activation.views import (
     ActivationView,
 )
 
-from .media import api_views
+from .media import api_views, views as media_views
 from .home import views as home_views
 from .user import views as user_views, forms as user_forms
 from .channel_manager import views as channel_manager_views
-from .channel import api_views as channel_api_views
+from .channel import api_views as channel_api_views, views as channel_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_views.IndexView.as_view(), name='index'),
+    path(
+        'v/<slug:video_id>/',
+        media_views.VideoView.as_view(),
+        name='view-video',
+    ),
+    path(
+        'c/<slug:channel_id>/',
+        channel_views.ChannelIndexView.as_view(),
+        name='view-channel',
+    ),
+    path(
+        'c/<slug:channel_id>/about/',
+        channel_views.ChannelAboutView.as_view(),
+        name='view-channel-about',
+    ),
     path(
         'accounts/logout/',
         user_views.logout,
@@ -99,7 +114,10 @@ urlpatterns = [
     path(
         'api/v1/upload/complete/<slug:upload_id>/', api_views.upload_complete
     ),
-    path('api/v1/video/<slug:video_id>/', api_views.video),
+    path('api/v1/video/', api_views.VideoDetailAPIView.as_view()),
+    path(
+        'api/v1/video/<slug:video_id>/', api_views.VideoDetailAPIView.as_view()
+    ),
     path(
         'api/v1/video/<slug:video_id>/playlist.m3u8',
         api_views.video_playlist,

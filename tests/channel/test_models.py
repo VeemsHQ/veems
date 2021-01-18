@@ -35,6 +35,16 @@ class TestChannel:
         assert channel.banner_image_large_url
         assert 'defaults/' not in channel.banner_image_large_url
 
+    def test_banner_image_small_url(
+        self, channel_factory, user, simple_uploaded_img_file
+    ):
+        channel = channel_factory(
+            user=user, banner_image=simple_uploaded_img_file
+        )
+
+        assert channel.banner_image_small_url
+        assert 'defaults/' not in channel.banner_image_small_url
+
     def test_banner_image_large_url_returns_default_when_not_set(
         self,
         channel_factory,
@@ -45,6 +55,6 @@ class TestChannel:
         assert not channel.banner_image
         assert channel.banner_image_large_url
         assert (
-            'defaults/channel-banner-image.png'
+            'defaults/channel-banner-image-large.png'
             in channel.banner_image_large_url
         )

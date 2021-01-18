@@ -6,6 +6,7 @@ from django.conf import settings
 from . import models
 from .transcoder import manager as transcode_manager
 from ..celery import async_task
+from . import services
 
 ONE_DAY_IN_SECS = 86400
 logger = logging.getLogger(__name__)
@@ -36,11 +37,7 @@ def prepare(*, user, filename, channel_id):
         upload=upload, filename=filename
     )
     upload.save()
-    video = models.Video.objects.create(
-        upload=upload,
-        visibility='draft',
-        channel=channel,
-    )
+    video = services.create_video(upload=upload)
     logger.info(
         'Done preparing upload for user %s, draft video %s', user.id, video.id
     )

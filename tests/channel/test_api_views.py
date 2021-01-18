@@ -30,36 +30,81 @@ def test_get_channels(api_client, channel_factory, user_factory):
             'user': user.id,
             'name': str,
             'description': str,
-            'sync_videos_interested': True,
+            'sync_videos_interested': bool,
             'language': 'en',
-            'created_on': str,
             'modified_on': str,
             'is_selected': bool,
+            'followers_count': int,
+            'avatar_image_small_url': str,
+            'avatar_image_large_url': str,
+            'banner_image_small_url': str,
+            'banner_image_large_url': str,
+            'has_banner': bool,
+            'created_on': str,
+            'created_date': str,
         }
     )
     assert all(c['id'] in exp_channels for c in response.json())
 
 
-def test_get_channel(api_client, channel_factory):
+def test_get_channel(
+    api_client, channel_factory, video_with_transcodes_factory
+):
     api_client, user = api_client
     channel = channel_factory(user=user)
+    video_with_transcodes_factory(channel=channel)
 
     response = api_client.get(f'/api/v1/channel/{channel.id}/')
 
     assert response.status_code == OK
-    assert response.json() == S(
+    resp_json = response.json()
+    assert resp_json == S(
         {
             'id': channel.id,
             'user': user.id,
             'name': str,
             'description': str,
-            'sync_videos_interested': True,
+            'sync_videos_interested': bool,
             'language': 'en',
-            'created_on': str,
             'modified_on': str,
             'is_selected': bool,
+            'followers_count': int,
+            'avatar_image_small_url': str,
+            'avatar_image_large_url': str,
+            'banner_image_small_url': str,
+            'banner_image_large_url': str,
+            'has_banner': bool,
+            'created_on': str,
+            'created_date': str,
+            'videos': list,
         }
     )
+    assert len(resp_json['videos']) == 1
+    assert resp_json['videos'][0] == S(
+        {
+            'id': str,
+            'channel': str,
+            'description': str,
+            'tags': list,
+            'title': str,
+            'visibility': str,
+            'playlist_file': str,
+            'video_renditions': list,
+            'transcode_jobs': list,
+            'video_renditions_count': int,
+            'created_date': str,
+            'view_count': int,
+            'comment_count': int,
+            'default_thumbnail_image_small_url': str,
+            'time_ago_human': str,
+            'channel_name': str,
+            'channel_id': str,
+            'duration': int,
+            'duration_human': str,
+        }
+    )
+    assert resp_json['videos'][0]['video_renditions']
+    assert resp_json['videos'][0]['transcode_jobs']
 
 
 class TestCreateChannel:
@@ -86,9 +131,16 @@ class TestCreateChannel:
                 'description': body['description'],
                 'sync_videos_interested': body['sync_videos_interested'],
                 'language': body['language'],
-                'created_on': str,
                 'modified_on': str,
                 'is_selected': is_selected,
+                'followers_count': int,
+                'avatar_image_large_url': str,
+                'avatar_image_small_url': str,
+                'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
             }
         )
 
@@ -102,7 +154,10 @@ class TestCreateChannel:
         response = api_client.post('/api/v1/channel/', body, format='json')
 
         assert response.status_code == BAD_REQUEST
-        assert response.json() == {'detail': 'Invalid payload'}
+        assert response.json() == {
+            'description': ['This field is required.'],
+            'sync_videos_interested': ['This field is required.'],
+        }
 
 
 class TestUpdateChannel:
@@ -146,6 +201,15 @@ class TestUpdateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': body.get('is_selected', channel.is_selected),
+                'videos': list,
+                'followers_count': int,
+                'avatar_image_large_url': str,
+                'avatar_image_small_url': str,
+                'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
             }
         )
         num_selected_channels = len(
@@ -205,6 +269,15 @@ class TestUpdateChannel:
                 'created_on': str,
                 'modified_on': str,
                 'is_selected': True,
+                'videos': list,
+                'followers_count': int,
+                'avatar_image_large_url': str,
+                'avatar_image_small_url': str,
+                'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
             }
         )
 

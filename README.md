@@ -45,40 +45,56 @@ Further design materials can be found [here](https://github.com/VeemsHQ/design).
 
 In order of priority.
 
-1. Uploading, transcoding of content, playlist video packaging (backend ✅, frontend ⏳).
-2. Playback of video content (backend ✅, frontend ⏳).
-3. User & API authentication (backend ✅, frontend ⏳).
-4. Creation and management of "Channels" (backend ✅, frontend ⏳).
-5. Channel Manager (basics).
+### Alpha Release
+
+- Uploading, transcoding of content, playlist video packaging (backend ✅, frontend ⏳).
+- Playback of video content (backend ✅, frontend ✅).
+- User & API authentication (backend ✅, frontend ⏳).
+- Creation and management of "Channels" (backend ✅, frontend ⏳).
+- Homepage video listings ✅.
+- Search function.
+- Channel Manager (basics).
     - Video Management.
     - Channel customisation.
-6. Video comments.
-7. Video responses.
-8. Like/dislike videos.
-9. Follow (Subscribe to) a Channel.
-10. Related videos suggestions.
-11. Video categories pages.
-    - Sport
-    - Comedy
-    - etc
-12. Trending videos.
-    - Trending algorithm.
-    - Trending section on Homepage.
-13. User notifications.
-    - UI notifications.
-    - Email notifications.
-14. Sync channel(s) content from YT to Veems automatically.
+- Related videos suggestions, Video playback page.
+- Sync channel(s) content from YT to Veems automatically.
     - Channel Dashboard, sync configuration.
     - Background sync process.
     - Related user notifications.
-15. Monetization.
+- Video view metrics.
+- Follow (Subscribe to) a Channel.
+- Like/dislike videos.
+- User notifications.
+    - Email notifications.
+- Moderation
+    - Ability to report content.
+    - Moderation queue in Admin with actions.
+    - Content error pages if unavailable due to moderation.
+    - IP logging.
+    - DMCA submission form.
+
+### Beta Release
+
+- Video comments.
+- Video responses.
+- Video categories pages.
+    - Sport
+    - Comedy
+    - etc
+- Trending videos.
+    - Trending algorithm.
+    - Trending section on Homepage.
+- User notifications.
+    - UI notifications.
+- Live streaming.
+- User controlled content hiding. (e.g. Don't show me any cat videos).
+- User Badges (earned by performing actions on the platform).
+- Monetization.
     - Revenue share from Premium user accounts.
     - Banner ads.
     - Pre-roll video player ads.
     - Video view validation.
-16. Embeddable video player.
-17. User controlled content hiding. (e.g. Don't show me any cat videos).
-18. User Badges (earned by performing actions on the platform).
+- Embeddable video player.
 
 This section is work-in-progress, more to be added shortly.
 

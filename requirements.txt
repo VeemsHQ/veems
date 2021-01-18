@@ -3,8 +3,8 @@ amqp==5.0.2
 celery==5.0.4
 psycopg2-binary==2.8.6
 django-storages==1.10.1
-boto3==1.16.35
-awscli==1.18.195
+boto3==1.16.56
+awscli==1.18.216
 djangorestframework==3.12.2
 sentry-sdk==0.19.5
 django_celery_beat==2.1.0

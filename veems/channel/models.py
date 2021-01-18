@@ -28,6 +28,9 @@ def _channel_banner_image_upload_to(instance, filename):
 class Channel(BaseModel):
     _DEFAULT_AVATAR_PATH = 'images/defaults/avatar.svg'
     _DEFAULT_BANNER_PATH = 'images/defaults/channel-banner-image.png'
+    _DEFAULT_BANNER_LARGE_PATH = (
+        'images/defaults/channel-banner-image-large.png'
+    )
 
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='channels'
@@ -66,6 +69,13 @@ class Channel(BaseModel):
         format='JPEG',
         options={'quality': 85},
     )
+    banner_image_small = ImageSpecField(
+        source='banner_image',
+        processors=[ResizeToFit(1360, 765)],
+        format='JPEG',
+        options={'quality': 70},
+    )
+
     # User may have many Channels, but only one may be selected
     # at any one time.
     is_selected = models.BooleanField(default=False, db_index=True)
@@ -94,5 +104,11 @@ class Channel(BaseModel):
     @property
     def banner_image_large_url(self):
         if not self.banner_image_large:
-            return static(self._DEFAULT_BANNER_PATH)
+            return static(self._DEFAULT_BANNER_LARGE_PATH)
         return self.banner_image_large.url
+
+    @property
+    def banner_image_small_url(self):
+        if not self.banner_image_small:
+            return static(self._DEFAULT_BANNER_PATH)
+        return self.banner_image_small.url

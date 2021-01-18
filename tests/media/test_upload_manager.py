@@ -19,7 +19,7 @@ def test_prepare(user, channel_factory):
     assert upload.file
     assert isinstance(video, models.Video)
     assert not video.title
-    assert video.visibility == 'draft'
+    assert video.visibility == 'public'
     assert upload.channel == channel
     assert video.channel == channel
 

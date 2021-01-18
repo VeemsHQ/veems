@@ -24,7 +24,7 @@ def create_transcodes(video_id):
     task_transcode_args = []
     with uploaded_file as file_:
         file_.write(upload.file.read())
-        profiles = _get_applicable_transcode_profiles(file_.name)
+        profiles = _get_applicable_transcode_profiles(Path(file_.name))
         for profile_cls in profiles:
             transcode_job_id = models.TranscodeJob.objects.create(
                 video=video,

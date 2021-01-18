@@ -9,5 +9,5 @@ class MediaStorage(S3Boto3Storage):
     default_acl = settings.BUCKET_MEDIA_DEFAULT_ACL
 
 
-class MediaStorage(Storage):
-    pass
+class MediaStoragePublic(MediaStorage):
+    default_acl = 'public-read'

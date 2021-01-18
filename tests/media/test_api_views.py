@@ -8,6 +8,7 @@ from http.client import (
 )
 import json
 
+from pytest_voluptuous import S
 import pytest
 import m3u8
 
@@ -174,102 +175,204 @@ class TestUploadComplete:
         assert response.status_code == FORBIDDEN
 
 
-class TestVideo:
+class TestVideoDetail:
+    @pytest.fixture
+    def video_with_transcodes(
+        self,
+        video_with_transcodes_factory,
+        api_client_factory,
+        channel,
+    ):
+        video_data = video_with_transcodes_factory(channel=channel)
+        api_client, _ = api_client_factory(user=video_data['user'])
+        return {**video_data, **{'api_client': api_client}}
+
+    @pytest.fixture
+    def expected_video_resp_json(self, video_with_transcodes, mocker):
+        video = video_with_transcodes['video']
+        video_rendition = video_with_transcodes['video_rendition']
+        return S(
+            {
+                'id': video.id,
+                'channel': video.channel.id,
+                'description': 'description',
+                'tags': ['tag1', 'tag2'],
+                'title': 'title',
+                'visibility': 'draft',
+                'video_renditions_count': int,
+                'duration': int,
+                'view_count': int,
+                'default_thumbnail_image_small_url': str,
+                'channel_id': str,
+                'channel_name': str,
+                'comment_count': int,
+                'created_date': str,
+                'duration_human': str,
+                'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
+                'time_ago_human': str,
+                'video_renditions': [
+                    {
+                        'audio_codec': 'opus',
+                        'container': 'webm',
+                        'codecs_string': None,
+                        'playlist_file': None,
+                        'created_on': str,
+                        'duration': 10,
+                        'ext': 'webm',
+                        'file_size': 1000,
+                        'framerate': 30,
+                        'height': 144,
+                        'id': video_rendition.id,
+                        'metadata': {'example': 'metadata'},
+                        'modified_on': str,
+                        'name': '144p',
+                        'video': video.id,
+                        'video_codec': 'vp9',
+                        'width': 256,
+                    }
+                ],
+                'transcode_jobs': [
+                    {
+                        'created_on': str,
+                        'ended_on': None,
+                        'executor': 'ffmpeg',
+                        'id': str,
+                        'modified_on': str,
+                        'profile': str,
+                        'started_on': str,
+                        'status': 'created',
+                        'video': video.id,
+                    },
+                    {
+                        'created_on': str,
+                        'ended_on': None,
+                        'executor': 'ffmpeg',
+                        'id': str,
+                        'modified_on': str,
+                        'profile': str,
+                        'started_on': str,
+                        'status': 'created',
+                        'video': video.id,
+                    },
+                ],
+            }
+        )
+
     def test_get(
         self,
         api_client_no_auth,
-        video_factory,
-        transcode_job_factory,
         mocker,
-        simple_uploaded_file_factory,
-        rendition_playlist_file,
+        video_with_transcodes,
+        expected_video_resp_json,
     ):
-        video = video_factory(
-            video_path=VIDEO_PATH,
-            description='description',
-            tags=['tag1', 'tag2'],
-            visibility='draft',
-            title='title',
-        )
-        transcode_job = transcode_job_factory(
-            profile='144p', video_record=video
-        )
-        transcode_job2 = transcode_job_factory(
-            profile='360p', video_record=video
-        )
-        file_ = simple_uploaded_file_factory(video_path=VIDEO_PATH)
-        video_rendition = models.VideoRendition.objects.create(
-            video=video,
-            file=file_,
-            playlist_file=rendition_playlist_file,
-            file_size=1000,
-            width=256,
-            height=144,
-            duration=10,
-            ext='webm',
-            container='webm',
-            audio_codec='opus',
-            video_codec='vp9',
-            name='144p',
-            framerate=30,
-            metadata={'example': 'metadata'},
-        )
+        video = video_with_transcodes['video']
 
         response = api_client_no_auth.get(f'/api/v1/video/{video.id}/')
 
         assert response.status_code == OK
-        assert response.json() == {
-            'description': 'description',
-            'tags': ['tag1', 'tag2'],
-            'title': 'title',
-            'visibility': 'draft',
-            'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
-            'video_renditions': [
-                {
-                    'audio_codec': 'opus',
-                    'container': 'webm',
-                    'codecs_string': None,
-                    'playlist_file': mocker.ANY,
-                    'created_on': mocker.ANY,
-                    'duration': 10,
-                    'ext': 'webm',
-                    'file_size': 1000,
-                    'framerate': 30,
-                    'height': 144,
-                    'id': video_rendition.id,
-                    'metadata': {'example': 'metadata'},
-                    'modified_on': mocker.ANY,
-                    'name': '144p',
-                    'video': video.id,
-                    'video_codec': 'vp9',
-                    'width': 256,
-                }
-            ],
-            'transcode_jobs': [
-                {
-                    'created_on': mocker.ANY,
-                    'ended_on': None,
-                    'executor': 'ffmpeg',
-                    'id': transcode_job.id,
-                    'modified_on': mocker.ANY,
-                    'profile': '144p',
-                    'started_on': mocker.ANY,
-                    'status': 'created',
-                    'video': video.id,
-                },
-                {
-                    'created_on': mocker.ANY,
-                    'ended_on': None,
-                    'executor': 'ffmpeg',
-                    'id': transcode_job2.id,
-                    'modified_on': mocker.ANY,
-                    'profile': '360p',
-                    'started_on': mocker.ANY,
-                    'status': 'created',
-                    'video': video.id,
-                },
-            ],
+        assert response.json() == expected_video_resp_json
+
+    def test_put(
+        self, mocker, video_with_transcodes, expected_video_resp_json
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+
+        payload = {
+            'title': 'new title',
+            'visibility': 'public',
+            'description': 'new description',
+            'tags': ['new', 'tags'],
         }
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            payload,
+            format='json',
+        )
+
+        assert response.status_code == OK
+        expected_video_resp_json = expected_video_resp_json.extend(payload)
+        assert response.json() == expected_video_resp_json
+
+    def test_put_cannot_update_channel(
+        self,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+        other_users_channel = channel_factory(user=user_factory())
+
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'channel': other_users_channel.id,
+            },
+            format='json',
+        )
+
+        assert response.status_code == BAD_REQUEST
+
+    def test_put_cannot_update_upload(
+        self,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+        upload_factory,
+    ):
+        video = video_with_transcodes['video']
+        api_client = video_with_transcodes['api_client']
+        other_users_channel = channel_factory(user=user_factory())
+        other_upload = upload_factory(channel=other_users_channel)
+
+        response = api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'upload': other_upload.id,
+            },
+            format='json',
+        )
+
+        assert response.status_code == BAD_REQUEST
+
+    def test_put_cannot_update_another_users_video(
+        self,
+        mocker,
+        video_with_transcodes,
+        channel_factory,
+        user_factory,
+        api_client_factory,
+    ):
+        video = video_with_transcodes['video']
+        other_user_api_client, _ = api_client_factory(user=user_factory())
+
+        response = other_user_api_client.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'title': 'new title',
+            },
+            format='json',
+        )
+
+        assert response.status_code == NOT_FOUND
+
+    def test_put_without_auth_returns_403(
+        self,
+        api_client_no_auth,
+        video_with_transcodes,
+    ):
+        video = video_with_transcodes['video']
+
+        response = api_client_no_auth.put(
+            f'/api/v1/video/{video.id}/',
+            {
+                'title': 'new title',
+            },
+            format='json',
+        )
+
+        assert response.status_code == FORBIDDEN
 
 
 class TestVideoPlaylist:

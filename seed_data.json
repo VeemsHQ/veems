@@ -8,16 +8,31 @@
 		"name": "Timcast",
 		"description": "Example channel description",
 		"sync_videos_interested": true,
-		"is_selected": false
+		"is_selected": false,
+		"videos": [
+			{
+				"title": "Test Video 1080p 30fps Vertical",
+				"description": "Here is a video description.",
+				"path": "tests/test_data/1080p_30fps_vertical.webm"
+			}
+		]
 	}, {
 		"name": "Timcast IRL",
 		"description": "Example channel description",
 		"sync_videos_interested": true,
-		"is_selected": true
+		"is_selected": true,
+		"videos": [
+			{
+				"title": "This is a test video, hello world",
+				"description": "Here is a video description.",
+				"path": "tests/test_data/1920x960.mp4"
+			}
+		]
 	}, {
 		"name": "Tim Pool",
 		"description": "Example channel description",
 		"sync_videos_interested": false,
-		"is_selected": false
+		"is_selected": false,
+		"videos": []
 	}]
 }]

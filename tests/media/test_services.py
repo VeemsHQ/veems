@@ -531,3 +531,82 @@ class TestGeneratePlaylist:
         playlist_str = services.generate_master_playlist(video_id=video.id)
 
         assert playlist_str is None
+
+
+def test_get_video(video):
+    result = services.get_video(id=video.id)
+
+    assert isinstance(result, models.Video)
+    assert result == video
+
+
+def test_get_popular_videos(
+    video_with_transcodes_factory, channel_factory, user_factory
+):
+    visibility_values = (
+        'private',
+        'public',
+        'public',
+        'public',
+        'public',
+        'unlisted',
+    )
+    is_viewable_values = (False, False, True, True, True, True)
+    for visibility, is_viewable in zip(visibility_values, is_viewable_values):
+        video_with_transcodes_factory(
+            channel=channel_factory(user=user_factory()),
+            visibility=visibility,
+            is_viewable=is_viewable,
+        )
+
+    records = services.get_popular_videos()
+
+    assert all(isinstance(r, models.Video) for r in records)
+    assert len(records) == 3
+    assert all(
+        r.visibility == 'public' and r.is_viewable is True for r in records
+    )
+    assert (
+        records[0].created_on > records[1].created_on > records[2].created_on
+    )
+
+
+def test_mark_video_as_viewable(video_factory):
+    video = video_factory(is_viewable=False)
+
+    updated_video = services.mark_video_as_viewable(video=video)
+
+    assert updated_video.is_viewable is True
+
+
+def test_create_video(upload):
+    video = services.create_video(upload=upload)
+
+    assert video.channel == upload.channel
+    assert video.upload == upload
+    assert not video.default_thumbnail_image
+    assert video.default_thumbnail_image_small_url
+
+
+class TestGetVideos:
+    def test(self, video_factory):
+        videos = (
+            video_factory(),
+            video_factory(),
+        )
+
+        records = services.get_videos()
+
+        assert tuple(records) == videos
+
+    def test_with_channel_id(self, video_factory, channel_factory, user):
+        channel = channel_factory(user=user)
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel)
+        video_factory(channel=channel)
+
+        records = services.get_videos(channel_id=channel.id)
+
+        assert len(records) == 2
+        assert all(v.channel_id == channel.id for v in records)

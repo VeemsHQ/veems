@@ -35,10 +35,22 @@ start-deps:
 	aws --endpoint-url=${AWS_S3_ENDPOINT_URL} s3 mb s3://${BUCKET_MEDIA}
 
 .ONESHELL:
+.PHONY: reset
+reset:
+	python manage.py flush --noinput
+	python manage.py import_seed_data
+
+.ONESHELL:
 .PHONY: run
 run:
 	docker-compose build app_local
 	docker-compose run --service-port app_local
+
+.ONESHELL:
+.PHONY: run
+run_seed:
+	docker-compose build app_local
+	docker-compose run --service-port app_local make install && make reset
 
 .ONESHELL:
 .PHONY: docker-test

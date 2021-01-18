@@ -1,6 +1,9 @@
 from pathlib import Path
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.templatetags.static import static
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
@@ -59,6 +62,11 @@ def _video_rendition_segment_upload_to(instance, filename):
     )
 
 
+def _video_thumbnail_image_upload_to(instance, filename):
+    video = instance
+    return f'videos/{video.id}/thumbnails/{video.id}{Path(filename).suffix}'
+
+
 def _video_rendition_thumbnail_upload_to(instance, filename):
     thumbnail = instance
     video_rendition = thumbnail.video_rendition
@@ -83,6 +91,7 @@ class Upload(BaseModel):
         max_length=10,
         choices=tuple((c, c) for c in UPLOAD_CHOICES),
         default='draft',
+        db_index=True,
     )
 
     def __str__(self):
@@ -93,7 +102,9 @@ class Upload(BaseModel):
 
 
 class Video(BaseModel):
-    upload = models.OneToOneField(Upload, null=True, on_delete=models.CASCADE)
+    upload = models.OneToOneField(
+        Upload, null=True, on_delete=models.CASCADE, blank=True
+    )
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='videos'
     )
@@ -101,9 +112,40 @@ class Video(BaseModel):
     visibility = models.CharField(
         max_length=10,
         choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
+        db_index=True,
+        default='public',
     )
+    is_viewable = models.BooleanField(default=False, db_index=True)
     description = models.TextField(max_length=5000)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
+    framerate = models.IntegerField(null=True)
+    duration = models.IntegerField(null=True, default=0)
+    default_thumbnail_image = models.ImageField(
+        upload_to=_video_thumbnail_image_upload_to,
+        storage=STORAGE_BACKEND,
+        null=True,
+        blank=True,
+    )
+    default_thumbnail_image_small = ImageSpecField(
+        source='default_thumbnail_image',
+        processors=[ResizeToFit(480, 270)],
+        format='JPEG',
+        options={'quality': 70},
+    )
+    default_thumbnail_image_large = ImageSpecField(
+        source='default_thumbnail_image',
+        processors=[ResizeToFit(720, 404)],
+        format='JPEG',
+        options={'quality': 85},
+    )
+
+    @property
+    def default_thumbnail_image_small_url(self):
+        if not self.default_thumbnail_image_small:
+            return static(
+                'images/player/error-video-processing-simple-480p.png'
+            )
+        return self.default_thumbnail_image_small.url
 
     def __str__(self):
         return (
@@ -152,7 +194,8 @@ class VideoRenditionSegment(BaseModel):
         VideoRendition, on_delete=models.CASCADE
     )
     file = models.FileField(
-        upload_to=_video_rendition_segment_upload_to, storage=STORAGE_BACKEND
+        upload_to=_video_rendition_segment_upload_to,
+        storage=storage_backends.MediaStoragePublic,
     )
     segment_number = models.IntegerField()
 
@@ -190,7 +233,9 @@ class TranscodeJob(BaseModel):
     profile = models.CharField(max_length=100)
     executor = models.CharField(max_length=20)
     status = models.CharField(
-        max_length=10, choices=tuple((c, c) for c in TRANSCODE_JOB_CHOICES)
+        max_length=10,
+        choices=tuple((c, c) for c in TRANSCODE_JOB_CHOICES),
+        db_index=True,
     )
     started_on = models.DateTimeField(db_index=True, null=True)
     ended_on = models.DateTimeField(db_index=True, null=True)
