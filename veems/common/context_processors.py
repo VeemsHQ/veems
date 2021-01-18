@@ -2,7 +2,10 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..channel import services as channel_services
+from ..channel import (
+    services as channel_services,
+    serializers as channel_serializers,
+)
 from ..user import forms as user_forms
 
 logger = logging.getLogger(__name__)
@@ -12,9 +15,11 @@ def global_context(request):
     """Context which is applied to all views."""
     context = {}
     if request.user.is_authenticated:
-        context['channels'] = channel_services.get_channels(
-            user_id=request.user.id
-        )
+        channels = channel_services.get_channels(user_id=request.user.id)
+        channels_data = channel_serializers.ChannelSerializer(
+            channels, many=True
+        ).data
+        context['channels'] = channels_data
         try:
             context[
                 'selected_channel'
