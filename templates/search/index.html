@@ -1,0 +1,53 @@
+{% extends '_base_public.html' %}
+
+{% block content %}
+<main class="mx-auto col d-flex w-100 py-3 middle-col justify-content-between">
+    <div class="pt-2 w-100">
+        <div class="col border-bottom mb-3">
+        <div
+            class="flex-row box-shadow-bottom d-flex justify-content-center justify-content-md-between align-items-center">
+            <ul class="nav settings-nav">
+            <li class="nav-item">
+                <a class="nav-link active" href="">Videos (2)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">Channels (5)</a>
+            </li>
+            </ul>
+        </div>
+        </div>
+        <div class="col p-0 m-0">
+            <div class="search-results px-2 m-0">
+                {% for video in video_results %}
+                <div class="mt-1 mb-3 d-flex w-100">
+                    <a href="{% url 'view-video' video.id %}" class="thumbnail thumbnail-large">
+                        <img src="{{video.default_thumbnail_image_small_url}}">
+                        <div class="overlays">{{video.duration_human}}</div>
+                    </a>
+                    <div class="py-1 px-3">
+                        <div class="h5"><a href="{% url 'view-video' video.id %}">{{video.title}}</a></div>
+                        <div class="metadata">
+                            <div class="w-100">
+                                <div class="text-muted">{{video.view_count}} views • {{video.time_ago_human}}
+                                </div>
+                            </div>
+                            <div class="w-100 d-flex flex-row align-items-center py-1">
+                                <span><a href="{% url 'view-channel' video.channel_id %}" class="rounded-circle d-flex justify-content-center avatar-small">
+                                        <img class="d-block rounded-circle align-self-center"
+                                            src="{{video.channel_avatar_image_small_url}}" />
+                                    </a></span>
+                                <span class="ml-2"><a href="{% url 'view-channel' video.channel_id %}" class="text-muted">{{video.channel_name}}</a></span>
+                            </div>
+                            <div class="w-100">
+                                <div class="text-muted mt-1">{{video.description|truncatechars:120}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </div>
+</main>
+{% endblock %}

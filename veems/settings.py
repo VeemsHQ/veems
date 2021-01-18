@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'veems.home',
     'veems.channel_manager',
     'veems.channel',
+    'veems.search',
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

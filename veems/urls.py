@@ -11,6 +11,7 @@ from .home import views as home_views
 from .user import views as user_views, forms as user_forms
 from .channel_manager import views as channel_manager_views
 from .channel import api_views as channel_api_views, views as channel_views
+from .search import views as search_views
 
 
 urlpatterns = [
@@ -25,6 +26,11 @@ urlpatterns = [
         'c/<slug:channel_id>/',
         channel_views.ChannelIndexView.as_view(),
         name='view-channel',
+    ),
+    path(
+        'search/<slug:query>/',
+        search_views.SearchView.as_view(),
+        name='search',
     ),
     path(
         'c/<slug:channel_id>/about/',
