@@ -13,7 +13,7 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case SET_ACTIVE_CHANNEL_ID:
-      return { ...state, session: payload };
+      return { ...state, activeChannelID: payload };
     case SET_SYNC_MODAL_OPEN:
       return { ...state, bSyncModalOpen: payload };
     default:

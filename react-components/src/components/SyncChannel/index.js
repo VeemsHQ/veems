@@ -21,18 +21,17 @@ import {
 const { store, persistor } = configureStore();
 
 // Component connected to Redux store
-export const Container = (
-  bSyncModalOpen,
-  ) => {
+export function Container(props) {
+  console.log(props);
   const handleSyncChannel = () => {
     // todo when server calls in place 
     // syncChannelRequest();
   };
   const handleModalClose = () => {
-    bSyncModalOpen.setSyncModalOpen(false);
+    props.setSyncModalOpen(false);
   };
   return (
-    <SyncChannelButton bModalOpen={bSyncModalOpen.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalClose={() => handleModalClose} />
+    <SyncChannelButton bModalOpen={props.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalClose={() => handleModalClose} />
   );
 };
 

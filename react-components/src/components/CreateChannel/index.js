@@ -13,6 +13,7 @@ import CreateChannelButton from './CreateChannelButton';
 // Actions
 import {
   setSyncModalOpenAction,
+  setActiveChannelAction,
 } from '../../actions/index';
 
 // api
@@ -21,19 +22,22 @@ import { createChannelRequest } from '../../api/api';
 const { store, persistor } = configureStore();
 
 // Component connected to Redux store
-export const Container = (setSyncModalOpen) => {
+export function Container(props) {
 
   const handleCreateChannel = async (name, desc, bSync) => {
-    // TODO: Set active channel and store ID. 
-    createChannelRequest(name, desc, bSync);
+     
+    const response = await createChannelRequest(name, desc, bSync);
+    // Set active channel and store ID.
+    if (response && response.data && response.data.id)
+      await props.setActiveChannel(response.data.id);
 
     /* If bSync then enable correct tab and dispatch Redux action to
     open modal dialog on page */ 
     if (bSync) {
-      await setSyncModalOpen.setSyncModalOpen(true);
+      await props.setSyncModalOpen(true);
       window.location.pathname = '/channel/sync/';
     } else {
-      await setSyncModalOpen.setSyncModalOpen(false);
+      await props.setSyncModalOpen(false);
     }
   };
   
@@ -47,6 +51,7 @@ const mapDispatchToProps = (dispatch) => {
     dispatch,
     ...bindActionCreators({
       setSyncModalOpen: setSyncModalOpenAction,
+      setActiveChannel: setActiveChannelAction,
     }, dispatch),
   };
 };

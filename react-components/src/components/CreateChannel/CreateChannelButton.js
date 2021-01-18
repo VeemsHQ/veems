@@ -39,7 +39,7 @@ export const CreateChannelButton = ({
 
               <Form.Group>
                 <Form.Label>Channel Name</Form.Label>
-                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" placeholder={channelName} />
+                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" />
               </Form.Group>
 
               <Form.Group controlId="exampleForm.ControlTextarea1">

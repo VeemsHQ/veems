@@ -46,6 +46,7 @@ const createChannelRequest = async ( name, description, syncVideosInterested ) =
     description,
     sync_videos_interested: syncVideosInterested,
     language: 'en',
+    is_selected: true,
   };
   try {
     const res = await API.post(`${await getServerURL()}/api/v1/channel/`, data);
