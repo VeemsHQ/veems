@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 
 // Redux
@@ -8,29 +8,35 @@ import configureStore from '../../store';
 import { PersistGate } from 'redux-persist/integration/react'
 
 // Components
-import SyncChannelButton from './SyncChannelButton';
+import SelectChannelDropdown from './SelectChannelDropdown';
 
 // Actions
 import {
   setSyncModalOpenAction,
+  setActiveChannelAction,
 } from '../../actions/index';
 
 // api
-// import { syncChannelRequest } from '../../api/api';
+import { createChannelRequest } from '../../api/api';
 
 const { store, persistor } = configureStore();
 
 // Component connected to Redux store
 export function Container(props) {
-  const handleSyncChannel = () => {
-    // todo when server calls in place 
-    // syncChannelRequest();
+  const [channels, setChannels] = useState(props.channels);
+
+  useEffect(() => { }
+    /* If we have anything in the persisted Redux store
+    at this point we can assume that we should use that instead of the
+    data passed from Django. If not we will use Django. */
+  , [])
+
+  const handleSelectChannel = async () => { 
+    // select api call
   };
-  const handleModalClose = () => {
-    props.setSyncModalOpen(false);
-  };
+  
   return (
-    <SyncChannelButton bModalOpen={props.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalClose={() => handleModalClose} />
+    <SelectChannelDropdown channels={channels} onSelectChannel={handleSelectChannel} />
   );
 };
 
@@ -39,21 +45,18 @@ const mapDispatchToProps = (dispatch) => {
     dispatch,
     ...bindActionCreators({
       setSyncModalOpen: setSyncModalOpenAction,
+      setActiveChannel: setActiveChannelAction,
     }, dispatch),
   };
 };
 
-const mapStateToProps = state => ({
-  bSyncModalOpen: state.channels.bSyncModalOpen,
-});
-
-export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
+export const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
 /* Entry point for DOM element render and subsequent button render.
 This only deal with the above and handling API requests. The SyncChannel
 component will manage logic.
 */
-export const SyncChannel = ({
+export const SelectChannel = ({
   element,
   ...params
 }) => {
