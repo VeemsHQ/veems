@@ -586,3 +586,27 @@ def test_create_video(upload):
     assert video.upload == upload
     assert not video.default_thumbnail_image
     assert video.default_thumbnail_image_small_url
+
+
+class TestGetVideos:
+    def test(self, video_factory):
+        videos = (
+            video_factory(),
+            video_factory(),
+        )
+
+        records = services.get_videos()
+
+        assert tuple(records) == videos
+
+    def test_with_channel_id(self, video_factory, channel_factory, user):
+        channel = channel_factory(user=user)
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel)
+        video_factory(channel=channel)
+
+        records = services.get_videos(channel_id=channel.id)
+
+        assert len(records) == 2
+        assert all(v.channel_id == channel.id for v in records)

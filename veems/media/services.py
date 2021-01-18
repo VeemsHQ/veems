@@ -230,6 +230,12 @@ def get_video(id):
     return models.Video.objects.get(id=id)
 
 
+def get_videos(channel_id=None):
+    if channel_id:
+        return models.Video.objects.filter(channel_id=channel_id)
+    return models.Video.objects.all()
+
+
 def get_popular_videos():
     return models.Video.objects.filter(
         is_viewable=True, visibility='public'

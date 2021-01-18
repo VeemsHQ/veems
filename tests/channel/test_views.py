@@ -1,0 +1,99 @@
+from http.client import OK
+from datetime import date
+
+from pytest_voluptuous import S
+import pytest
+
+pytestmark = pytest.mark.django_db
+
+
+class TestChannelIndexView:
+    def test(
+        self, client, video_with_transcodes_factory, channel_factory, user
+    ):
+        for channel_name in ('My channel 1', 'My channel 2'):
+            channel = channel_factory(
+                name=channel_name,
+                user=user,
+                description=f'{channel_name} Desc',
+            )
+            video_with_transcodes_factory(
+                channel=channel, visibility='public', is_viewable=True
+            )
+            video_with_transcodes_factory(
+                channel=channel, visibility='public', is_viewable=True
+            )
+
+        response = client.get(f'/c/{channel.id}/')
+
+        assert response.status_code == OK
+        assert len(response.context['channel_videos']) == 2
+        assert all(
+            v['channel_id'] == channel.id
+            for v in response.context['channel_videos']
+        )
+        assert dict(response.context['channel']) == S(
+            {
+                'avatar_image_large_url': str,
+                'avatar_image_small_url': str,
+                'banner_image_large_url': str,
+                'banner_image_small_url': str,
+                'created_date': date,
+                'created_on': str,
+                'description': str,
+                'followers_count': 0,
+                'has_banner': bool,
+                'id': channel.id,
+                'is_selected': bool,
+                'language': str,
+                'modified_on': str,
+                'name': str,
+                'sync_videos_interested': bool,
+                'user': str,
+            }
+        )
+        assert response.context['is_owner'] is False
+        assert len(response.context['channel_videos']) == 2
+
+
+class TestChannelAboutView:
+    def test(
+        self, client, video_with_transcodes_factory, channel_factory, user
+    ):
+        for channel_name in ('My channel 1', 'My channel 2'):
+            channel = channel_factory(
+                name=channel_name,
+                user=user,
+                description=f'{channel_name} Desc',
+            )
+            video_with_transcodes_factory(
+                channel=channel, visibility='public', is_viewable=True
+            )
+            video_with_transcodes_factory(
+                channel=channel, visibility='public', is_viewable=True
+            )
+
+        response = client.get(f'/c/{channel.id}/about/')
+
+        assert response.status_code == OK
+        assert dict(response.context['channel']) == S(
+            {
+                'avatar_image_large_url': str,
+                'avatar_image_small_url': str,
+                'banner_image_large_url': str,
+                'banner_image_small_url': str,
+                'created_date': date,
+                'created_on': str,
+                'description': str,
+                'followers_count': 0,
+                'has_banner': bool,
+                'id': channel.id,
+                'is_selected': bool,
+                'language': str,
+                'modified_on': str,
+                'name': str,
+                'sync_videos_interested': bool,
+                'user': str,
+            }
+        )
+        assert response.context['is_owner'] is False
