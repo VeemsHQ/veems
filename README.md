@@ -51,7 +51,7 @@ In order of priority.
 - Playback of video content (backend ✅, frontend ✅).
 - User & API authentication (backend ✅, frontend ⏳).
 - Creation and management of "Channels" (backend ✅, frontend ⏳).
-- Homepage video listings.
+- Homepage video listings ✅.
 - Search function.
 - Channel Manager (basics).
     - Video Management.
