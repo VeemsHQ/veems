@@ -55,7 +55,7 @@ export const CreateChannelButton = ({
             </Modal.Body>
 
             <Modal.Footer>
-              <button onClick={() => setShowChannleModal(false)} type="button" className="btn btn-light">Cancel</button>
+              <button onClick={() => setShowChannelModal(false)} type="button" className="btn btn-light">Cancel</button>
               <a href="#" onClick={() => createChannelHandler()} className="btn btn-primary">Create Channel</a>
             </Modal.Footer>
 

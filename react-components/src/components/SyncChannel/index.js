@@ -8,7 +8,7 @@ import configureStore from '../../store';
 import { PersistGate } from 'redux-persist/integration/react'
 
 // Components
-import CreateChannelButton from './CreateChannelButton';
+import SyncChannelButton from './SyncChannelButton';
 
 // Actions
 import {
@@ -16,29 +16,23 @@ import {
 } from '../../actions/index';
 
 // api
-import { createChannelRequest } from '../../api/api';
+// import { syncChannelRequest } from '../../api/api';
 
 const { store, persistor } = configureStore();
 
 // Component connected to Redux store
-export const Container = (setSyncModalOpen) => {
-
-  const handleCreateChannel = async (name, desc, bSync) => {
-    // TODO: Set active channel and store ID. 
-    createChannelRequest(name, desc, bSync);
-
-    /* If bSync then enable correct tab and dispatch Redux action to
-    open modal dialog on page */ 
-    if (bSync) {
-      await setSyncModalOpen.setSyncModalOpen(true);
-      window.location.pathname = '/channel/sync/';
-    } else {
-      await setSyncModalOpen.setSyncModalOpen(false);
-    }
+export const Container = (
+  bSyncModalOpen,
+  ) => {
+  const handleSyncChannel = () => {
+    // todo when server calls in place 
+    // syncChannelRequest();
   };
-  
+  const handleModalClose = () => {
+    bSyncModalOpen.setSyncModalOpen(false);
+  };
   return (
-    <CreateChannelButton onCreateChannel={handleCreateChannel} />
+    <SyncChannelButton bModalOpen={bSyncModalOpen.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalClose={() => handleModalClose} />
   );
 };
 
@@ -51,13 +45,17 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
+const mapStateToProps = state => ({
+  bSyncModalOpen: state.channels.bSyncModalOpen,
+});
+
+export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
 /* Entry point for DOM element render and subsequent button render.
 This only deal with the above and handling API requests. The SyncChannel
 component will manage logic.
 */
-export const CreateChannel = ({
+export const SyncChannel = ({
   element,
   ...params
 }) => {
