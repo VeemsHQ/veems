@@ -25,9 +25,7 @@ def search(query, limit=50):
     )
     query_ = SearchQuery(query)
     videos = (
-        media_modals.Video.objects.annotate(
-            rank=SearchRank(vector, query_)
-        )
+        media_modals.Video.objects.annotate(rank=SearchRank(vector, query_))
         .filter(rank__gte=0.2, visibility='public')
         .order_by('-rank')
     )[:limit]

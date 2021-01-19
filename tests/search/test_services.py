@@ -7,7 +7,6 @@ pytestmark = pytest.mark.django_db
 
 
 class TestSearch:
-
     @pytest.fixture(autouse=True)
     def setup_method(self, channel_factory, user, video_factory, channel):
         channel_factory(name='Cheese', user=user)
@@ -40,7 +39,7 @@ class TestSearch:
         channel_results = results['channels']
         assert len(channel_results) == 2
         names = tuple(r.name for r in channel_results)
-        assert names == ('Cheese', 'Cheese on Toast recipes', 'Pizza Recipes')
+        assert names == ('Cheese', 'Cheese on Toast recipes')
 
         video_results = results['videos']
         assert len(video_results) == 1

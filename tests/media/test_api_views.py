@@ -208,6 +208,7 @@ class TestVideoDetail:
                 'comment_count': int,
                 'created_date': str,
                 'duration_human': str,
+                'channel_avatar_image_small_url': str,
                 'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
                 'time_ago_human': str,
                 'video_renditions': [
