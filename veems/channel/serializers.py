@@ -22,7 +22,7 @@ class ChannelSerializer(CustomModelSerializer):
     )
 
     def get_videos_count(self, instance):
-        return 0
+        return instance.videos.filter(visibility='public').count()
 
     def get_followers_count(self, instance):
         return 0
