@@ -14,7 +14,6 @@ class TestSearch:
         channel_factory(name='Pizza Recipes', description='Cheese', user=user)
         channel_factory(name='Cheese on Toast recipes', user=user)
         channel_factory(name='Carrot', description='Cheesy', user=user)
-
         video_factory(
             channel=channel, title='I love cheese cake', visibility='public'
         )
