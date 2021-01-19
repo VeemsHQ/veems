@@ -1,12 +1,8 @@
 from django.views.generic import TemplateView
 
-from ..media import (
-    serializers as media_serializers,
-    services as media_services,
-)
-from ..channel import (
-    services as channel_services, serializers as channel_serializers
-)
+from ..media import serializers as media_serializers
+from ..channel import serializers as channel_serializers
+from ..search import services
 
 
 class SearchView(TemplateView):
@@ -15,19 +11,13 @@ class SearchView(TemplateView):
     def get_context_data(self, *args, query, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         query_type = self.request.GET.get('type', '').lower()
-        context['video_results'] = []
-        context['channel_results'] = []
-        if not query_type or query_type == 'videos':
-            videos = media_services.get_popular_videos()
-            videos = media_serializers.VideoSlimSerializer(
-                videos, many=True
-            ).data
-            context['video_results'] = videos
-        elif query_type == 'channels':
-            channels = channel_services.get_channels()
-            channels = channel_serializers.ChannelSlimSerializer(
-                channels, many=True
-            ).data
-            context['channel_results'] = channels
+        search_results = services.search(query=query, query_type=query_type)
+        context['video_results'] = media_serializers.VideoSlimSerializer(
+            search_results['videos'], many=True
+        ).data
+        context['channel_results'] = channel_serializers.ChannelSlimSerializer(
+            search_results['channels'], many=True
+        ).data
+
         context['search_query'] = query
         return context

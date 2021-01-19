@@ -8,10 +8,10 @@
             class="flex-row box-shadow-bottom d-flex justify-content-center justify-content-md-between align-items-center">
             <ul class="nav settings-nav">
             <li class="nav-item">
-                <a class="nav-link {% if video_results %}active{% endif %}" href="{% url 'search' search_query %}?type=videos">Videos (2)</a>
+                <a class="nav-link {% if video_results %}active{% endif %}" href="{% url 'search' search_query %}?type=videos">Videos ({{video_results|length}})</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if channel_results %}active{% endif %}" href="{% url 'search' search_query %}?type=channels">Channels (5)</a>
+                <a class="nav-link {% if channel_results %}active{% endif %}" href="{% url 'search' search_query %}?type=channels">Channels ({{channel_results|length}})</a>
             </li>
             </ul>
         </div>
