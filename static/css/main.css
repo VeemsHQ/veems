@@ -1,9 +1,12 @@
-
 :root {
     --video-thumb-width: 240px;
     --video-thumb-height: 134px;
-    --search-video-thumb-width: 360px;
-    --search-video-thumb-height: 200px;
+    --video-thumb-large-width: 360px;
+    --video-thumb-large-height: 200px;
+    --search-thumb-width: 243px;
+    --search-thumb-height: 136px;
+    --search-thumb-md-width: 360px;
+    --search-thumb-md-height: 200px;
 }
 
 body {
@@ -320,8 +323,6 @@ body {
     background: transparent;
     border: 0;
     justify-content: center;
-    /* margin-left: 8px;
-    margin-right: 8px; */
     margin-top: 24px;
 }
 
@@ -346,18 +347,40 @@ body {
     height: inherit;
 }
 
-
 .thumbnail-large {
-    width: var(--search-video-thumb-width);
-    height: var(--search-video-thumb-height);
+    width: var(--video-thumb-large-width);
+    height: var(--video-thumb-large-height);
 }
 
 .thumbnail-large img {
     display: block;
-    max-width: var(--search-video-thumb-width);
+    max-width: var(--video-thumb-large-width);
     width: auto;
-    height: var(--search-video-thumb-height);
+    height: var(--video-thumb-large-height);
     margin: 0 auto;
+}
+
+.search-thumbnail {
+    width: var(--search-thumb-width);
+    height: var(--search-thumb-height);
+}
+
+.search-thumbnail img {
+    display: block;
+    height: var(--search-thumb-height);
+    margin: 0 auto;
+}
+
+/* Medium devices (tablets, 768px and up) */
+
+@media (min-width: 768px) {
+    .search-thumbnail {
+        width: var(--search-thumb-md-width);
+        height: var(--search-thumb-md-height);
+    }
+    .search-thumbnail img {
+        height: var(--search-thumb-md-height);
+    }
 }
 
 .video-grid h5 a:hover {
@@ -371,7 +394,6 @@ body {
     width: auto;
     margin: 0 auto;
 }
-
 
 .video-grid .metadata a {
     color: var(--muted) !important;
