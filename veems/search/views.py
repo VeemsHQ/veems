@@ -1,10 +1,15 @@
 from django.views.generic import TemplateView
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 from ..media import serializers as media_serializers
 from ..channel import serializers as channel_serializers
 from ..search import services
 
+FIVE_MINS_SECS = 300
 
+
+@method_decorator(cache_page(FIVE_MINS_SECS), name='dispatch')
 class SearchView(TemplateView):
     template_name = 'search/index.html'
 
