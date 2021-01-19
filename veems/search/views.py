@@ -8,16 +8,17 @@ from ..search import services
 class SearchView(TemplateView):
     template_name = 'search/index.html'
 
-    def get_context_data(self, *args, query, **kwargs):
+    def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        query_type = self.request.GET.get('type', '').lower()
-        search_results = services.search(query=query, query_type=query_type)
+        search_query = self.request.GET['search_query']
+        query_type = self.request.GET.get('type', '').lower() or 'videos'
+        search_results = services.search(query=search_query)
         context['video_results'] = media_serializers.VideoSlimSerializer(
             search_results['videos'], many=True
         ).data
         context['channel_results'] = channel_serializers.ChannelSlimSerializer(
             search_results['channels'], many=True
         ).data
-
-        context['search_query'] = query
+        context['search_query'] = search_query
+        context['query_type'] = query_type
         return context

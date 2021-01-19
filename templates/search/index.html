@@ -8,16 +8,17 @@
             class="flex-row box-shadow-bottom d-flex justify-content-center justify-content-md-between align-items-center">
             <ul class="nav settings-nav">
             <li class="nav-item">
-                <a class="nav-link {% if video_results %}active{% endif %}" href="{% url 'search' search_query %}?type=videos">Videos ({{video_results|length}})</a>
+                <a class="nav-link {% if query_type == 'videos' %}active{% endif %}" href="{% url 'search' %}?search_query={{search_query}}&type=videos">Videos ({{video_results|length}})</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if channel_results %}active{% endif %}" href="{% url 'search' search_query %}?type=channels">Channels ({{channel_results|length}})</a>
+                <a class="nav-link {% if query_type == 'channels' %}active{% endif %}" href="{% url 'search' %}?search_query={{search_query}}&type=channels">Channels ({{channel_results|length}})</a>
             </li>
             </ul>
         </div>
         </div>
         <div class="col p-0 m-0">
             <div class="search-results px-2 m-0">
+                {% if query_type == 'videos' %}
                 {% for video in video_results %}
                 <div class="mt-1 mb-3 d-flex w-100">
                     <a href="{% url 'view-video' video.id %}" class="thumbnail thumbnail-large">
@@ -44,15 +45,17 @@
                     </div>
                 </div>
                 {% endfor %}
+                {% endif %}
 
+                {% if query_type == 'channels' %}
                 {% for channel in channel_results %}
                 <div class="mt-1 mb-3 d-flex w-100">
-                    <a href="#" class="rounded-circle d-flex justify-content-center avatar-large">
+                    <a href="{% url 'view-channel' channel.id %}" class="rounded-circle d-flex justify-content-center avatar-large">
                         <img class="d-block rounded-circle align-self-center"
                             src="{{channel.avatar_image_large_url}}" />
                     </a>
                     <div class="py-1 px-3 w-100">
-                        <div class="h5"><a href="#">{{channel.name}}</a></div>
+                        <div class="h5"><a href="{% url 'view-channel' channel.id %}">{{channel.name}}</a></div>
                         <div class="metadata d-flex">
                             <div>
                             <div class="w-100">
@@ -66,6 +69,7 @@
                     </div>
                 </div>
                 {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>

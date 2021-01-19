@@ -9,9 +9,9 @@
     </div>
 
     <div class="d-none d-md-flex col-md-6 justify-content-center">
-        <form class="form-inline search-nav border rounded-circle">
+        <form class="form-inline search-nav border rounded-circle" method='get' action="{% url 'search' %}">
             <input class="form-control bg-white border border-white rounded-circle flex-fill" type="text"
-                placeholder="Search" aria-label="Search" value="{% block search_query %}{{search_query}}{% endblock %}">
+                placeholder="Search" aria-label="Search" name="search_query" value="{% block search_query %}{{search_query}}{% endblock %}">
             <button
                 class="btn btn-light bg-light rounded-circle border border-light border-left-1 text-dark my-2 my-sm-0 d-flex px-3"
                 type="submit">

@@ -28,7 +28,7 @@ urlpatterns = [
         name='view-channel',
     ),
     path(
-        'search/<slug:query>/',
+        'results/',
         search_views.SearchView.as_view(),
         name='search',
     ),
