@@ -85,7 +85,7 @@ class ChannelSerializer(CustomModelSerializer):
         return services.create_channel(**validated_data)
 
     def get_created_date(self, instance):
-        return instance.created_on.date()
+        return instance.created_on.date().isoformat()
 
 
 class ChannelSlimSerializer(ChannelSerializer):

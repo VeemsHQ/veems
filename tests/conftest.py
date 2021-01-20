@@ -317,22 +317,22 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
 def expected_channel_resp_json():
     return S(
         {
-            'id': str,
-            'user': str,
-            'name': str,
+            'avatar_image_large_url': str,
+            'avatar_image_small_url': str,
+            'banner_image_large_url': str,
+            'banner_image_small_url': str,
+            'created_date': str,
+            'created_on': str,
             'description': str,
-            'sync_videos_interested': bool,
+            'followers_count': int,
+            'has_banner': bool,
+            'id': str,
+            'is_selected': bool,
             'language': 'en',
             'modified_on': str,
-            'is_selected': bool,
-            'followers_count': int,
-            'avatar_image_small_url': str,
-            'avatar_image_large_url': str,
-            'banner_image_small_url': str,
-            'banner_image_large_url': str,
-            'has_banner': bool,
-            'created_on': str,
-            'created_date': str,
+            'name': str,
+            'sync_videos_interested': bool,
+            'user': str,
             'videos_count': int,
         }
     )
@@ -342,25 +342,54 @@ def expected_channel_resp_json():
 def expected_video_resp_json():
     return S(
         {
-            'id': str,
+            'channel_avatar_image_small_url': str,
+            'channel_id': str,
+            'channel_name': str,
             'channel': str,
+            'comment_count': int,
+            'created_date_human': str,
+            'created_date': str,
+            'default_thumbnail_image_small_url': str,
             'description': str,
-            'tags': list,
-            'title': str,
-            'visibility': str,
+            'dislikes_count': int,
+            'duration_human': str,
+            'duration': int,
+            'id': str,
+            'likes_count': int,
             'playlist_file': str,
-            'video_renditions': list,
+            'tags': list,
+            'time_ago_human': str,
+            'title': str,
             'transcode_jobs': list,
             'video_renditions_count': int,
-            'created_date': str,
+            'video_renditions': list,
             'view_count': int,
-            'comment_count': int,
-            'default_thumbnail_image_small_url': str,
-            'time_ago_human': str,
-            'channel_name': str,
-            'channel_id': str,
-            'duration': int,
-            'duration_human': str,
+            'visibility': str,
+        }
+    )
+
+
+@pytest.fixture
+def expected_video_slim_resp_json():
+    return S(
+        {
             'channel_avatar_image_small_url': str,
+            'channel_id': str,
+            'channel_name': str,
+            'channel': str,
+            'comment_count': int,
+            'created_date_human': str,
+            'created_date': str,
+            'default_thumbnail_image_small_url': str,
+            'description': str,
+            'duration_human': str,
+            'duration': int,
+            'id': str,
+            'tags': ['tag1', 'tag2'],
+            'time_ago_human': str,
+            'title': str,
+            'video_renditions_count': int,
+            'view_count': int,
+            'visibility': str,
         }
     )
