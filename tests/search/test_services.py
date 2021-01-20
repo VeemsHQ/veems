@@ -27,8 +27,10 @@ class TestSearch:
 
         channel_results = results['channels']
         assert len(channel_results) == 3
-        names = tuple(r.name for r in channel_results)
-        assert names == ('Cheese', 'Cheese on Toast recipes', 'Pizza Recipes')
+        names = sorted((r.name for r in channel_results))
+        assert names == sorted(
+            ('Cheese', 'Cheese on Toast recipes', 'Pizza Recipes')
+        )
 
         video_results = results['videos']
         assert len(video_results) == 1
@@ -38,8 +40,8 @@ class TestSearch:
 
         channel_results = results['channels']
         assert len(channel_results) == 2
-        names = tuple(r.name for r in channel_results)
-        assert names == ('Cheese', 'Cheese on Toast recipes')
+        names = sorted((r.name for r in channel_results))
+        assert names == sorted(('Cheese', 'Cheese on Toast recipes'))
 
         video_results = results['videos']
         assert len(video_results) == 1
