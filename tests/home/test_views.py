@@ -47,5 +47,6 @@ class TestIndexView:
                 'video_renditions_count': int,
                 'view_count': int,
                 'visibility': str,
+                'channel_avatar_image_small_url': str,
             }
         )

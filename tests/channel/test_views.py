@@ -50,6 +50,7 @@ class TestChannelIndexView:
                 'name': str,
                 'sync_videos_interested': bool,
                 'user': str,
+                'videos_count': int,
             }
         )
         assert response.context['is_owner'] is False
@@ -94,6 +95,7 @@ class TestChannelAboutView:
                 'name': str,
                 'sync_videos_interested': bool,
                 'user': str,
+                'videos_count': int,
             }
         )
         assert response.context['is_owner'] is False

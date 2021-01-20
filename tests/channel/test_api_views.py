@@ -42,6 +42,7 @@ def test_get_channels(api_client, channel_factory, user_factory):
             'has_banner': bool,
             'created_on': str,
             'created_date': str,
+            'videos_count': int,
         }
     )
     assert all(c['id'] in exp_channels for c in response.json())
@@ -77,6 +78,7 @@ def test_get_channel(
             'created_on': str,
             'created_date': str,
             'videos': list,
+            'videos_count': int,
         }
     )
     assert len(resp_json['videos']) == 1
@@ -101,6 +103,7 @@ def test_get_channel(
             'channel_id': str,
             'duration': int,
             'duration_human': str,
+            'channel_avatar_image_small_url': str,
         }
     )
     assert resp_json['videos'][0]['video_renditions']
@@ -141,6 +144,7 @@ class TestCreateChannel:
                 'has_banner': bool,
                 'created_on': str,
                 'created_date': str,
+                'videos_count': int,
             }
         )
 
@@ -210,6 +214,7 @@ class TestUpdateChannel:
                 'has_banner': bool,
                 'created_on': str,
                 'created_date': str,
+                'videos_count': int,
             }
         )
         num_selected_channels = len(
@@ -278,6 +283,7 @@ class TestUpdateChannel:
                 'has_banner': bool,
                 'created_on': str,
                 'created_date': str,
+                'videos_count': int,
             }
         )
 

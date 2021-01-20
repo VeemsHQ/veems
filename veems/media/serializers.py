@@ -54,6 +54,9 @@ class VideoSerializer(CustomModelSerializer):
     duration_human = serializers.SerializerMethodField(
         method_name='get_duration_human'
     )
+    channel_avatar_image_small_url = serializers.SerializerMethodField(
+        method_name='get_channel_avatar_image_small_url'
+    )
 
     def get_playlist_file(self, instance):
         video_id = instance.id
@@ -80,6 +83,9 @@ class VideoSerializer(CustomModelSerializer):
 
     def get_channel_id(self, instance):
         return instance.channel_id
+
+    def get_channel_avatar_image_small_url(self, instance):
+        return instance.channel.avatar_image_small_url
 
     def get_duration_human(self, instance):
         return time.strftime(
@@ -108,6 +114,7 @@ class VideoSerializer(CustomModelSerializer):
             'channel_id',
             'duration',
             'duration_human',
+            'channel_avatar_image_small_url',
         ]
         extra_kwargs = {
             'channel': {'read_only': True},
@@ -125,6 +132,7 @@ class VideoSerializer(CustomModelSerializer):
             'duration': {'read_only': True},
             'duration_human': {'read_only': True},
             'default_thumbnail_image_small_url': {'read_only': True},
+            'channel_avatar_image_small_url': {'read_only': True},
         }
 
 
@@ -148,5 +156,6 @@ class VideoSlimSerializer(VideoSerializer):
             'channel_id',
             'duration',
             'duration_human',
+            'channel_avatar_image_small_url',
         ]
         extra_kwargs = VideoSerializer.Meta.extra_kwargs
