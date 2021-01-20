@@ -1,5 +1,4 @@
 from http.client import OK
-from datetime import date
 
 from pytest_voluptuous import S
 import pytest
@@ -36,7 +35,7 @@ class TestIndexView:
                 'channel_id': str,
                 'channel_name': str,
                 'comment_count': int,
-                'created_date': date,
+                'created_date': str,
                 'description': str,
                 'duration': int,
                 'duration_human': str,

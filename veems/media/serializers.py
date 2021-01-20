@@ -67,7 +67,7 @@ class VideoSerializer(CustomModelSerializer):
         return instance.videorendition_set.count()
 
     def get_created_date(self, instance):
-        return instance.created_on.date()
+        return instance.created_on.date().isoformat()
 
     def get_view_count(self, instance):
         return 0

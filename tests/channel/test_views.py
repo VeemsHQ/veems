@@ -1,5 +1,4 @@
 from http.client import OK
-from datetime import date
 
 from pytest_voluptuous import S
 import pytest
@@ -38,7 +37,7 @@ class TestChannelIndexView:
                 'avatar_image_small_url': str,
                 'banner_image_large_url': str,
                 'banner_image_small_url': str,
-                'created_date': date,
+                'created_date': str,
                 'created_on': str,
                 'description': str,
                 'followers_count': 0,
@@ -83,7 +82,7 @@ class TestChannelAboutView:
                 'avatar_image_small_url': str,
                 'banner_image_large_url': str,
                 'banner_image_small_url': str,
-                'created_date': date,
+                'created_date': str,
                 'created_on': str,
                 'description': str,
                 'followers_count': 0,

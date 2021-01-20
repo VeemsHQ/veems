@@ -71,6 +71,7 @@ class ChannelSerializer(CustomModelSerializer):
             'sync_videos_interested', instance.sync_videos_interested
         )
         language = validated_data.get('language', instance.language)
+        # TODO: don't allow selecting another user's channel
         return services.update_channel(
             channel=instance,
             language=language,
