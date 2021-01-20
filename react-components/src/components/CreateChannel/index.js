@@ -22,7 +22,7 @@ import { createChannelRequest } from '../../api/api';
 const { store, persistor } = configureStore();
 
 // Component connected to Redux store
-export function Container(props) {
+function Container(props) {
 
   const handleCreateChannel = async (name, desc, bSync) => {
      
@@ -56,7 +56,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
+const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
 /* Entry point for DOM element render and subsequent button render.
 This only deal with the above and handling API requests. The SyncChannel

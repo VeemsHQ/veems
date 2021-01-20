@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case SET_SESSION:
-      return { state, session: payload };
+      return { ...state, session: payload };
     default:
       return state;
   }
