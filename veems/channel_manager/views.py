@@ -51,12 +51,7 @@ class VideosView(ChannelManagerTemplateView):
 
 
 class MonetizationView(ChannelManagerTemplateView):
-    template_name = 'channel_manager/monetization.html'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['videos'] = VIDEOS[:6]
-        return context
+    template_name = 'channel_manager/coming-soon-monetization.html'
 
 
 class CustomizationView(ChannelManagerTemplateView):
