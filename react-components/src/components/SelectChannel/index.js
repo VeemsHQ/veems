@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 // Redux
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import configureStore from '../../store';
+import { configureStore } from '../../store';
 import { PersistGate } from 'redux-persist/integration/react'
 
 // Components
@@ -18,14 +18,12 @@ import {
 
 // api
 
-const { store, persistor } = configureStore();
+const { store, persistor } = configureStore.getInstance();
 
 // Component connected to Redux store
 function Container(props) {
-  const { activeChannelID } = props
-
   const [channels, setChannels] = useState(props.channels);
-  //const [activeChannelID, setActiveChannelID] = useState(0);
+  const [activeChannelID, setActiveChannelID] = useState(0);
 
   useEffect(() => { 
     /* If we have anything in the persisted Redux store
@@ -36,10 +34,10 @@ function Container(props) {
   }, [props.storeChannels])
 
   useEffect(() => {
-    // Here we should hit a rerender on change of activeChannelID from CreateChannel. 
-    // Currently not hit.
-    console.log("rerender")
-  }, [activeChannelID])
+    // Here we update active channel on change of activeChannelID from CreateChannel. 
+    console.log("rerender complete");
+    // Todo: Update the activeChannelID so the list is dynamically changed.
+  }, [props.activeChannelID])
 
   const handleSelectChannel = async () => { 
     // select api call

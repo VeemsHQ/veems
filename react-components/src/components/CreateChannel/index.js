@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 // Redux
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import configureStore from '../../store';
+import { configureStore } from '../../store';
 import { PersistGate } from 'redux-persist/integration/react'
 
 // Components
@@ -19,7 +19,7 @@ import {
 // api
 import { createChannelRequest } from '../../api/api';
 
-const { store, persistor } = configureStore();
+const { store, persistor } = configureStore.getInstance();
 
 // Component connected to Redux store
 function Container(props) {

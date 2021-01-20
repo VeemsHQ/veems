@@ -12,8 +12,6 @@ const persistConfig = {
   storage,
 }
 
-const persistedReducer = persistReducer(persistConfig, reducer)
-
 // eslint-disable-next-line no-mixed-operators
 // todo: remove when not in dev. Add proper dev check.
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
@@ -22,12 +20,29 @@ window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
   traceLimit: 25,
 }) || compose;
 
-function configureStore() {
-  const store = createStore(persistedReducer, composeEnhancers(
-    applyMiddleware(ReduxThunk),
-  ));
-  const persistor = persistStore(store)
-  return { store, persistor }
+
+/* Singleton for store to make sure we don't duplicate between components */
+export class configureStore {
+  static store = null;
+  static persistor = null;
+  static persistedReducer = null;
+
+  static getInstance() {
+    if (this.store === null || this.persistor === null)
+      this.setInstance();
+
+    const store = this.store;
+    const persistor = this.persistor;
+    return {store, persistor};
+  }
+
+  static setInstance() {
+    this.persistedReducer = persistReducer(persistConfig, reducer)
+    this.store = createStore(this.persistedReducer, composeEnhancers(
+      applyMiddleware(ReduxThunk),
+    ));
+    this.persistor = persistStore(this.store)
+  }
 }
 
 export default configureStore;
