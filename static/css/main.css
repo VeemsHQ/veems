@@ -603,3 +603,20 @@ hr {
     width: 100px;
     height: 100px;
 }
+
+
+.channel-videos .overlay {
+    display: none;
+ }
+ .channel-videos tr:hover .overlay {
+     display: inline-flex;
+ }
+ .channel-videos tr:hover .content {
+     display: none;
+ }
+ .channel-videos .metadata-container {
+     position: relative
+ }
+ .channel-videos tr:hover {
+     background-color: rgb(244, 244, 244) !important;
+ }

@@ -2,7 +2,10 @@ import time
 
 from rest_framework import serializers
 from django.urls import reverse
-from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.contrib.humanize.templatetags.humanize import (
+    naturaltime,
+    naturalday,
+)
 
 from . import models
 from ..common.serializers import CustomModelSerializer
@@ -36,6 +39,9 @@ class VideoSerializer(CustomModelSerializer):
     created_date = serializers.SerializerMethodField(
         method_name='get_created_date'
     )
+    created_date_human = serializers.SerializerMethodField(
+        method_name='get_created_date_human'
+    )
     view_count = serializers.SerializerMethodField(
         method_name='get_view_count'
     )
@@ -57,6 +63,12 @@ class VideoSerializer(CustomModelSerializer):
     channel_avatar_image_small_url = serializers.SerializerMethodField(
         method_name='get_channel_avatar_image_small_url'
     )
+    likes_count = serializers.SerializerMethodField(
+        method_name='get_likes_count'
+    )
+    dislikes_count = serializers.SerializerMethodField(
+        method_name='get_dislikes_count'
+    )
 
     def get_playlist_file(self, instance):
         video_id = instance.id
@@ -67,12 +79,22 @@ class VideoSerializer(CustomModelSerializer):
         return instance.videorendition_set.count()
 
     def get_created_date(self, instance):
-        return instance.created_on.date()
+        return instance.created_on.date().isoformat()
+
+    def get_created_date_human(self, instance):
+        return instance.created_on.strftime('%d %b %Y')
+        return naturalday(instance.created_on.date())
 
     def get_view_count(self, instance):
         return 0
 
     def get_comment_count(self, instance):
+        return 0
+
+    def get_likes_count(self, instance):
+        return 0
+
+    def get_dislikes_count(self, instance):
         return 0
 
     def get_time_ago_human(self, instance):
@@ -106,6 +128,7 @@ class VideoSerializer(CustomModelSerializer):
             'playlist_file',
             'video_renditions_count',
             'created_date',
+            'created_date_human',
             'view_count',
             'comment_count',
             'default_thumbnail_image_small_url',
@@ -115,6 +138,8 @@ class VideoSerializer(CustomModelSerializer):
             'duration',
             'duration_human',
             'channel_avatar_image_small_url',
+            'likes_count',
+            'dislikes_count',
         ]
         extra_kwargs = {
             'channel': {'read_only': True},
@@ -124,6 +149,7 @@ class VideoSerializer(CustomModelSerializer):
             'playlist_file': {'read_only': True},
             'video_renditions_count': {'read_only': True},
             'created_date': {'read_only': True},
+            'created_date_human': {'read_only': True},
             'view_count': {'read_only': True},
             'comment_count': {'read_only': True},
             'time_ago_human': {'read_only': True},
@@ -133,6 +159,8 @@ class VideoSerializer(CustomModelSerializer):
             'duration_human': {'read_only': True},
             'default_thumbnail_image_small_url': {'read_only': True},
             'channel_avatar_image_small_url': {'read_only': True},
+            'likes_count': {'read_only': True},
+            'dislikes_count': {'read_only': True},
         }
 
 
@@ -148,6 +176,7 @@ class VideoSlimSerializer(VideoSerializer):
             'tags',
             'video_renditions_count',
             'created_date',
+            'created_date_human',
             'view_count',
             'comment_count',
             'default_thumbnail_image_small_url',

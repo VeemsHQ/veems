@@ -71,6 +71,7 @@ class ChannelSerializer(CustomModelSerializer):
             'sync_videos_interested', instance.sync_videos_interested
         )
         language = validated_data.get('language', instance.language)
+        # TODO: don't allow selecting another user's channel
         return services.update_channel(
             channel=instance,
             language=language,
@@ -84,7 +85,7 @@ class ChannelSerializer(CustomModelSerializer):
         return services.create_channel(**validated_data)
 
     def get_created_date(self, instance):
-        return instance.created_on.date()
+        return instance.created_on.date().isoformat()
 
 
 class ChannelSlimSerializer(ChannelSerializer):

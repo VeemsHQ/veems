@@ -26,7 +26,7 @@ class TestVideoView:
         assert vid_ctx['title'] == video.title
         assert vid_ctx['video_renditions_count'] == 1
         assert vid_ctx['description'] == video.description
-        assert vid_ctx['created_date'] == video.created_on.date()
+        assert vid_ctx['created_date'] == video.created_on.date().isoformat()
         assert vid_ctx['view_count'] == 0
         assert vid_ctx['comment_count'] == 0
         assert vid_ctx['tags'] == ['tag1', 'tag2']
