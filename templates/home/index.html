@@ -38,14 +38,3 @@
 
 
 {% endblock %}
-
-
-
-{% block scripts %}
-{{ block.super }}
-<script type="text/javascript">
-    app.createHello({
-        element: document.getElementById('hello-app-root'),
-    })
-</script>
-{% endblock %}
