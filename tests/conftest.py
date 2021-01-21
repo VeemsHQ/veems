@@ -5,6 +5,7 @@ import pytest
 from django.utils import timezone
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
+from pytest_voluptuous import S
 from rest_framework.test import APIClient
 
 from veems.channel import services as channel_services
@@ -38,7 +39,12 @@ def simple_uploaded_img_file_factory():
 
 
 @pytest.fixture
-def user_factory():
+def pasword():
+    return f'password{str(uuid4())[:5]}'
+
+
+@pytest.fixture
+def user_factory(pasword):
     def make():
         unique = f'user{str(uuid4())[:5]}'
         email = f'{unique}@veems.tv'
@@ -46,7 +52,8 @@ def user_factory():
             username=email,
             email=email,
         )
-        user.set_password(f'password{str(uuid4())}')
+        user.set_password(pasword)
+        user.save()
         return user
 
     return make
@@ -230,7 +237,7 @@ def upload_factory(request):
 def video_factory(upload_factory, request):
     def make(video_path=VIDEO_PATH, channel=None, **kwargs):
         channel = channel or request.getfixturevalue('channel')
-        upload = upload_factory(video_path=video_path)
+        upload = upload_factory(video_path=video_path, channel=channel)
         return models.Video.objects.create(
             upload=upload, channel=channel, **kwargs
         )
@@ -304,3 +311,85 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
             segments=segment_paths,
         )
     return video, video_renditions_to_create
+
+
+@pytest.fixture
+def expected_channel_resp_json():
+    return S(
+        {
+            'avatar_image_large_url': str,
+            'avatar_image_small_url': str,
+            'banner_image_large_url': str,
+            'banner_image_small_url': str,
+            'created_date': str,
+            'created_on': str,
+            'description': str,
+            'followers_count': int,
+            'has_banner': bool,
+            'id': str,
+            'is_selected': bool,
+            'language': 'en',
+            'modified_on': str,
+            'name': str,
+            'sync_videos_interested': bool,
+            'user': str,
+            'videos_count': int,
+        }
+    )
+
+
+@pytest.fixture
+def expected_video_resp_json():
+    return S(
+        {
+            'channel_avatar_image_small_url': str,
+            'channel_id': str,
+            'channel_name': str,
+            'channel': str,
+            'comment_count': int,
+            'created_date_human': str,
+            'created_date': str,
+            'default_thumbnail_image_small_url': str,
+            'description': str,
+            'dislikes_count': int,
+            'duration_human': str,
+            'duration': int,
+            'id': str,
+            'likes_count': int,
+            'playlist_file': str,
+            'tags': list,
+            'time_ago_human': str,
+            'title': str,
+            'transcode_jobs': list,
+            'video_renditions_count': int,
+            'video_renditions': list,
+            'view_count': int,
+            'visibility': str,
+        }
+    )
+
+
+@pytest.fixture
+def expected_video_slim_resp_json():
+    return S(
+        {
+            'channel_avatar_image_small_url': str,
+            'channel_id': str,
+            'channel_name': str,
+            'channel': str,
+            'comment_count': int,
+            'created_date_human': str,
+            'created_date': str,
+            'default_thumbnail_image_small_url': str,
+            'description': str,
+            'duration_human': str,
+            'duration': int,
+            'id': str,
+            'tags': ['tag1', 'tag2'],
+            'time_ago_human': str,
+            'title': str,
+            'video_renditions_count': int,
+            'view_count': int,
+            'visibility': str,
+        }
+    )

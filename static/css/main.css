@@ -1,3 +1,14 @@
+:root {
+    --video-thumb-width: 240px;
+    --video-thumb-height: 134px;
+    --video-thumb-large-width: 360px;
+    --video-thumb-large-height: 200px;
+    --search-thumb-width: 243px;
+    --search-thumb-height: 136px;
+    --search-thumb-md-width: 360px;
+    --search-thumb-md-height: 200px;
+}
+
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
 }
@@ -66,6 +77,12 @@ body {
     margin-top: 70px;
     min-width: 300px;
     max-width: 1754px;
+}
+
+.middle-col-narrow {
+    margin-top: 70px;
+    min-width: 300px;
+    max-width: 1280px;
 }
 
 .video-info {
@@ -162,7 +179,7 @@ body {
     line-height: 3;
 }
 
-.top-nav-right a.icon-link  {
+.top-nav-right a.icon-link {
     width: 42px;
     height: 42px;
 }
@@ -271,14 +288,19 @@ body {
     height: 42px;
 }
 
+.avatar-small img {
+    width: 24px;
+    height: 24px;
+}
+
 .avatar-medium img {
     width: 70px;
     height: 70px;
 }
 
 .avatar-large img {
-    max-width: 140px;
-    max-height: 140px;
+    width: 140px;
+    height: 140px;
 }
 
 .video-grid .card {
@@ -288,17 +310,77 @@ body {
     margin-left: 8px;
     margin-right: 8px;
     margin-top: 24px;
-}
-
-.video-grid .card {
     min-width: 228px;
     max-width: 240px;
     width: auto;
 }
 
-.video-grid .thumbnail {
+.video-title {
+    font-size: 0.99rem;
+}
+
+.search-results .card {
+    background: transparent;
+    border: 0;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.thumbnail {
     position: relative;
     background: #000;
+}
+
+.thumbnail .overlays {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.9rem;
+    background: #000;
+    color: #fff;
+    padding: 1px 3px;
+    border-radius: 4px;
+}
+
+.thumbnail img {
+    width: inherit;
+    height: inherit;
+}
+
+.thumbnail-large {
+    width: var(--video-thumb-large-width);
+    height: var(--video-thumb-large-height);
+}
+
+.thumbnail-large img {
+    display: block;
+    max-width: var(--video-thumb-large-width);
+    width: auto;
+    height: var(--video-thumb-large-height);
+    margin: 0 auto;
+}
+
+.search-thumbnail {
+    width: var(--search-thumb-width);
+    height: var(--search-thumb-height);
+}
+
+.search-thumbnail img {
+    display: block;
+    height: var(--search-thumb-height);
+    margin: 0 auto;
+}
+
+/* Medium devices (tablets, 768px and up) */
+
+@media (min-width: 768px) {
+    .search-thumbnail {
+        width: var(--search-thumb-md-width);
+        height: var(--search-thumb-md-height);
+    }
+    .search-thumbnail img {
+        height: var(--search-thumb-md-height);
+    }
 }
 
 .video-grid h5 a:hover {
@@ -307,22 +389,10 @@ body {
 
 .video-grid .thumbnail img {
     display: block;
-    max-width: 240px;
-    height: 134px;
+    max-width: var(--video-thumb-width);
+    height: var(--video-thumb-height);
     width: auto;
     margin: 0 auto;
-}
-
-
-.video-grid .thumbnail .overlays {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 0.8rem;
-    background: #000;
-    color: #fff;
-    padding: 1px 3px;
-    border-radius: 4px;
 }
 
 .video-grid .metadata a {
@@ -337,8 +407,7 @@ body {
 
 .select2-container {
     width: 100% !important;
-  }
-
+}
 
 .thumbnail-small {
     height: 47px;
@@ -357,7 +426,7 @@ body {
     overflow: hidden;
 }
 
-.video-grid-side h5, .channel-videos h5 {
+.search-results h5, .channel-videos h5, .channel-videos h5 {
     color: var(--primary);
     font-size: 0.9rem;
     text-decoration: none;
@@ -373,23 +442,7 @@ body {
     -webkit-box-orient: vertical;
 }
 
-.video-grid-side .thumbnail .overlays, .channel-videos .thumbnail .overlays {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 0.7rem;
-    background: #000;
-    color: #fff;
-    padding: 1px 3px;
-    border-radius: 4px;
-}
-
-.video-grid-side .thumbnail img, .channel-videos .thumbnail img {
-    width: inherit;
-    height: inherit;
-}
-
-.video-grid-side .metadata, .channel-videos .metadata {
+.video-grid-side .metadata, .channel-videos .metadata, .search-results .metadata {
     font-size: 0.8rem;
 }
 
@@ -549,5 +602,21 @@ hr {
 .thumbnail-grid .card {
     width: 100px;
     height: 100px;
-
 }
+
+
+.channel-videos .overlay {
+    display: none;
+ }
+ .channel-videos tr:hover .overlay {
+     display: inline-flex;
+ }
+ .channel-videos tr:hover .content {
+     display: none;
+ }
+ .channel-videos .metadata-container {
+     position: relative
+ }
+ .channel-videos tr:hover {
+     background-color: rgb(244, 244, 244) !important;
+ }

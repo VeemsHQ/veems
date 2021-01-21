@@ -17,6 +17,12 @@ class ChannelSerializer(CustomModelSerializer):
     has_banner = serializers.SerializerMethodField(
         method_name='get_has_banner'
     )
+    videos_count = serializers.SerializerMethodField(
+        method_name='get_videos_count'
+    )
+
+    def get_videos_count(self, instance):
+        return instance.videos.filter(visibility='public').count()
 
     def get_followers_count(self, instance):
         return 0
@@ -44,6 +50,7 @@ class ChannelSerializer(CustomModelSerializer):
             'banner_image_large_url',
             'created_date',
             'has_banner',
+            'videos_count',
         )
         extra_kwargs = {
             'followers_count': {'read_only': True},
@@ -53,6 +60,7 @@ class ChannelSerializer(CustomModelSerializer):
             'banner_image_large_url': {'read_only': True},
             'created_date': {'read_only': True},
             'has_banner': {'read_only': True},
+            'videos_count': {'read_only': True},
         }
 
     def update(self, instance, validated_data):
@@ -63,6 +71,7 @@ class ChannelSerializer(CustomModelSerializer):
             'sync_videos_interested', instance.sync_videos_interested
         )
         language = validated_data.get('language', instance.language)
+        # TODO: don't allow selecting another user's channel
         return services.update_channel(
             channel=instance,
             language=language,
@@ -76,7 +85,7 @@ class ChannelSerializer(CustomModelSerializer):
         return services.create_channel(**validated_data)
 
     def get_created_date(self, instance):
-        return instance.created_on.date()
+        return instance.created_on.date().isoformat()
 
 
 class ChannelSlimSerializer(ChannelSerializer):
@@ -99,6 +108,7 @@ class ChannelSlimSerializer(ChannelSerializer):
             'banner_image_large_url',
             'created_date',
             'has_banner',
+            'videos_count',
         )
         extra_kwargs = {
             'followers_count': {'read_only': True},
@@ -108,6 +118,7 @@ class ChannelSlimSerializer(ChannelSerializer):
             'banner_image_large_url': {'read_only': True},
             'created_date': {'read_only': True},
             'has_banner': {'read_only': True},
+            'videos_count': {'read_only': True},
         }
 
 

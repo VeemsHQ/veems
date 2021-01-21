@@ -52,10 +52,10 @@ In order of priority.
 - User & API authentication (backend ✅, frontend ⏳).
 - Creation and management of "Channels" (backend ✅, frontend ⏳).
 - Homepage video listings ✅.
-- Search function.
+- Search function ✅.
 - Channel Manager (basics).
-    - Video Management.
-    - Channel customisation.
+    - Video Management (backend ✅, frontend ⏳).
+    - Channel customisation (backend ✅, frontend ⏳).
 - Related videos suggestions, Video playback page.
 - Sync channel(s) content from YT to Veems automatically.
     - Channel Dashboard, sync configuration.

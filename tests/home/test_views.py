@@ -1,7 +1,5 @@
 from http.client import OK
-from datetime import date
 
-from pytest_voluptuous import S
 import pytest
 
 pytestmark = pytest.mark.django_db
@@ -9,7 +7,12 @@ pytestmark = pytest.mark.django_db
 
 class TestIndexView:
     def test(
-        self, client, video_with_transcodes_factory, channel_factory, user
+        self,
+        client,
+        video_with_transcodes_factory,
+        channel_factory,
+        user,
+        expected_video_slim_resp_json,
     ):
         channel = channel_factory(
             name='My Channel',
@@ -29,23 +32,4 @@ class TestIndexView:
         assert len(response.context['videos_popular']) == 2
         video = response.context['videos_popular'][0]
         assert video['duration'] is not None
-        assert video == S(
-            {
-                'id': str,
-                'channel': str,
-                'channel_id': str,
-                'channel_name': str,
-                'comment_count': int,
-                'created_date': date,
-                'description': str,
-                'duration': int,
-                'duration_human': str,
-                'tags': ['tag1', 'tag2'],
-                'default_thumbnail_image_small_url': str,
-                'time_ago_human': str,
-                'title': str,
-                'video_renditions_count': int,
-                'view_count': int,
-                'visibility': str,
-            }
-        )
+        assert video == expected_video_slim_resp_json

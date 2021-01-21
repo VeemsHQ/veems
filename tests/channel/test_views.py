@@ -1,5 +1,4 @@
 from http.client import OK
-from datetime import date
 
 from pytest_voluptuous import S
 import pytest
@@ -9,7 +8,8 @@ pytestmark = pytest.mark.django_db
 
 class TestChannelIndexView:
     def test(
-        self, client, video_with_transcodes_factory, channel_factory, user
+        self, client, video_with_transcodes_factory, channel_factory, user,
+        expected_channel_resp_json
     ):
         for channel_name in ('My channel 1', 'My channel 2'):
             channel = channel_factory(
@@ -32,26 +32,9 @@ class TestChannelIndexView:
             v['channel_id'] == channel.id
             for v in response.context['channel_videos']
         )
-        assert dict(response.context['channel']) == S(
-            {
-                'avatar_image_large_url': str,
-                'avatar_image_small_url': str,
-                'banner_image_large_url': str,
-                'banner_image_small_url': str,
-                'created_date': date,
-                'created_on': str,
-                'description': str,
-                'followers_count': 0,
-                'has_banner': bool,
-                'id': channel.id,
-                'is_selected': bool,
-                'language': str,
-                'modified_on': str,
-                'name': str,
-                'sync_videos_interested': bool,
-                'user': str,
-            }
-        )
+        expected = expected_channel_resp_json
+        expected = expected_channel_resp_json.extend({'id': channel.id})
+        assert dict(response.context['channel']) == expected
         assert response.context['is_owner'] is False
         assert len(response.context['channel_videos']) == 2
 
@@ -82,7 +65,7 @@ class TestChannelAboutView:
                 'avatar_image_small_url': str,
                 'banner_image_large_url': str,
                 'banner_image_small_url': str,
-                'created_date': date,
+                'created_date': str,
                 'created_on': str,
                 'description': str,
                 'followers_count': 0,
@@ -94,6 +77,7 @@ class TestChannelAboutView:
                 'name': str,
                 'sync_videos_interested': bool,
                 'user': str,
+                'videos_count': int,
             }
         )
         assert response.context['is_owner'] is False

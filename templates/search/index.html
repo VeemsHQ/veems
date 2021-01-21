@@ -1,0 +1,79 @@
+{% extends '_base_public.html' %}
+{% block title %}{{search_query}}{% endblock %}
+{% block description %}{{search_query}}{% endblock %}
+{% block content %}
+<main class="mx-auto col d-flex w-100 py-3 middle-col-narrow justify-content-between">
+    <div class="pt-2 w-100">
+        <div class="col border-bottom mb-3">
+        <div
+            class="flex-row box-shadow-bottom d-flex justify-content-center justify-content-md-between align-items-center">
+            <ul class="nav settings-nav">
+            <li class="nav-item">
+                <a class="nav-link {% if query_type == 'videos' %}active{% endif %}" href="{% url 'search' %}?search_query={{search_query}}&type=videos">Videos ({{video_results|length}})</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if query_type == 'channels' %}active{% endif %}" href="{% url 'search' %}?search_query={{search_query}}&type=channels">Channels ({{channel_results|length}})</a>
+            </li>
+            </ul>
+        </div>
+        </div>
+        <div class="col p-0 m-0">
+            <div class="search-results px-2 m-0">
+                {% if query_type == 'videos' %}
+                {% for video in video_results %}
+                <div class="mt-1 mb-3 d-flex w-100">
+                    <a href="{% url 'view-video' video.id %}" class="thumbnail search-thumbnail">
+                        <img src="{{video.default_thumbnail_image_small_url}}">
+                        <div class="overlays">{{video.duration_human}}</div>
+                    </a>
+                    <div class="py-1 px-3">
+                        <div class="h5"><a href="{% url 'view-video' video.id %}">{{video.title}}</a></div>
+                        <div class="metadata">
+                            <div class="w-100">
+                                <div class="text-muted">{{video.view_count}} views • {{video.time_ago_human}}</div>
+                            </div>
+                            <div class="w-100 d-flex flex-row align-items-center py-1">
+                                <span><a href="{% url 'view-channel' video.channel_id %}" class="rounded-circle d-flex justify-content-center avatar-small">
+                                        <img class="d-block rounded-circle align-self-center"
+                                            src="{{video.channel_avatar_image_small_url}}" />
+                                    </a></span>
+                                <span class="ml-2"><a href="{% url 'view-channel' video.channel_id %}" class="text-muted">{{video.channel_name}}</a></span>
+                            </div>
+                            <div class="w-100 d-none d-sm-block">
+                                <div class="text-muted mt-1">{{video.description|truncatechars:120}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if query_type == 'channels' %}
+                {% for channel in channel_results %}
+                <div class="mt-1 mb-3 d-flex w-100">
+                    <a href="{% url 'view-channel' channel.id %}" class="rounded-circle d-flex justify-content-center avatar-large">
+                        <img class="d-block rounded-circle align-self-center"
+                            src="{{channel.avatar_image_large_url}}" />
+                    </a>
+                    <div class="py-1 px-3 w-100">
+                        <div class="h5"><a href="{% url 'view-channel' channel.id %}">{{channel.name}}</a></div>
+                        <div class="metadata d-flex">
+                            <div>
+                            <div class="w-100">
+                                <div class="text-muted">{{channel.followers_count}} followers • {{channel.videos_count}} videos</div>
+                            </div>
+                            <div class="w-100">
+                                <div class="text-muted mt-1">{{channel.description|truncatechars:120}}</div>
+                            </div></div>
+                             <div class="d-none d-sm-block ml-auto">{% include '_btn_follow.html' %}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    </div>
+</main>
+{% endblock %}

@@ -42,13 +42,15 @@ def test_get_channels(api_client, channel_factory, user_factory):
             'has_banner': bool,
             'created_on': str,
             'created_date': str,
+            'videos_count': int,
         }
     )
     assert all(c['id'] in exp_channels for c in response.json())
 
 
 def test_get_channel(
-    api_client, channel_factory, video_with_transcodes_factory
+    api_client, channel_factory, video_with_transcodes_factory,
+    expected_video_resp_json
 ):
     api_client, user = api_client
     channel = channel_factory(user=user)
@@ -77,32 +79,11 @@ def test_get_channel(
             'created_on': str,
             'created_date': str,
             'videos': list,
+            'videos_count': int,
         }
     )
     assert len(resp_json['videos']) == 1
-    assert resp_json['videos'][0] == S(
-        {
-            'id': str,
-            'channel': str,
-            'description': str,
-            'tags': list,
-            'title': str,
-            'visibility': str,
-            'playlist_file': str,
-            'video_renditions': list,
-            'transcode_jobs': list,
-            'video_renditions_count': int,
-            'created_date': str,
-            'view_count': int,
-            'comment_count': int,
-            'default_thumbnail_image_small_url': str,
-            'time_ago_human': str,
-            'channel_name': str,
-            'channel_id': str,
-            'duration': int,
-            'duration_human': str,
-        }
-    )
+    assert resp_json['videos'][0] == expected_video_resp_json
     assert resp_json['videos'][0]['video_renditions']
     assert resp_json['videos'][0]['transcode_jobs']
 
@@ -141,6 +122,7 @@ class TestCreateChannel:
                 'has_banner': bool,
                 'created_on': str,
                 'created_date': str,
+                'videos_count': int,
             }
         )
 
@@ -210,6 +192,7 @@ class TestUpdateChannel:
                 'has_banner': bool,
                 'created_on': str,
                 'created_date': str,
+                'videos_count': int,
             }
         )
         num_selected_channels = len(
@@ -278,6 +261,7 @@ class TestUpdateChannel:
                 'has_banner': bool,
                 'created_on': str,
                 'created_date': str,
+                'videos_count': int,
             }
         )
 
