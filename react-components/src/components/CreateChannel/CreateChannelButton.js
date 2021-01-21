@@ -39,21 +39,22 @@ export const CreateChannelButton = ({
 
               <Form.Group>
                 <Form.Label>Channel Name</Form.Label>
-                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" />
+                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" placeholder={'My Awesome Channel'} />
               </Form.Group>
 
               <Form.Group controlId="exampleForm.ControlTextarea1">
                 <Form.Label>Channel Description</Form.Label>
-                <Form.Control onChange={e => setChannelDescription(e.target.value)} as="textarea" rows={3} placeholder={'Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.'} />
+                <Form.Control onChange={e => setChannelDescription(e.target.value)} as="textarea" rows={4} placeholder={'Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.'} />
               </Form.Group>
 
               <Form.Group controlId="formBasicCheckbox">
-                <Form.Check onChange={e => {setChannelSync(e.target.value === 'on' ? true : false)}} type="checkbox" placeholder="I'd like to sync videos from my YouTube Channel." />
-                <a href="#">Learn more about channel syncing</a>
+                <Form.Check onChange={e => {setChannelSync(e.target.value === 'on' ? true : false)}} type="checkbox" label={<><label>I'd like to sync videos from my YouTube Channel. </label> <a href='#'> Learn more about channel syncing</a></>} />
               </Form.Group>
-
+              <p class="text-muted">
+                  By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
+              </p>
             </Modal.Body>
-
+            
             <Modal.Footer>
               <button onClick={() => setShowChannelModal(false)} type="button" className="btn btn-light">Cancel</button>
               <a href="#" onClick={() => createChannelHandler()} className="btn btn-primary">Create Channel</a>
