@@ -14,10 +14,14 @@ import CreateChannelButton from './CreateChannelButton';
 import {
   setSyncModalOpenAction,
   setActiveChannelAction,
+  setChannelsAction,
 } from '../../actions/index';
 
 // api
-import { createChannelRequest } from '../../api/api';
+import { 
+  createChannelRequest,
+  getChannelsRequest,
+} from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -27,10 +31,18 @@ function Container(props) {
   const handleCreateChannel = async (name, desc, bSync) => {
      
     const response = await createChannelRequest(name, desc, bSync);
+    
+    /* Update active channel redux list from server. Alternativly we could merge
+    the returned active channel below to  into an already populated list reduce API calls, but
+    leaving this up to the server to manage is safer */
+    const allChannels =  await getChannelsRequest();
+    if (allChannels && allChannels.data && Array.isArray(allChannels.data))
+      await props.setChannels(allChannels.data);
+    
     // Set active channel and store ID.
     if (response && response.data && response.data.id)
       await props.setActiveChannel(response.data.id);
-
+    
     /* If bSync then enable correct tab and dispatch Redux action to
     open modal dialog on page */ 
     if (bSync) {
@@ -52,6 +64,7 @@ const mapDispatchToProps = (dispatch) => {
     ...bindActionCreators({
       setSyncModalOpen: setSyncModalOpenAction,
       setActiveChannel: setActiveChannelAction,
+      setChannels: setChannelsAction,
     }, dispatch),
   };
 };

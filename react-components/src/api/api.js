@@ -64,12 +64,42 @@ const createChannelRequest = async ( name, description, syncVideosInterested ) =
  * @throw Should return error
  */
 const getChannelRequest = async ( channelId ) => {
-  const data = {
-    id : channelId,
-  };
-  
   try {
-    const res = await API.get(`${await getServerURL()}/api/v1/channel/${channelId}`);
+    const res = await API.get(`${await getServerURL()}/api/v1/channel/${channelId}/`);
+    return res;
+  } catch (err) {
+    return err;
+  }
+};
+
+/**
+ * API
+ * Send a get channels request
+ * @return Should return successful
+ * @throw Should return error
+ */
+const getChannelsRequest = async () => {
+  try {
+    const res = await API.get(`${await getServerURL()}/api/v1/channel/`);
+    return res;
+  } catch (err) {
+    return err;
+  }
+};
+
+/**
+ * API
+ * Send a set channel request
+ * @return Should return successful
+ * @param {number} channelId - Required channelId
+ * @throw Should return error
+ */
+const setChannelRequest = async (channelId) => {
+  const data = {
+    is_selected: true,
+  };
+  try {
+    const res = await API.put(`${await getServerURL()}/api/v1/channel/${channelId}/`, data);
     return res;
   } catch (err) {
     return err;
@@ -79,4 +109,6 @@ const getChannelRequest = async ( channelId ) => {
 export {
   createChannelRequest,
   getChannelRequest,
+  getChannelsRequest,
+  setChannelRequest
 };

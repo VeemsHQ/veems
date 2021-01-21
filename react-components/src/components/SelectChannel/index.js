@@ -17,34 +17,34 @@ import {
 } from '../../actions/index';
 
 // api
+import { 
+  setChannelRequest,
+} from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
 // Component connected to Redux store
 function Container(props) {
   const [channels, setChannels] = useState(props.channels);
-  const [activeChannelID, setActiveChannelID] = useState(0);
 
   useEffect(() => { 
     /* If we have anything in the persisted Redux store
     at this point we can assume that we should use that instead of the
     data passed from Django. If not we will use Django. */
     if (props && props.storeChannels && props.storeChannels.length > 0)
-      setChannels(storeChannels);
+      setChannels(props.storeChannels);
   }, [props.storeChannels])
 
-  useEffect(() => {
-    // Here we update active channel on change of activeChannelID from CreateChannel. 
-    console.log("rerender complete");
-    // Todo: Update the activeChannelID so the list is dynamically changed.
-  }, [props.activeChannelID])
-
-  const handleSelectChannel = async () => { 
-    // select api call
+  const handleSelectChannel = async (e) => { 
+    if (e.target.value){
+      // update the active cahnnel in the store and on the server
+      props.setActiveChannel(e.target.value);
+      await setChannelRequest(e.target.value);
+    }
   };
   
   return (
-    <SelectChannelDropdown channels={channels} activeID={activeChannelID} onSelectChannel={() => handleSelectChannel()} />
+    <SelectChannelDropdown channels={channels} activeID={props.activeChannelID} onSelectChannel={(e) => handleSelectChannel(e)} />
   );
 };
 
@@ -59,7 +59,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const mapStateToProps = state => ({
-  storeChannels: state.channels.currentChannels,
+  storeChannels: state.channels.channels,
   activeChannelID: state.channels.activeChannelID,
 });
 

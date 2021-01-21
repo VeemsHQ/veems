@@ -30,6 +30,14 @@ export const setActiveChannelAction = id => async (dispatch) => {
 };
 
 /**
+ * Function to set the active channel on the redux store.
+ * @param {int} id - channel ID passed to the redux store
+ */
+export const setChannelsAction = channels => async (dispatch) => {
+  dispatch({ type: aTypes.SET_CHANNELS, payload: channels });
+};
+
+/**
  * Function to set the open state of the sync modal.
  * @param {boolean} state -open/closed state
  */
