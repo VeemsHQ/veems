@@ -50,7 +50,7 @@ run:
 .PHONY: run
 run_seed:
 	docker-compose build app_local
-	docker-compose run --service-port app_local make install && make reset
+	docker-compose run --service-port app_local make install; make reset
 
 .ONESHELL:
 .PHONY: docker-test
