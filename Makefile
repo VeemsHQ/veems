@@ -36,7 +36,7 @@ start-deps:
 
 .ONESHELL:
 .PHONY: reset
-reset: install
+reset: install make-buckets-remote
 	python manage.py flush --noinput
 	python manage.py import_seed_data
 
