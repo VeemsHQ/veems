@@ -146,6 +146,21 @@ def transcode(*, transcode_job, source_file_path):
             return video_rendition, thumbnail_records
 
 
+def _process_default_thumbnail_image(image_path):
+    command = (
+        'ffmpeg '
+        f'-i {image_path} '
+        '-filter_complex [0]scale=hd720,setsar=1,boxblur=15:15[b];'
+        '[0]scale=-1:720[v];[b][v]overlay=(W-w)/2 '
+        f'{image_path} -y'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and image_path.exists():
+        return image_path
+    else:
+        raise RuntimeError(result)
+
+
 def _create_segments_for_video(
     *, video_path, profile, tmp_dir, video_rendition_id, video_id
 ):
