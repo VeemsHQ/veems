@@ -36,7 +36,7 @@ start-deps:
 
 .ONESHELL:
 .PHONY: reset
-reset:
+reset: install
 	python manage.py flush --noinput
 	python manage.py import_seed_data
 
@@ -50,7 +50,7 @@ run:
 .PHONY: run
 run_seed:
 	docker-compose build app_local
-	docker-compose run --service-port app_local make install; make reset
+	docker-compose run --service-port app_local make reset
 
 .ONESHELL:
 .PHONY: docker-test
