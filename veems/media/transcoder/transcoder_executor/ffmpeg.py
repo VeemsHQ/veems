@@ -214,7 +214,6 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
     """
     Generate a thumbnail image for every 30 secs of video.
     """
-    # TODO: fixed width/height, even for vertical videos
     time_offsets = _get_thumbnail_time_offsets(video_path=video_file_path)
     thumbnails = []
     for offset in time_offsets:

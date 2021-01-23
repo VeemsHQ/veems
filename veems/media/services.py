@@ -270,8 +270,10 @@ def _generate_default_thumbnail_image(image_path):
     command = (
         'ffmpeg '
         f'-i {image_path} '
-        '-filter_complex [0]scale=hd720,setsar=1,boxblur=10:10[b];'
-        '[0]scale=-1:720[v];[b][v]overlay=(W-w)/2 '
+        '-filter_complex [0]scale=hd720,setsar=1,boxblur=15:15[b];'
+        '[b]eq=brightness=-0.2[b];'
+        '[0]scale=-1:720[v];'
+        '[b][v]overlay=(W-w)/2 '
         f'{image_path} -y'
     )
     result = subprocess.run(command.split(), capture_output=True)
