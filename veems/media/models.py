@@ -146,6 +146,12 @@ class Video(BaseModel):
         options={'quality': 90},
     )
 
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.channel_id} {self.title}>'
+        )
+
     @property
     def default_thumbnail_image_small_url(self):
         if not self.default_thumbnail_image_small:
@@ -169,12 +175,6 @@ class Video(BaseModel):
                 'images/player/error-video-processing-simple-480p.png'
             )
         return self.default_thumbnail_image_large.url
-
-    def __str__(self):
-        return (
-            f'<{self.__class__.__name__} '
-            f'{self.id} {self.channel_id} {self.title}>'
-        )
 
 
 class VideoRendition(BaseModel):
