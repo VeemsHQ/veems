@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from pytest_voluptuous import S
 import m3u8
@@ -8,6 +10,7 @@ from veems.media.transcoder import transcoder_profiles
 from tests import constants
 
 pytestmark = pytest.mark.django_db
+TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 
 
 def test_mark_transcode_job_completed(transcode_job_factory):
@@ -610,3 +613,37 @@ class TestGetVideos:
 
         assert len(records) == 2
         assert all(v.channel_id == channel.id for v in records)
+
+
+def test_generate_default_thumbnail_image(tmpdir):
+    image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+    test_image_path = tmpdir / 'thumbnail-vertical.jpg'
+    with test_image_path.open('wb') as file_:
+        with image_path.open('rb') as file2:
+            file_.write(file2.read())
+
+    result_image = services._generate_default_thumbnail_image(
+        image_path=test_image_path
+    )
+
+    assert result_image.exists()
+    metadata = services.get_metadata(result_image)
+    assert metadata['summary']['width'] == 1280
+    assert metadata['summary']['height'] == 720
+
+
+def test_set_video_default_thumbnail_image(video):
+    assert not video.default_thumbnail_image
+    thumbnail_paths = (
+        TEST_DATA_DIR / 'thumbnail-vertical.jpg',
+        TEST_DATA_DIR / 'thumbnail-vertical.jpg',
+        TEST_DATA_DIR / 'thumbnail-vertical.jpg',
+    )
+
+    updated_video_record = services.set_video_default_thumbnail_image(
+        thumbnail_paths=thumbnail_paths,
+        video_record=video,
+    )
+
+    assert updated_video_record.id == video.id
+    assert updated_video_record.default_thumbnail_image

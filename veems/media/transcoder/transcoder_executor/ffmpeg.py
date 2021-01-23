@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 
 import m3u8
-from django.core.files import File
 
 from .. import transcoder_profiles
 from ... import services
@@ -134,31 +133,14 @@ def transcode(*, transcode_job, source_file_path):
             thumbnail_records = services.persist_video_rendition_thumbs(
                 video_rendition_record=video_rendition, thumbnails=thumbnails
             )
+            services.set_video_default_thumbnail_image(
+                video_record=transcode_job,
+                thumbnail_paths=thumbnails,
+            )
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             services.mark_video_as_viewable(video=transcode_job.video)
-
-            default_thumbnail_image = thumbnail_records[0].file
-            with default_thumbnail_image.open('rb') as file_:
-                transcode_job.video.default_thumbnail_image = File(file_)
-                transcode_job.video.save()
-
             logger.info('Completed transcode job %s', transcode_job)
             return video_rendition, thumbnail_records
-
-
-def _process_default_thumbnail_image(image_path):
-    command = (
-        'ffmpeg '
-        f'-i {image_path} '
-        '-filter_complex [0]scale=hd720,setsar=1,boxblur=15:15[b];'
-        '[0]scale=-1:720[v];[b][v]overlay=(W-w)/2 '
-        f'{image_path} -y'
-    )
-    result = subprocess.run(command.split(), capture_output=True)
-    if result.returncode == 0 and image_path.exists():
-        return image_path
-    else:
-        raise RuntimeError(result)
 
 
 def _create_segments_for_video(
