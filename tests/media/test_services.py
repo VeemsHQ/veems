@@ -3,6 +3,7 @@ import shutil
 
 import pytest
 from pytest_voluptuous import S
+from django.core.files import File
 import m3u8
 
 from veems.media import services, models
@@ -650,3 +651,16 @@ def test_set_video_default_thumbnail_image(video):
 
     assert updated_video_record.id == video.id
     assert updated_video_record.default_thumbnail_image
+
+
+def test_set_video_custom_thumbnail_image(video, tmpdir):
+    image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+    test_image_path = tmpdir / 'thumbnail-vertical.jpg'
+    shutil.copyfile(image_path, test_image_path)
+
+    with test_image_path.open('rb') as file_:
+        video = services.set_video_custom_thumbnail_image(
+            video_record=video, thumbnail_image=File(file_)
+        )
+
+    assert video.custom_thumbnail_image
