@@ -23,7 +23,7 @@
                 {% for video in video_results %}
                 <div class="mt-1 mb-3 d-flex w-100">
                     <a href="{% url 'view-video' video.id %}" class="thumbnail search-thumbnail">
-                        <img src="{{video.default_thumbnail_image_small_url}}">
+                        <img src="{{video.default_thumbnail_image_medium_url}}">
                         <div class="overlays">{{video.duration_human}}</div>
                     </a>
                     <div class="py-1 px-3">

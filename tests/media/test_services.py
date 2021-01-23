@@ -590,6 +590,8 @@ def test_create_video(upload):
     assert video.upload == upload
     assert not video.default_thumbnail_image
     assert video.default_thumbnail_image_small_url
+    assert video.default_thumbnail_image_medium_url
+    assert video.default_thumbnail_image_large_url
 
 
 class TestGetVideos:
