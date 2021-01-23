@@ -71,7 +71,7 @@ def test_get_presigned_upload_url(settings, user, channel_factory):
     [
         (
             'y2mate.com - we_need_to_talk_8OLxoiwE0Fc_1080p.mp4',
-            'y2mate com   we need to talk 8OLxoiwE0Fc 1080p',
+            'y2mate com we need to talk 8OLxoiwE0Fc 1080p',
         ),
     ],
 )

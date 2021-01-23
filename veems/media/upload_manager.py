@@ -49,7 +49,8 @@ def prepare(*, user, filename, channel_id):
 
 def _default_video_title_from_filename(filename):
     value = re.sub(r'[^\w\s-]', ' ', Path(filename).stem, re.IGNORECASE)
-    return re.sub(r'[-_]+', ' ', value)
+    value = re.sub(r'[-_]+', ' ', value)
+    return re.sub(r' {2,}', ' ', value)
 
 
 @async_task()
