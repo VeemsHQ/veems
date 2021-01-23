@@ -62,9 +62,20 @@ def _video_rendition_segment_upload_to(instance, filename):
     )
 
 
-def _video_thumbnail_image_upload_to(instance, filename):
+def _video_default_thumbnail_image_upload_to(instance, filename):
     video = instance
-    return f'videos/{video.id}/thumbnails/{video.id}{Path(filename).suffix}'
+    return (
+        f'videos/{video.id}/'
+        f'thumbnails/default/{video.id}{Path(filename).suffix}'
+    )
+
+
+def _video_custom_thumbnail_image_upload_to(instance, filename):
+    video = instance
+    return (
+        f'videos/{video.id}/'
+        f'thumbnails/custom/{video.id}{Path(filename).suffix}'
+    )
 
 
 def _video_rendition_thumbnail_upload_to(instance, filename):
@@ -120,8 +131,16 @@ class Video(BaseModel):
     tags = ArrayField(models.CharField(max_length=1000), null=True)
     framerate = models.IntegerField(null=True)
     duration = models.IntegerField(null=True, default=0)
+    # Custom thumb is user uploaded
+    custom_thumbnail_image = models.ImageField(
+        upload_to=_video_custom_thumbnail_image_upload_to,
+        storage=STORAGE_BACKEND,
+        null=True,
+        blank=True,
+    )
+    # Default thumb is picked from the video frames
     default_thumbnail_image = models.ImageField(
-        upload_to=_video_thumbnail_image_upload_to,
+        upload_to=_video_default_thumbnail_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
