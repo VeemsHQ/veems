@@ -1,4 +1,6 @@
 import logging
+import re
+from pathlib import Path
 
 import boto3
 from django.conf import settings
@@ -36,13 +38,18 @@ def prepare(*, user, filename, channel_id):
     upload.presigned_upload_url, upload.file.name = _get_presigned_upload_url(
         upload=upload, filename=filename
     )
-    # TODO: filename to title
     upload.save()
-    video = services.create_video(upload=upload)
+    title = _default_video_title_from_filename(filename)
+    video = services.create_video(upload=upload, title=title)
     logger.info(
         'Done preparing upload for user %s, draft video %s', user.id, video.id
     )
     return upload, video
+
+
+def _default_video_title_from_filename(filename):
+    value = re.sub(r'[^\w\s-]', ' ', Path(filename).stem, re.IGNORECASE)
+    return re.sub(r'[-_]+', ' ', value)
 
 
 @async_task()

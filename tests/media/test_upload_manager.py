@@ -18,10 +18,10 @@ def test_prepare(user, channel_factory):
     assert upload.presigned_upload_url.startswith('http')
     assert upload.file
     assert isinstance(video, models.Video)
-    assert not video.title
     assert video.visibility == 'public'
     assert upload.channel == channel
     assert video.channel == channel
+    assert video.title == 'MyFile'
 
 
 class TestComplete:
@@ -64,3 +64,20 @@ def test_get_presigned_upload_url(settings, user, channel_factory):
     assert 'AccessKeyId' in signed_url
     assert settings.BUCKET_MEDIA in signed_url
     assert object_key in signed_url
+
+
+@pytest.mark.parametrize(
+    'filename, exp_title',
+    [
+        (
+            'y2mate.com - we_need_to_talk_8OLxoiwE0Fc_1080p.mp4',
+            'y2mate com   we need to talk 8OLxoiwE0Fc 1080p',
+        ),
+    ],
+)
+def test_default_video_title_from_filename(filename, exp_title):
+    result = upload_manager._default_video_title_from_filename(
+        filename=filename
+    )
+
+    assert result == exp_title
