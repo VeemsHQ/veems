@@ -127,7 +127,7 @@ class Video(BaseModel):
         default='public',
     )
     is_viewable = models.BooleanField(default=False, db_index=True)
-    description = models.TextField(max_length=5000)
+    description = models.TextField(max_length=5000, null=True)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
     framerate = models.IntegerField(null=True)
     duration = models.IntegerField(null=True, default=0)
@@ -137,6 +137,24 @@ class Video(BaseModel):
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
+    )
+    custom_thumbnail_image_small = ImageSpecField(
+        source='custom_thumbnail_image',
+        processors=[SmartResize(320, 180)],
+        format='JPEG',
+        options={'quality': 90},
+    )
+    custom_thumbnail_image_medium = ImageSpecField(
+        source='custom_thumbnail_image',
+        processors=[SmartResize(480, 260)],
+        format='JPEG',
+        options={'quality': 90},
+    )
+    custom_thumbnail_image_large = ImageSpecField(
+        source='custom_thumbnail_image',
+        processors=[SmartResize(1280, 720)],
+        format='JPEG',
+        options={'quality': 90},
     )
     # Default thumb is picked from the video frames
     default_thumbnail_image = models.ImageField(
@@ -170,6 +188,24 @@ class Video(BaseModel):
             f'<{self.__class__.__name__} '
             f'{self.id} {self.channel_id} {self.title}>'
         )
+
+    @property
+    def thumbnail_image_small_url(self):
+        if not self.custom_thumbnail_image_small:
+            return self.default_thumbnail_image_small_url
+        return self.custom_thumbnail_image_small.url
+
+    @property
+    def thumbnail_image_medium_url(self):
+        if not self.custom_thumbnail_image_medium:
+            return self.default_thumbnail_image_medium_url
+        return self.custom_thumbnail_image_medium.url
+
+    @property
+    def thumbnail_image_large_url(self):
+        if not self.custom_thumbnail_image_large:
+            return self.default_thumbnail_image_large_url
+        return self.custom_thumbnail_image_large.url
 
     @property
     def default_thumbnail_image_small_url(self):

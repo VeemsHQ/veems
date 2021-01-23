@@ -36,6 +36,7 @@ def prepare(*, user, filename, channel_id):
     upload.presigned_upload_url, upload.file.name = _get_presigned_upload_url(
         upload=upload, filename=filename
     )
+    # TODO: filename to title
     upload.save()
     video = services.create_video(upload=upload)
     logger.info(
