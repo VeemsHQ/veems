@@ -18,10 +18,10 @@ def test_prepare(user, channel_factory):
     assert upload.presigned_upload_url.startswith('http')
     assert upload.file
     assert isinstance(video, models.Video)
+    assert video.title == 'MyFile'
     assert video.visibility == 'public'
     assert upload.channel == channel
     assert video.channel == channel
-    assert video.title == 'MyFile'
 
 
 class TestComplete:
