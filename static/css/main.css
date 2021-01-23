@@ -313,6 +313,7 @@ body {
     min-width: 228px;
     max-width: 240px;
     width: auto;
+    border-radius: 0 !important;
 }
 
 .video-title {
@@ -329,6 +330,11 @@ body {
 .thumbnail {
     position: relative;
     background: #000;
+}
+
+.thumbnail .card-img-top {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .thumbnail .overlays {
@@ -602,6 +608,7 @@ hr {
 .thumbnail-grid .card {
     width: 100px;
     height: 100px;
+    border-radius: 0 !important;
 }
 
 

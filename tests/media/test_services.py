@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 
 import pytest
 from pytest_voluptuous import S
@@ -618,9 +619,7 @@ class TestGetVideos:
 def test_generate_default_thumbnail_image(tmpdir):
     image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
     test_image_path = tmpdir / 'thumbnail-vertical.jpg'
-    with test_image_path.open('wb') as file_:
-        with image_path.open('rb') as file2:
-            file_.write(file2.read())
+    shutil.copyfile(image_path, test_image_path)
 
     result_image = services._generate_default_thumbnail_image(
         image_path=test_image_path

@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFit
+from imagekit.processors import SmartResize
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
@@ -126,17 +126,24 @@ class Video(BaseModel):
         null=True,
         blank=True,
     )
+    # TODO: add custom thumbnail image
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFit(480, 270)],
+        processors=[SmartResize(320, 180)],
         format='JPEG',
-        options={'quality': 70},
+        options={'quality': 90},
+    )
+    default_thumbnail_image_medium = ImageSpecField(
+        source='default_thumbnail_image',
+        processors=[SmartResize(480, 260)],
+        format='JPEG',
+        options={'quality': 90},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFit(720, 404)],
+        processors=[SmartResize(1280, 720)],
         format='JPEG',
-        options={'quality': 85},
+        options={'quality': 90},
     )
 
     @property

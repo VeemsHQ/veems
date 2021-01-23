@@ -134,8 +134,8 @@ def transcode(*, transcode_job, source_file_path):
                 video_rendition_record=video_rendition, thumbnails=thumbnails
             )
             services.set_video_default_thumbnail_image(
-                video_record=transcode_job,
-                thumbnail_paths=thumbnails,
+                video_record=transcode_job.video,
+                thumbnail_paths=tuple(t[1] for t in thumbnails),
             )
             services.mark_transcode_job_completed(transcode_job=transcode_job)
             services.mark_video_as_viewable(video=transcode_job.video)
