@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFit
+from imagekit.processors import SmartResize
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
@@ -126,18 +126,31 @@ class Video(BaseModel):
         null=True,
         blank=True,
     )
+    # TODO: add custom thumbnail image
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFit(480, 270)],
+        processors=[SmartResize(320, 180)],
         format='JPEG',
-        options={'quality': 70},
+        options={'quality': 90},
+    )
+    default_thumbnail_image_medium = ImageSpecField(
+        source='default_thumbnail_image',
+        processors=[SmartResize(480, 260)],
+        format='JPEG',
+        options={'quality': 90},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFit(720, 404)],
+        processors=[SmartResize(1280, 720)],
         format='JPEG',
-        options={'quality': 85},
+        options={'quality': 90},
     )
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.channel_id} {self.title}>'
+        )
 
     @property
     def default_thumbnail_image_small_url(self):
@@ -147,11 +160,21 @@ class Video(BaseModel):
             )
         return self.default_thumbnail_image_small.url
 
-    def __str__(self):
-        return (
-            f'<{self.__class__.__name__} '
-            f'{self.id} {self.channel_id} {self.title}>'
-        )
+    @property
+    def default_thumbnail_image_medium_url(self):
+        if not self.default_thumbnail_image_medium:
+            return static(
+                'images/player/error-video-processing-simple-480p.png'
+            )
+        return self.default_thumbnail_image_medium.url
+
+    @property
+    def default_thumbnail_image_large_url(self):
+        if not self.default_thumbnail_image_large:
+            return static(
+                'images/player/error-video-processing-simple-480p.png'
+            )
+        return self.default_thumbnail_image_large.url
 
 
 class VideoRendition(BaseModel):

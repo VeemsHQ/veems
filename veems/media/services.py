@@ -247,3 +247,37 @@ def create_video(*, upload):
         upload_id=upload.id,
         channel_id=upload.channel_id,
     )
+
+
+def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
+    logger.info('Setting default thumbnail for video %s', video_record.id)
+    image_path = thumbnail_paths[0]
+    image_path = _generate_default_thumbnail_image(image_path=image_path)
+    with image_path.open('rb') as file_:
+        video_record.default_thumbnail_image = File(file_)
+        video_record.save()
+    logger.info('Done setting default thumbnail for video %s', video_record.id)
+    return video_record
+
+
+def _generate_default_thumbnail_image(image_path):
+    """
+    Generates a default thumbnail image.
+
+    If there are black bars around the video due to it being vertical for e.g.
+    then those spaces will be filled with expanded blurred video content.
+    """
+    command = (
+        'ffmpeg '
+        f'-i {image_path} '
+        '-filter_complex [0]scale=hd720,setsar=1,boxblur=15:15[b];'
+        '[b]eq=brightness=-0.2[b];'
+        '[0]scale=-1:720[v];'
+        '[b][v]overlay=(W-w)/2 '
+        f'{image_path} -y'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and image_path.exists():
+        return image_path
+    else:
+        raise RuntimeError(result.stderr)
