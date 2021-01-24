@@ -1,6 +1,12 @@
+from pathlib import Path
+import shutil
+
 import pytest
 from pytest_voluptuous import S
+from django.core.files import File
 import m3u8
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from veems.media import services, models
 from veems.media.transcoder.transcoder_executor import ffmpeg
@@ -8,6 +14,7 @@ from veems.media.transcoder import transcoder_profiles
 from tests import constants
 
 pytestmark = pytest.mark.django_db
+TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 
 
 def test_mark_transcode_job_completed(transcode_job_factory):
@@ -533,11 +540,32 @@ class TestGeneratePlaylist:
         assert playlist_str is None
 
 
-def test_get_video(video):
-    result = services.get_video(id=video.id)
+class TestGetVideo:
+    def test(self, video):
+        result = services.get_video(id=video.id)
 
-    assert isinstance(result, models.Video)
-    assert result == video
+        assert isinstance(result, models.Video)
+        assert result == video
+
+    def test_not_found_if_is_deleted(self, video):
+        services.delete_video(id=video.id)
+
+        with pytest.raises(ObjectDoesNotExist):
+            services.get_video(id=video.id)
+
+    def test_found_if_is_deleted_and_include_deleted_true(self, video):
+        services.delete_video(id=video.id)
+
+        result = services.get_video(id=video.id, include_deleted=True)
+
+        assert isinstance(result, models.Video)
+        assert result == video
+
+
+def test_delete_video(video):
+    video = services.delete_video(id=video.id)
+
+    assert video.deleted_on
 
 
 def test_get_popular_videos(
@@ -552,23 +580,26 @@ def test_get_popular_videos(
         'unlisted',
     )
     is_viewable_values = (False, False, True, True, True, True)
-    for visibility, is_viewable in zip(visibility_values, is_viewable_values):
+    deleted_on_values = (None, None, None, None, timezone.now(), None)
+    for visibility, is_viewable, deleted_on in zip(
+        visibility_values, is_viewable_values, deleted_on_values
+    ):
         video_with_transcodes_factory(
             channel=channel_factory(user=user_factory()),
             visibility=visibility,
             is_viewable=is_viewable,
+            deleted_on=deleted_on,
         )
 
     records = services.get_popular_videos()
 
     assert all(isinstance(r, models.Video) for r in records)
-    assert len(records) == 3
+    assert len(records) == 2
     assert all(
-        r.visibility == 'public' and r.is_viewable is True for r in records
+        r.visibility == 'public' and r.is_viewable is True and not r.deleted_on
+        for r in records
     )
-    assert (
-        records[0].created_on > records[1].created_on > records[2].created_on
-    )
+    assert records[0].created_on > records[1].created_on
 
 
 def test_mark_video_as_viewable(video_factory):
@@ -580,12 +611,16 @@ def test_mark_video_as_viewable(video_factory):
 
 
 def test_create_video(upload):
-    video = services.create_video(upload=upload)
+    video = services.create_video(upload=upload, title='hello')
 
     assert video.channel == upload.channel
     assert video.upload == upload
+    assert video.title == 'hello'
+    assert video.description is None
     assert not video.default_thumbnail_image
     assert video.default_thumbnail_image_small_url
+    assert video.default_thumbnail_image_medium_url
+    assert video.default_thumbnail_image_large_url
 
 
 class TestGetVideos:
@@ -593,11 +628,15 @@ class TestGetVideos:
         videos = (
             video_factory(),
             video_factory(),
+            video_factory(),
         )
+        # Deleted videos shouldn't be returned
+        services.delete_video(id=videos[-1].id)
 
         records = services.get_videos()
 
-        assert tuple(records) == videos
+        assert tuple(records) == tuple(videos[:-1])
+        assert all(not v.deleted_on for v in records)
 
     def test_with_channel_id(self, video_factory, channel_factory, user):
         channel = channel_factory(user=user)
@@ -605,8 +644,60 @@ class TestGetVideos:
         video_factory(channel=channel_factory(user=user))
         video_factory(channel=channel)
         video_factory(channel=channel)
+        # Deleted videos shouldn't be returned
+        services.delete_video(id=video_factory(channel=channel).id)
 
         records = services.get_videos(channel_id=channel.id)
 
         assert len(records) == 2
-        assert all(v.channel_id == channel.id for v in records)
+        assert all(
+            v.channel_id == channel.id and not v.deleted_on for v in records
+        )
+
+
+def test_generate_default_thumbnail_image(tmpdir):
+    image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+    test_image_path = tmpdir / 'thumbnail-vertical.jpg'
+    shutil.copyfile(image_path, test_image_path)
+
+    result_image = services._generate_default_thumbnail_image(
+        image_path=test_image_path
+    )
+
+    assert result_image.exists()
+    metadata = services.get_metadata(result_image)
+    assert metadata['summary']['width'] == 1280
+    assert metadata['summary']['height'] == 720
+
+
+def test_set_video_default_thumbnail_image(video, tmpdir):
+    image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+    test_image_path = tmpdir / 'thumbnail-vertical.jpg'
+    shutil.copyfile(image_path, test_image_path)
+    assert not video.default_thumbnail_image
+    thumbnail_paths = (
+        test_image_path,
+        test_image_path,
+        test_image_path,
+    )
+
+    updated_video_record = services.set_video_default_thumbnail_image(
+        thumbnail_paths=thumbnail_paths,
+        video_record=video,
+    )
+
+    assert updated_video_record.id == video.id
+    assert updated_video_record.default_thumbnail_image
+
+
+def test_set_video_custom_thumbnail_image(video, tmpdir):
+    image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+    test_image_path = tmpdir / 'thumbnail-vertical.jpg'
+    shutil.copyfile(image_path, test_image_path)
+
+    with test_image_path.open('rb') as file_:
+        video = services.set_video_custom_thumbnail_image(
+            video_record=video, thumbnail_image=File(file_)
+        )
+
+    assert video.custom_thumbnail_image

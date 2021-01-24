@@ -1,3 +1,4 @@
+from pathlib import Path
 from http.client import (
     CREATED,
     BAD_REQUEST,
@@ -8,7 +9,10 @@ from http.client import (
 )
 import json
 
+from django.core.files import File
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
+from pytest_voluptuous import S
 import m3u8
 
 from veems.media import models, services
@@ -17,6 +21,7 @@ from tests import constants
 pytestmark = pytest.mark.django_db
 MODULE = 'veems.media.api_views'
 VIDEO_PATH = constants.VID_360P_24FPS
+TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 
 
 class TestUploadPrepare:
@@ -170,6 +175,105 @@ class TestUploadComplete:
         response = api_client_no_auth.put(
             url, body, content_type='application/json'
         )
+
+        assert response.status_code == FORBIDDEN
+
+
+class TestVideoThumbnail:
+    IMAGE_PATH = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+
+    @pytest.fixture
+    def video_with_custom_thumb(self, video):
+        with self.IMAGE_PATH.open('rb') as file_:
+            video.custom_thumbnail_image = File(file_)
+            video.save()
+        return video
+
+    def test_get(self, client, video_with_custom_thumb, api_client_no_auth):
+        video = video_with_custom_thumb
+
+        response = api_client_no_auth.get(
+            f'/api/v1/video/{video.id}/thumbnail'
+        )
+
+        assert response.status_code == OK
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'thumbnail_image_large_url': str,
+                'thumbnail_image_medium_url': str,
+                'thumbnail_image_small_url': str,
+            }
+        )
+        assert resp_json['thumbnail_image_large_url'].startswith('http://')
+        assert resp_json['thumbnail_image_medium_url'].startswith('http://')
+        assert resp_json['thumbnail_image_small_url'].startswith('http://')
+        assert 'defaults/' not in resp_json['thumbnail_image_large_url']
+        assert 'defaults/' not in resp_json['thumbnail_image_medium_url']
+        assert 'defaults/' not in resp_json['thumbnail_image_small_url']
+        assert 'images/player/' not in resp_json['thumbnail_image_large_url']
+        assert 'images/player/' not in resp_json['thumbnail_image_medium_url']
+        assert 'images/player/' not in resp_json['thumbnail_image_small_url']
+
+    def test_post(self, api_client, video_factory, channel_factory):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        video = video_factory(channel=channel)
+
+        with self.IMAGE_PATH.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = api_client.post(
+                f'/api/v1/video/{video.id}/thumbnail', data=form_data
+            )
+
+        assert response.status_code == OK
+
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'thumbnail_image_large_url': str,
+                'thumbnail_image_medium_url': str,
+                'thumbnail_image_small_url': str,
+            }
+        )
+        assert resp_json['thumbnail_image_large_url'].startswith('http://')
+        assert resp_json['thumbnail_image_medium_url'].startswith('http://')
+        assert resp_json['thumbnail_image_small_url'].startswith('http://')
+        assert 'defaults/' not in resp_json['thumbnail_image_large_url']
+        assert 'defaults/' not in resp_json['thumbnail_image_medium_url']
+        assert 'defaults/' not in resp_json['thumbnail_image_small_url']
+        assert 'images/player/' not in resp_json['thumbnail_image_large_url']
+        assert 'images/player/' not in resp_json['thumbnail_image_medium_url']
+        assert 'images/player/' not in resp_json['thumbnail_image_small_url']
+
+    def test_post_returns_404_when_attempting_to_update_other_users_video(
+        self, api_client, channel_factory, user_factory, video_factory
+    ):
+        api_client, user = api_client
+        another_user = user_factory()
+        channel = channel_factory(user=another_user)
+        video = video_factory(channel=channel)
+
+        with self.IMAGE_PATH.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = api_client.post(
+                f'/api/v1/video/{video.id}/thumbnail', data=form_data
+            )
+
+        assert response.status_code == NOT_FOUND
+
+    def test_post_returns_403_unauthenticated(
+        self, client, api_client, channel_factory, video_factory
+    ):
+        _, user = api_client
+        channel = channel_factory(user=user)
+        video = video_factory(channel=channel)
+
+        with self.IMAGE_PATH.open('rb') as file_:
+            form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
+            response = client.post(
+                f'/api/v1/video/{video.id}/thumbnail', data=form_data
+            )
 
         assert response.status_code == FORBIDDEN
 
@@ -359,6 +463,17 @@ class TestVideoDetail:
         )
 
         assert response.status_code == FORBIDDEN
+
+    def test_delete(self, video_with_transcodes):
+        api_client = video_with_transcodes['api_client']
+        video = video_with_transcodes['video']
+
+        response = api_client.delete(f'/api/v1/video/{video.id}/')
+
+        assert response.status_code == NO_CONTENT
+        # Check after delete, it's gone
+        response = api_client.get(f'/api/v1/video/{video.id}/')
+        assert response.status_code == NOT_FOUND
 
 
 class TestVideoPlaylist:

@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFit
+from imagekit.processors import SmartResize
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
@@ -62,9 +62,20 @@ def _video_rendition_segment_upload_to(instance, filename):
     )
 
 
-def _video_thumbnail_image_upload_to(instance, filename):
+def _video_default_thumbnail_image_upload_to(instance, filename):
     video = instance
-    return f'videos/{video.id}/thumbnails/{video.id}{Path(filename).suffix}'
+    return (
+        f'videos/{video.id}/'
+        f'thumbnails/default/{video.id}{Path(filename).suffix}'
+    )
+
+
+def _video_custom_thumbnail_image_upload_to(instance, filename):
+    video = instance
+    return (
+        f'videos/{video.id}/'
+        f'thumbnails/custom/{video.id}{Path(filename).suffix}'
+    )
 
 
 def _video_rendition_thumbnail_upload_to(instance, filename):
@@ -116,28 +127,84 @@ class Video(BaseModel):
         default='public',
     )
     is_viewable = models.BooleanField(default=False, db_index=True)
-    description = models.TextField(max_length=5000)
+    description = models.TextField(max_length=5000, null=True)
     tags = ArrayField(models.CharField(max_length=1000), null=True)
     framerate = models.IntegerField(null=True)
     duration = models.IntegerField(null=True, default=0)
+    # Custom thumb is user uploaded
+    custom_thumbnail_image = models.ImageField(
+        upload_to=_video_custom_thumbnail_image_upload_to,
+        storage=STORAGE_BACKEND,
+        null=True,
+        blank=True,
+    )
+    custom_thumbnail_image_small = ImageSpecField(
+        source='custom_thumbnail_image',
+        processors=[SmartResize(320, 180)],
+        format='JPEG',
+        options={'quality': 90},
+    )
+    custom_thumbnail_image_medium = ImageSpecField(
+        source='custom_thumbnail_image',
+        processors=[SmartResize(480, 260)],
+        format='JPEG',
+        options={'quality': 90},
+    )
+    custom_thumbnail_image_large = ImageSpecField(
+        source='custom_thumbnail_image',
+        processors=[SmartResize(1280, 720)],
+        format='JPEG',
+        options={'quality': 90},
+    )
+    # Default thumb is picked from the video frames
     default_thumbnail_image = models.ImageField(
-        upload_to=_video_thumbnail_image_upload_to,
+        upload_to=_video_default_thumbnail_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
     )
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFit(480, 270)],
+        processors=[SmartResize(320, 180)],
         format='JPEG',
-        options={'quality': 70},
+        options={'quality': 90},
+    )
+    default_thumbnail_image_medium = ImageSpecField(
+        source='default_thumbnail_image',
+        processors=[SmartResize(480, 260)],
+        format='JPEG',
+        options={'quality': 90},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFit(720, 404)],
+        processors=[SmartResize(1280, 720)],
         format='JPEG',
-        options={'quality': 85},
+        options={'quality': 90},
     )
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.id} {self.channel_id} {self.title}>'
+        )
+
+    @property
+    def thumbnail_image_small_url(self):
+        if not self.custom_thumbnail_image_small:
+            return self.default_thumbnail_image_small_url
+        return self.custom_thumbnail_image_small.url
+
+    @property
+    def thumbnail_image_medium_url(self):
+        if not self.custom_thumbnail_image_medium:
+            return self.default_thumbnail_image_medium_url
+        return self.custom_thumbnail_image_medium.url
+
+    @property
+    def thumbnail_image_large_url(self):
+        if not self.custom_thumbnail_image_large:
+            return self.default_thumbnail_image_large_url
+        return self.custom_thumbnail_image_large.url
 
     @property
     def default_thumbnail_image_small_url(self):
@@ -147,11 +214,21 @@ class Video(BaseModel):
             )
         return self.default_thumbnail_image_small.url
 
-    def __str__(self):
-        return (
-            f'<{self.__class__.__name__} '
-            f'{self.id} {self.channel_id} {self.title}>'
-        )
+    @property
+    def default_thumbnail_image_medium_url(self):
+        if not self.default_thumbnail_image_medium:
+            return static(
+                'images/player/error-video-processing-simple-480p.png'
+            )
+        return self.default_thumbnail_image_medium.url
+
+    @property
+    def default_thumbnail_image_large_url(self):
+        if not self.default_thumbnail_image_large:
+            return static(
+                'images/player/error-video-processing-simple-480p.png'
+            )
+        return self.default_thumbnail_image_large.url
 
 
 class VideoRendition(BaseModel):

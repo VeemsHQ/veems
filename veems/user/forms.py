@@ -31,3 +31,15 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CustomRegistrationForm(RegistrationForm):
     class Meta(RegistrationForm.Meta):
         model = get_user_model()
+
+    def save(self, commit=True):
+        user = super().save(commit=True)
+        try:
+            sync_videos_interested = (
+                self.data['sync_videos_interested'].lower() == 'on'
+            )
+        except KeyError:
+            sync_videos_interested = False
+        user.profile.sync_videos_interested = sync_videos_interested
+        user.profile.save()
+        return user

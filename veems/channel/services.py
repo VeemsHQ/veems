@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 @transaction.atomic
 def create_channel(*, name, user, is_selected=True, **kwargs):
-    logger.info('Creating new channel: %s for user %s', name, user.id)
+    logger.info('Creating new channel: %s for user %s...', name, user.id)
     channel = models.Channel.objects.create(
         name=name,
         user=user,
@@ -26,6 +26,7 @@ def get_selected_channel_id(user):
 
 
 def update_channel(*, channel, **kwargs):
+    logger.info('Updating channel %s...', channel.id)
     for field, val in kwargs.items():
         if field == 'user':
             raise RuntimeError('Updating of channel user is not permitted')
@@ -51,12 +52,14 @@ def get_channels(user_id=None):
 
 
 def set_channel_avatar_image(*, channel, avatar_image):
+    logger.info('Setting avatar image for channel %s...', channel.id)
     channel.avatar_image = avatar_image
     channel.save()
     return channel
 
 
 def set_channel_banner_image(*, channel, banner_image):
+    logger.info('Setting banner image for channel %s...', channel.id)
     channel.banner_image = banner_image
     channel.save()
     return channel

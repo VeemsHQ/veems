@@ -57,12 +57,12 @@ class VideoDetailAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, video_id, format=None):
-        video = models.Video.objects.get(id=video_id)
+        video = services.get_video(id=video_id)
         data = serializers.VideoSerializer(video).data
         return Response(data, status=OK)
 
     def put(self, request, video_id, format=None):
-        video = models.Video.objects.get(
+        video = services.get_video(
             id=video_id, channel__user_id=request.user.id
         )
         serializer = serializers.VideoSerializer(
@@ -71,6 +71,30 @@ class VideoDetailAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         video = serializer.save()
         serializer = serializers.VideoSerializer(video)
+        return Response(serializer.data)
+
+    def delete(self, request, video_id, format=None):
+        services.delete_video(id=video_id)
+        return HttpResponse('', status=NO_CONTENT)
+
+
+class VideoThumbnailAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, video_id, format=None):
+        channel = services.get_video(id=video_id)
+        serializer = serializers.VideoThumbnailSerializer(channel)
+        return Response(serializer.data)
+
+    def post(self, request, video_id, format=None):
+        video = services.get_video(
+            id=video_id, channel__user_id=request.user.id
+        )
+        thumbnail_image = request.data['file']
+        video = services.set_video_custom_thumbnail_image(
+            video_record=video, thumbnail_image=thumbnail_image
+        )
+        serializer = serializers.VideoThumbnailSerializer(video)
         return Response(serializer.data)
 
 

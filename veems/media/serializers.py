@@ -8,19 +8,19 @@ from django.contrib.humanize.templatetags.humanize import (
 )
 
 from . import models
-from ..common.serializers import CustomModelSerializer
+from ..common.serializers import CustomModelSerializer, DEFAULT_EXCLUDE
 
 
 class VideoRenditionSerializer(CustomModelSerializer):
     class Meta:
         model = models.VideoRendition
-        exclude = ['file']
+        exclude = ['file'] + DEFAULT_EXCLUDE
 
 
 class TranscodeJobSerializer(CustomModelSerializer):
     class Meta:
         model = models.TranscodeJob
-        exclude = ['failure_context']
+        exclude = ['failure_context'] + DEFAULT_EXCLUDE
 
 
 class VideoSerializer(CustomModelSerializer):
@@ -131,7 +131,9 @@ class VideoSerializer(CustomModelSerializer):
             'created_date_human',
             'view_count',
             'comment_count',
-            'default_thumbnail_image_small_url',
+            'thumbnail_image_small_url',
+            'thumbnail_image_medium_url',
+            'thumbnail_image_large_url',
             'time_ago_human',
             'channel_name',
             'channel_id',
@@ -157,7 +159,9 @@ class VideoSerializer(CustomModelSerializer):
             'channel_id': {'read_only': True},
             'duration': {'read_only': True},
             'duration_human': {'read_only': True},
-            'default_thumbnail_image_small_url': {'read_only': True},
+            'thumbnail_image_small_url': {'read_only': True},
+            'thumbnail_image_medium_url': {'read_only': True},
+            'thumbnail_image_large_url': {'read_only': True},
             'channel_avatar_image_small_url': {'read_only': True},
             'likes_count': {'read_only': True},
             'dislikes_count': {'read_only': True},
@@ -179,7 +183,9 @@ class VideoSlimSerializer(VideoSerializer):
             'created_date_human',
             'view_count',
             'comment_count',
-            'default_thumbnail_image_small_url',
+            'thumbnail_image_small_url',
+            'thumbnail_image_medium_url',
+            'thumbnail_image_large_url',
             'time_ago_human',
             'channel_name',
             'channel_id',
@@ -188,3 +194,18 @@ class VideoSlimSerializer(VideoSerializer):
             'channel_avatar_image_small_url',
         ]
         extra_kwargs = VideoSerializer.Meta.extra_kwargs
+
+
+class VideoThumbnailSerializer(CustomModelSerializer):
+    class Meta:
+        model = models.Video
+        fields = (
+            'thumbnail_image_small_url',
+            'thumbnail_image_medium_url',
+            'thumbnail_image_large_url',
+        )
+        extra_kwargs = {
+            'thumbnail_image_small_url': {'read_only': True},
+            'thumbnail_image_medium_url': {'read_only': True},
+            'thumbnail_image_large_url': {'read_only': True},
+        }

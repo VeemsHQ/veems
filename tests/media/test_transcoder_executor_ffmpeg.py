@@ -11,6 +11,7 @@ from tests import constants
 
 pytestmark = pytest.mark.django_db
 MODULE = 'veems.media.transcoder.transcoder_executor.ffmpeg'
+TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 
 
 @pytest.mark.xfail

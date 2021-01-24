@@ -44,7 +44,7 @@ def generate_master_playlist(video_id):
         'Generating master playlist for %s',
         video_id,
     )
-    video = models.Video.objects.get(id=video_id)
+    video = get_video(id=video_id)
     playlist_data = _get_rendition_playlists(video)
     variant_m3u8 = m3u8.M3U8()
     if not playlist_data:
@@ -226,8 +226,19 @@ def get_metadata(video_path):
     }
 
 
-def get_video(id):
-    return models.Video.objects.get(id=id)
+def get_video(include_deleted=False, **kwargs):
+    manager = models.Video.objects
+    if include_deleted:
+        manager = models.Video.objects_all
+    return manager.get(**kwargs)
+
+
+def delete_video(id):
+    logger.info('Deleting video %s...', id)
+    video = get_video(include_deleted=True, id=id)
+    video.deleted_on = timezone.now()
+    video.save()
+    return video
 
 
 def get_videos(channel_id=None):
@@ -242,8 +253,50 @@ def get_popular_videos():
     ).order_by('-created_on')
 
 
-def create_video(*, upload):
+def create_video(*, upload, **kwargs):
     return models.Video.objects.create(
         upload_id=upload.id,
         channel_id=upload.channel_id,
+        **kwargs,
     )
+
+
+def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
+    logger.info('Setting default thumbnail for video %s...', video_record.id)
+    image_path = thumbnail_paths[0]
+    image_path = _generate_default_thumbnail_image(image_path=image_path)
+    with image_path.open('rb') as file_:
+        video_record.default_thumbnail_image = File(file_)
+        video_record.save()
+    logger.info('Done setting default thumbnail for video %s', video_record.id)
+    return video_record
+
+
+def _generate_default_thumbnail_image(image_path):
+    """
+    Generates a default thumbnail image.
+
+    If there are black bars around the video due to it being vertical for e.g.
+    then those spaces will be filled with expanded blurred video content.
+    """
+    command = (
+        'ffmpeg '
+        f'-i {image_path} '
+        '-filter_complex [0]scale=hd720,setsar=1,boxblur=15:15[b];'
+        '[b]eq=brightness=-0.2[b];'
+        '[0]scale=-1:720[v];'
+        '[b][v]overlay=(W-w)/2 '
+        f'{image_path} -y'
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and image_path.exists():
+        return image_path
+    else:
+        raise RuntimeError(result.stderr)
+
+
+def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
+    logger.info('Setting custom thumbnail for video %s...', video_record.id)
+    video_record.custom_thumbnail_image = thumbnail_image
+    video_record.save()
+    return video_record
