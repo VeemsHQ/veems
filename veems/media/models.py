@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
 from imagekit.processors import SmartResize
+from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
@@ -322,4 +323,18 @@ class TranscodeJob(BaseModel):
         return (
             f'<{self.__class__.__name__} {self.id} '
             f'{self.profile} {self.status}>'
+        )
+
+
+class VideoLikeDislike(BaseModel):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name='likedislikes'
+    )
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, null=False)
+    is_like = models.BooleanField(null=False, db_index=True)
+
+    def __str__(self):
+        return (
+            f'<{self.__class__.__name__} {self.id} {self.video_id} '
+            f'{self.is_like}>'
         )
