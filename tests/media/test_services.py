@@ -5,6 +5,7 @@ import pytest
 from pytest_voluptuous import S
 from django.core.files import File
 import m3u8
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
 from veems.media import services, models
@@ -539,18 +540,32 @@ class TestGeneratePlaylist:
         assert playlist_str is None
 
 
-# class TestGetVideo:
-#     def test(self, video):
-#         result = services.get_video(id=video.id)
+class TestGetVideo:
+    def test(self, video):
+        result = services.get_video(id=video.id)
 
-#         assert isinstance(result, models.Video)
-#         assert result == video
+        assert isinstance(result, models.Video)
+        assert result == video
 
-#     def test_not_found_if_is_deleted(self, video):
-#         result = services.get_video(id=video.id)
+    def test_not_found_if_is_deleted(self, video):
+        services.delete_video(id=video.id)
 
-#         assert isinstance(result, models.Video)
-#         assert result == video
+        with pytest.raises(ObjectDoesNotExist):
+            services.get_video(id=video.id)
+
+    def test_found_if_is_deleted_and_include_deleted_true(self, video):
+        services.delete_video(id=video.id)
+
+        result = services.get_video(id=video.id, include_deleted=True)
+
+        assert isinstance(result, models.Video)
+        assert result == video
+
+
+def test_delete_video(video):
+    video = services.delete_video(id=video.id)
+
+    assert video.deleted_on
 
 
 def test_get_popular_videos(
@@ -584,10 +599,7 @@ def test_get_popular_videos(
         r.visibility == 'public' and r.is_viewable is True and not r.deleted_on
         for r in records
     )
-    breakpoint()
-    assert (
-        records[0].created_on > records[1].created_on > records[2].created_on
-    )
+    assert records[0].created_on > records[1].created_on
 
 
 def test_mark_video_as_viewable(video_factory):
@@ -616,11 +628,15 @@ class TestGetVideos:
         videos = (
             video_factory(),
             video_factory(),
+            video_factory(),
         )
+        # Deleted videos shouldn't be returned
+        services.delete_video(id=videos[-1].id)
 
         records = services.get_videos()
 
-        assert tuple(records) == videos
+        assert tuple(records) == tuple(videos[:-1])
+        assert all(not v.deleted_on for v in records)
 
     def test_with_channel_id(self, video_factory, channel_factory, user):
         channel = channel_factory(user=user)
@@ -628,11 +644,15 @@ class TestGetVideos:
         video_factory(channel=channel_factory(user=user))
         video_factory(channel=channel)
         video_factory(channel=channel)
+        # Deleted videos shouldn't be returned
+        services.delete_video(id=video_factory(channel=channel).id)
 
         records = services.get_videos(channel_id=channel.id)
 
         assert len(records) == 2
-        assert all(v.channel_id == channel.id for v in records)
+        assert all(
+            v.channel_id == channel.id and not v.deleted_on for v in records
+        )
 
 
 def test_generate_default_thumbnail_image(tmpdir):
