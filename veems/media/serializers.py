@@ -88,6 +88,9 @@ class VideoSerializer(CustomModelSerializer):
     dislikes_count = serializers.SerializerMethodField(
         method_name='get_dislikes_count'
     )
+    likesdislikes_percentage = serializers.SerializerMethodField(
+        method_name='get_likesdislikes_percentage'
+    )
     authenticated_user_data = serializers.SerializerMethodField(
         method_name='get_authenticated_user_data'
     )
@@ -124,6 +127,16 @@ class VideoSerializer(CustomModelSerializer):
     def get_dislikes_count(self, instance):
         counts = self._get_video_likedislike_counts(video_id=instance.id)
         return counts['dislike_count']
+
+    @cachedmethod(operator.attrgetter('cache'))
+    def get_likesdislikes_percentage(self, instance):
+        likes = self.get_likes_count(instance=instance)
+        dislikes = self.get_dislikes_count(instance=instance)
+        total = likes + dislikes
+        if total == 0:
+            return 50
+        percentage = likes / total * 100
+        return percentage
 
     def get_authenticated_user_data(self, instance):
         if self._user_id:
@@ -182,6 +195,7 @@ class VideoSerializer(CustomModelSerializer):
             'channel_avatar_image_small_url',
             'likes_count',
             'dislikes_count',
+            'likesdislikes_percentage',
             'authenticated_user_data',
         ]
         extra_kwargs = {
