@@ -302,17 +302,26 @@ def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
     return video_record
 
 
-def like_video(*, video_id, user_id):
+def video_like(*, video_id, user_id):
     record, _ = models.VideoLikeDislike.objects.update_or_create(
-        video_id=video_id, user_id=user_id,
+        video_id=video_id,
+        user_id=user_id,
         defaults={'is_like': True},
     )
     return record
 
 
-def dislike_video(*, video_id, user_id):
+def video_remove_likedislike(*, video_id, user_id):
+    models.VideoLikeDislike.objects.filter(
+        video_id=video_id,
+        user_id=user_id,
+    ).delete()
+
+
+def video_dislike(*, video_id, user_id):
     record, _ = models.VideoLikeDislike.objects.update_or_create(
-        video_id=video_id, user_id=user_id,
+        video_id=video_id,
+        user_id=user_id,
         defaults={'is_like': False},
     )
     return record

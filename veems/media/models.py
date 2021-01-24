@@ -338,3 +338,6 @@ class VideoLikeDislike(BaseModel):
             f'<{self.__class__.__name__} {self.id} {self.video_id} '
             f'{self.is_like}>'
         )
+
+    class Meta:
+        unique_together = ('user', 'video')
