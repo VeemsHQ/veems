@@ -44,7 +44,7 @@ class VideosView(ChannelManagerTemplateView):
         )
         channel_videos = media_services.get_videos(channel_id=channel_id)
         channel_videos = media_serializers.VideoSerializer(
-            channel_videos, many=True
+            instance=channel_videos, many=True
         ).data
         context['channel_videos'] = channel_videos
         return context

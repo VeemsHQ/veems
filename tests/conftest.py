@@ -367,6 +367,7 @@ def expected_video_resp_json():
             'video_renditions': list,
             'view_count': int,
             'visibility': str,
+            'authenticated_user_data': dict,
         }
     )
 

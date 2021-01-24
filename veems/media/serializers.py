@@ -87,6 +87,9 @@ class VideoSerializer(CustomModelSerializer):
     dislikes_count = serializers.SerializerMethodField(
         method_name='get_dislikes_count'
     )
+    authenticated_user_data = serializers.SerializerMethodField(
+        method_name='get_authenticated_user_data'
+    )
 
     def get_playlist_file(self, instance):
         video_id = instance.id
@@ -120,6 +123,15 @@ class VideoSerializer(CustomModelSerializer):
     def get_dislikes_count(self, instance):
         counts = self._get_video_likedislike_counts(video_id=instance.id)
         return counts['dislike_count']
+
+    def get_authenticated_user_data(self, instance):
+        if self._user_id:
+            has_liked_video = services.get_video_likedislike(
+                video_id=instance.id,
+                user_id=self._user_id,
+            ).is_like
+            return {'has_liked_video': has_liked_video}
+        return {}
 
     def get_time_ago_human(self, instance):
         return naturaltime(instance.created_on)
@@ -166,6 +178,7 @@ class VideoSerializer(CustomModelSerializer):
             'channel_avatar_image_small_url',
             'likes_count',
             'dislikes_count',
+            'authenticated_user_data',
         ]
         extra_kwargs = {
             'channel': {'read_only': True},

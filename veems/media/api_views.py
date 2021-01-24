@@ -58,7 +58,7 @@ class VideoDetailAPIView(APIView):
 
     def get(self, request, video_id, format=None):
         video = services.get_video(id=video_id)
-        data = serializers.VideoSerializer(video).data
+        data = serializers.VideoSerializer(instance=video).data
         return Response(data, status=OK)
 
     def put(self, request, video_id, format=None):
@@ -66,11 +66,11 @@ class VideoDetailAPIView(APIView):
             id=video_id, channel__user_id=request.user.id
         )
         serializer = serializers.VideoSerializer(
-            video, data=request.data, partial=True
+            instance=video, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
         video = serializer.save()
-        serializer = serializers.VideoSerializer(video)
+        serializer = serializers.VideoSerializer(instance=video)
         return Response(serializer.data)
 
     def delete(self, request, video_id, format=None):
