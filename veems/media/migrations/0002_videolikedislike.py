@@ -17,13 +17,41 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VideoLikeDislike',
             fields=[
-                ('id', veems.common.fields.ShortUUIDField(default=veems.common.fields._default, editable=False, max_length=12, primary_key=True, serialize=False)),
-                ('created_on', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('modified_on', models.DateTimeField(auto_now=True, db_index=True)),
+                (
+                    'id',
+                    veems.common.fields.ShortUUIDField(
+                        default=veems.common.fields._default,
+                        editable=False,
+                        max_length=12,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    'created_on',
+                    models.DateTimeField(auto_now_add=True, db_index=True),
+                ),
+                (
+                    'modified_on',
+                    models.DateTimeField(auto_now=True, db_index=True),
+                ),
                 ('deleted_on', models.DateTimeField(db_index=True, null=True)),
                 ('is_like', models.BooleanField(db_index=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='likedislikes', to=settings.AUTH_USER_MODEL)),
-                ('video', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='media.video')),
+                (
+                    'user',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='likedislikes',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    'video',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='media.video',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['created_on'],
