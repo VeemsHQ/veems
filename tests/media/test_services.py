@@ -670,12 +670,15 @@ def test_generate_default_thumbnail_image(tmpdir):
     assert metadata['summary']['height'] == 720
 
 
-def test_set_video_default_thumbnail_image(video):
+def test_set_video_default_thumbnail_image(video, tmpdir):
+    image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+    test_image_path = tmpdir / 'thumbnail-vertical.jpg'
+    shutil.copyfile(image_path, test_image_path)
     assert not video.default_thumbnail_image
     thumbnail_paths = (
-        TEST_DATA_DIR / 'thumbnail-vertical.jpg',
-        TEST_DATA_DIR / 'thumbnail-vertical.jpg',
-        TEST_DATA_DIR / 'thumbnail-vertical.jpg',
+        test_image_path,
+        test_image_path,
+        test_image_path,
     )
 
     updated_video_record = services.set_video_default_thumbnail_image(
