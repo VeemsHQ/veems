@@ -78,6 +78,27 @@ class VideoDetailAPIView(APIView):
         return HttpResponse('', status=NO_CONTENT)
 
 
+class VideoLikeDislikeAPIView(APIView):
+    def post(self, request, video_id, format=None):
+        if request.data['is_like']:
+            record = services.video_like(
+                video_id=video_id, user_id=request.user.id
+            )
+        else:
+            record = services.video_dislike(
+                video_id=video_id, user_id=request.user.id
+            )
+        serializer = serializers.VideoLikeDislikeSerializer(record)
+
+        return Response(serializer.data)
+
+    def delete(self, request, video_id, format=None):
+        services.video_remove_likedislike(
+            video_id=video_id, user_id=request.user.id
+        )
+        return HttpResponse('', status=NO_CONTENT)
+
+
 class VideoThumbnailAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 

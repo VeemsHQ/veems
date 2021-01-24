@@ -273,7 +273,7 @@ class TestChannelAvatarAPIView:
         api_client, user = api_client
         channel = channel_factory(user=user, avatar_image=None)
 
-        response = api_client.get(f'/api/v1/channel/{channel.id}/avatar')
+        response = api_client.get(f'/api/v1/channel/{channel.id}/avatar/')
 
         assert response.status_code == OK
 
@@ -297,7 +297,7 @@ class TestChannelAvatarAPIView:
         with EXAMPLE_IMG.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = api_client.post(
-                f'/api/v1/channel/{channel.id}/avatar', data=form_data
+                f'/api/v1/channel/{channel.id}/avatar/', data=form_data
             )
 
         assert response.status_code == OK
@@ -322,7 +322,7 @@ class TestChannelAvatarAPIView:
         with EXAMPLE_IMG.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = api_client.post(
-                f'/api/v1/channel/{channel.id}/avatar', data=form_data
+                f'/api/v1/channel/{channel.id}/avatar/', data=form_data
             )
 
         assert response.status_code == NOT_FOUND
@@ -336,7 +336,7 @@ class TestChannelAvatarAPIView:
         with EXAMPLE_IMG.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = client.post(
-                f'/api/v1/channel/{channel.id}/avatar', data=form_data
+                f'/api/v1/channel/{channel.id}/avatar/', data=form_data
             )
 
         assert response.status_code == FORBIDDEN
@@ -347,7 +347,7 @@ class TestChannelBannerAPIView:
         api_client, user = api_client
         channel = channel_factory(user=user, banner_image=None)
 
-        response = api_client.get(f'/api/v1/channel/{channel.id}/banner')
+        response = api_client.get(f'/api/v1/channel/{channel.id}/banner/')
 
         assert response.status_code == OK
 
@@ -368,7 +368,7 @@ class TestChannelBannerAPIView:
         with EXAMPLE_BANNER_IMG.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = api_client.post(
-                f'/api/v1/channel/{channel.id}/banner', data=form_data
+                f'/api/v1/channel/{channel.id}/banner/', data=form_data
             )
 
         assert response.status_code == OK
@@ -391,7 +391,7 @@ class TestChannelBannerAPIView:
         with EXAMPLE_BANNER_IMG.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = api_client.post(
-                f'/api/v1/channel/{channel.id}/banner', data=form_data
+                f'/api/v1/channel/{channel.id}/banner/', data=form_data
             )
 
         assert response.status_code == NOT_FOUND
@@ -405,7 +405,7 @@ class TestChannelBannerAPIView:
         with EXAMPLE_BANNER_IMG.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = client.post(
-                f'/api/v1/channel/{channel.id}/banner', data=form_data
+                f'/api/v1/channel/{channel.id}/banner/', data=form_data
             )
 
         assert response.status_code == FORBIDDEN

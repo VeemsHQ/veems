@@ -11,6 +11,16 @@ from . import models
 from ..common.serializers import CustomModelSerializer, DEFAULT_EXCLUDE
 
 
+class VideoLikeDislikeSerializer(CustomModelSerializer):
+    class Meta:
+        model = models.VideoLikeDislike
+        fields = ('video_id', 'is_like')
+        extra_kwargs = {
+            'video_id': {'read_only': True},
+            'is_like': {'read_only': True},
+        }
+
+
 class VideoRenditionSerializer(CustomModelSerializer):
     class Meta:
         model = models.VideoRendition

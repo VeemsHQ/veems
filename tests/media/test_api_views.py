@@ -193,7 +193,7 @@ class TestVideoThumbnail:
         video = video_with_custom_thumb
 
         response = api_client_no_auth.get(
-            f'/api/v1/video/{video.id}/thumbnail'
+            f'/api/v1/video/{video.id}/thumbnail/'
         )
 
         assert response.status_code == OK
@@ -223,7 +223,7 @@ class TestVideoThumbnail:
         with self.IMAGE_PATH.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = api_client.post(
-                f'/api/v1/video/{video.id}/thumbnail', data=form_data
+                f'/api/v1/video/{video.id}/thumbnail/', data=form_data
             )
 
         assert response.status_code == OK
@@ -257,7 +257,7 @@ class TestVideoThumbnail:
         with self.IMAGE_PATH.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = api_client.post(
-                f'/api/v1/video/{video.id}/thumbnail', data=form_data
+                f'/api/v1/video/{video.id}/thumbnail/', data=form_data
             )
 
         assert response.status_code == NOT_FOUND
@@ -272,7 +272,7 @@ class TestVideoThumbnail:
         with self.IMAGE_PATH.open('rb') as file_:
             form_data = {'file': SimpleUploadedFile(file_.name, file_.read())}
             response = client.post(
-                f'/api/v1/video/{video.id}/thumbnail', data=form_data
+                f'/api/v1/video/{video.id}/thumbnail/', data=form_data
             )
 
         assert response.status_code == FORBIDDEN
@@ -556,3 +556,34 @@ class TestVideoPlaylist:
 
         assert response.status_code == NO_CONTENT
         assert response.content.decode() == ''
+
+
+class TestVideoLikeDislike:
+    @pytest.mark.parametrize('is_like', [True, False])
+    def test_post(self, api_client, video, is_like):
+        api_client, _ = api_client
+
+        response = api_client.post(
+            f'/api/v1/video/{video.id}/likedislike/',
+            {
+                'is_like': is_like,
+            },
+            format='json',
+        )
+
+        assert response.status_code == OK
+        assert response.json() == {
+            'video_id': video.id,
+            'is_like': is_like,
+        }
+
+    def test_delete(
+        self,
+        api_client,
+        video,
+    ):
+        api_client, _ = api_client
+
+        response = api_client.delete(f'/api/v1/video/{video.id}/likedislike/')
+
+        assert response.status_code == NO_CONTENT
