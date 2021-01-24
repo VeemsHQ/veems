@@ -226,8 +226,8 @@ def get_metadata(video_path):
     }
 
 
-def get_video(id):
-    return models.Video.objects.get(id=id)
+def get_video(**kwargs):
+    return models.Video.objects.get(**kwargs)
 
 
 def get_videos(channel_id=None):
@@ -242,15 +242,16 @@ def get_popular_videos():
     ).order_by('-created_on')
 
 
-def create_video(*, upload):
+def create_video(*, upload, **kwargs):
     return models.Video.objects.create(
         upload_id=upload.id,
         channel_id=upload.channel_id,
+        **kwargs,
     )
 
 
 def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
-    logger.info('Setting default thumbnail for video %s', video_record.id)
+    logger.info('Setting default thumbnail for video %s...', video_record.id)
     image_path = thumbnail_paths[0]
     image_path = _generate_default_thumbnail_image(image_path=image_path)
     with image_path.open('rb') as file_:
@@ -281,3 +282,10 @@ def _generate_default_thumbnail_image(image_path):
         return image_path
     else:
         raise RuntimeError(result.stderr)
+
+
+def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
+    logger.info('Setting custom thumbnail for video %s...', video_record.id)
+    video_record.custom_thumbnail_image = thumbnail_image
+    video_record.save()
+    return video_record

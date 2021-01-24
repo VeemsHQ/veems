@@ -74,6 +74,26 @@ class VideoDetailAPIView(APIView):
         return Response(serializer.data)
 
 
+class VideoThumbnailAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, video_id, format=None):
+        channel = services.get_video(id=video_id)
+        serializer = serializers.VideoThumbnailSerializer(channel)
+        return Response(serializer.data)
+
+    def post(self, request, video_id, format=None):
+        video = services.get_video(
+            id=video_id, channel__user_id=request.user.id
+        )
+        thumbnail_image = request.data['file']
+        video = services.set_video_custom_thumbnail_image(
+            video_record=video, thumbnail_image=thumbnail_image
+        )
+        serializer = serializers.VideoThumbnailSerializer(video)
+        return Response(serializer.data)
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def video_playlist(request, video_id):

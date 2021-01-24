@@ -129,9 +129,16 @@ class ChannelAvatarSerializer(CustomModelSerializer):
             'avatar_image_small_url',
             'avatar_image_large_url',
         )
+        extra_kwargs = {
+            'avatar_image_small_url': {'read_only': True},
+            'avatar_image_large_url': {'read_only': True},
+        }
 
 
 class ChannelBannerSerializer(CustomModelSerializer):
     class Meta:
         model = models.Channel
         fields = ('banner_image_large_url',)
+        extra_kwargs = {
+            'banner_image_large_url': {'read_only': True},
+        }
