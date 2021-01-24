@@ -49,8 +49,10 @@ def test_get_channels(api_client, channel_factory, user_factory):
 
 
 def test_get_channel(
-    api_client, channel_factory, video_with_transcodes_factory,
-    expected_video_resp_json
+    api_client,
+    channel_factory,
+    video_with_transcodes_factory,
+    expected_video_resp_json,
 ):
     api_client, user = api_client
     channel = channel_factory(user=user)
