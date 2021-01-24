@@ -308,6 +308,7 @@ def video_like(*, video_id, user_id):
         user_id=user_id,
         defaults={'is_like': True},
     )
+    logger.info('Video %s liked by %s', video_id, user_id)
     return record
 
 
@@ -316,6 +317,7 @@ def video_remove_likedislike(*, video_id, user_id):
         video_id=video_id,
         user_id=user_id,
     ).delete()
+    logger.info('Video %s likedislike removed by %s', video_id, user_id)
 
 
 def video_dislike(*, video_id, user_id):
@@ -324,6 +326,7 @@ def video_dislike(*, video_id, user_id):
         user_id=user_id,
         defaults={'is_like': False},
     )
+    logger.info('Video %s disliked by %s', video_id, user_id)
     return record
 
 
