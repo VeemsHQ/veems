@@ -701,3 +701,25 @@ def test_set_video_custom_thumbnail_image(video, tmpdir):
         )
 
     assert video.custom_thumbnail_image
+
+
+def test_like_video(video, user):
+    for _ in range(2):
+        likedislike = services.like_video(video_id=video.id, user_id=user.id)
+
+    assert likedislike.is_like is True
+    assert likedislike.video == video
+    assert likedislike.user == user
+    assert len(services.get_likedislikes(video_id=video.id)) == 1
+
+
+def test_dislike_video(video, user):
+    for _ in range(2):
+        likedislike = services.dislike_video(
+            video_id=video.id, user_id=user.id
+        )
+
+    assert likedislike.is_like is False
+    assert likedislike.video == video
+    assert likedislike.user == user
+    assert len(services.get_likedislikes(video_id=video.id)) == 1
