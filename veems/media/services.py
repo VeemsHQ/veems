@@ -6,6 +6,7 @@ import functools
 import operator
 
 import m3u8
+from django.db.models import Q, Count
 from django.utils import timezone
 from django.core.files import File
 
@@ -330,5 +331,18 @@ def video_dislike(*, video_id, user_id):
     return record
 
 
-def get_likedislikes(*, video_id):
+def get_video_likedislikes(*, video_id):
     return models.VideoLikeDislike.objects.filter(video_id=video_id)
+
+
+def get_video_likedislike(*, video_id, user_id):
+    return models.VideoLikeDislike.objects.get(
+        video_id=video_id, user_id=user_id
+    )
+
+
+def get_video_likedislike_count(*, video_id):
+    return models.VideoLikeDislike.objects.filter(video_id=video_id).aggregate(
+        like_count=Count('id', filter=Q(is_like=True)),
+        dislike_count=Count('id', filter=Q(is_like=False)),
+    )

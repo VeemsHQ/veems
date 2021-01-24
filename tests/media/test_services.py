@@ -710,7 +710,7 @@ def test_video_like(video, user):
     assert likedislike.is_like is True
     assert likedislike.video == video
     assert likedislike.user == user
-    assert len(services.get_likedislikes(video_id=video.id)) == 1
+    assert len(services.get_video_likedislikes(video_id=video.id)) == 1
 
 
 def test_video_remove_likedislike(video, user):
@@ -719,7 +719,7 @@ def test_video_remove_likedislike(video, user):
 
     services.video_remove_likedislike(video_id=video.id, user_id=user.id)
 
-    assert len(services.get_likedislikes(video_id=video.id)) == 0
+    assert len(services.get_video_likedislikes(video_id=video.id)) == 0
 
 
 def test_video_dislike(video, user):
@@ -731,4 +731,30 @@ def test_video_dislike(video, user):
     assert likedislike.is_like is False
     assert likedislike.video == video
     assert likedislike.user == user
-    assert len(services.get_likedislikes(video_id=video.id)) == 1
+    assert len(services.get_video_likedislikes(video_id=video.id)) == 1
+
+
+def test_get_video_likedislike_count(video, user_factory):
+    for _ in range(2):
+        services.video_like(video_id=video.id, user_id=user_factory().id)
+    for _ in range(3):
+        services.video_dislike(video_id=video.id, user_id=user_factory().id)
+
+    result = services.get_video_likedislike_count(video_id=video.id)
+
+    assert result == {
+        'like_count': 2,
+        'dislike_count': 3,
+    }
+
+
+def test_get_video_likedislike(video, user):
+    services.video_like(video_id=video.id, user_id=user.id)
+
+    record = services.get_video_likedislike(user_id=user.id, video_id=video.id)
+
+    assert record
+    assert isinstance(record, services.models.VideoLikeDislike)
+    assert record.is_like is True
+    assert record.video == video
+    assert record.user == user
