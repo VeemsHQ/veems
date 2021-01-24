@@ -8,19 +8,19 @@ from django.contrib.humanize.templatetags.humanize import (
 )
 
 from . import models
-from ..common.serializers import CustomModelSerializer
+from ..common.serializers import CustomModelSerializer, DEFAULT_EXCLUDE
 
 
 class VideoRenditionSerializer(CustomModelSerializer):
     class Meta:
         model = models.VideoRendition
-        exclude = ['file']
+        exclude = ['file'] + DEFAULT_EXCLUDE
 
 
 class TranscodeJobSerializer(CustomModelSerializer):
     class Meta:
         model = models.TranscodeJob
-        exclude = ['failure_context']
+        exclude = ['failure_context'] + DEFAULT_EXCLUDE
 
 
 class VideoSerializer(CustomModelSerializer):
