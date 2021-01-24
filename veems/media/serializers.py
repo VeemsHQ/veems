@@ -8,6 +8,7 @@ from django.contrib.humanize.templatetags.humanize import (
     naturaltime,
     naturalday,
 )
+from django.core.exceptions import ObjectDoesNotExist
 
 from . import models
 from . import services
@@ -126,10 +127,13 @@ class VideoSerializer(CustomModelSerializer):
 
     def get_authenticated_user_data(self, instance):
         if self._user_id:
-            has_liked_video = services.get_video_likedislike(
-                video_id=instance.id,
-                user_id=self._user_id,
-            ).is_like
+            try:
+                has_liked_video = services.get_video_likedislike(
+                    video_id=instance.id,
+                    user_id=self._user_id,
+                ).is_like
+            except ObjectDoesNotExist:
+                return {}
             return {'has_liked_video': has_liked_video}
         return {}
 

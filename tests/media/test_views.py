@@ -66,7 +66,7 @@ class TestVideoView:
             == channel.banner_image_small_url.split('?')[0]
         )
 
-    def test_logged_in(
+    def test_logged_in_and_has_disliked_video(
         self,
         client,
         video_with_transcodes_factory,
@@ -91,6 +91,36 @@ class TestVideoView:
             'authenticated_user_data': {
                 'has_liked_video': False,
             },
+        }
+        expected_video_resp_json = expected_video_resp_json.extend(
+            expected_video_context
+        )
+        assert dict(video_context) == expected_video_resp_json
+        channel_context = response.context['channel']
+        assert dict(channel_context) == expected_channel_resp_json
+
+    def test_logged_in(
+        self,
+        client,
+        video_with_transcodes_factory,
+        channel,
+        user,
+        expected_video_resp_json,
+        expected_channel_resp_json,
+    ):
+        video_data = video_with_transcodes_factory(channel=channel)
+        video = video_data['video']
+        client.force_login(user=user)
+
+        response = client.get(f'/v/{video.id}/')
+
+        assert response.status_code == OK
+        video_context = response.context['video']
+        expected_video_context = {
+            'id': video.id,
+            'likes_count': 0,
+            'dislikes_count': 0,
+            'authenticated_user_data': {},
         }
         expected_video_resp_json = expected_video_resp_json.extend(
             expected_video_context

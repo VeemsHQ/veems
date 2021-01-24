@@ -14,19 +14,19 @@
             <h1 style="font-size:18px" class="mt-3">{{video.title}} {{video.rendition_count}}</h1>
             <div class="text-muted d-flex">
                 <div class="video-menu d-inline-flex align-items-center align-middle">
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
-                            class="small material-icons align-middle">thumb_up_alt</i><span class="ml-2">Like</span></a>
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
-                            class="small material-icons align-middle">thumb_down_alt</i><span class="ml-2"></span></a>
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
+                    <a href="#" title="I like this" class="btn btn-sm text-muted d-flex align-items-center"><i
+                            class="small material-icons align-middle">thumb_up_alt</i><span class="ml-2">{{video.likes_count}}</span></a>
+                    <a href="#" title="I dislike this" class="btn btn-sm text-muted d-flex align-items-center"><i
+                            class="small material-icons align-middle">thumb_down_alt</i><span class="ml-2">{{video.dislikes_count}}</span></a>
+                    <a href="#" title="Share" class="btn btn-sm text-muted d-flex align-items-center"><i
                             class="small material-icons align-middle">share</i><span class="ml-2">Share</span></a>
-                    <a href="#" class="btn btn-sm text-muted align-items-center  d-none d-xl-inline-flex"><i
+                    <a href="#" title="Post a video response" class="btn btn-sm text-muted align-items-center  d-none d-xl-inline-flex"><i
                             class="small material-icons align-middle">video_call</i><span
                             class="ml-2">Respond</span></a>
-                    <a href="#" class="btn btn-sm text-muted  d-none d-md-inline-flex align-items-center"><i
+                    <a href="#" title="Add to..." class="btn btn-sm text-muted  d-none d-md-inline-flex align-items-center"><i
                             class="small material-icons align-middle">add_circle_outline</i><span class="ml-2">Add
                             to</span></a>
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
+                    <a href="#" title="More" class="btn btn-sm text-muted d-flex align-items-center"><i
                             class="small material-icons align-middle">more_horiz</i></a>
                 </div>
                 <div class="video-info d-inline-flex ml-auto align-items-center">
