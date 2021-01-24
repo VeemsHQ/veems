@@ -163,7 +163,6 @@ class Video(BaseModel):
         null=True,
         blank=True,
     )
-    # TODO: add custom thumbnail image
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
         processors=[SmartResize(320, 180)],

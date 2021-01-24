@@ -44,7 +44,7 @@ def generate_master_playlist(video_id):
         'Generating master playlist for %s',
         video_id,
     )
-    video = models.Video.objects.get(id=video_id)
+    video = get_video(id=video_id)
     playlist_data = _get_rendition_playlists(video)
     variant_m3u8 = m3u8.M3U8()
     if not playlist_data:
@@ -226,8 +226,19 @@ def get_metadata(video_path):
     }
 
 
-def get_video(**kwargs):
-    return models.Video.objects.get(**kwargs)
+def get_video(include_deleted=False, **kwargs):
+    manager = models.Video.objects
+    if include_deleted:
+        manager = models.Video.objects_all
+    return manager.get(**kwargs)
+
+
+def delete_video(id):
+    logger.info('Deleting video %s...', id)
+    video = get_video(include_deleted=True, id=id)
+    video.deleted_on = timezone.now()
+    video.save()
+    return video
 
 
 def get_videos(channel_id=None):

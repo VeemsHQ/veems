@@ -2,6 +2,9 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 
+DEFAULT_EXCLUDE = ['deleted_on']
+
+
 class CustomModelSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if self.partial and not validated_data:

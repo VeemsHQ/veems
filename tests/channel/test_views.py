@@ -8,8 +8,12 @@ pytestmark = pytest.mark.django_db
 
 class TestChannelIndexView:
     def test(
-        self, client, video_with_transcodes_factory, channel_factory, user,
-        expected_channel_resp_json
+        self,
+        client,
+        video_with_transcodes_factory,
+        channel_factory,
+        user,
+        expected_channel_resp_json,
     ):
         for channel_name in ('My channel 1', 'My channel 2'):
             channel = channel_factory(

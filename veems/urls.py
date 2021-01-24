@@ -126,7 +126,7 @@ urlpatterns = [
     ),
     path(
         'api/v1/video/<slug:video_id>/thumbnail',
-        api_views.VideoThumbnailAPIView.as_view()
+        api_views.VideoThumbnailAPIView.as_view(),
     ),
     path(
         'api/v1/video/<slug:video_id>/playlist.m3u8',
