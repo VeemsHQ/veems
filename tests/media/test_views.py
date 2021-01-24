@@ -3,12 +3,21 @@ from http.client import OK
 from django.urls import reverse
 import pytest
 
+from veems.media import services
+
 pytestmark = pytest.mark.django_db
 
 
 class TestVideoView:
     def test(
-        self, client, video_with_transcodes_factory, channel_factory, user
+        self,
+        client,
+        video_with_transcodes_factory,
+        channel_factory,
+        user,
+        user_factory,
+        expected_video_resp_json,
+        expected_channel_resp_json,
     ):
         channel = channel_factory(
             name='My Channel',
@@ -17,32 +26,42 @@ class TestVideoView:
         )
         video_data = video_with_transcodes_factory(channel=channel)
         video = video_data['video']
+        services.video_dislike(video_id=video.id, user_id=user.id)
+        services.video_like(video_id=video.id, user_id=user_factory().id)
 
         response = client.get(f'/v/{video.id}/')
 
         assert response.status_code == OK
-        vid_ctx = response.context['video']
-        assert vid_ctx['id'] == video.id
-        assert vid_ctx['title'] == video.title
-        assert vid_ctx['video_renditions_count'] == 1
-        assert vid_ctx['description'] == video.description
-        assert vid_ctx['created_date'] == video.created_on.date().isoformat()
-        assert vid_ctx['view_count'] == 0
-        assert vid_ctx['comment_count'] == 0
-        assert vid_ctx['tags'] == ['tag1', 'tag2']
-        assert vid_ctx['playlist_file'] == reverse(
-            'api-video-playlist', args=[video.id]
+        video_context = response.context['video']
+        expected_video_context = {
+            'id': video.id,
+            'title': video.title,
+            'video_renditions_count': 1,
+            'description': video.description,
+            'created_date': video.created_on.date().isoformat(),
+            'playlist_file': reverse('api-video-playlist', args=[video.id]),
+            'likes_count': 1,
+            'dislikes_count': 1,
+        }
+        expected_video_resp_json = expected_video_resp_json.extend(
+            expected_video_context
         )
-        channel_ctx = response.context['channel']
-        assert channel_ctx['name'] == channel.name
-        assert channel_ctx['id'] == channel.id
-        assert channel_ctx['followers_count'] == 0
-        assert channel_ctx['description'] == channel.description
+        assert dict(video_context) == expected_video_resp_json
+        channel_context = response.context['channel']
+        expected_channel_context = {
+            'name': channel.name,
+            'id': channel.id,
+            'description': channel.description,
+        }
+        expected_channel_resp_json = expected_channel_resp_json.extend(
+            expected_channel_context
+        )
+        assert dict(channel_context) == expected_channel_resp_json
         assert (
-            channel_ctx['avatar_image_small_url'].split('?')[0]
+            channel_context['avatar_image_small_url'].split('?')[0]
             == channel.avatar_image_small_url.split('?')[0]
         )
         assert (
-            channel_ctx['banner_image_small_url'].split('?')[0]
+            channel_context['banner_image_small_url'].split('?')[0]
             == channel.banner_image_small_url.split('?')[0]
         )

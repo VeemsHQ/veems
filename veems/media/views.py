@@ -10,10 +10,12 @@ class VideoView(TemplateView):
     def get_context_data(self, *args, video_id, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         video = services.get_video(id=video_id)
-        video_data = serializers.VideoSerializer(video).data
+        video_data = serializers.VideoSerializer(
+            instance=video, user_id=self.request.user.id
+        ).data
         context['video'] = video_data
         channel_data = channel_serializers.ChannelSlimSerializer(
-            video.channel
+            instance=video.channel
         ).data
         context['channel'] = channel_data
         return context

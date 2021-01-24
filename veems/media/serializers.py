@@ -1,5 +1,7 @@
 import time
+import operator
 
+from cachetools import cachedmethod, LRUCache
 from rest_framework import serializers
 from django.urls import reverse
 from django.contrib.humanize.templatetags.humanize import (
@@ -8,6 +10,7 @@ from django.contrib.humanize.templatetags.humanize import (
 )
 
 from . import models
+from . import services
 from ..common.serializers import CustomModelSerializer, DEFAULT_EXCLUDE
 
 
@@ -34,6 +37,11 @@ class TranscodeJobSerializer(CustomModelSerializer):
 
 
 class VideoSerializer(CustomModelSerializer):
+    def __init__(self, user_id=None, *args, **kwargs):
+        CustomModelSerializer.__init__(self, *args, **kwargs)
+        self._user_id = user_id
+        self.cache = LRUCache(maxsize=1000)
+
     video_renditions = VideoRenditionSerializer(
         many=True, read_only=True, source='videorendition_set'
     )
@@ -101,11 +109,17 @@ class VideoSerializer(CustomModelSerializer):
     def get_comment_count(self, instance):
         return 0
 
+    @cachedmethod(operator.attrgetter('cache'))
+    def _get_video_likedislike_counts(self, video_id):
+        return services.get_video_likedislike_count(video_id=video_id)
+
     def get_likes_count(self, instance):
-        return 0
+        counts = self._get_video_likedislike_counts(video_id=instance.id)
+        return counts['like_count']
 
     def get_dislikes_count(self, instance):
-        return 0
+        counts = self._get_video_likedislike_counts(video_id=instance.id)
+        return counts['dislike_count']
 
     def get_time_ago_human(self, instance):
         return naturaltime(instance.created_on)
