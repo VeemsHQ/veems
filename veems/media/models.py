@@ -330,7 +330,9 @@ class VideoLikeDislike(BaseModel):
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='likedislikes'
     )
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE, related_name='likedislikes'
+    )
     is_like = models.BooleanField(db_index=True)
 
     def __str__(self):
