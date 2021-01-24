@@ -24,6 +24,7 @@ def search(query, limit=50):
         'description', weight='B'
     )
     query_ = SearchQuery(query)
+    # TODO: exclude deleted
     videos = (
         media_modals.Video.objects.annotate(rank=SearchRank(vector, query_))
         .filter(rank__gte=0.2, visibility='public')

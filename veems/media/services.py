@@ -44,7 +44,7 @@ def generate_master_playlist(video_id):
         'Generating master playlist for %s',
         video_id,
     )
-    video = models.Video.objects.get(id=video_id)
+    video = services.get_video(id=video_id)
     playlist_data = _get_rendition_playlists(video)
     variant_m3u8 = m3u8.M3U8()
     if not playlist_data:
@@ -226,18 +226,33 @@ def get_metadata(video_path):
     }
 
 
-def get_video(**kwargs):
-    return models.Video.objects.get(**kwargs)
+def get_video(include_deleted=False, **kwargs):
+    # TODO: test
+    if include_deleted:
+        raise NotImplementedError('fdf')
+    else:
+        return models.Video.objects.get(deleted_on__isnull=True, **kwargs)
+
+
+def delete_video(id):
+    # TODO: test
+    logger.info('Deleting video %s...', id)
+    return models.Video.objects.filter(id=id).update(
+        deleted_on=timezone.now()
+    )
 
 
 def get_videos(channel_id=None):
     if channel_id:
+         # TODO: exclude deleted
         return models.Video.objects.filter(channel_id=channel_id)
+     # TODO: exclude deleted
     return models.Video.objects.all()
 
 
 def get_popular_videos():
     return models.Video.objects.filter(
+        deleted_on__isnull=True,
         is_viewable=True, visibility='public'
     ).order_by('-created_on')
 

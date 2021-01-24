@@ -5,6 +5,7 @@ import pytest
 from pytest_voluptuous import S
 from django.core.files import File
 import m3u8
+from django.utils import timezone
 
 from veems.media import services, models
 from veems.media.transcoder.transcoder_executor import ffmpeg
@@ -538,11 +539,18 @@ class TestGeneratePlaylist:
         assert playlist_str is None
 
 
-def test_get_video(video):
-    result = services.get_video(id=video.id)
+# class TestGetVideo:
+#     def test(self, video):
+#         result = services.get_video(id=video.id)
 
-    assert isinstance(result, models.Video)
-    assert result == video
+#         assert isinstance(result, models.Video)
+#         assert result == video
+
+#     def test_not_found_if_is_deleted(self, video):
+#         result = services.get_video(id=video.id)
+
+#         assert isinstance(result, models.Video)
+#         assert result == video
 
 
 def test_get_popular_videos(
@@ -557,20 +565,26 @@ def test_get_popular_videos(
         'unlisted',
     )
     is_viewable_values = (False, False, True, True, True, True)
-    for visibility, is_viewable in zip(visibility_values, is_viewable_values):
+    deleted_on_values = (None, None, None, None, timezone.now(), None)
+    for visibility, is_viewable, deleted_on in zip(
+        visibility_values, is_viewable_values, deleted_on_values
+    ):
         video_with_transcodes_factory(
             channel=channel_factory(user=user_factory()),
             visibility=visibility,
             is_viewable=is_viewable,
+            deleted_on=deleted_on,
         )
 
     records = services.get_popular_videos()
 
     assert all(isinstance(r, models.Video) for r in records)
-    assert len(records) == 3
+    assert len(records) == 2
     assert all(
-        r.visibility == 'public' and r.is_viewable is True for r in records
+        r.visibility == 'public' and r.is_viewable is True and not r.deleted_on
+        for r in records
     )
+    breakpoint()
     assert (
         records[0].created_on > records[1].created_on > records[2].created_on
     )

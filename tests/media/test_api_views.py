@@ -464,6 +464,17 @@ class TestVideoDetail:
 
         assert response.status_code == FORBIDDEN
 
+    def test_delete(self, video_with_transcodes):
+        api_client = video_with_transcodes['api_client']
+        video = video_with_transcodes['video']
+
+        response = api_client.delete(f'/api/v1/video/{video.id}/')
+
+        assert response.status_code == NO_CONTENT
+        # Check after delete, it's gone
+        response = api_client.get(f'/api/v1/video/{video.id}/')
+        assert response.status_code == NOT_FOUND
+
 
 class TestVideoPlaylist:
     def test_get(
