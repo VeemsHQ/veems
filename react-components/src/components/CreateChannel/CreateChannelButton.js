@@ -23,7 +23,6 @@ export const CreateChannelButton = ({
   const [validated, setValidated] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  console.log(isChannelSynced);
   const createChannelHandler = async (e) => {
     const form = e.currentTarget;
     e.preventDefault();

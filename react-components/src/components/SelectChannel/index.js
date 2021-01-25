@@ -31,7 +31,7 @@ function Container(props) {
   useEffect(() => { 
     /* The first thing we need to do is make sure when reloading this component is
     make sure Redux matches what we have passed in from Django  */
-    props.setChannels(props.channels)
+    props.setChannels(props.channels);
   }, [])
 
   useEffect(() => { 
