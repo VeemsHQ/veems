@@ -26,11 +26,10 @@ export function Container(props) {
     // todo when server calls in place 
     // syncChannelRequest();
   };
-  const handleModalClose = () => {
-    props.setSyncModalOpen(false);
-  };
+  const handleModalClose = () => props.setSyncModalOpen(false);
+  const handleModalOpen = () => props.setSyncModalOpen(true);
   return (
-    <SyncChannelButton bModalOpen={props.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalClose={() => handleModalClose} />
+    <SyncChannelButton bModalOpen={props.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalOpen={() => handleModalOpen} onModalClose={() => handleModalClose} />
   );
 };
 
