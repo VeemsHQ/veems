@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Toast from 'react-bootstrap/Toast';
 
 import "regenerator-runtime/runtime.js";
 
@@ -20,6 +21,7 @@ export const CreateChannelButton = ({
   const [channelWarning, setChannelWarning] = useState('');
   const [channelSync, setChannelSync] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const createChannelHandler = async (e) => {
     const form = e.currentTarget;
@@ -33,6 +35,8 @@ export const CreateChannelButton = ({
     const isChannelCreated = await onCreateChannel(channelName, channelDescription, channelSync);
     if (isChannelCreated) {
       setShowChannelModal(false);
+      // Show toast success.
+      setShowToast(true);
     } else {
       setChannelWarning('Sorry, it looks like something has gone wrong.');
     }
@@ -88,10 +92,46 @@ export const CreateChannelButton = ({
     )
   };
 
+  const renderToast = () => {
+    return (
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'fixed',
+          bottom: '0',
+          right: '0',
+          padding: '20px',
+          margin: '20px',
+          width: '100%',
+          zIndex: '9999',
+        }}
+      >
+        <Toast
+          style={{
+            position: 'absolute',
+            padding: '20px',
+            bottom: 0,
+            right: 0,
+          }}
+          show={showToast}
+          autohide={true}
+          onClose={() => setShowToast(!showToast)}
+        >
+          <Toast.Header>
+            Success
+          </Toast.Header>
+          <Toast.Body>Created Channel: {channelName}</Toast.Body>
+        </Toast>
+      </div>
+    )
+  }
+
   return (
     <>
       <div><a onClick={() => setShowChannelModal(true)} className="mt-2 btn btn-outline-secondary"><i className="material-icons align-middle">add_circle_outline</i> Create Channel</a></div>
       {renderModal()}
+      {renderToast()}
     </>
   );
 
