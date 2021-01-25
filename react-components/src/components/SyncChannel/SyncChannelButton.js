@@ -19,7 +19,8 @@ export const SyncChannelButton = ({
 }) => {
   const [channelName, setChannelName] = useState('');
 
-  const syncHandler = () => {
+  const syncHandler = (e) => {
+    // e.preventDefault();
     // Todo: Add some warnings to form validation
     onSyncChannel();
     onModalClose()

@@ -82,7 +82,7 @@ const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 This only deal with the above and handling API requests. The SyncChannel
 component will manage logic.
 */
-export const CreateChannel = ({
+export const CreateChannelContainer = ({
   element,
   ...params
 }) => {
