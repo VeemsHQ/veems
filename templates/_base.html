@@ -26,8 +26,16 @@
     <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css"
         rel="stylesheet" />
     <script src="{% static 'js/bootstrap-tagsinput.js' %}"></script>
+    <script>
+        {% if selected_channel %}
+        window.SELECTED_CHANNEL_ID = "{{ selected_channel }}";
+        {% else %}
+        window.SELECTED_CHANNEL_ID;
+        {% endif %}
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    <script type="text/javascript" src="{% static 'app.js' %}"></script>
 </head>
-
 
 {% block body %}
 {% endblock %}

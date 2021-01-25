@@ -8,6 +8,7 @@ __pycache__/
 staticfiles/
 # C extensions
 *.so
+staticfiles/
 .vscode/
 ./media/
 # Distribution / packaging
