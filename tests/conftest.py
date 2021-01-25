@@ -368,6 +368,7 @@ def expected_video_resp_json():
             'view_count': int,
             'visibility': str,
             'authenticated_user_data': dict,
+            'likesdislikes_percentage': float,
         }
     )
 

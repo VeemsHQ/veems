@@ -121,6 +121,7 @@ class TestVideoView:
             'likes_count': 0,
             'dislikes_count': 0,
             'authenticated_user_data': {},
+            'likesdislikes_percentage': 50.,
         }
         expected_video_resp_json = expected_video_resp_json.extend(
             expected_video_context

@@ -134,9 +134,9 @@ class VideoSerializer(CustomModelSerializer):
         dislikes = self.get_dislikes_count(instance=instance)
         total = likes + dislikes
         if total == 0:
-            return 50
+            return 50.
         percentage = likes / total * 100
-        return percentage
+        return float(percentage)
 
     def get_authenticated_user_data(self, instance):
         if self._user_id:
