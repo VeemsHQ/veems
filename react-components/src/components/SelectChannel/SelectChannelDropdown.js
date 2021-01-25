@@ -1,6 +1,8 @@
 import React from 'react';
 
+
 import "regenerator-runtime/runtime.js";
+import PropTypes from 'prop-types';
 
 // Styling
 /* Todo: Move all embedded css into here so we can properly pass and use props
@@ -34,6 +36,20 @@ export const SelectChannelDropdown = ({
     </>
   );
 
+};
+
+/** Props Types */
+SelectChannelDropdown.propTypes = {
+  activeID: PropTypes.string,
+  channels: PropTypes.arrayOf(PropTypes.shape()),
+  onSelectChannel: PropTypes.func,
+};
+
+/** Default Props. */
+SelectChannelDropdown.defaultProps = {
+  activeID: '',
+  onSelectChannel: () => { Error('No callback defined for SelectChannelDropdown'); },
+  channels: [],
 };
 
 export default SelectChannelDropdown;

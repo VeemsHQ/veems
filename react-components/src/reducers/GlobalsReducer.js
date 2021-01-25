@@ -3,7 +3,7 @@ import {
 } from '../actions/ActionTypes';
 
 const initialState = {
-  session: 0,
+  session: null,
 };
 
 export default (state = initialState, action) => {

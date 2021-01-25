@@ -23,8 +23,9 @@ export const CreateChannelButton = ({
 
   const createChannelHandler = async (e) => {
     const form = e.currentTarget;
+    e.preventDefault();
+    
     if (form.checkValidity() === false) {
-      e.preventDefault();
       e.stopPropagation();
       setValidated(true);
       return;
