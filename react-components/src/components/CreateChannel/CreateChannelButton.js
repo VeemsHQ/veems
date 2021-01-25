@@ -17,19 +17,31 @@ export const CreateChannelButton = ({
 
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
+  const [channelWarning, setChannelWarning] = useState('');
   const [channelSync, setChannelSync] = useState(false);
+  const [validated, setValidated] = useState(false);
 
-  const createChannelHandler = () => {
-    setShowChannelModal(false);
-    // Todo: Add some warnings to form validation for failed create.
-    onCreateChannel(channelName, channelDescription, channelSync);
+  const createChannelHandler = async (e) => {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
+      setValidated(true);
+      return;
+    }
+    const isChannelCreated = await onCreateChannel(channelName, channelDescription, channelSync);
+    if (isChannelCreated) {
+      setShowChannelModal(false);
+    } else {
+      setChannelWarning('Sorry, it looks like something has gone wrong.');
+    }
   };
 
   const renderModal = () => {
     return (
       <>
         <Modal show={showChannelModal} onHide={() => setShowChannelModal(false)}>
-        <Form>
+        <Form onSubmit={(e) => createChannelHandler(e)} noValidate validated={validated}>
 
           <Modal.Header closeButton>
             <Modal.Title>Create a channel</Modal.Title>
@@ -39,25 +51,34 @@ export const CreateChannelButton = ({
 
               <Form.Group>
                 <Form.Label>Channel Name</Form.Label>
-                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" placeholder={'My Awesome Channel'} />
+                <Form.Control onChange={e => setChannelName(e.target.value)} type="text" placeholder={'My Awesome Channel'} required />
+                <Form.Control.Feedback type="invalid">
+                  Please provide a channel name.
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group controlId="exampleForm.ControlTextarea1">
                 <Form.Label>Channel Description</Form.Label>
-                <Form.Control onChange={e => setChannelDescription(e.target.value)} as="textarea" rows={4} placeholder={'Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.'} />
+                <Form.Control required onChange={e => setChannelDescription(e.target.value)} as="textarea" rows={4} placeholder={'Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.'} />
+                <Form.Control.Feedback type="invalid">
+                  Please provide a channel description.
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group controlId="formBasicCheckbox">
                 <Form.Check onChange={e => {setChannelSync(e.target.value === 'on' ? true : false)}} type="checkbox" label={<><label>I'd like to sync videos from my YouTube Channel. </label> <a href='#'> Learn more about channel syncing</a></>} />
               </Form.Group>
-              <p class="text-muted">
-                  By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
+              <p className="text-muted">
+                By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
               </p>
             </Modal.Body>
             
             <Modal.Footer>
+              <p className="text-danger">
+                {channelWarning}
+              </p>
               <button onClick={() => setShowChannelModal(false)} type="button" className="btn btn-light">Cancel</button>
-              <a href="#" onClick={() => createChannelHandler()} className="btn btn-primary">Create Channel</a>
+              <button type="submit" className="btn btn-primary">Create Channel</button>
             </Modal.Footer>
 
           </Form>

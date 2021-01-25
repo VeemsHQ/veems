@@ -30,8 +30,11 @@ function Container(props) {
 
   const handleCreateChannel = async (name, desc, bSync) => {
      
-    const response = await createChannelRequest(name, desc, bSync);
-    
+    const {response, data } = await createChannelRequest(name, desc, bSync);
+
+    if (response && response.status === 400)
+      return false;
+
     /* Update active channel redux list from server. Alternativly we could merge
     the returned active channel below to  into an already populated list reduce API calls, but
     leaving this up to the server to manage is safer */
@@ -40,8 +43,10 @@ function Container(props) {
       await props.setChannels(allChannels.data);
     
     // Set active channel and store ID.
-    if (response && response.data && response.data.id)
-      await props.setActiveChannel(response.data.id);
+    if (data && data.id) {
+      window.SELECTED_CHANNEL_ID = data.id;
+      await props.setActiveChannel(data.id);
+    }
     
     /* If bSync then enable correct tab and dispatch Redux action to
     open modal dialog on page */ 
@@ -51,6 +56,8 @@ function Container(props) {
     } else {
       await props.setSyncModalOpen(false);
     }
+
+    return true;
   };
   
   return (

@@ -37,9 +37,10 @@ function Container(props) {
 
   const handleSelectChannel = async (e) => { 
     if (e.target.value){
-      // update the active cahnnel in the store and on the server
+      // update the active channel in the store and on the server
       props.setActiveChannel(e.target.value);
       await setChannelRequest(e.target.value);
+      window.SELECTED_CHANNEL_ID = e.target.value;
     }
   };
   
@@ -81,7 +82,7 @@ export const SelectChannel = ({
           </Provider>
         </PersistGate>
       ,
-      element
+      element || document.createElement('div') // for testing purposes
     )
   );
 };
