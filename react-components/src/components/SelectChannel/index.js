@@ -14,6 +14,7 @@ import SelectChannelDropdown from './SelectChannelDropdown';
 import {
   setSyncModalOpenAction,
   setActiveChannelAction,
+  setChannelsAction,
 } from '../../actions/index';
 
 // api
@@ -26,6 +27,12 @@ const { store, persistor } = configureStore.getInstance();
 // Component connected to Redux store
 function Container(props) {
   const [channels, setChannels] = useState(props.channels);
+
+  useEffect(() => { 
+    /* The first thing we need to do is make sure when reloading this component is
+    make sure Redux matches what we have passed in from Django  */
+    props.setChannels(props.channels)
+  }, [])
 
   useEffect(() => { 
     /* If we have anything in the persisted Redux store
@@ -55,6 +62,7 @@ const mapDispatchToProps = (dispatch) => {
     ...bindActionCreators({
       setSyncModalOpen: setSyncModalOpenAction,
       setActiveChannel: setActiveChannelAction,
+      setChannels: setChannelsAction,
     }, dispatch),
   };
 };

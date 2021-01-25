@@ -19,10 +19,11 @@ export const CreateChannelButton = ({
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
   const [channelWarning, setChannelWarning] = useState('');
-  const [channelSync, setChannelSync] = useState(false);
+  const [isChannelSynced, setIsChannelSynced] = useState(false);
   const [validated, setValidated] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  console.log(isChannelSynced);
   const createChannelHandler = async (e) => {
     const form = e.currentTarget;
     e.preventDefault();
@@ -32,7 +33,7 @@ export const CreateChannelButton = ({
       setValidated(true);
       return;
     }
-    const isChannelCreated = await onCreateChannel(channelName, channelDescription, channelSync);
+    const isChannelCreated = await onCreateChannel(channelName, channelDescription, isChannelSynced);
     if (isChannelCreated) {
       setShowChannelModal(false);
       // Show toast success.
@@ -71,7 +72,7 @@ export const CreateChannelButton = ({
               </Form.Group>
 
               <Form.Group controlId="formBasicCheckbox">
-                <Form.Check onChange={e => {setChannelSync(e.target.value === 'on' ? true : false)}} type="checkbox" label={<><label>I'd like to sync videos from my YouTube Channel. </label> <a href='#'> Learn more about channel syncing</a></>} />
+                <Form.Check checked={isChannelSynced} onChange={() => setIsChannelSynced(!isChannelSynced)} type="checkbox" label={<><label>I'd like to sync videos from my YouTube Channel. </label> <a href='#'> Learn more about channel syncing</a></>} />
               </Form.Group>
               <p className="text-muted">
                 By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
