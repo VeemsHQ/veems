@@ -22,4 +22,3 @@ django-crispy-forms==1.10.0
 Pillow==8.1.0
 django-imagekit==4.0.2
 cachetools==4.2.0
-whitenoise==5.2.0

@@ -91,7 +91,6 @@ AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -164,7 +163,6 @@ STATICFILES_DIRS = (
     Path(__file__).parent.parent / 'static',
     Path(__file__).parent.parent / 'react-components/dist/',
 )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': (
