@@ -12,7 +12,7 @@ export const StyledLink = styled.a`
 `; // Bootstrap is overriding color here so having to use !important. Needs investigation.
 
 export const SyncChannelButton = ({
-  bModalOpen,
+  isModalOpen,
   onModalClose,
   onModalOpen,
   onSyncChannel,
@@ -28,7 +28,7 @@ export const SyncChannelButton = ({
   const renderModal = () => {
     return (
       <>
-        <Modal show={bModalOpen} onHide={onModalClose()}>
+        <Modal show={isModalOpen} onHide={onModalClose()}>
         <Form>
 
           <Modal.Header closeButton>

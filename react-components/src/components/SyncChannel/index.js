@@ -29,7 +29,7 @@ export function Container(props) {
   const handleModalClose = () => props.setSyncModalOpen(false);
   const handleModalOpen = () => props.setSyncModalOpen(true);
   return (
-    <SyncChannelButton bModalOpen={props.bSyncModalOpen} onSyncChannel={handleSyncChannel} onModalOpen={() => handleModalOpen} onModalClose={() => handleModalClose} />
+    <SyncChannelButton isModalOpen={props.isSyncModalOpen} onSyncChannel={handleSyncChannel} onModalOpen={() => handleModalOpen} onModalClose={() => handleModalClose} />
   );
 };
 
@@ -43,7 +43,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const mapStateToProps = state => ({
-  bSyncModalOpen: state.channels.bSyncModalOpen,
+  isSyncModalOpen: state.channels.isSyncModalOpen,
 });
 
 export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);

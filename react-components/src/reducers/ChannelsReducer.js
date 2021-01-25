@@ -6,7 +6,7 @@ import {
 
 const initialState = {
   activeChannelID: 0,
-  bSyncModalOpen: false,
+  isSyncModalOpen: false,
   channels: [],
 };
 
@@ -17,7 +17,7 @@ export default (state = initialState, action) => {
     case SET_ACTIVE_CHANNEL_ID:
       return { ...state, activeChannelID: payload };
     case SET_SYNC_MODAL_OPEN:
-      return { ...state, bSyncModalOpen: payload };
+      return { ...state, isSyncModalOpen: payload };
     case SET_CHANNELS:
       return { ...state, channels: payload };
     default:

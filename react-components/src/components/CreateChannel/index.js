@@ -28,9 +28,9 @@ const { store, persistor } = configureStore.getInstance();
 // Component connected to Redux store
 function Container(props) {
 
-  const handleCreateChannel = async (name, desc, bSync) => {
+  const handleCreateChannel = async (name, desc, isSynced) => {
      
-    const {response, data } = await createChannelRequest(name, desc, bSync);
+    const {response, data } = await createChannelRequest(name, desc, isSynced);
 
     if (response && response.status === 400)
       return false;
@@ -48,9 +48,9 @@ function Container(props) {
       await props.setActiveChannel(data.id);
     }
     
-    /* If bSync then enable correct tab and dispatch Redux action to
+    /* If isSynced then enable correct tab and dispatch Redux action to
     open modal dialog on page */ 
-    if (bSync) {
+    if (isSynced) {
       await props.setSyncModalOpen(true);
       window.location.pathname = '/channel/sync/';
     } else {
