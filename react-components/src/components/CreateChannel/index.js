@@ -32,18 +32,18 @@ function Container(props) {
      
     const {response, data } = await createChannelRequest(name, desc, isSynced);
 
-    if (response && response.status === 400)
+    if (response?.status === 400)
       return false;
 
     /* Update active channel redux list from server. Alternativly we could merge
     the returned active channel below to  into an already populated list reduce API calls, but
     leaving this up to the server to manage is safer */
     const allChannels =  await getChannelsRequest();
-    if (allChannels && allChannels.data && Array.isArray(allChannels.data))
+    if (allChannels?.data && Array.isArray(allChannels.data))
       await props.setChannels(allChannels.data);
     
     // Set active channel and store ID.
-    if (data && data.id) {
+    if (data?.id) {
       window.SELECTED_CHANNEL_ID = data.id;
       await props.setActiveChannel(data.id);
     }

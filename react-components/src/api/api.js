@@ -25,10 +25,7 @@ export const API = axios.create({
 
 // Todo: This could do with splitting into seperate apis per service
 
-const getServerURL = async () => {
-  // todo.
-  return 'http://localhost:8000';
-}
+const serverURL = 'http://localhost:8000';
 
 /**
  * API
@@ -40,7 +37,7 @@ const getServerURL = async () => {
  * @param {string} language - 
  * @throw Should return error
  */
-const createChannelRequest = async ( name, description, syncVideosInterested ) => {
+export const createChannelRequest = async ( name, description, syncVideosInterested ) => {
   const data = {
     name,
     description,
@@ -49,7 +46,7 @@ const createChannelRequest = async ( name, description, syncVideosInterested ) =
     is_selected: true,
   };
   try {
-    const res = await API.post(`${await getServerURL()}/api/v1/channel/`, data);
+    const res = await API.post(`${serverURL}/api/v1/channel/`, data);
     return res;
   } catch (err) {
     return err;
@@ -63,9 +60,9 @@ const createChannelRequest = async ( name, description, syncVideosInterested ) =
  * @param {number} channelId - Required channelId
  * @throw Should return error
  */
-const getChannelRequest = async ( channelId ) => {
+export const getChannelRequest = async ( channelId ) => {
   try {
-    const res = await API.get(`${await getServerURL()}/api/v1/channel/${channelId}/`);
+    const res = await API.get(`${serverURL}/api/v1/channel/${channelId}/`);
     return res;
   } catch (err) {
     return err;
@@ -78,9 +75,9 @@ const getChannelRequest = async ( channelId ) => {
  * @return Should return successful
  * @throw Should return error
  */
-const getChannelsRequest = async () => {
+export const getChannelsRequest = async () => {
   try {
-    const res = await API.get(`${await getServerURL()}/api/v1/channel/`);
+    const res = await API.get(`${serverURL}/api/v1/channel/`);
     return res;
   } catch (err) {
     return err;
@@ -94,21 +91,14 @@ const getChannelsRequest = async () => {
  * @param {number} channelId - Required channelId
  * @throw Should return error
  */
-const setChannelRequest = async (channelId) => {
+export const setChannelRequest = async (channelId) => {
   const data = {
     is_selected: true,
   };
   try {
-    const res = await API.put(`${await getServerURL()}/api/v1/channel/${channelId}/`, data);
+    const res = await API.put(`${serverURL}/api/v1/channel/${channelId}/`, data);
     return res;
   } catch (err) {
     return err;
   }
-};
-
-export {
-  createChannelRequest,
-  getChannelRequest,
-  getChannelsRequest,
-  setChannelRequest
 };

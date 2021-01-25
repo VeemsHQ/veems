@@ -31,7 +31,7 @@ function Container(props) {
     /* If we have anything in the persisted Redux store
     at this point we can assume that we should use that instead of the
     data passed from Django. If not we will use Django. */
-    if (props && props.storeChannels && props.storeChannels.length > 0)
+    if (props?.storeChannels && props.storeChannels.length > 0)
       setChannels(props.storeChannels);
   }, [props.storeChannels])
 
