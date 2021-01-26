@@ -26,6 +26,9 @@ class VideoLikeDislikeSerializer(CustomModelSerializer):
     dislikes_count = serializers.SerializerMethodField(
         method_name='get_dislikes_count'
     )
+    likesdislikes_percentage = serializers.SerializerMethodField(
+        method_name='get_likesdislikes_percentage'
+    )
 
     @cachedmethod(operator.attrgetter('cache'))
     def _get_video_likedislike_counts(self, video_id):
@@ -36,13 +39,31 @@ class VideoLikeDislikeSerializer(CustomModelSerializer):
         return counts['like_count']
 
     def get_dislikes_count(self, instance):
-
         counts = self._get_video_likedislike_counts(video_id=instance.video_id)
         return counts['dislike_count']
 
+    @cachedmethod(operator.attrgetter('cache'))
+    def get_likesdislikes_percentage(self, instance):
+        likes = self.get_likes_count(instance=instance)
+        dislikes = self.get_dislikes_count(instance=instance)
+        total = likes + dislikes
+        if total == 0:
+            return 50.0
+        if likes > dislikes:
+            percentage = likes / total * 100
+        else:
+            percentage = dislikes / total * 100
+        return float(percentage)
+
     class Meta:
         model = models.VideoLikeDislike
-        fields = ('video_id', 'is_like', 'likes_count', 'dislikes_count')
+        fields = (
+            'video_id',
+            'is_like',
+            'likes_count',
+            'dislikes_count',
+            'likesdislikes_percentage',
+        )
         extra_kwargs = {
             'video_id': {'read_only': True},
             'is_like': {'read_only': True},
@@ -160,7 +181,7 @@ class VideoSerializer(CustomModelSerializer):
         dislikes = self.get_dislikes_count(instance=instance)
         total = likes + dislikes
         if total == 0:
-            return 50.
+            return 50.0
         percentage = likes / total * 100
         return float(percentage)
 

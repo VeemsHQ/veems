@@ -11,20 +11,9 @@ export const VideoLikesDislikesContainer = ({
   likesCount,
   dislikesCount,
   isLiked,
+  likesDislikesPercentage,
 }) => {
   const [showToast, setShowToast] = useState(false);
-  // Calc percentage from likes/dislike counts for the UI progress bar.
-  let likesDislikesPercentage;
-  const total = likesCount + dislikesCount;
-  if (total == 0) {
-    likesDislikesPercentage = 50;
-  } else {
-    if(likesCount > dislikesCount) {
-      likesDislikesPercentage = (likesCount / total) * 100;
-    } else {
-      likesDislikesPercentage = (dislikesCount / total) * 100;
-    }
-  }
 
   const likeVideo = async (e) => {
     e.preventDefault();
@@ -47,7 +36,6 @@ export const VideoLikesDislikesContainer = ({
   };
 
   const renderToast = () => {
-    console.log('RENDER');
     let action;
     if (isLiked == true) {
       action = 'liked';

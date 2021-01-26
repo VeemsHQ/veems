@@ -577,6 +577,7 @@ class TestVideoLikeDislike:
             'is_like': is_like,
             'likes_count': 1 if is_like else 0,
             'dislikes_count': 1 if not is_like else 0,
+            'likesdislikes_percentage': 100,
         }
 
     def test_delete(
@@ -604,4 +605,5 @@ class TestVideoLikeDislike:
             'is_like': None,
             'likes_count': 0,
             'dislikes_count': 0,
+            'likesdislikes_percentage': 50,
         }

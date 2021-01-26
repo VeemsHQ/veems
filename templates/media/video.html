@@ -671,6 +671,7 @@
         videoId: "{{video.id}}",
         likesCount: {{video.likes_count}},
         dislikesCount: {{video.dislikes_count}},
+        likesDislikesPercentage: {{video.likesdislikes_percentage}},
         isLiked: {{ video.authenticated_user_data.has_liked_video|to_json }}
     })
 </script>

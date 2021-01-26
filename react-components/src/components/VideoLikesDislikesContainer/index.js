@@ -28,11 +28,13 @@ function Container(props) {
   const [dislikesCount, setDislikesCount] = useState(props.dislikesCount);
   // isLiked possible states: true=liked false=disliked null=neither
   const [isLiked, setIsLiked] = useState(props.isLiked);
+  const [likesDislikesPercentage, setLikesDislikesPercentage] = useState(props.likesDislikesPercentage);
 
   const updateStateFromApiResponse =  async (response) => {
     setLikesCount(response.data.likes_count)
     setDislikesCount(response.data.dislikes_count)
     setIsLiked(response.data.is_like);
+    setLikesDislikesPercentage(response.data.likesdislikes_percentage);
   }
 
   const handleVideoNeither = async () => {
@@ -69,6 +71,7 @@ function Container(props) {
       dislikesCount={dislikesCount}
       likesCount={likesCount}
       isLiked={isLiked}
+      likesDislikesPercentage={likesDislikesPercentage}
     />
   );
 };
