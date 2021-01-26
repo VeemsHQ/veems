@@ -10,8 +10,9 @@ import axios from 'axios';
  */
 export const API = axios.create({
   timeout: 5000,
-  headers: { 'Content-Type': 'application/json',
-              'X-CSRFTOKEN': window.CSRF_TOKEN,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFTOKEN': window.CSRF_TOKEN,
   },
   transformRequest: [function preTransformData(data) {
     // Todo: Add some outgoing error checks to server
@@ -33,11 +34,11 @@ const serverURL = 'http://localhost:8000';
  * @return Should return successful
  * @param {string} name - Channel name
  * @param {string} description - Channel description
- * @param {boolean} syncVideosInterested - 
- * @param {string} language - 
+ * @param {boolean} syncVideosInterested -
+ * @param {string} language -
  * @throw Should return error
  */
-export const createChannelRequest = async ( name, description, syncVideosInterested ) => {
+export const createChannelRequest = async (name, description, syncVideosInterested) => {
   const data = {
     name,
     description,
@@ -60,7 +61,7 @@ export const createChannelRequest = async ( name, description, syncVideosInteres
  * @param {number} channelId - Required channelId
  * @throw Should return error
  */
-export const getChannelRequest = async ( channelId ) => {
+export const getChannelRequest = async (channelId) => {
   try {
     const res = await API.get(`${serverURL}/api/v1/channel/${channelId}/`);
     return res;
@@ -100,5 +101,27 @@ export const setChannelRequest = async (channelId) => {
     return res;
   } catch (err) {
     return err;
+  }
+};
+
+
+export const setVideoLikeDislike = async (videoId, isLike) => {
+  if (isLike == null) {
+    try {
+      const res = await API.delete(`${serverURL}/api/v1/video/${videoId}/likedislike/`);
+      return res;
+    } catch (err) {
+      return err;
+    }
+  } else {
+    const data = {
+      is_like: isLike,
+    };
+    try {
+      const res = await API.post(`${serverURL}/api/v1/video/${videoId}/likedislike/`, data);
+      return res;
+    } catch (err) {
+      return err;
+    }
   }
 };

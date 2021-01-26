@@ -1,47 +1,138 @@
 
 import React, { useState } from 'react';
+import Toast from 'react-bootstrap/Toast';
 
 import "regenerator-runtime/runtime.js";
 
 export const VideoLikesDislikesContainer = ({
-  onCreateChannel,
+  handleVideoLiked,
+  handleVideoDisliked,
+  handleVideoNeither,
+  likesCount,
+  dislikesCount,
+  isLiked,
 }) => {
-  const [likesCount, likeVideo] = useState(0);
-  const [dislikesCount, dislikeVideo] = useState(0);
-  const [isLiked, setAsLiked] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  // Calc percentage from likes/dislike counts for the UI progress bar.
+  let likesDislikesPercentage;
+  const total = likesCount + dislikesCount;
+  if (total == 0) {
+    likesDislikesPercentage = 50;
+  } else {
+    if(likesCount > dislikesCount) {
+      likesDislikesPercentage = (likesCount / total) * 100;
+    } else {
+      likesDislikesPercentage = (dislikesCount / total) * 100;
+    }
+  }
 
-  const doLikeVideo = async () => {
-    // const isChannelCreated = await onCreateChannel(channelName, channelDescription, isChannelSynced);
-    // if (isChannelCreated) {
-    //   setShowChannelModal(false);
-    //   // Show toast success.
-    //   setShowToast(true);
-    // } else {
-    //   setChannelWarning('Sorry, it looks like something has gone wrong.');
-    // }
-    setAsLiked(true);
+  const likeVideo = async (e) => {
+    e.preventDefault();
+    if (isLiked == false || isLiked == null) {
+      await handleVideoLiked();
+      setShowToast(true);
+    } else {
+      await handleVideoNeither();
+    }
   };
+
+  const dislikeVideo = async (e) => {
+    e.preventDefault();
+    if (isLiked == true || isLiked == null) {
+      await handleVideoDisliked();
+      setShowToast(true);
+    } else {
+      await handleVideoNeither();
+    }
+  };
+
+  const renderToast = () => {
+    console.log('RENDER');
+    let action;
+    if (isLiked == true) {
+      action = 'liked';
+    } else if (isLiked == false) {
+      action = 'disliked';
+    } else {
+      return '';
+    }
+    return (
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'fixed',
+          top: '0',
+          right: '0',
+          padding: '20px',
+          margin: '20px',
+          width: '100%',
+          zIndex: '9999',
+        }}
+      >
+        <Toast
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+          }}
+          show={showToast}
+          autohide={true}
+          onClose={() => setShowToast(!showToast)}
+        >
+          <Toast.Header>
+            <strong className="mr-auto">Success</strong>
+          </Toast.Header>
+          <Toast.Body>You {action} this video.</Toast.Body>
+        </Toast>
+      </div>
+    )
+  }
+
+  const getLikeTextColor = () => {
+    if (isLiked === true) {
+      return 'text-primary';
+    } else {
+      return 'text-muted';
+    }
+  }
+
+  const getDislikeTextColor = () => {
+    if (isLiked === false) {
+      return 'text-primary';
+    } else {
+      return 'text-muted';
+    }
+  }
+
+  const getBarBackgroundColor = () => {
+    if (isLiked == true || isLiked == false) {
+      return 'bg-primary';
+    } else {
+      return 'bg-muted';
+    }
+  }
 
   return (
     <>
       <div className="video-menu d-inline-flex align-items-center align-middle">
         <div className="d-flex flex-column" id="video-likes-dislikes">
           <div className="d-flex flex-row">
-            <a href="#" onClick={() => doLikeVideo()} title="I like this" className="btn btn-sm text-muted d-flex align-items-center"><i
+            <a href="#" onClick={(e) => likeVideo(e)} title="I like this" className={"btn btn-sm d-flex align-items-center " + getLikeTextColor()}><i
               className="small material-icons align-middle">thumb_up_alt</i><span
                 className="ml-2">{likesCount}</span></a>
-            <a href="#" title="I dislike this"
-              className="btn btn-sm text-muted d-flex align-items-center"><i
+            <a href="#" onClick={(e) => dislikeVideo(e)} title="I dislike this"
+              className={"btn btn-sm d-flex align-items-center " + getDislikeTextColor()}><i
                 className="small material-icons align-middle">thumb_down_alt</i><span
                   className="ml-2">{dislikesCount}</span></a>
           </div>
           <div className="progress likedislike-progress">
-            {/* TODO width */}
-            <div className="progress-bar bg-muted" role="progressbar" style={{width: '50%'}} aria-valuenow="50"
+            <div className={"progress-bar " + getBarBackgroundColor()} role="progressbar" style={{ width: `${likesDislikesPercentage}%` }} aria-valuenow={likesDislikesPercentage}
               aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
-        </div>
+      </div>
+      {renderToast()}
     </>
   );
 };

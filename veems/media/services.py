@@ -314,11 +314,13 @@ def video_like(*, video_id, user_id):
 
 
 def video_remove_likedislike(*, video_id, user_id):
-    models.VideoLikeDislike.objects.filter(
+    record, _ = models.VideoLikeDislike.objects.update_or_create(
         video_id=video_id,
         user_id=user_id,
-    ).delete()
+        defaults={'is_like': None},
+    )
     logger.info('Video %s likedislike removed by %s', video_id, user_id)
+    return record
 
 
 def video_dislike(*, video_id, user_id):

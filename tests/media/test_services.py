@@ -717,9 +717,14 @@ def test_video_remove_likedislike(video, user):
     services.video_like(video_id=video.id, user_id=user.id)
     services.video_dislike(video_id=video.id, user_id=user.id)
 
-    services.video_remove_likedislike(video_id=video.id, user_id=user.id)
+    likedislike = services.video_remove_likedislike(
+        video_id=video.id, user_id=user.id
+    )
 
-    assert len(services.get_video_likedislikes(video_id=video.id)) == 0
+    assert likedislike.is_like is None
+    assert likedislike.video == video
+    assert likedislike.user == user
+    assert len(services.get_video_likedislikes(video_id=video.id)) == 1
 
 
 def test_video_dislike(video, user):

@@ -26,7 +26,7 @@ export const CreateChannelButton = ({
   const createChannelHandler = async (e) => {
     const form = e.currentTarget;
     e.preventDefault();
-    
+
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
@@ -51,7 +51,7 @@ export const CreateChannelButton = ({
           <Modal.Header closeButton>
             <Modal.Title>Create a channel</Modal.Title>
           </Modal.Header>
-                
+
            <Modal.Body>
 
               <Form.Group>
@@ -77,7 +77,7 @@ export const CreateChannelButton = ({
                 By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
               </p>
             </Modal.Body>
-            
+
             <Modal.Footer>
               <p className="text-danger">
                 {channelWarning}

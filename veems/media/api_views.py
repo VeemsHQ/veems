@@ -89,14 +89,14 @@ class VideoLikeDislikeAPIView(APIView):
                 video_id=video_id, user_id=request.user.id
             )
         serializer = serializers.VideoLikeDislikeSerializer(record)
-
         return Response(serializer.data)
 
     def delete(self, request, video_id, format=None):
-        services.video_remove_likedislike(
+        record = services.video_remove_likedislike(
             video_id=video_id, user_id=request.user.id
         )
-        return HttpResponse('', status=NO_CONTENT)
+        serializer = serializers.VideoLikeDislikeSerializer(record)
+        return Response(serializer.data)
 
 
 class VideoThumbnailAPIView(APIView):

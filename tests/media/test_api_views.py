@@ -575,6 +575,8 @@ class TestVideoLikeDislike:
         assert response.json() == {
             'video_id': video.id,
             'is_like': is_like,
+            'likes_count': 1 if is_like else 0,
+            'dislikes_count': 1 if not is_like else 0,
         }
 
     def test_delete(
@@ -583,7 +585,23 @@ class TestVideoLikeDislike:
         video,
     ):
         api_client, _ = api_client
+        # First like a video
+        response = api_client.post(
+            f'/api/v1/video/{video.id}/likedislike/',
+            {
+                'is_like': True,
+            },
+            format='json',
+        )
+        assert response.status_code == OK
 
         response = api_client.delete(f'/api/v1/video/{video.id}/likedislike/')
 
-        assert response.status_code == NO_CONTENT
+        # Check the like was deleted
+        assert response.status_code == OK
+        assert response.json() == {
+            'video_id': video.id,
+            'is_like': None,
+            'likes_count': 0,
+            'dislikes_count': 0,
+        }

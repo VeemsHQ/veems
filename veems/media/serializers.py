@@ -16,12 +16,38 @@ from ..common.serializers import CustomModelSerializer, DEFAULT_EXCLUDE
 
 
 class VideoLikeDislikeSerializer(CustomModelSerializer):
+    def __init__(self, *args, **kwargs):
+        CustomModelSerializer.__init__(self, *args, **kwargs)
+        self.cache = LRUCache(maxsize=1000)
+
+    likes_count = serializers.SerializerMethodField(
+        method_name='get_likes_count'
+    )
+    dislikes_count = serializers.SerializerMethodField(
+        method_name='get_dislikes_count'
+    )
+
+    @cachedmethod(operator.attrgetter('cache'))
+    def _get_video_likedislike_counts(self, video_id):
+        return services.get_video_likedislike_count(video_id=video_id)
+
+    def get_likes_count(self, instance):
+        counts = self._get_video_likedislike_counts(video_id=instance.video_id)
+        return counts['like_count']
+
+    def get_dislikes_count(self, instance):
+
+        counts = self._get_video_likedislike_counts(video_id=instance.video_id)
+        return counts['dislike_count']
+
     class Meta:
         model = models.VideoLikeDislike
-        fields = ('video_id', 'is_like')
+        fields = ('video_id', 'is_like', 'likes_count', 'dislikes_count')
         extra_kwargs = {
             'video_id': {'read_only': True},
             'is_like': {'read_only': True},
+            'likes_count': {'read_only': True},
+            'dislikes_count': {'read_only': True},
         }
 
 
