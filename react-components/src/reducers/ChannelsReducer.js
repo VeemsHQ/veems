@@ -2,12 +2,14 @@ import {
   SET_ACTIVE_CHANNEL_ID,
   SET_SYNC_MODAL_OPEN,
   SET_CHANNELS,
+  SET_DB_STALE,
 } from '../actions/ActionTypes';
 
 const initialState = {
   activeChannelID: null,
   isSyncModalOpen: false,
   channels: [],
+  isDbStale: false,
 };
 
 export default (state = initialState, action) => {
@@ -20,6 +22,8 @@ export default (state = initialState, action) => {
       return { ...state, isSyncModalOpen: payload };
     case SET_CHANNELS:
       return { ...state, channels: payload };
+    case SET_DB_STALE:
+      return { ...state, isDbStale: payload };
     default:
       return state;
   }
