@@ -6,7 +6,7 @@ import {
 } from '../actions/ActionTypes';
 
 const initialState = {
-  activeChannelID: null,
+  activeChannelID: undefined,
   isSyncModalOpen: false,
   channels: [],
   isDbStale: false,
