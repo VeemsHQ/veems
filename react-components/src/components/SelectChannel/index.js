@@ -12,7 +12,6 @@ import SelectChannelDropdown from './SelectChannelDropdown';
 
 // Actions
 import {
-  setSyncModalOpenAction,
   setActiveChannelAction,
   setChannelsDbStaleAction,
 } from '../../actions/index';
@@ -25,9 +24,15 @@ import {
 const { store, persistor } = configureStore.getInstance();
 
 // Component connected to Redux store
-function Container(props) {
-  const [dropdownChannels, setDropdownChannels] = useState(props.channels);
-  const { isDbStale, storeChannels, channels } = props;
+const Container = ({
+  isDbStale,
+  storeChannels,
+  channels,
+  activeChannelID,
+  setChannelsDbStale,
+  setActiveChannel,
+ }) => {
+  const [dropdownChannels, setDropdownChannels] = useState(channels);
 
   useEffect(() => {
     /* If we have anything in the persisted Redux store
@@ -37,7 +42,7 @@ function Container(props) {
     if (storeChannels && isDbStale){
       setDropdownChannels(storeChannels);
       // Reset stale state now we are using the most up to date.
-      props.setChannelsDbStale(false);
+      setChannelsDbStale(false);
     } else {
       setDropdownChannels(dbChannels)
     }
@@ -47,14 +52,14 @@ function Container(props) {
   const handleSelectChannel = async (e) => { 
     if (e.target.value){
       // update the active channel in the store and on the server
-      props.setActiveChannel(e.target.value);
+      setActiveChannel(e.target.value);
       await setChannelRequest(e.target.value);
       window.SELECTED_CHANNEL_ID = e.target.value;
     }
   };
   
   return (
-    <SelectChannelDropdown channels={dropdownChannels} activeID={props.activeChannelID} onSelectChannel={(e) => handleSelectChannel(e)} />
+    <SelectChannelDropdown channels={dropdownChannels} activeID={activeChannelID} onSelectChannel={(e) => handleSelectChannel(e)} />
   );
 };
 
@@ -62,7 +67,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     ...bindActionCreators({
-      setSyncModalOpen: setSyncModalOpenAction,
       setActiveChannel: setActiveChannelAction,
       setChannelsDbStale: setChannelsDbStaleAction,
     }, dispatch),
