@@ -111,20 +111,15 @@ export const setVideoLikeDislike = async (videoId, isLike) => {
       const res = await API.delete(`${serverURL}/api/v1/video/${videoId}/likedislike/`);
       return res;
     } catch (err) {
-      return err.response.status;
-      // return err;
+      return err;
     }
   } else {
-    const data = {
-      is_like: isLike,
-    };
+    const data = { is_like: isLike };
     try {
       const res = await API.post(`${serverURL}/api/v1/video/${videoId}/likedislike/`, data);
       return res;
     } catch (err) {
-      return err.response.status;
-      console.log(err.response.status);
-      // return err;
+      return err;
     }
   }
 };

@@ -58,9 +58,9 @@ export const VideoLikesDislikesContainer = ({
             top: 0,
             right: 0,
           }}
-          show={apiError}
+          show={apiError != ''}
           autohide={true}
-          onClose={() => setApiError(false)}
+          onClose={() => setApiError('')}
         >
           <Toast.Header>
             <strong className="mr-auto">Error</strong>
