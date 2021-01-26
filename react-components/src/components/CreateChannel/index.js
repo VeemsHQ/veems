@@ -97,7 +97,7 @@ export const CreateChannelContainer = ({
           <ConnectedContainer {...params} />
         </PersistGate>
       </Provider>,
-      element
+      element || document.createElement('div') // for testing purposes
     )
   );
 };

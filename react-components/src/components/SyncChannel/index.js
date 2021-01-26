@@ -66,7 +66,7 @@ export const SyncChannelContainer = ({
           <ConnectedContainer {...params} />
         </PersistGate>
       </Provider>,
-      element
+      element || document.createElement('div') // for testing purposes
     )
   );
 };
