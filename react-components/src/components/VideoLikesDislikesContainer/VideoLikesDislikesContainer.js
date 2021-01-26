@@ -12,6 +12,8 @@ export const VideoLikesDislikesContainer = ({
   dislikesCount,
   isLiked,
   likesDislikesPercentage,
+  apiError,
+  setApiError,
 }) => {
   const [showToast, setShowToast] = useState(false);
 
@@ -35,11 +37,48 @@ export const VideoLikesDislikesContainer = ({
     }
   };
 
+  const renderErrorToast = () => {
+    return (
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'fixed',
+          top: '0',
+          right: '0',
+          padding: '20px',
+          margin: '20px',
+          width: '100%',
+          zIndex: '9999',
+        }}
+      >
+        <Toast
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+          }}
+          show={apiError}
+          autohide={true}
+          onClose={() => setApiError(false)}
+        >
+          <Toast.Header>
+            <strong className="mr-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body>{apiError}</Toast.Body>
+        </Toast>
+      </div>
+    )
+  }
+
   const renderToast = () => {
+    if (apiError !== false) {
+      return renderErrorToast();
+    }
     let action;
-    if (isLiked == true) {
+    if (isLiked === true) {
       action = 'liked';
-    } else if (isLiked == false) {
+    } else if (isLiked === false) {
       action = 'disliked';
     } else {
       return '';

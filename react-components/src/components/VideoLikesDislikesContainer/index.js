@@ -20,21 +20,32 @@ import {
 
 const { store, persistor } = configureStore.getInstance();
 
-// TODO: error when  not logged in
 // TODO: Sign in btn doesn't work when toast on page
 
 function Container(props) {
+  const [apiError, setApiError] = useState(false);
   const [likesCount, setLikesCount] = useState(props.likesCount);
   const [dislikesCount, setDislikesCount] = useState(props.dislikesCount);
   // isLiked possible states: true=liked false=disliked null=neither
   const [isLiked, setIsLiked] = useState(props.isLiked);
   const [likesDislikesPercentage, setLikesDislikesPercentage] = useState(props.likesDislikesPercentage);
 
-  const updateStateFromApiResponse =  async (response) => {
-    setLikesCount(response.data.likes_count)
-    setDislikesCount(response.data.dislikes_count)
-    setIsLiked(response.data.is_like);
-    setLikesDislikesPercentage(response.data.likesdislikes_percentage);
+  const updateStateFromApiResponse = async (response) => {
+    if (!response.data) {
+      var status = await response;
+      if (status == 403) {
+        setApiError('You need to login to do that.')
+        return true;
+      } else {
+        setApiError('Something went wrong, please try again.')
+        return true;
+      }
+    } else {
+      setLikesCount(response.data.likes_count)
+      setDislikesCount(response.data.dislikes_count)
+      setIsLiked(response.data.is_like);
+      setLikesDislikesPercentage(response.data.likesdislikes_percentage);
+    }
   }
 
   const handleVideoNeither = async () => {
@@ -44,8 +55,8 @@ function Container(props) {
   }
 
   const handleVideoLiked = async () => {
-    if (isLiked == null || isLiked == false) {
-      const response = await setVideoLikeDislike(props.videoId, true);
+    if (isLiked === null || isLiked === false) {
+      const response = setVideoLikeDislike(props.videoId, true);
       await updateStateFromApiResponse(response);
     } else {
       await handleVideoNeither()
@@ -54,7 +65,7 @@ function Container(props) {
   }
 
   const handleVideoDisliked = async () => {
-    if (isLiked == null || isLiked == true) {
+    if (isLiked === null || isLiked === true) {
       const response = await setVideoLikeDislike(props.videoId, false);
       await updateStateFromApiResponse(response);
     } else {
@@ -72,6 +83,8 @@ function Container(props) {
       likesCount={likesCount}
       isLiked={isLiked}
       likesDislikesPercentage={likesDislikesPercentage}
+      apiError={apiError}
+      setApiError={setApiError}
     />
   );
 };
