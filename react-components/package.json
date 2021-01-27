@@ -22,8 +22,8 @@
     "test": "react-scripts test ./src/__tests__/",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .jsx --ext .js ./src/",
-    "watch": "webpack --watch --config react-components/webpack.config.js --mode development",
-    "build-dev": "webpack --config react-components/webpack.config.js --mode development"
+    "watch": "webpack --watch --config webpack.config.js --mode development",
+    "build-dev": "webpack --config webpack.config.js --mode development"
   },
   "eslintConfig": {
     "extends": [

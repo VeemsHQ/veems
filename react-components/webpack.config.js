@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   devtool: 'source-map',
   entry: {
-    app: './react-components/src/bundle.js',
+    app: './src/bundle.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -34,8 +34,8 @@ module.exports = {
           ],
         },
         exclude: /node_modules/,
-      }
+      },
     ],
   },
   plugins: [],
-}
+};
