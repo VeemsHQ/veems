@@ -133,7 +133,7 @@ export const VideoLikesDislikesContainer = ({
   }
 
   const getBarBackgroundColor = () => {
-    if (isLiked == true || isLiked == false) {
+    if (isLiked === true || isLiked === false) {
       return 'bg-primary';
     } else {
       return 'bg-muted';
