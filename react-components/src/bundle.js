@@ -4,8 +4,8 @@ import { SelectChannelContainer } from '@src/components/SelectChannel';
 import { CreateVideoLikeDislikeWidget } from '@src/components/VideoLikeDislikeWidget';
 
 export default {
-    CreateChannelContainer,
-    SyncChannelContainer,
-    SelectChannelContainer,
-    CreateVideoLikeDislikeWidget,
-}
+  CreateChannelContainer,
+  SyncChannelContainer,
+  SelectChannelContainer,
+  CreateVideoLikeDislikeWidget,
+};

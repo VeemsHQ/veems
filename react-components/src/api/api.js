@@ -18,10 +18,9 @@ export const API = axios.create({
     // Todo: Add some outgoing error checks to server
     return JSON.stringify(data);
   }],
-  transformResponse: axios.defaults.transformResponse.concat(function (data) {
+  transformResponse: axios.defaults.transformResponse.concat((data) =>
     // Todo: Add some incoming error checks to server responses
-    return data;
-  })
+    data),
 });
 
 // Todo: This could do with splitting into seperate apis per service
@@ -103,7 +102,6 @@ export const setChannelRequest = async (channelId) => {
     return err;
   }
 };
-
 
 export const setVideoLikeDislike = async (videoId, isLike) => {
   if (isLike == null) {
