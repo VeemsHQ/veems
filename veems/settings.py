@@ -157,14 +157,15 @@ BUCKET_MEDIA_DEFAULT_ACL = None
 BUCKET_STATIC_CUSTOM_DOMAIN = os.environ.get('BUCKET_STATIC_CUSTOM_DOMAIN')
 
 DEFAULT_FILE_STORAGE = 'veems.common.storage_backends.CustomS3Boto3Storage'
-STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+STATICFILES_STORAGE = os.environ.get(
+    'STATICFILES_STORAGE', DEFAULT_FILE_STORAGE
+)
 
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
 STATICFILES_DIRS = (
     Path(__file__).parent.parent / 'static',
     Path(__file__).parent.parent / 'react-components/dist/',
 )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': (
