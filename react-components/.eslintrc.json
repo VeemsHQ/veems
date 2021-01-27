@@ -4,6 +4,7 @@
     "browser": true,
     "jest": true
   },
+  "parser": "babel-eslint",
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/jsx-one-expression-per-line": "off",
@@ -14,6 +15,7 @@
     "object-shorthand": ["error", "methods"],
     "import/no-named-as-default": 0,
     "jsx-a11y/click-events-have-key-events": "off",
-    "no-shadow": "off"
+    "no-shadow": "off",
+    "react/jsx-props-no-spreading": "off"
   }
 }

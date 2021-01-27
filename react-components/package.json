@@ -21,6 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint --ext .jsx --ext .js ./src/",
     "watch": "webpack --watch --config react-components/webpack.config.js --mode development",
     "build-dev": "webpack --config react-components/webpack.config.js --mode development"
   },
@@ -46,9 +47,12 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "8.1.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb": "^18.2.1",
     "fetch-mock": "^9.11.0",
     "regenerator-runtime": "^0.13.3",
     "webpack-cli": "^4.3.1"

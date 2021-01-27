@@ -1,11 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom';
 
 // Redux
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
-import { PersistGate } from 'redux-persist/integration/react'
 
 // Components
 import SyncChannelButton from './SyncChannelButton';
@@ -26,26 +26,29 @@ const Container = ({
   setSyncModalOpen,
 }) => {
   const handleSyncChannel = () => {
-    // todo when server calls in place 
+    // todo when server calls in place
     // syncChannelRequest();
   };
   const handleModalClose = () => setSyncModalOpen(false);
   const handleModalOpen = () => setSyncModalOpen(true);
   return (
-    <SyncChannelButton isModalOpen={isSyncModalOpen} onSyncChannel={handleSyncChannel} onModalOpen={() => handleModalOpen} onModalClose={() => handleModalClose} />
+    <SyncChannelButton
+      isModalOpen={isSyncModalOpen}
+      onSyncChannel={handleSyncChannel}
+      onModalOpen={() => handleModalOpen}
+      onModalClose={() => handleModalClose}
+    />
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    dispatch,
-    ...bindActionCreators({
-      setSyncModalOpen: setSyncModalOpenAction,
-    }, dispatch),
-  };
-};
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+  ...bindActionCreators({
+    setSyncModalOpen: setSyncModalOpenAction,
+  }, dispatch),
+});
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isSyncModalOpen: state.channels.isSyncModalOpen,
 });
 
@@ -58,16 +61,13 @@ component will manage logic.
 export const SyncChannelContainer = ({
   element,
   ...params
-}) => {
-  return (
-    ReactDOM.render(
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <ConnectedContainer {...params} />
-        </PersistGate>
-      </Provider>,
-      element || document.createElement('div') // for testing purposes
-    )
-  );
-};
-
+}) => (
+  ReactDOM.render(
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ConnectedContainer {...params} />
+      </PersistGate>
+    </Provider>,
+    element || document.createElement('div'), // for testing purposes
+  )
+);

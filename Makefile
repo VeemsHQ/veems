@@ -10,6 +10,12 @@ test: install lint
 	pytest -n auto -k 'not TestTranscode' -vvv
 
 .ONESHELL:
+.PHONY: test-js
+test-js:
+	cd ./react-components
+	npm run lint
+
+.ONESHELL:
 .PHONY: system_install
 system_install:
 	apt update && apt install -y ffmpeg
