@@ -14,6 +14,7 @@ test: install lint
 test-js:
 	cd ./react-components
 	npm run lint
+	npm run test
 
 .ONESHELL:
 .PHONY: system_install

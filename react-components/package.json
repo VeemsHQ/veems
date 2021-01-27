@@ -19,7 +19,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test ./src/__tests__/",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .jsx --ext .js ./src/",
     "watch": "webpack --watch --config react-components/webpack.config.js --mode development",
