@@ -9,12 +9,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 import VideoLikeDislikeWidget from './VideoLikeDislikeWidget';
 
 import {
-  setSyncModalOpenAction,
-  setActiveChannelAction,
-  setChannelsAction,
-} from '../../actions/index';
-
-import {
   setVideoLikeDislike,
 } from '../../api/api';
 
@@ -87,9 +81,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     ...bindActionCreators({
-      setSyncModalOpen: setSyncModalOpenAction,
-      setActiveChannel: setActiveChannelAction,
-      setChannels: setChannelsAction,
     }, dispatch),
   };
 };
