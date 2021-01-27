@@ -17,7 +17,8 @@
                 <div class="video-menu d-inline-flex align-items-center align-middle">
                     <div class="d-flex flex-column" id="video-likes-dislikes">
                         <div class="d-flex flex-row">
-                            <a href="#" title="I like this" class="btn btn-sm d-flex align-items-center {% if video.authenticated_user_data.has_liked_video == True %}text-primary{% else %}text-muted{% endif %}"><i
+                            <a href="#" title="I like this"
+                                class="btn btn-sm d-flex align-items-center {% if video.authenticated_user_data.has_liked_video == True %}text-primary{% else %}text-muted{% endif %}"><i
                                     class="small material-icons align-middle">thumb_up_alt</i><span
                                     class="ml-2">{{video.likes_count}}</span></a>
                             <a href="#" title="I dislike this"
@@ -26,8 +27,10 @@
                                     class="ml-2">{{video.dislikes_count}}</span></a>
                         </div>
                         <div class="progress likedislike-progress">
-                            <div class="progress-bar {% if video.authenticated_user_data.has_liked_video %}bg-primary{% else %}bg-muted{% endif %}" role="progressbar" style="width: {{video.likesdislikes_percentage}}%;" aria-valuenow="{{video.likesdislikes_percentage}}"
-                                aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar {% if video.authenticated_user_data.has_liked_video %}bg-primary{% else %}bg-muted{% endif %}"
+                                role="progressbar" style="width: {{video.likesdislikes_percentage}}%;"
+                                aria-valuenow="{{video.likesdislikes_percentage}}" aria-valuemin="0"
+                                aria-valuemax="100"></div>
                         </div>
                     </div>
                     <a href="#" title="Share" class="btn btn-sm text-muted d-flex align-items-center"><i
@@ -666,13 +669,13 @@
 </script>
 
 <script type="text/javascript">
-    app.CreateVideoLikesDislikesContainer({
+    app.CreateVideoLikeDislikeWidget({
         element: document.getElementById('video-likes-dislikes'),
         videoId: "{{video.id}}",
-        likesCount: {{video.likes_count}},
-        dislikesCount: {{video.dislikes_count}},
-        likesDislikesPercentage: {{video.likesdislikes_percentage}},
-        isLiked: {{ video.authenticated_user_data.has_liked_video|to_json }}
+        likesCount: {{ video.likes_count }},
+        dislikesCount: {{ video.dislikes_count }},
+        likesDislikesPercentage: {{ video.likesdislikes_percentage }},
+        isLiked: {{ video.authenticated_user_data.has_liked_video | to_json }}
     })
 </script>
 {% endblock %}

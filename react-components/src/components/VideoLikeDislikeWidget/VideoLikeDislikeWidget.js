@@ -45,8 +45,7 @@ export const VideoLikeDislikeWidget = ({
           position: 'fixed',
           top: '0',
           right: '0',
-          padding: '20px',
-          margin: '20px',
+          height: '2px',
           width: '100%',
           zIndex: '9999',
         }}
@@ -54,8 +53,8 @@ export const VideoLikeDislikeWidget = ({
         <Toast
           style={{
             position: 'absolute',
-            top: 0,
-            right: 0,
+            top: 20,
+            right: 20,
           }}
           show={apiError != ''}
           autohide={true}
@@ -90,8 +89,7 @@ export const VideoLikeDislikeWidget = ({
           position: 'fixed',
           top: '0',
           right: '0',
-          padding: '20px',
-          margin: '20px',
+          height: '2px',
           width: '100%',
           zIndex: '9999',
         }}
@@ -99,8 +97,8 @@ export const VideoLikeDislikeWidget = ({
         <Toast
           style={{
             position: 'absolute',
-            top: 0,
-            right: 0,
+            top: 20,
+            right: 20,
           }}
           show={showToast}
           autohide={true}
