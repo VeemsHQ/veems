@@ -10,17 +10,17 @@ import axios from 'axios';
  */
 export const API = axios.create({
   timeout: 5000,
-  headers: { 'Content-Type': 'application/json',
-              'X-CSRFTOKEN': window.CSRF_TOKEN,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFTOKEN': window.CSRF_TOKEN,
   },
   transformRequest: [function preTransformData(data) {
     // Todo: Add some outgoing error checks to server
     return JSON.stringify(data);
   }],
-  transformResponse: axios.defaults.transformResponse.concat(function (data) {
+  transformResponse: axios.defaults.transformResponse.concat((data) =>
     // Todo: Add some incoming error checks to server responses
-    return data;
-  })
+    data),
 });
 
 // Todo: This could do with splitting into seperate apis per service
@@ -33,11 +33,11 @@ const serverURL = 'http://localhost:8000';
  * @return Should return successful
  * @param {string} name - Channel name
  * @param {string} description - Channel description
- * @param {boolean} syncVideosInterested - 
- * @param {string} language - 
+ * @param {boolean} syncVideosInterested -
+ * @param {string} language -
  * @throw Should return error
  */
-export const createChannelRequest = async ( name, description, syncVideosInterested ) => {
+export const createChannelRequest = async (name, description, syncVideosInterested) => {
   const data = {
     name,
     description,
@@ -60,7 +60,7 @@ export const createChannelRequest = async ( name, description, syncVideosInteres
  * @param {number} channelId - Required channelId
  * @throw Should return error
  */
-export const getChannelRequest = async ( channelId ) => {
+export const getChannelRequest = async (channelId) => {
   try {
     const res = await API.get(`${serverURL}/api/v1/channel/${channelId}/`);
     return res;
