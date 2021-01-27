@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import { configureStore } from '../../store';
 import { PersistGate } from 'redux-persist/integration/react'
 
-import VideoLikesDislikesContainer from './VideoLikesDislikesContainer';
+import VideoLikeDislikeWidget from './VideoLikeDislikeWidget';
 
 import {
   setSyncModalOpenAction,
@@ -69,7 +69,7 @@ function Container(props) {
   }
 
   return (
-    <VideoLikesDislikesContainer
+    <VideoLikeDislikeWidget
       handleVideoLiked={handleVideoLiked}
       handleVideoDisliked={handleVideoDisliked}
       handleVideoNeither={handleVideoNeither}
@@ -96,7 +96,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
-export const CreateVideoLikesDislikesContainer = ({
+export const CreateVideoLikeDislikeWidget = ({
   element,
   ...params
 }) => {

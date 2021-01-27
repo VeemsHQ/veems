@@ -4,7 +4,7 @@ import Toast from 'react-bootstrap/Toast';
 
 import "regenerator-runtime/runtime.js";
 
-export const VideoLikesDislikesContainer = ({
+export const VideoLikeDislikeWidget = ({
   handleVideoLiked,
   handleVideoDisliked,
   handleVideoNeither,
@@ -116,7 +116,7 @@ export const VideoLikesDislikesContainer = ({
     )
   }
 
-  const getLikeTextColor = () => {
+  const getLikeControlTextColor = () => {
     if (isLiked === true) {
       return 'text-primary';
     } else {
@@ -124,7 +124,7 @@ export const VideoLikesDislikesContainer = ({
     }
   }
 
-  const getDislikeTextColor = () => {
+  const getDislikeControlTextColor = () => {
     if (isLiked === false) {
       return 'text-primary';
     } else {
@@ -132,7 +132,7 @@ export const VideoLikesDislikesContainer = ({
     }
   }
 
-  const getBarBackgroundColor = () => {
+  const getRatioBarColor = () => {
     if (isLiked === true || isLiked === false) {
       return 'bg-primary';
     } else {
@@ -145,16 +145,16 @@ export const VideoLikesDislikesContainer = ({
       <div className="video-menu d-inline-flex align-items-center align-middle">
         <div className="d-flex flex-column" id="video-likes-dislikes">
           <div className="d-flex flex-row">
-            <a href="#" onClick={(e) => likeVideo(e)} title="I like this" className={"btn btn-sm d-flex align-items-center " + getLikeTextColor()}><i
+            <a href="#" onClick={(e) => likeVideo(e)} title="I like this" className={"btn btn-sm d-flex align-items-center " + getLikeControlTextColor()}><i
               className="small material-icons align-middle">thumb_up_alt</i><span
                 className="ml-2">{likesCount}</span></a>
             <a href="#" onClick={(e) => dislikeVideo(e)} title="I dislike this"
-              className={"btn btn-sm d-flex align-items-center " + getDislikeTextColor()}><i
+              className={"btn btn-sm d-flex align-items-center " + getDislikeControlTextColor()}><i
                 className="small material-icons align-middle">thumb_down_alt</i><span
                   className="ml-2">{dislikesCount}</span></a>
           </div>
           <div className="progress likedislike-progress">
-            <div className={"progress-bar " + getBarBackgroundColor()} role="progressbar" style={{ width: `${likesDislikesPercentage}%` }} aria-valuenow={likesDislikesPercentage}
+            <div className={"progress-bar " + getRatioBarColor()} role="progressbar" style={{ width: `${likesDislikesPercentage}%` }} aria-valuenow={likesDislikesPercentage}
               aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
@@ -164,6 +164,6 @@ export const VideoLikesDislikesContainer = ({
   );
 };
 
-export default VideoLikesDislikesContainer;
+export default VideoLikeDislikeWidget;
 
 
