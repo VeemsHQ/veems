@@ -14,8 +14,6 @@ import {
 
 const { store, persistor } = configureStore.getInstance();
 
-// TODO: Sign in btn doesn't work when toast on page
-
 function Container(props) {
   const [apiError, setApiError] = useState('');
   const [likesCount, setLikesCount] = useState(props.likesCount);
@@ -40,11 +38,13 @@ function Container(props) {
   }
 
   const handleVideoNeither = async () => {
+    // If it was unliked/undisliked.
     await updateStateFromApiResponse(setVideoLikeDislike(props.videoId, null));
     return true
   }
 
   const handleVideoLiked = async () => {
+    // Is it was previously not liked/disliked or was liked and 'Like' was just clicked.
     if (isLiked === null || isLiked === false) {
       await updateStateFromApiResponse(setVideoLikeDislike(props.videoId, true));
     } else {
@@ -54,6 +54,7 @@ function Container(props) {
   }
 
   const handleVideoDisliked = async () => {
+    // Is it was previously not liked/disliked or was liked and 'Dislike' was just clicked.
     if (isLiked === null || isLiked === true) {
       await updateStateFromApiResponse(setVideoLikeDislike(props.videoId, false));
     } else {
