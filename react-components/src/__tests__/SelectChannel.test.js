@@ -3,16 +3,16 @@ import Enzyme from 'enzyme';
 
 import Adapter from 'enzyme-adapter-react-16'
 
-import { SyncChannelContainer } from '../../../react-components/src/components/SyncChannel';
+import { SelectChannelContainer } from '../components/SelectChannel';
 
 const setUp = (props = {}) => {
-  const component = Enzyme.shallow(<SyncChannelContainer {...props} />);
+  const component = Enzyme.shallow(<SelectChannelContainer {...props} />);
   return component;
 }
 
 Enzyme.configure({ adapter: new Adapter() })
 
-describe('SyncChannel-Component', () => {
+describe('SelectChannel-Component', () => {
   let component;
 
   beforeEach(() => {
