@@ -178,6 +178,8 @@ body {
 
 .top-nav-right a.icon-link {
     width: 42px;
+    min-width: 42px;
+    min-height: 42px;
     height: 42px;
 }
 
