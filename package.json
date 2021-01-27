@@ -49,6 +49,7 @@
     "babel-loader": "8.1.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
+    "eslint": "^7.18.0",
     "fetch-mock": "^9.11.0",
     "regenerator-runtime": "^0.13.3",
     "webpack-cli": "^4.3.1"
