@@ -1,40 +1,88 @@
 {% load static %}
-<nav class="w-100 navbar navbar-expand-lg d-flex fixed-top navbar-white bg-white shadow">
+<nav
+  class="w-100 navbar navbar-expand-lg d-flex fixed-top navbar-white bg-white shadow"
+>
+  <div class="col-2 col-lg-3 d-flex align-items-center">
+    <a
+      class="navbar-brand bg-white mr-auto mr-lg-0 d-flex flex-fill"
+      href="{% url 'index' %}"
+      ><img src="{% static 'images/logo.png' %}" class="logo" /><span
+        class="d-none d-lg-inline ml-1 small text-uppercase text-muted mt-auto"
+        ><b>Alpha</b></span
+      >
+    </a>
+  </div>
 
-    <div class="col-6 col-md-3 d-flex align-items-center">
-        <a class="navbar-brand bg-white mr-auto mr-lg-0 d-flex flex-fill" href="{% url 'index' %}"><img
-                src="{% static 'images/logo.png' %}" class="logo" /><span
-                class="ml-1 small text-uppercase text-muted mt-auto"><b>Alpha</b></span>
-        </a>
-    </div>
+  <div class="col-md-6 col-lg-6 d-none d-md-flex justify-content-center">
+    <form
+      class="form-inline search-nav border rounded-circle"
+      method="get"
+      action="{% url 'search' %}"
+    >
+      <input
+        class="form-control bg-white border border-white rounded-circle flex-fill"
+        type="text"
+        placeholder="Search"
+        aria-label="Search"
+        name="search_query"
+        value="{% block search_query %}{{search_query}}{% endblock %}"
+      />
+      <input type="hidden" name="type" value="{{query_type}}" />
+      <button
+        class="btn btn-light bg-light rounded-circle border border-light border-left-1 text-dark my-2 my-sm-0 d-flex px-3"
+        type="submit"
+      >
+        <i class="material-icons align-middle text-secondary">search</i>
+      </button>
+    </form>
+  </div>
+  <div
+    class="col-7 col-md-3 col-lg-3 d-flex justify-content-end top-nav-right pr-4"
+  >
+    <a
+      href="#"
+      class="icon-link text-dark d-flex d-md-none justify-content-center ml-3 bg-light rounded-circle"
+      ><i class="material-icons align-self-center">search</i></a
+    >
+    <a
+      href="#"
+      data-toggle="modal"
+      data-target="#uploadModal"
+      class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle"
+      ><i class="small material-icons align-self-center">cloud_upload</i></a
+    >
+    <a
+      href="#"
+      class="icon-link text-dark d-none d-lg-flex justify-content-center ml-3 bg-light rounded-circle"
+    >
+      <i class="small material-icons align-self-center"
+        >notifications_none</i
+      ></a
+    >
 
-    <div class="d-none d-md-flex col-md-6 justify-content-center">
-        <form class="form-inline search-nav border rounded-circle" method='get' action="{% url 'search' %}">
-            <input class="form-control bg-white border border-white rounded-circle flex-fill" type="text"
-                placeholder="Search" aria-label="Search" name="search_query" value="{% block search_query %}{{search_query}}{% endblock %}">
-            <input type="hidden" name="type" value="{{query_type}}">
-            <button
-                class="btn btn-light bg-light rounded-circle border border-light border-left-1 text-dark my-2 my-sm-0 d-flex px-3"
-                type="submit">
-                <i class="material-icons align-middle text-secondary">search</i></button>
-        </form>
-    </div>
-    <div class="col-6 col-md-3 d-flex justify-content-end top-nav-right pr-4">
-        <a href="#" class="icon-link text-dark d-flex d-md-none justify-content-center ml-3 bg-light rounded-circle "><i
-                class="material-icons align-self-center text-secondary">search</i></a>
-        <a href="#" data-toggle="modal" data-target="#uploadModal"
-            class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle "><i
-                class="small material-icons align-self-center">cloud_upload</i></a>
-        <a href="#" class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle ">
-            <i class="small material-icons align-self-center">notifications_none</i></a>
-
-        {% if request.user.is_authenticated %}
-        <a href="{% url 'channel-manager-index' %}" class="ml-3 rounded-circle bg-light d-flex justify-content-center avatar">
-            <!-- TODO: update this image to one provided by the backend -->
-            <i class="material-icons align-middle" style="font-size:300%; width:42px; height:42px">face</i>
-            <img class="d-none COMMENTEDOUT-d-block rounded-circle align-self-center" src="https://i.imgur.com/AhSGyhc.png" /></a>
-        {% else %}
-            <a href="{% url 'login' %}" data-toggle="modal" data-target="#loginModal" class="ml-3 d-flex justify-content-center btn btn-outline-primary">Sign in</a>
-        {% endif %}
-    </div>
+    {% if request.user.is_authenticated %}
+    <a
+      href="{% url 'channel-manager-index' %}"
+      class="ml-3 rounded-circle bg-light d-flex justify-content-center avatar"
+    >
+      <!-- TODO: update this image to one provided by the backend -->
+      <i
+        class="material-icons align-middle"
+        style="font-size: 300%; width: 42px; height: 42px"
+        >face</i
+      >
+      <img
+        class="d-none COMMENTEDOUT-d-block rounded-circle align-self-center"
+        src="https://i.imgur.com/AhSGyhc.png"
+    /></a>
+    {% else %}
+    <a
+      href="{% url 'login' %}"
+      data-toggle="modal"
+      data-target="#loginModal"
+      class="ml-3 d-flex justify-content-center btn btn-outline-primary"
+      >Sign in</a
+    >
+    {% endif %}
+  </div>
 </nav>
