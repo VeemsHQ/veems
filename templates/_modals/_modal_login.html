@@ -1,8 +1,6 @@
-<div
-class="modal fade {% if show_on_load %}show d-block{% endif %}" id="loginModal" tabindex="-1" role="dialog"
-aria-labelledby="loginModalLabel" aria-hidden="true"  data-keyboard="true"
-style="{% if show_on_load %}position: inherit{% endif %}"
->
+<div class="modal fade {% if show_on_load %}show d-block{% endif %}" id="loginModal" tabindex="-1" role="dialog"
+    aria-labelledby="loginModalLabel" aria-hidden="true" data-keyboard="true"
+    style="{% if show_on_load %}position: inherit{% endif %}">
     <div class="modal-dialog model-dialog-narrow modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +10,8 @@ style="{% if show_on_load %}position: inherit{% endif %}"
                 <div class="p-3 w-100 d-inline-flex flex-column align-items-center justify-content-center">
                     <p>If you have a Veems account, please enter your credentials.</p>
 
-                    <form id="login-form" method="post" action="{% url 'login' %}?next={{next}}" class="w-100">
+                    <form id="login-form" method="post" action="{% url 'login' %}?next={{ request.path }}"
+                        class="w-100">
                         {% csrf_token %}
                         <div class="dp-3">
                             {% for field, errors in login_form.errors.items %}
@@ -32,7 +31,8 @@ style="{% if show_on_load %}position: inherit{% endif %}"
 
                             <div class="form-group d-flex flex-row align-items-center justify-content-center">
                                 <button type="submit" class="btn btn-primary">Sign in</button>
-                                <a href="{% url 'password_reset' %}" class="ml-3 text-muted btn">Forgot your password?</a>
+                                <a href="{% url 'password_reset' %}" class="ml-3 text-muted btn">Forgot your
+                                    password?</a>
                             </div>
                         </div>
                     </form>
@@ -41,7 +41,8 @@ style="{% if show_on_load %}position: inherit{% endif %}"
                 <div
                     class="w-100 py-4 border-top px-3 bg-secondary d-flex flex-column align-items-center justify-content-center">
                     <div class="h4 mb-3">Don't have a Veems account yet?</div>
-                    <a href="{% url 'django_registration_register' %}?next={{next}}" class="btn btn-primary">Create your Veems account now</a>
+                    <a href="{% url 'django_registration_register' %}?next={{ request.path }}"
+                        class="btn btn-primary">Create your Veems account now</a>
                 </div>
             </div>
         </div>
