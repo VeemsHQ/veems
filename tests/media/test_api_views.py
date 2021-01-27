@@ -300,6 +300,7 @@ class TestVideoDetail:
             'id': video.id,
             'channel': video.channel.id,
             'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
+            'authenticated_user_data': {'has_liked_video': None},
             'video_renditions': [
                 {
                     'audio_codec': 'opus',

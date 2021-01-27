@@ -15,6 +15,17 @@ from . import services
 from ..common.serializers import CustomModelSerializer, DEFAULT_EXCLUDE
 
 
+def _get_video_likedislike_counts(*, likes, dislikes):
+    total = likes + dislikes
+    if total == 0:
+        return 50.0
+    if likes > dislikes:
+        percentage = likes / total * 100
+    else:
+        percentage = dislikes / total * 100
+    return float(percentage)
+
+
 class VideoLikeDislikeSerializer(CustomModelSerializer):
     def __init__(self, *args, **kwargs):
         CustomModelSerializer.__init__(self, *args, **kwargs)
@@ -46,14 +57,7 @@ class VideoLikeDislikeSerializer(CustomModelSerializer):
     def get_likesdislikes_percentage(self, instance):
         likes = self.get_likes_count(instance=instance)
         dislikes = self.get_dislikes_count(instance=instance)
-        total = likes + dislikes
-        if total == 0:
-            return 50.0
-        if likes > dislikes:
-            percentage = likes / total * 100
-        else:
-            percentage = dislikes / total * 100
-        return float(percentage)
+        return _get_video_likedislike_counts(likes=likes, dislikes=dislikes)
 
     class Meta:
         model = models.VideoLikeDislike
@@ -179,11 +183,7 @@ class VideoSerializer(CustomModelSerializer):
     def get_likesdislikes_percentage(self, instance):
         likes = self.get_likes_count(instance=instance)
         dislikes = self.get_dislikes_count(instance=instance)
-        total = likes + dislikes
-        if total == 0:
-            return 50.0
-        percentage = likes / total * 100
-        return float(percentage)
+        return _get_video_likedislike_counts(likes=likes, dislikes=dislikes)
 
     def get_authenticated_user_data(self, instance):
         if self._user_id:
