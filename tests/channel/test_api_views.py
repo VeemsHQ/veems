@@ -284,8 +284,8 @@ class TestChannelAvatarAPIView:
                 'avatar_image_large_url': str,
             }
         )
-        assert resp_json['avatar_image_small_url'].startswith('http://')
-        assert resp_json['avatar_image_large_url'].startswith('http://')
+        assert resp_json['avatar_image_small_url']
+        assert resp_json['avatar_image_large_url']
         # Check returned defaults
         assert 'defaults/' in resp_json['avatar_image_small_url']
         assert 'defaults/' in resp_json['avatar_image_large_url']
@@ -309,8 +309,8 @@ class TestChannelAvatarAPIView:
                 'avatar_image_large_url': str,
             }
         )
-        assert resp_json['avatar_image_small_url'].startswith('http://')
-        assert resp_json['avatar_image_large_url'].startswith('http://')
+        assert resp_json['avatar_image_small_url']
+        assert resp_json['avatar_image_large_url']
 
     def test_post_returns_404_when_attempting_to_update_other_users_avatar(
         self, api_client, channel_factory, user_factory
@@ -357,7 +357,7 @@ class TestChannelBannerAPIView:
                 'banner_image_large_url': str,
             }
         )
-        assert resp_json['banner_image_large_url'].startswith('http://')
+        assert resp_json['banner_image_large_url']
         # Check returned defaults
         assert 'defaults/' in resp_json['banner_image_large_url']
 
@@ -379,7 +379,7 @@ class TestChannelBannerAPIView:
                 'banner_image_large_url': str,
             }
         )
-        assert resp_json['banner_image_large_url'].startswith('http://')
+        assert resp_json['banner_image_large_url']
 
     def test_post_returns_404_when_attempting_to_update_other_users_banner(
         self, api_client, channel_factory, user_factory

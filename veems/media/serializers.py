@@ -193,7 +193,6 @@ class VideoSerializer(CustomModelSerializer):
                     user_id=self._user_id,
                 ).is_like
             except ObjectDoesNotExist:
-                # TODO: test
                 return {'has_liked_video': None}
             return {'has_liked_video': has_liked_video}
         return {}

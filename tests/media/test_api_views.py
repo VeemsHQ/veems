@@ -205,9 +205,9 @@ class TestVideoThumbnail:
                 'thumbnail_image_small_url': str,
             }
         )
-        assert resp_json['thumbnail_image_large_url'].startswith('http://')
-        assert resp_json['thumbnail_image_medium_url'].startswith('http://')
-        assert resp_json['thumbnail_image_small_url'].startswith('http://')
+        assert resp_json['thumbnail_image_large_url']
+        assert resp_json['thumbnail_image_medium_url']
+        assert resp_json['thumbnail_image_small_url']
         assert 'defaults/' not in resp_json['thumbnail_image_large_url']
         assert 'defaults/' not in resp_json['thumbnail_image_medium_url']
         assert 'defaults/' not in resp_json['thumbnail_image_small_url']
@@ -236,9 +236,9 @@ class TestVideoThumbnail:
                 'thumbnail_image_small_url': str,
             }
         )
-        assert resp_json['thumbnail_image_large_url'].startswith('http://')
-        assert resp_json['thumbnail_image_medium_url'].startswith('http://')
-        assert resp_json['thumbnail_image_small_url'].startswith('http://')
+        assert resp_json['thumbnail_image_large_url']
+        assert resp_json['thumbnail_image_medium_url']
+        assert resp_json['thumbnail_image_small_url']
         assert 'defaults/' not in resp_json['thumbnail_image_large_url']
         assert 'defaults/' not in resp_json['thumbnail_image_medium_url']
         assert 'defaults/' not in resp_json['thumbnail_image_small_url']
@@ -300,7 +300,7 @@ class TestVideoDetail:
             'id': video.id,
             'channel': video.channel.id,
             'playlist_file': f'/api/v1/video/{video.id}/playlist.m3u8',
-            'authenticated_user_data': {'has_liked_video': None},
+            'authenticated_user_data': dict,
             'video_renditions': [
                 {
                     'audio_codec': 'opus',
