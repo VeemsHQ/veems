@@ -52,16 +52,13 @@ export const getChannelsRequest = async () => {
 };
 
 export const setChannelRequest = async (channelId) => {
-  console.log('calling set channel');
   const data = {
     is_selected: true,
   };
   try {
     const res = await API.put(`${serverURL}/api/v1/channel/${channelId}/`, data);
-    console.log('calling set channel1');
     return res;
   } catch (err) {
-    console.log('calling set channel2');
     return err;
   }
 };
