@@ -1,29 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
-// Redux
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-// Components
 import SelectChannelDropdown from './SelectChannelDropdown';
 
-// Actions
 import {
   setActiveChannelAction,
   setChannelsDbStaleAction,
 } from '../../actions/index';
 
-// api
 import {
   setChannelRequest,
 } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
-// Component connected to Redux store
 const Container = ({
   isDbStale,
   storeChannels,
@@ -58,7 +53,11 @@ const Container = ({
   };
 
   return (
-    <SelectChannelDropdown channels={dropdownChannels} activeID={activeChannelID} onSelectChannel={(e) => handleSelectChannel(e)} />
+    <SelectChannelDropdown
+      channels={dropdownChannels}
+      activeID={activeChannelID}
+      onSelectChannel={(e) => handleSelectChannel(e)}
+    />
   );
 };
 
@@ -78,10 +77,6 @@ const mapStateToProps = (state) => ({
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-/* Entry point for DOM element render and subsequent button render.
-This only deal with the above and handling API requests. The SyncChannel
-component will manage logic.
-*/
 export const SelectChannelContainer = ({
   element,
   ...params

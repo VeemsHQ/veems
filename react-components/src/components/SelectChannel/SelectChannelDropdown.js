@@ -1,12 +1,7 @@
 import React from 'react';
-
-import 'regenerator-runtime/runtime.js';
 import PropTypes from 'prop-types';
 
-// Styling
-/* Todo: Move all embedded css into here so we can properly pass and use props
-  and remove all ugly className syntax.
-*/
+import 'regenerator-runtime/runtime.js';
 
 export const SelectChannelDropdown = ({
   onSelectChannel,
@@ -31,14 +26,12 @@ export const SelectChannelDropdown = ({
   );
 };
 
-/** Props Types */
 SelectChannelDropdown.propTypes = {
   activeID: PropTypes.string,
   channels: PropTypes.arrayOf(PropTypes.shape()),
   onSelectChannel: PropTypes.func,
 };
 
-/** Default Props. */
 SelectChannelDropdown.defaultProps = {
   activeID: '',
   onSelectChannel: () => { Error('No callback defined for SelectChannelDropdown'); },

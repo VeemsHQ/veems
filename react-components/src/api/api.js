@@ -1,13 +1,5 @@
 import axios from 'axios';
 
-/**
- * Axios Promise based HTTP client
- * Here we import axios and create a new configuration of it.
- * @param {string} baseURL - What url axios will use for the server requests
- * @param {number} timeout - When the server time out is set to stop responding.
- * @param {string} headers - Any additional headers we want to send infront of all server requests.
- * {@link https://github.com/axios/axios}
- */
 export const API = axios.create({
   timeout: 5000,
   headers: {
@@ -23,20 +15,9 @@ export const API = axios.create({
     data),
 });
 
-// Todo: This could do with splitting into seperate apis per service
-
+// TODO: Make dynamic
 const serverURL = 'http://localhost:8000';
 
-/**
- * API
- * Send a create channel request
- * @return Should return successful
- * @param {string} name - Channel name
- * @param {string} description - Channel description
- * @param {boolean} syncVideosInterested -
- * @param {string} language -
- * @throw Should return error
- */
 export const createChannelRequest = async (name, description, syncVideosInterested) => {
   const data = {
     name,
@@ -53,13 +34,6 @@ export const createChannelRequest = async (name, description, syncVideosInterest
   }
 };
 
-/**
- * API
- * Send a get channel request
- * @return Should return successful
- * @param {number} channelId - Required channelId
- * @throw Should return error
- */
 export const getChannelRequest = async (channelId) => {
   try {
     const res = await API.get(`${serverURL}/api/v1/channel/${channelId}/`);
@@ -69,12 +43,6 @@ export const getChannelRequest = async (channelId) => {
   }
 };
 
-/**
- * API
- * Send a get channels request
- * @return Should return successful
- * @throw Should return error
- */
 export const getChannelsRequest = async () => {
   try {
     const res = await API.get(`${serverURL}/api/v1/channel/`);
@@ -84,13 +52,6 @@ export const getChannelsRequest = async () => {
   }
 };
 
-/**
- * API
- * Send a set channel request
- * @return Should return successful
- * @param {number} channelId - Required channelId
- * @throw Should return error
- */
 export const setChannelRequest = async (channelId) => {
   const data = {
     is_selected: true,

@@ -12,12 +12,11 @@ import {
   setChannelSyncModalOpenAction,
 } from '../../actions/index';
 
-// api
+// TODO: Call API
 // import { syncChannelRequest } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
-// Component connected to Redux store
 const Container = ({
   isChannelSyncModalOpen,
   setChannelSyncModalOpen,
