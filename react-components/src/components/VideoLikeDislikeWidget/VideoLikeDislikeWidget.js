@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Toast from 'react-bootstrap/Toast';
 
-import "regenerator-runtime/runtime.js";
+import 'regenerator-runtime/runtime.js';
 
 export const VideoLikeDislikeWidget = ({
   handleVideoLiked,
@@ -18,7 +18,7 @@ export const VideoLikeDislikeWidget = ({
 
   const likeVideo = async (e) => {
     e.preventDefault();
-    if (isLiked == false || isLiked == null) {
+    if (isLiked === false || isLiked === null) {
       await handleVideoLiked();
       setShowToast(true);
     } else {
@@ -28,7 +28,7 @@ export const VideoLikeDislikeWidget = ({
 
   const dislikeVideo = async (e) => {
     e.preventDefault();
-    if (isLiked == true || isLiked == null) {
+    if (isLiked === true || isLiked === null) {
       await handleVideoDisliked();
       setShowToast(true);
     } else {
@@ -36,38 +36,37 @@ export const VideoLikeDislikeWidget = ({
     }
   };
 
-  const renderErrorToast = () => {
-    return (
-      <div
-        aria-live="polite"
-        aria-atomic="true"
+  const renderErrorToast = () => (
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      style={{
+        position: 'relative',
+        top: '0',
+        right: '0',
+        height: '2px',
+        width: '200%',
+        zIndex: '9999',
+        overflow: 'visible',
+      }}
+    >
+      <Toast
         style={{
-          position: 'fixed',
-          top: '0',
-          right: '0',
-          height: '2px',
-          width: '100%',
-          zIndex: '9999',
+          position: 'absolute',
+          top: 20,
+          right: 20,
         }}
+        show={apiError != ''}
+        autohide
+        onClose={() => setApiError('')}
       >
-        <Toast
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 20,
-          }}
-          show={apiError != ''}
-          autohide={true}
-          onClose={() => setApiError('')}
-        >
-          <Toast.Header>
-            <strong className="mr-auto">Error</strong>
-          </Toast.Header>
-          <Toast.Body>{apiError}</Toast.Body>
-        </Toast>
-      </div>
-    )
-  }
+        <Toast.Header>
+          <strong className="mr-auto">Oops</strong>
+        </Toast.Header>
+        <Toast.Body>{apiError}</Toast.Body>
+      </Toast>
+    </div>
+  );
 
   const renderToast = () => {
     if (apiError !== false) {
@@ -101,7 +100,7 @@ export const VideoLikeDislikeWidget = ({
             right: 20,
           }}
           show={showToast}
-          autohide={true}
+          autohide
           onClose={() => setShowToast(!showToast)}
         >
           <Toast.Header>
@@ -110,41 +109,56 @@ export const VideoLikeDislikeWidget = ({
           <Toast.Body>You {action} this video.</Toast.Body>
         </Toast>
       </div>
-    )
-  }
+    );
+  };
 
-  const getLikeControlTextColor = () => {
-    return isLiked === true ? 'text-primary' : 'text-muted';
-  }
+  const getLikeControlTextColor = () => (isLiked === true ? 'text-primary' : 'text-muted');
 
-  const getDislikeControlTextColor = () => {
-    return isLiked === false ? 'text-primary' : 'text-muted';
-  }
+  const getDislikeControlTextColor = () => (isLiked === false ? 'text-primary' : 'text-muted');
 
   const getRatioBarColor = () => {
     if (isLiked === true || isLiked === false) {
       return 'bg-primary';
-    } else {
-      return 'bg-muted';
     }
-  }
+    return 'bg-muted';
+  };
 
   return (
     <>
       <div className="video-menu d-inline-flex align-items-center align-middle">
         <div className="d-flex flex-column" id="video-likes-dislikes">
           <div className="d-flex flex-row">
-            <a href="#" onClick={(e) => likeVideo(e)} title="I like this" className={"btn btn-sm d-flex align-items-center " + getLikeControlTextColor()}><i
-              className="small material-icons align-middle">thumb_up_alt</i><span
-                className="ml-2">{likesCount}</span></a>
-            <a href="#" onClick={(e) => dislikeVideo(e)} title="I dislike this"
-              className={"btn btn-sm d-flex align-items-center " + getDislikeControlTextColor()}><i
-                className="small material-icons align-middle">thumb_down_alt</i><span
-                  className="ml-2">{dislikesCount}</span></a>
+            <a href="#" onClick={(e) => likeVideo(e)} title="I like this" className={`btn btn-sm d-flex align-items-center ${getLikeControlTextColor()}`}><i
+              className="small material-icons align-middle"
+            >thumb_up_alt
+            </i><span
+                className="ml-2"
+              >{likesCount}
+              </span>
+            </a>
+            <a
+              href="#"
+              onClick={(e) => dislikeVideo(e)}
+              title="I dislike this"
+              className={`btn btn-sm d-flex align-items-center ${getDislikeControlTextColor()}`}
+            ><i
+              className="small material-icons align-middle"
+            >thumb_down_alt
+             </i><span
+                className="ml-2"
+              >{dislikesCount}
+              </span>
+            </a>
           </div>
           <div className="progress likedislike-progress">
-            <div className={"progress-bar " + getRatioBarColor()} role="progressbar" style={{ width: `${likesDislikesPercentage}%` }} aria-valuenow={likesDislikesPercentage}
-              aria-valuemin="0" aria-valuemax="100"></div>
+            <div
+              className={`progress-bar ${getRatioBarColor()}`}
+              role="progressbar"
+              style={{ width: `${likesDislikesPercentage}%` }}
+              aria-valuenow={likesDislikesPercentage}
+              aria-valuemin="0"
+              aria-valuemax="100"
+            />
           </div>
         </div>
       </div>
@@ -154,5 +168,3 @@ export const VideoLikeDislikeWidget = ({
 };
 
 export default VideoLikeDislikeWidget;
-
-
