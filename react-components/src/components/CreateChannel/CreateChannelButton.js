@@ -61,7 +61,7 @@ export const CreateChannelButton = ({
             </Form.Group>
 
             <Form.Group controlId="formBasicCheckbox">
-              <Form.Check checked={isChannelSynced} onChange={() => setIsChannelSynced(!isChannelSynced)} type="checkbox" label={<><label>I'd like to sync videos from my YouTube Channel. </label> <a href="#"> Learn more about channel syncing</a></>} />
+              <Form.Check checked={isChannelSynced} onChange={() => setIsChannelSynced(!isChannelSynced)} type="checkbox" id="sync_videos_interested" name="sync_videos_interested" label={<><label htmlFor="sync_videos_interested">I'd like to sync videos from my YouTube Channel. </label> <a href="#"> Learn more about channel syncing</a></>} />
             </Form.Group>
             <p className="text-muted">
               By clicking "Create channel", you agree to our <a href="#">Terms of Service</a>.
