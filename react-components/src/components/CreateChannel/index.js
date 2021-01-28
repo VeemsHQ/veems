@@ -34,7 +34,9 @@ const Container = ({
   const handleCreateChannel = async (name, desc, isSynced) => {
     const { response, data } = await createChannelRequest(name, desc, isSynced);
 
-    if (response?.status === 400) return false;
+    if (response?.status === 400) {
+      return [false, response?.data];
+    }
 
     /* Update active channel redux list from server. Alternativly we could merge
     the returned active channel below to  into an already populated list reduce API calls, but
@@ -57,7 +59,7 @@ const Container = ({
       await setSyncModalOpen(false);
     }
 
-    return true;
+    return [true, null];
   };
 
   return (

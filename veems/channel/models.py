@@ -36,7 +36,7 @@ class Channel(BaseModel):
         get_user_model(), on_delete=models.CASCADE, related_name='channels'
     )
     name = models.CharField(max_length=60, db_index=True)
-    description = models.TextField(max_length=5000)
+    description = models.TextField(max_length=5000, null=True, blank=True)
     sync_videos_interested = models.BooleanField(db_index=True)
     language = models.CharField(
         max_length=2, validators=(validators.validate_language,), default=None

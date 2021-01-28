@@ -54,10 +54,6 @@ const mapStateToProps = (state) => ({
 
 export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-/* Entry point for DOM element render and subsequent button render.
-This only deal with the above and handling API requests. The SyncChannel
-component will manage logic.
-*/
 export const SyncChannelContainer = ({
   element,
   ...params

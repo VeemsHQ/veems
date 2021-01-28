@@ -6,19 +6,15 @@ import Toast from 'react-bootstrap/Toast';
 
 import 'regenerator-runtime/runtime.js';
 
-// Styling
-/* Todo: Move all embedded css into here so we can properly pass and use props
-  and remove all ugly className syntax.
-*/
-
 export const CreateChannelButton = ({
   onCreateChannel,
 }) => {
   const [showChannelModal, setShowChannelModal] = useState(false);
+  const [apiErrors, setApiErrors] = useState({});
 
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
-  const [channelWarning, setChannelWarning] = useState('');
+  const [primaryFormError, setPrimaryFormError] = useState('');
   const [isChannelSynced, setIsChannelSynced] = useState(false);
   const [validated, setValidated] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -32,13 +28,15 @@ export const CreateChannelButton = ({
       setValidated(true);
       return;
     }
-    const isChannelCreated = await onCreateChannel(channelName, channelDescription, isChannelSynced);
+    const [isChannelCreated, apiErrors_] = await onCreateChannel(
+      channelName, channelDescription, isChannelSynced,
+    );
     if (isChannelCreated) {
-      setShowChannelModal(false);
-      // Show toast success.
       setShowToast(true);
+      setShowChannelModal(false);
     } else {
-      setChannelWarning('Sorry, it looks like something has gone wrong.');
+      setApiErrors(apiErrors_);
+      setPrimaryFormError('Please correct the form errors shown above and resubmit.');
     }
   };
 
@@ -46,27 +44,20 @@ export const CreateChannelButton = ({
     <>
       <Modal show={showChannelModal} onHide={() => setShowChannelModal(false)}>
         <Form onSubmit={(e) => createChannelHandler(e)} noValidate validated={validated}>
-
           <Modal.Header closeButton>
             <Modal.Title>Create a channel</Modal.Title>
           </Modal.Header>
-
           <Modal.Body>
-
             <Form.Group>
               <Form.Label>Channel Name</Form.Label>
-              <Form.Control onChange={(e) => setChannelName(e.target.value)} type="text" placeholder="My Awesome Channel" required />
-              <Form.Control.Feedback type="invalid">
-                Please provide a channel name.
-              </Form.Control.Feedback>
+              <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.name : false)} onChange={(e) => setChannelName(e.target.value)} name="name" type="text" placeholder="My Awesome Channel" required />
+              <Form.Control.Feedback type="invalid">{apiErrors ? apiErrors.name : ''}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="exampleForm.ControlTextarea1">
               <Form.Label>Channel Description</Form.Label>
-              <Form.Control required onChange={(e) => setChannelDescription(e.target.value)} as="textarea" rows={4} placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places." />
-              <Form.Control.Feedback type="invalid">
-                Please provide a channel description.
-              </Form.Control.Feedback>
+              <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.description : false)} onChange={(e) => setChannelDescription(e.target.value)} name="description" as="textarea" rows={4} placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places." />
+              <Form.Control.Feedback type="invalid">{apiErrors ? apiErrors.description : ''}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicCheckbox">
@@ -79,7 +70,7 @@ export const CreateChannelButton = ({
 
           <Modal.Footer>
             <p className="text-danger">
-              {channelWarning}
+              {primaryFormError}
             </p>
             <button onClick={() => setShowChannelModal(false)} type="button" className="btn btn-light">Cancel</button>
             <button type="submit" className="btn btn-primary">Create Channel</button>
@@ -96,10 +87,9 @@ export const CreateChannelButton = ({
       aria-atomic="true"
       style={{
         position: 'fixed',
-        bottom: '0',
+        top: '0',
         right: '0',
-        padding: '20px',
-        margin: '20px',
+        height: '2px',
         width: '100%',
         zIndex: '9999',
       }}
@@ -107,25 +97,28 @@ export const CreateChannelButton = ({
       <Toast
         style={{
           position: 'absolute',
-          padding: '20px',
-          bottom: 0,
-          right: 0,
+          top: 20,
+          right: 20,
         }}
         show={showToast}
         autohide
         onClose={() => setShowToast(!showToast)}
       >
         <Toast.Header>
-          Success
+          <strong className="mr-auto">Success</strong>
         </Toast.Header>
-        <Toast.Body>Created Channel: {channelName}</Toast.Body>
+        <Toast.Body>Your new channel has been created.</Toast.Body>
       </Toast>
     </div>
   );
 
   return (
     <>
-      <div><a onClick={() => setShowChannelModal(true)} className="mt-2 btn btn-outline-secondary"><i className="material-icons align-middle">add_circle_outline</i> Create Channel</a></div>
+      <div>
+        <a onClick={() => setShowChannelModal(true)} className="mt-2 btn btn-outline-secondary">
+          <i className="material-icons align-middle">add_circle_outline</i> Create Channel
+        </a>
+      </div>
       {renderModal()}
       {renderToast()}
     </>

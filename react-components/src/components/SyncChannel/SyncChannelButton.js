@@ -32,7 +32,7 @@ export const SyncChannelButton = ({
         <Form>
 
           <Modal.Header closeButton>
-            <Modal.Title>Sync a channel</Modal.Title>
+            <Modal.Title>Sync your YouTube Channel to Veems</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -71,7 +71,7 @@ export const SyncChannelButton = ({
                     content to Veems and agree to
                   </label> <a href="#"> these terms</a><label>. I have also read and understand <a href="#"> how the program works</a>.</label>
                   </>
-)}
+                )}
               />
             </Form.Group>
 
@@ -89,8 +89,7 @@ export const SyncChannelButton = ({
 
   return (
     <>
-      <h2 className="h5 ">Sync Status</h2>
-      <StyledLink onClick={onModalOpen(true)} className="btn btn-primary ml-auto">Add YouTube Channel</StyledLink>
+      <StyledLink onClick={onModalOpen(true)} className="btn btn-primary ml-auto">Sync YouTube Channel</StyledLink>
       {renderModal()}
     </>
   );
