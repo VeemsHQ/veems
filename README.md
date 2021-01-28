@@ -136,12 +136,6 @@ make test
 
 ## Usage
 
-### Importing seed data
-
-```bash
-python manage.py import_seed_data
-```
-
 ### Running the webserver
 
 ```bash
@@ -158,6 +152,12 @@ make run
 ```
 
 Then visit http://localhost:8000/
+
+### Importing seed data
+
+```bash
+make reset
+```
 
 
 ### Running the background [Celery](https://docs.celeryproject.org/en/stable/index.html) workers
