@@ -44,8 +44,8 @@ export const setChannelsAction = (channels) => async (dispatch) => {
  * Function to set the open state of the sync modal.
  * @param {boolean} state -open/closed state
  */
-export const setSyncModalOpenAction = (state) => async (dispatch) => {
-  dispatch({ type: aTypes.SET_SYNC_MODAL_OPEN, payload: state });
+export const setChannelSyncModalOpenAction = (state) => async (dispatch) => {
+  dispatch({ type: aTypes.SET_CHANNEL_SYNC_MODAL_OPEN, payload: state });
 };
 
 /**
