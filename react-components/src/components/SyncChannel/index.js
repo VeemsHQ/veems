@@ -1,39 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-// Redux
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-// Components
 import SyncChannelButton from './SyncChannelButton';
 
-// Actions
 import {
-  setSyncModalOpenAction,
+  setChannelSyncModalOpenAction,
 } from '../../actions/index';
 
-// api
+// TODO: Call API
 // import { syncChannelRequest } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
-// Component connected to Redux store
 const Container = ({
-  isSyncModalOpen,
-  setSyncModalOpen,
+  isChannelSyncModalOpen,
+  setChannelSyncModalOpen,
 }) => {
   const handleSyncChannel = () => {
     // todo when server calls in place
     // syncChannelRequest();
   };
-  const handleModalClose = () => setSyncModalOpen(false);
-  const handleModalOpen = () => setSyncModalOpen(true);
+  const handleModalClose = () => setChannelSyncModalOpen(false);
+  const handleModalOpen = () => setChannelSyncModalOpen(true);
   return (
     <SyncChannelButton
-      isModalOpen={isSyncModalOpen}
+      isModalOpen={isChannelSyncModalOpen}
       onSyncChannel={handleSyncChannel}
       onModalOpen={() => handleModalOpen}
       onModalClose={() => handleModalClose}
@@ -44,21 +40,17 @@ const Container = ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    setSyncModalOpen: setSyncModalOpenAction,
+    setChannelSyncModalOpen: setChannelSyncModalOpenAction,
   }, dispatch),
 });
 
 const mapStateToProps = (state) => ({
-  isSyncModalOpen: state.channels.isSyncModalOpen,
+  isChannelSyncModalOpen: state.channels.isChannelSyncModalOpen,
 });
 
 export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-/* Entry point for DOM element render and subsequent button render.
-This only deal with the above and handling API requests. The SyncChannel
-component will manage logic.
-*/
-export const SyncChannelContainer = ({
+export const CreateSyncChannelButtonContainer = ({
   element,
   ...params
 }) => (

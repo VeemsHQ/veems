@@ -12,7 +12,7 @@ import CreateChannelButton from './CreateChannelButton';
 
 // Actions
 import {
-  setSyncModalOpenAction,
+  setChannelSyncModalOpenAction,
   setActiveChannelAction,
   setChannelsAction,
 } from '../../actions/index';
@@ -27,14 +27,16 @@ const { store, persistor } = configureStore.getInstance();
 
 // Component connected to Redux store
 const Container = ({
-  setSyncModalOpen,
+  setChannelSyncModalOpen,
   setActiveChannel,
   setChannels,
 }) => {
   const handleCreateChannel = async (name, desc, isSynced) => {
     const { response, data } = await createChannelRequest(name, desc, isSynced);
 
-    if (response?.status === 400) return false;
+    if (response?.status === 400) {
+      return [false, response?.data];
+    }
 
     /* Update active channel redux list from server. Alternativly we could merge
     the returned active channel below to  into an already populated list reduce API calls, but
@@ -51,13 +53,13 @@ const Container = ({
     /* If isSynced then enable correct tab and dispatch Redux action to
     open modal dialog on page */
     if (isSynced) {
-      await setSyncModalOpen(true);
+      await setChannelSyncModalOpen(true);
       window.location.pathname = '/channel/sync/';
     } else {
-      await setSyncModalOpen(false);
+      await setChannelSyncModalOpen(false);
     }
 
-    return true;
+    return [true, null];
   };
 
   return (
@@ -68,7 +70,7 @@ const Container = ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    setSyncModalOpen: setSyncModalOpenAction,
+    setChannelSyncModalOpen: setChannelSyncModalOpenAction,
     setActiveChannel: setActiveChannelAction,
     setChannels: setChannelsAction,
   }, dispatch),

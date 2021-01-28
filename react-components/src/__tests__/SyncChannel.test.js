@@ -3,10 +3,10 @@ import Enzyme from 'enzyme';
 
 import Adapter from 'enzyme-adapter-react-16';
 
-import { SyncChannelContainer } from '../components/SyncChannel';
+import { CreateSyncChannelButtonContainer } from '../components/SyncChannel';
 
 const setUp = (props = {}) => {
-  const component = Enzyme.shallow(<SyncChannelContainer {...props} />);
+  const component = Enzyme.shallow(<CreateSyncChannelButtonContainer {...props} />);
   return component;
 };
 

@@ -4,9 +4,11 @@
 {% block content %}
 <div class="col">
 
-    <div id="sync-channel-button" class="d-flex align-items-center">
-        <h2 class="h5 ">Sync Status</h2>
-        <a href="#" data-toggle="modal" data-target="#createSyncModal" class="btn btn-primary ml-auto">Add YouTube Channel</a>
+    <div class="d-flex align-items-center">
+        <h2 class="h5">Sync Status</h2>
+        <div id="sync-channel-button" class="d-inline-block ml-auto">
+            <a href="#" class="btn btn-primary ml-auto">Sync YouTube Channel</a>
+        </div>
     </div>
     <table class="table mt-4">
         <thead>
@@ -38,7 +40,7 @@
 
 {{ block.super }}
 <script type="text/javascript">
-    app.SyncChannelContainer({
+    app.CreateSyncChannelButtonContainer({
         element: document.getElementById('sync-channel-button'),
     })
 </script>

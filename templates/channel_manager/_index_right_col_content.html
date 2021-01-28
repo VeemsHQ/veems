@@ -4,8 +4,12 @@
     <h4>News</h4>
     <p>No new updates, but check back regularly to see announcements geared specifically for creators.
         Also take a look at: </p>
-    <p><a href="#"><img src="{% static 'images/social-icons/discord.svg' %}" class="social-icon mr-1" /> Veems on Discord</a></p>
-    <p><a href="#"><img src="{% static 'images/social-icons/twitter.svg' %}" class="social-icon mr-1" /> Veems on Twitter</a></p>
+    <p><a href="https://veems.tv/discord"><img src="{% static 'images/social-icons/discord.svg' %}"
+                class="social-icon mr-1" /> Veems on
+            Discord</a></p>
+    <p><a href="https://twitter.com/VeemsHQ"><img src="{% static 'images/social-icons/twitter.svg' %}"
+                class="social-icon mr-1" /> Veems on
+            Twitter</a></p>
 </div>
 <div id="actions" class="border my-3 rounded p-3">
     <h4>Actions</h4>
@@ -13,12 +17,17 @@
                 class="material-icons align-middle">backup</i> Upload
             Video</a>
     </div>
-    <div><a href="{% url 'channel-manager-sync' %}" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">sync</i>
+    <div><a href="{% url 'channel-manager-sync' %}" class="mt-2 btn btn-outline-secondary"><i
+                class="material-icons align-middle">sync</i>
             Sync
             YouTube
             Videos</a></div>
-    <div id="create-channel-button"><a href="#" data-toggle="modal" data-target="#createChannelModal" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">add_circle_outline</i> Create Channel</a></div>
-    <div><a href="{% url 'logout' %}" class="mt-2 btn btn-outline-secondary"><i class="material-icons align-middle">exit_to_app</i> Logout</a></div>
+    <div id="create-channel-button">
+        <a href="#" data-toggle="modal" data-target="#createChannelModal" class="mt-2 btn btn-outline-secondary">
+            <i class="material-icons align-middle">add_circle_outline</i> Create Channel</a>
+    </div>
+    <div><a href="{% url 'logout' %}" class="mt-2 btn btn-outline-secondary"><i
+                class="material-icons align-middle">exit_to_app</i> Logout</a></div>
 </div>
 <script type="text/javascript">
     app.CreateChannelContainer({
