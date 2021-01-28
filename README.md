@@ -63,7 +63,7 @@ In order of priority.
     - Related user notifications.
 - Video view metrics.
 - Follow (Subscribe to) a Channel.
-- Like/dislike videos.
+- Like/dislike videos (backend ⏳, frontend ⏳).
 - User notifications.
     - Email notifications.
 - Moderation
