@@ -77,7 +77,7 @@ const mapStateToProps = (state) => ({
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-export const SelectChannelContainer = ({
+export const CreateSelectChannelContainer = ({
   element,
   ...params
 }) => (

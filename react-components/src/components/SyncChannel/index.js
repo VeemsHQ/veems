@@ -50,7 +50,7 @@ const mapStateToProps = (state) => ({
 
 export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-export const SyncChannelContainer = ({
+export const CreateSyncChannelButtonContainer = ({
   element,
   ...params
 }) => (

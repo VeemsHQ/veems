@@ -18,14 +18,15 @@
         {{ channels|json_script:"channels" }}
         <div class="row justify-content-around">
             <div class="col h-100">
-                <div id="select-channel-dropdown"
-                    class="title-band d-flex align-items-center mt-5 pt-5 pb-2 px-0 mb-0 border-bottom">
+                <div class="title-band d-flex align-items-center mt-5 pt-5 pb-2 px-0 mb-0 border-bottom">
                     <h1 class="h2 m-0 p-0 d-inline-block">Channel Manager</h1>
-                    <select class="custom-select custom-select-sm d-inline-block w-auto ml-3">
-                        {% for channel in channels %}
-                        <option value="{{channel.id}}">{{channel.name}}</option>
-                        {% endfor %}
-                    </select>
+                    <div id="select-channel-dropdown">
+                        <select class="custom-select custom-select-sm d-inline-block w-auto ml-3">
+                            {% for channel in channels %}
+                            <option value="{{channel.id}}">{{channel.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <div class="flex-row border-bottom mt-0 mb-4">
                     <ul class="nav settings-nav">
@@ -63,7 +64,7 @@
 {{ block.super }}
 <script type="text/javascript">
     var channels = JSON.parse(document.getElementById('channels').textContent);
-    app.SelectChannelContainer({
+    app.CreateSelectChannelContainer({
         element: document.getElementById('select-channel-dropdown'),
         channels: channels,
     })

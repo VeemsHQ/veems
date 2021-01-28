@@ -1,9 +1,9 @@
 import { CreateChannelContainer } from '@src/components/CreateChannel';
-import { SyncChannelContainer } from '@src/components/SyncChannel';
-import { SelectChannelContainer } from '@src/components/SelectChannel';
+import { CreateSyncChannelButtonContainer } from '@src/components/SyncChannel';
+import { CreateSelectChannelContainer } from '@src/components/SelectChannel';
 
 export default {
   CreateChannelContainer,
-  SyncChannelContainer,
-  SelectChannelContainer,
+  CreateSyncChannelButtonContainer,
+  CreateSelectChannelContainer,
 };
