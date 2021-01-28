@@ -63,3 +63,22 @@ export const setChannelRequest = async (channelId) => {
     return err;
   }
 };
+
+export const setVideoLikeDislike = async (videoId, isLike) => {
+  if (isLike == null) {
+    try {
+      const res = await API.delete(`${serverURL}/api/v1/video/${videoId}/likedislike/`);
+      return res;
+    } catch (err) {
+      return err;
+    }
+  } else {
+    const data = { is_like: isLike };
+    try {
+      const res = await API.post(`${serverURL}/api/v1/video/${videoId}/likedislike/`, data);
+      return res;
+    } catch (err) {
+      return err;
+    }
+  }
+};

@@ -7,6 +7,7 @@
     --search-thumb-height: 136px;
     --search-thumb-md-width: 360px;
     --search-thumb-md-height: 200px;
+    --muted: #6c757d;
 }
 
 body {
@@ -277,6 +278,10 @@ body {
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
+.bg-muted {
+    background-color: var(--muted);
+}
+
 .top-nav-right a:hover {
     text-decoration: none;
     background: var(--primary) !important;
@@ -301,6 +306,10 @@ body {
 .avatar-large img {
     width: 140px;
     height: 140px;
+}
+
+.likedislike-progress {
+    height: 2px;
 }
 
 .video-grid .card {

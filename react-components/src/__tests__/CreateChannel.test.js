@@ -4,7 +4,6 @@ import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import { CreateChannelContainer } from '../components/CreateChannel';
-import CreateChannelButton from '../components/CreateChannel/CreateChannelButton';
 
 const setUp = (props = {}) => {
   const component = Enzyme.shallow(<CreateChannelContainer {...props} />);
