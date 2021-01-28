@@ -139,7 +139,6 @@ class TestCreateChannel:
 
         assert response.status_code == BAD_REQUEST
         assert response.json() == {
-            'description': ['This field is required.'],
             'sync_videos_interested': ['This field is required.'],
         }
 
