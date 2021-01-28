@@ -7,10 +7,7 @@ export const VideoLikeDislikeWidget = ({
   handleVideoLiked,
   handleVideoDisliked,
   handleVideoNeither,
-  likesCount,
-  dislikesCount,
-  isLiked,
-  likesDislikesPercentage,
+  videoData,
   apiError,
   setApiError,
 }) => {
@@ -18,7 +15,7 @@ export const VideoLikeDislikeWidget = ({
 
   const likeVideo = async (e) => {
     e.preventDefault();
-    if (isLiked === false || isLiked === null) {
+    if (videoData.isLiked === false || videoData.isLiked === null) {
       await handleVideoLiked();
       setShowToast(true);
     } else {
@@ -28,7 +25,7 @@ export const VideoLikeDislikeWidget = ({
 
   const dislikeVideo = async (e) => {
     e.preventDefault();
-    if (isLiked === true || isLiked === null) {
+    if (videoData.isLiked === true || videoData.isLiked === null) {
       await handleVideoDisliked();
       setShowToast(true);
     } else {
@@ -56,7 +53,7 @@ export const VideoLikeDislikeWidget = ({
           top: 20,
           right: 20,
         }}
-        show={apiError != ''}
+        show={apiError !== ''}
         autohide
         onClose={() => setApiError('')}
       >
@@ -69,13 +66,13 @@ export const VideoLikeDislikeWidget = ({
   );
 
   const renderToast = () => {
-    if (apiError !== false) {
+    if (apiError !== false && apiError !== '') {
       return renderErrorToast();
     }
     let action;
-    if (isLiked === true) {
+    if (videoData.isLiked === true) {
       action = 'liked';
-    } else if (isLiked === false) {
+    } else if (videoData.isLiked === false) {
       action = 'disliked';
     } else {
       return '';
@@ -112,12 +109,12 @@ export const VideoLikeDislikeWidget = ({
     );
   };
 
-  const getLikeControlTextColor = () => (isLiked === true ? 'text-primary' : 'text-muted');
+  const getLikeControlTextColor = () => (videoData.isLiked === true ? 'text-primary' : 'text-muted');
 
-  const getDislikeControlTextColor = () => (isLiked === false ? 'text-primary' : 'text-muted');
+  const getDislikeControlTextColor = () => (videoData.isLiked === false ? 'text-primary' : 'text-muted');
 
   const getRatioBarColor = () => {
-    if (isLiked === true || isLiked === false) {
+    if (videoData.isLiked === true || videoData.isLiked === false) {
       return 'bg-primary';
     }
     return 'bg-muted';
@@ -133,7 +130,7 @@ export const VideoLikeDislikeWidget = ({
             >thumb_up_alt
             </i><span
                 className="ml-2"
-              >{likesCount}
+              >{videoData.likesCount}
               </span>
             </a>
             <a
@@ -146,7 +143,7 @@ export const VideoLikeDislikeWidget = ({
             >thumb_down_alt
              </i><span
                 className="ml-2"
-              >{dislikesCount}
+              >{videoData.dislikesCount}
               </span>
             </a>
           </div>
@@ -154,8 +151,8 @@ export const VideoLikeDislikeWidget = ({
             <div
               className={`progress-bar ${getRatioBarColor()}`}
               role="progressbar"
-              style={{ width: `${likesDislikesPercentage}%` }}
-              aria-valuenow={likesDislikesPercentage}
+              style={{ width: `${videoData.likesDislikesPercentage}%` }}
+              aria-valuenow={videoData.likesDislikesPercentage}
               aria-valuemin="0"
               aria-valuemax="100"
             />

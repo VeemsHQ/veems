@@ -16,12 +16,13 @@ const { store, persistor } = configureStore.getInstance();
 
 function Container(props) {
   const [apiError, setApiError] = useState('');
-  const [likesCount, setLikesCount] = useState(props.likesCount);
-  const [dislikesCount, setDislikesCount] = useState(props.dislikesCount);
-  // isLiked possible states: true=liked false=disliked null=neither
-  const [isLiked, setIsLiked] = useState(props.isLiked);
-  const [likesDislikesPercentage, setLikesDislikesPercentage] = useState(props.likesDislikesPercentage);
-
+  const [videoData, setvideoData] = useState({
+    likesCount: props.likesCount,
+    dislikesCount: props.dislikesCount,
+    // isLiked possible states: true=liked false=disliked null=neither
+    isLiked: props.isLiked,
+    likesDislikesPercentage: props.likesDislikesPercentage,
+  });
   const updateStateFromApiResponse = async (requestPromise) => {
     const { response, data } = await requestPromise;
     if (response?.status === 403) {
@@ -29,10 +30,14 @@ function Container(props) {
     } else if (response?.status > 400) {
       setApiError('Something went wrong, please try again.');
     } else {
-      setLikesCount(data?.likes_count);
-      setDislikesCount(data?.dislikes_count);
-      setIsLiked(data?.is_like);
-      setLikesDislikesPercentage(data?.likesdislikes_percentage);
+      setvideoData(
+        {
+          likesCount: data?.likes_count,
+          dislikesCount: data?.dislikes_count,
+          isLiked: data?.is_like,
+          likesDislikesPercentage: data?.likesdislikes_percentage,
+        },
+      );
       return true;
     }
   };
@@ -45,7 +50,7 @@ function Container(props) {
 
   const handleVideoLiked = async () => {
     // Is it was previously not liked/disliked or was liked and 'Like' was just clicked.
-    if (isLiked === null || isLiked === false) {
+    if (videoData.isLiked === null || videoData.isLiked === false) {
       await updateStateFromApiResponse(setVideoLikeDislike(props.videoId, true));
     } else {
       await handleVideoNeither();
@@ -55,7 +60,7 @@ function Container(props) {
 
   const handleVideoDisliked = async () => {
     // Is it was previously not liked/disliked or was liked and 'Dislike' was just clicked.
-    if (isLiked === null || isLiked === true) {
+    if (videoData.isLiked === null || videoData.isLiked === true) {
       await updateStateFromApiResponse(setVideoLikeDislike(props.videoId, false));
     } else {
       await handleVideoNeither();
@@ -68,10 +73,7 @@ function Container(props) {
       handleVideoLiked={handleVideoLiked}
       handleVideoDisliked={handleVideoDisliked}
       handleVideoNeither={handleVideoNeither}
-      dislikesCount={dislikesCount}
-      likesCount={likesCount}
-      isLiked={isLiked}
-      likesDislikesPercentage={likesDislikesPercentage}
+      videoData={videoData}
       apiError={apiError}
       setApiError={setApiError}
     />
