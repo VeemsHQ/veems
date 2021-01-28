@@ -18,16 +18,16 @@
                     <div class="d-flex flex-column" id="video-likes-dislikes">
                         <div class="d-flex flex-row">
                             <a href="#" title="I like this"
-                                class="btn btn-sm d-flex align-items-center {% if video.authenticated_user_data.has_liked_video == True %}text-primary{% else %}text-muted{% endif %}"><i
+                                class="btn btn-sm d-flex align-items-center {{ video.authenticated_user_data.has_liked_video|yesno:'bg-primary,bg-muted' }}"><i
                                     class="small material-icons align-middle">thumb_up_alt</i><span
                                     class="ml-2">{{video.likes_count}}</span></a>
                             <a href="#" title="I dislike this"
-                                class="btn btn-sm d-flex align-items-center  {% if video.authenticated_user_data.has_liked_video == False %}text-primary{% else %}text-muted{% endif %}"><i
+                                class="btn btn-sm d-flex align-items-center {{  video.authenticated_user_data.has_liked_video|yesno:'bg-muted,bg-primary' }}"><i
                                     class="small material-icons align-middle">thumb_down_alt</i><span
                                     class="ml-2">{{video.dislikes_count}}</span></a>
                         </div>
                         <div class="progress likedislike-progress">
-                            <div class="progress-bar {% if video.authenticated_user_data.has_liked_video %}bg-primary{% else %}bg-muted{% endif %}"
+                            <div class="progress-bar {{ video.authenticated_user_data.has_liked_video|yesno:'bg-primary,bg-muted' }}"
                                 role="progressbar" style="width: {{video.likesdislikes_percentage}}%;"
                                 aria-valuenow="{{video.likesdislikes_percentage}}" aria-valuemin="0"
                                 aria-valuemax="100"></div>

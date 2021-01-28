@@ -114,19 +114,11 @@ export const VideoLikeDislikeWidget = ({
   }
 
   const getLikeControlTextColor = () => {
-    if (isLiked === true) {
-      return 'text-primary';
-    } else {
-      return 'text-muted';
-    }
+    return isLiked === true ? 'text-primary' : 'text-muted';
   }
 
   const getDislikeControlTextColor = () => {
-    if (isLiked === false) {
-      return 'text-primary';
-    } else {
-      return 'text-muted';
-    }
+    return isLiked === false ? 'text-primary' : 'text-muted';
   }
 
   const getRatioBarColor = () => {
