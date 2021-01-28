@@ -63,8 +63,6 @@ body {
     list-style: none;
 }
 
-.nav-item {}
-
 .logo {
     width: 125px;
 }
@@ -91,7 +89,6 @@ body {
 }
 
 #main-video-player {
-    /* min-width:300px; */
     max-height: 720px;
 }
 
@@ -182,6 +179,8 @@ body {
 
 .top-nav-right a.icon-link {
     width: 42px;
+    min-width: 42px;
+    min-height: 42px;
     height: 42px;
 }
 
@@ -575,7 +574,15 @@ hr {
     .jumbotron-channel {
         height: 225px;
     }
+    .model-dialog-narrow {
+        min-width: 400px;
+        max-width: 430px;
+    }
 }
+
+/* breakpoint-lg */
+
+@media (min-width: 960px) {}
 
 /* breakpoint-xl */
 

@@ -11,14 +11,14 @@
 The code powering https://veems.tv.
 A next generation video sharing platform, with freedom of speech values.
 
-![https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg](https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg)
-
+![https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg](https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg) 
 [![Maintainability](https://api.codeclimate.com/v1/badges/5924e6affd4354f0af97/maintainability)](https://codeclimate.com/github/VeemsHQ/veems/maintainability)
 
 ## Stay in touch
 
-- [Twitter](https://twitter.com/veemshq)
+- [Telegram](https://veems.tv/telegram)
 - [Discord](https://discord.gg/RjCZMtZ)
+- [Twitter](https://twitter.com/veemshq)
 - [Twitch.tv](https://www.twitch.tv/richardarpanet)
 
 ## Contributing
@@ -63,7 +63,7 @@ In order of priority.
     - Related user notifications.
 - Video view metrics.
 - Follow (Subscribe to) a Channel.
-- Like/dislike videos.
+- Like/dislike videos (backend ⏳, frontend ⏳).
 - User notifications.
     - Email notifications.
 - Moderation
