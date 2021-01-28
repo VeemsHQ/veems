@@ -264,6 +264,7 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
 
 SITE_DOMAIN = os.environ['SITE_DOMAIN']
+FRONTEND_API_BASE_URL = f'{HOST_SCHEME}{SITE_DOMAIN}'
 SENDGRID_API_KEY = os.environ.get('EMAIL_SERVICE_API_KEY')
 if SENDGRID_API_KEY:
     EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'

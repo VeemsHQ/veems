@@ -1,6 +1,7 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 from ..channel import (
     services as channel_services,
@@ -31,4 +32,5 @@ def global_context(request):
         context['selected_channel'] = None
     context['login_form'] = user_forms.CustomAuthenticationForm(request)
     context['next'] = request.GET.get('next') or ''
+    context['api_base_url'] = settings.FRONTEND_API_BASE_URL
     return context
