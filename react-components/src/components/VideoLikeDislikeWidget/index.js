@@ -40,6 +40,7 @@ function Container(props) {
       );
       return true;
     }
+    return true;
   };
 
   const handleVideoNeither = async () => {
