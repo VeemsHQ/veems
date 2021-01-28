@@ -28,8 +28,8 @@ install:
 
 .ONESHELL:
 make-buckets-remote:
-	aws s3 mb s3://${BUCKET_STATIC}
-	aws s3 mb s3://${BUCKET_MEDIA}
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC} || true
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
 .ONESHELL:
 start-deps-remote:
@@ -38,8 +38,8 @@ start-deps-remote:
 .ONESHELL:
 start-deps:
 	docker-compose up -d postgres rabbit localstack
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC}
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA}
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC} || true
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
 .ONESHELL:
 .PHONY: reset
