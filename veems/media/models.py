@@ -335,11 +335,11 @@ class VideoLikeDislike(BaseModel):
     )
     is_like = models.BooleanField(db_index=True, null=True, blank=False)
 
+    class Meta:
+        unique_together = ('user', 'video')
+
     def __str__(self):
         return (
             f'<{self.__class__.__name__} {self.id} {self.video_id} '
             f'{self.is_like}>'
         )
-
-    class Meta:
-        unique_together = ('user', 'video')
