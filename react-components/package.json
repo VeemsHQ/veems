@@ -23,7 +23,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint --ext .jsx --ext .js ./src/",
     "watch": "webpack --watch --config webpack.config.js --mode development",
-    "build-dev": "webpack --config webpack.config.js --mode development"
+    "build-dev": "webpack --config webpack.config.js --mode development",
+    "build-prod": "webpack --config webpack.config.js --mode production"
   },
   "eslintConfig": {
     "extends": [
