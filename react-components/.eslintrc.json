@@ -1,0 +1,22 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "jest": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-one-expression-per-line": "off",
+    "no-await-in-loop": "off",
+    "linebreak-style": 0,
+    "react/prop-types": 0,
+    "no-console": "off",
+    "object-shorthand": ["error", "methods"],
+    "import/no-named-as-default": 0,
+    "jsx-a11y/click-events-have-key-events": "off",
+    "no-shadow": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/destructuring-assignment": "off"
+  }
+}

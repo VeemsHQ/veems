@@ -91,6 +91,7 @@ AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -156,10 +157,15 @@ BUCKET_MEDIA_DEFAULT_ACL = None
 BUCKET_STATIC_CUSTOM_DOMAIN = os.environ.get('BUCKET_STATIC_CUSTOM_DOMAIN')
 
 DEFAULT_FILE_STORAGE = 'veems.common.storage_backends.CustomS3Boto3Storage'
-STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+STATICFILES_STORAGE = os.environ.get(
+    'STATICFILES_STORAGE', DEFAULT_FILE_STORAGE
+)
 
 STATIC_ROOT = Path(__file__).parent.parent / 'staticfiles'
-STATICFILES_DIRS = (Path(__file__).parent.parent / 'static',)
+STATICFILES_DIRS = (
+    Path(__file__).parent.parent / 'static',
+    Path(__file__).parent.parent / 'react-components/dist/',
+)
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': (
@@ -258,6 +264,7 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
 
 SITE_DOMAIN = os.environ['SITE_DOMAIN']
+FRONTEND_API_BASE_URL = f'{HOST_SCHEME}{SITE_DOMAIN}'
 SENDGRID_API_KEY = os.environ.get('EMAIL_SERVICE_API_KEY')
 if SENDGRID_API_KEY:
     EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'

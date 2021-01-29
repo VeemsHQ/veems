@@ -109,11 +109,11 @@ urlpatterns = [
         channel_api_views.ChannelDetailAPIView.as_view(),
     ),
     path(
-        'api/v1/channel/<slug:channel_id>/avatar',
+        'api/v1/channel/<slug:channel_id>/avatar/',
         channel_api_views.ChannelAvatarAPIView.as_view(),
     ),
     path(
-        'api/v1/channel/<slug:channel_id>/banner',
+        'api/v1/channel/<slug:channel_id>/banner/',
         channel_api_views.ChannelBannerAPIView.as_view(),
     ),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
@@ -125,7 +125,11 @@ urlpatterns = [
         'api/v1/video/<slug:video_id>/', api_views.VideoDetailAPIView.as_view()
     ),
     path(
-        'api/v1/video/<slug:video_id>/thumbnail',
+        'api/v1/video/<slug:video_id>/likedislike/',
+        api_views.VideoLikeDislikeAPIView.as_view(),
+    ),
+    path(
+        'api/v1/video/<slug:video_id>/thumbnail/',
         api_views.VideoThumbnailAPIView.as_view(),
     ),
     path(

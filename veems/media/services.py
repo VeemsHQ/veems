@@ -6,6 +6,7 @@ import functools
 import operator
 
 import m3u8
+from django.db.models import Q, Count
 from django.utils import timezone
 from django.core.files import File
 
@@ -300,3 +301,50 @@ def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
     video_record.custom_thumbnail_image = thumbnail_image
     video_record.save()
     return video_record
+
+
+def video_like(*, video_id, user_id):
+    record, _ = models.VideoLikeDislike.objects.update_or_create(
+        video_id=video_id,
+        user_id=user_id,
+        defaults={'is_like': True},
+    )
+    logger.info('Video %s liked by %s', video_id, user_id)
+    return record
+
+
+def video_remove_likedislike(*, video_id, user_id):
+    record, _ = models.VideoLikeDislike.objects.update_or_create(
+        video_id=video_id,
+        user_id=user_id,
+        defaults={'is_like': None},
+    )
+    logger.info('Video %s likedislike removed by %s', video_id, user_id)
+    return record
+
+
+def video_dislike(*, video_id, user_id):
+    record, _ = models.VideoLikeDislike.objects.update_or_create(
+        video_id=video_id,
+        user_id=user_id,
+        defaults={'is_like': False},
+    )
+    logger.info('Video %s disliked by %s', video_id, user_id)
+    return record
+
+
+def get_video_likedislikes(*, video_id):
+    return models.VideoLikeDislike.objects.filter(video_id=video_id)
+
+
+def get_video_likedislike(*, video_id, user_id):
+    return models.VideoLikeDislike.objects.get(
+        video_id=video_id, user_id=user_id
+    )
+
+
+def get_video_likedislike_count(*, video_id):
+    return models.VideoLikeDislike.objects.filter(video_id=video_id).aggregate(
+        like_count=Count('id', filter=Q(is_like=True)),
+        dislike_count=Count('id', filter=Q(is_like=False)),
+    )

@@ -1,5 +1,6 @@
 {% extends '_base_public.html' %}
 {% load static %}
+{% load to_json %}
 {% block title %}{{video.title}}{% endblock %}
 {% block description %}{{video.description|truncatechars:150}}{% endblock %}
 {% block content %}
@@ -8,29 +9,46 @@
         <div class="col p-0 m-0">
             <div id="main-video-player" class="w-100 " style="min-width:500px">
                 {% if video.video_renditions_count == 0 %}
-                <img class="img-fluid" src="{% static 'images/player/error-video-processing.png' %}"/>
+                <img class="img-fluid" src="{% static 'images/player/error-video-processing.png' %}" />
                 {% endif %}
             </div>
             <h1 style="font-size:18px" class="mt-3">{{video.title}} {{video.rendition_count}}</h1>
             <div class="text-muted d-flex">
                 <div class="video-menu d-inline-flex align-items-center align-middle">
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
-                            class="small material-icons align-middle">thumb_up_alt</i><span class="ml-2">Like</span></a>
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
-                            class="small material-icons align-middle">thumb_down_alt</i><span class="ml-2"></span></a>
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
+                    <div class="d-flex flex-column" id="video-likes-dislikes">
+                        <div class="d-flex flex-row">
+                            <a href="#" title="I like this"
+                                class="btn btn-sm d-flex align-items-center {{ video.authenticated_user_data.has_liked_video|yesno:'text-primary,text-muted' }}"><i
+                                    class="small material-icons align-middle">thumb_up_alt</i><span
+                                    class="ml-2">{{video.likes_count}}</span></a>
+                            <a href="#" title="I dislike this"
+                                class="btn btn-sm d-flex align-items-center {{  video.authenticated_user_data.has_liked_video|yesno:'text-muted,text-primary' }}"><i
+                                    class="small material-icons align-middle">thumb_down_alt</i><span
+                                    class="ml-2">{{video.dislikes_count}}</span></a>
+                        </div>
+                        <div class="progress likedislike-progress">
+                            <div class="progress-bar {{ video.authenticated_user_data.has_liked_video|yesno:'bg-muted,bg-primary' }}"
+                                role="progressbar" style="width: {{video.likesdislikes_percentage}}%;"
+                                aria-valuenow="{{video.likesdislikes_percentage}}" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <a href="#" title="Share" class="btn btn-sm text-muted d-flex align-items-center"><i
                             class="small material-icons align-middle">share</i><span class="ml-2">Share</span></a>
-                    <a href="#" class="btn btn-sm text-muted align-items-center  d-none d-xl-inline-flex"><i
+                    <a href="#" title="Post a video response"
+                        class="btn btn-sm text-muted align-items-center  d-none d-xl-inline-flex"><i
                             class="small material-icons align-middle">video_call</i><span
                             class="ml-2">Respond</span></a>
-                    <a href="#" class="btn btn-sm text-muted  d-none d-md-inline-flex align-items-center"><i
+                    <a href="#" title="Add to..."
+                        class="btn btn-sm text-muted  d-none d-md-inline-flex align-items-center"><i
                             class="small material-icons align-middle">add_circle_outline</i><span class="ml-2">Add
                             to</span></a>
-                    <a href="#" class="btn btn-sm text-muted d-flex align-items-center"><i
+                    <a href="#" title="More" class="btn btn-sm text-muted d-flex align-items-center"><i
                             class="small material-icons align-middle">more_horiz</i></a>
                 </div>
                 <div class="video-info d-inline-flex ml-auto align-items-center">
-                    <span class="d-inline-block">{{video.view_count}} <span class="d-none d-sm-inline">views</span></span>
+                    <span class="d-inline-block">{{video.view_count}} <span
+                            class="d-none d-sm-inline">views</span></span>
                     <span class="d-none d-xl-inline mx-1">•</span>
                     <span class="d-none d-xl-inline">{{video.created_date}}</span>
                 </div>
@@ -41,12 +59,14 @@
                 <div class="position-absolute w-100 d-flex p-3">
                     <div>
                         <div class="d-flex flex-row align-items-center">
-                            <span><a href="{% url 'view-channel' channel.id %}" class="rounded-circle d-flex justify-content-center avatar-medium">
+                            <span><a href="{% url 'view-channel' channel.id %}"
+                                    class="rounded-circle d-flex justify-content-center avatar-medium">
                                     <img class="d-block rounded-circle align-self-center"
                                         src="{{channel.avatar_image_small_url}}" />
                                 </a></span>
                             <span class="ml-2">
-                                <a href="{% url 'view-channel' channel.id %}" class="font-weight-bold text-dark">{{channel.name}}</a>
+                                <a href="{% url 'view-channel' channel.id %}"
+                                    class="font-weight-bold text-dark">{{channel.name}}</a>
                                 <span class="d-block">{{channel.followers_count}} followers</span>
                             </span>
                         </div>
@@ -149,8 +169,7 @@
                                                 </li>
                                                 <li class="list-inline-item text-muted d-none d-md-inline-block">
                                                     <a href="javascript:void(0);" role="button" class="copy-link"
-                                                        data-clipboard-text=""><i
-                                                            class="fas fa-copy"></i>Copy link</a>
+                                                        data-clipboard-text=""><i class="fas fa-copy"></i>Copy link</a>
                                                 </li>
                                                 <li class="list-inline-item d-none d-md-inline-block">
                                                     <div class="dropdown show">
@@ -306,8 +325,7 @@
                                                             <li
                                                                 class="list-inline-item text-muted d-none d-md-inline-block">
                                                                 <a href="javascript:void(0);" role="button"
-                                                                    class="copy-link"
-                                                                    data-clipboard-text=""><i
+                                                                    class="copy-link" data-clipboard-text=""><i
                                                                         class="fas fa-copy"></i>Copy
                                                                     link</a>
                                                             </li>
@@ -321,8 +339,7 @@
                                                                     </a>
                                                                     <div class="dropdown-menu border-0 shadow"
                                                                         aria-labelledby="dropdownMoreLink">
-                                                                        <a class="dropdown-item"
-                                                                            href="#"><i
+                                                                        <a class="dropdown-item" href="#"><i
                                                                                 class="fas fa-book-open fa-width-rem"></i>Context</a>
                                                                         <a class="dropdown-item d-none" href="#"><i
                                                                                 class="fas fa-save fa-width-rem"></i>Save</a>
@@ -475,8 +492,7 @@
                                                 </li>
                                                 <li class="list-inline-item text-muted d-none d-md-inline-block">
                                                     <a href="javascript:void(0);" role="button" class="copy-link"
-                                                        data-clipboard-text=""><i
-                                                            class="fas fa-copy"></i>Copy link</a>
+                                                        data-clipboard-text=""><i class="fas fa-copy"></i>Copy link</a>
                                                 </li>
                                                 <li class="list-inline-item d-none d-md-inline-block">
                                                     <div class="dropdown show">
@@ -630,25 +646,36 @@
 
 {% block scripts %}
 {{ block.super }}
-    <script>
-        {% if video.video_renditions_count > 0 %}
-        const playerInstance = jwplayer('main-video-player').setup({
-            file: '{{video.playlist_file|safe}}',
-            autostart: true,
-            displaytitle: false,
-            responsive: true,
-            stretching: "uniform",
-            playbackRateControls: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2],
-            aspectratio: "16:9",
-            skin: {
-                name: 'alaska',
-                url: "{% static 'css/player.css' %}"
-            }
+<script>
+    {% if video.video_renditions_count > 0 %}
+    const playerInstance = jwplayer('main-video-player').setup({
+        file: '{{video.playlist_file|safe}}',
+        autostart: true,
+        displaytitle: false,
+        responsive: true,
+        stretching: "uniform",
+        playbackRateControls: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2],
+        aspectratio: "16:9",
+        skin: {
+            name: 'alaska',
+            url: "{% static 'css/player.css' %}"
+        }
             {% comment %} Add logo only on embedded player {% endcomment %}
-            {% comment %} logo: {
-                file: "{% static 'images/logo.png' %}"
-            }, {% endcomment %}
+    {% comment %} logo: {
+        file: "{% static 'images/logo.png' %}"
+    }, {% endcomment %}
         });
-        {% endif %}
-    </script>
+    {% endif %}
+</script>
+
+<script type="text/javascript">
+    app.CreateVideoLikeDislikeWidget({
+        element: document.getElementById('video-likes-dislikes'),
+        videoId: "{{video.id}}",
+        likesCount: {{ video.likes_count }},
+        dislikesCount: {{ video.dislikes_count }},
+        likesDislikesPercentage: {{ video.likesdislikes_percentage }},
+        isLiked: {{ video.authenticated_user_data.has_liked_video | to_json }}
+    })
+</script>
 {% endblock %}

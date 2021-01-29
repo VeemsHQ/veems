@@ -11,7 +11,7 @@
 The code powering https://veems.tv.
 A next generation video sharing platform, with freedom of speech values.
 
-![https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg](https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg) 
+![https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg](https://github.com/VeemsHQ/veems/workflows/Tests/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5924e6affd4354f0af97/maintainability)](https://codeclimate.com/github/VeemsHQ/veems/maintainability)
 
 ## Stay in touch
@@ -47,15 +47,16 @@ In order of priority.
 
 ### Alpha Release
 
-- Uploading, transcoding of content, playlist video packaging (backend ✅, frontend ⏳).
+- Uploading, transcoding of content, playlist video packaging (backend ✅, frontend ✅).
 - Playback of video content (backend ✅, frontend ✅).
-- User & API authentication (backend ✅, frontend ⏳).
-- Creation and management of "Channels" (backend ✅, frontend ⏳).
+- User & API authentication (backend ✅, frontend ✅).
+- Creation of "Channels" (backend ✅, frontend ✅).
 - Homepage video listings ✅.
 - Search function ✅.
 - Channel Manager (basics).
     - Video Management (backend ✅, frontend ⏳).
     - Channel customisation (backend ✅, frontend ⏳).
+- Like/dislike videos (backend ✅, frontend ✅).
 - Related videos suggestions, Video playback page.
 - Sync channel(s) content from YT to Veems automatically.
     - Channel Dashboard, sync configuration.
@@ -63,7 +64,6 @@ In order of priority.
     - Related user notifications.
 - Video view metrics.
 - Follow (Subscribe to) a Channel.
-- Like/dislike videos (backend ⏳, frontend ⏳).
 - User notifications.
     - Email notifications.
 - Moderation
@@ -136,12 +136,6 @@ make test
 
 ## Usage
 
-### Importing seed data
-
-```bash
-python manage.py import_seed_data
-```
-
 ### Running the webserver
 
 ```bash
@@ -158,6 +152,12 @@ make run
 ```
 
 Then visit http://localhost:8000/
+
+### Importing seed data
+
+```bash
+make reset
+```
 
 
 ### Running the background [Celery](https://docs.celeryproject.org/en/stable/index.html) workers

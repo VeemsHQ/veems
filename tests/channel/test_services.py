@@ -84,13 +84,13 @@ class TestCreateChannel:
         assert not channel.avatar_image
         # Small avatar (default)
         assert not channel.avatar_image_small
-        assert channel.avatar_image_small_url.startswith('http://')
+        assert channel.avatar_image_small_url
         # Large avatar (default)
         assert not channel.avatar_image_large
-        assert channel.avatar_image_large_url.startswith('http://')
+        assert channel.avatar_image_large_url
         # Large banner_image (default)
         assert not channel.banner_image_large
-        assert channel.banner_image_large_url.startswith('http://')
+        assert channel.banner_image_large_url
 
 
 class TestGetChannel:

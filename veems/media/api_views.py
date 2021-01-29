@@ -58,7 +58,7 @@ class VideoDetailAPIView(APIView):
 
     def get(self, request, video_id, format=None):
         video = services.get_video(id=video_id)
-        data = serializers.VideoSerializer(video).data
+        data = serializers.VideoSerializer(instance=video).data
         return Response(data, status=OK)
 
     def put(self, request, video_id, format=None):
@@ -66,16 +66,37 @@ class VideoDetailAPIView(APIView):
             id=video_id, channel__user_id=request.user.id
         )
         serializer = serializers.VideoSerializer(
-            video, data=request.data, partial=True
+            instance=video, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
         video = serializer.save()
-        serializer = serializers.VideoSerializer(video)
+        serializer = serializers.VideoSerializer(instance=video)
         return Response(serializer.data)
 
     def delete(self, request, video_id, format=None):
         services.delete_video(id=video_id)
         return HttpResponse('', status=NO_CONTENT)
+
+
+class VideoLikeDislikeAPIView(APIView):
+    def post(self, request, video_id, format=None):
+        if request.data['is_like']:
+            record = services.video_like(
+                video_id=video_id, user_id=request.user.id
+            )
+        else:
+            record = services.video_dislike(
+                video_id=video_id, user_id=request.user.id
+            )
+        serializer = serializers.VideoLikeDislikeSerializer(record)
+        return Response(serializer.data)
+
+    def delete(self, request, video_id, format=None):
+        record = services.video_remove_likedislike(
+            video_id=video_id, user_id=request.user.id
+        )
+        serializer = serializers.VideoLikeDislikeSerializer(record)
+        return Response(serializer.data)
 
 
 class VideoThumbnailAPIView(APIView):
