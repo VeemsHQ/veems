@@ -1,8 +1,8 @@
 {% extends "./_base_channel_manager.html" %}
-{% load static %}
+{% load static to_json %}
 {% block title %}Channel Videos{% endblock %}
 {% block content %}
-<div class="col">
+<div class="col" id="videos-table">
     <table class="table mt-4">
         <thead>
             <tr class="text-muted">
@@ -53,17 +53,23 @@
                 <td>{{video.view_count}}</td>
                 <td>{{video.comment_count}}</td>
                 <td>{{video.likes_count}}/{{video.dislikes_count}}</td>
-
             </tr>
-
         </tbody>
         {% endfor %}
     </table>
-
 </div>
 {% include "../_modals/_modal_video_detail.html" %}
 {% endblock %}
+
 {% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+    app.CreateChannelManagerVideos({
+        element: document.getElementById('videos-table'),
+        videos: {{ channel_videos | to_json }}
+    })
+</script>
+
 <script>
     // TODO: replace with ReactJS component
     $(document).ready(function () {
