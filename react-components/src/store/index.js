@@ -2,6 +2,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import ReduxThunk from 'redux-thunk';
+import { watcherEnhancer } from 'redux-action-watcher';
 
 import reducer from '../reducers';
 
@@ -41,6 +42,7 @@ export class configureStore {
     this.persistedReducer = persistReducer(persistConfig, reducer);
     this.store = createStore(this.persistedReducer, composeEnhancers(
       applyMiddleware(ReduxThunk),
+      watcherEnhancer,
     ));
     this.persistor = persistStore(this.store);
   }

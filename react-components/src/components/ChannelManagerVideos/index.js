@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { subscribeToWatcher } from 'redux-action-watcher';
 import { configureStore } from '../../store';
 
 import ChannelManagerVideos from './ChannelManagerVideos';
 import {
   getAllVideosForChannelRequest,
 } from '../../api/api';
+import * as aTypes from '../../actions/ActionTypes';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -17,21 +19,34 @@ const Container = ({
   videos,
   channelId,
 }) => {
+  console.log(channelId);
+  const [data, setData] = useState({
+    channelId: channelId,
+    videos: videos,
+  });
 
-  /**
-  THIS CODE BLOCK WITH REQUEST = BELOW ERROR
+  useEffect(() => {
+    // When active Channel Id changes, request Videos for that Channel from the API.
+    subscribeToWatcher(store, [
+      {
+        action: aTypes.SET_ACTIVE_CHANNEL_ID,
+        callback: async () => {
+          const channelId = store.getState().channels.activeChannelID;
+          const { response, data } = await getAllVideosForChannelRequest(channelId);
+          setData({
+            channelId: channelId,
+            videos: data,
+          });
+        },
+        onStateChange: true,
+      },
+    ]);
+  }, []);
 
-  ChannelManagerVideos/index.js: 'await' is only allowed within async
-  functions and at the top levels of modules (21:29)
-  */
-  const { response, data } = await getAllVideosForChannelRequest(channelId);
-  if (response?.status === 200) {
-    videos = data;
-  }
   return (
     <ChannelManagerVideos
-      videos={videos}
-      channelId={channelId}
+      videos={data.videos}
+      channelId={data.channelId}
     />
   );
 };

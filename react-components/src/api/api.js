@@ -43,7 +43,6 @@ export const getChannelRequest = async (channelId) => {
 };
 
 export const getAllVideosForChannelRequest = async (channelId) => {
-  console.log('getAllVideosForChannelRequest');
   try {
     const res = await API.get(`${serverURL}/api/v1/video/?channel_id=${channelId}`);
     return res;
