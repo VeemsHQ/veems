@@ -44,11 +44,12 @@ const Container = ({
   }, [storeChannels]);
 
   const handleSelectChannel = async (e) => {
-    if (e.target.value) {
+    const channelId = e.target.value;
+    if (channelId) {
       // update the active channel in the store and on the server
-      setActiveChannel(e.target.value);
-      await setChannelRequest(e.target.value);
-      window.SELECTED_CHANNEL_ID = e.target.value;
+      setActiveChannel(channelId);
+      await setChannelRequest(channelId);
+      window.SELECTED_CHANNEL_ID = channelId;
     }
   };
 

@@ -7,6 +7,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
 import ChannelManagerVideos from './ChannelManagerVideos';
+import {
+  getAllVideosForChannelRequest,
+} from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -14,11 +17,20 @@ const Container = ({
   videos,
   channelId,
 }) => {
-  const [videos_, setVideos] = useState(videos);
 
+  /**
+  THIS CODE BLOCK WITH REQUEST = BELOW ERROR
+
+  ChannelManagerVideos/index.js: 'await' is only allowed within async
+  functions and at the top levels of modules (21:29)
+  */
+  const { response, data } = await getAllVideosForChannelRequest(channelId);
+  if (response?.status === 200) {
+    videos = data;
+  }
   return (
     <ChannelManagerVideos
-      videos={videos_}
+      videos={videos}
       channelId={channelId}
     />
   );
@@ -30,7 +42,8 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const mapStateToProps = (state) => ({
-  activeChannelID: state.channels.activeChannelID,
+  // When the selected channel changes, we want to re-render the videos.
+  channelId: state.channels.activeChannelID,
 });
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
