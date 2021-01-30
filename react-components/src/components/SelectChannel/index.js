@@ -23,7 +23,7 @@ const Container = ({
   isDbStale,
   storeChannels,
   channels,
-  activeChannelID,
+  activeChannelId,
   setChannelsDbStale,
   setActiveChannel,
 }) => {
@@ -56,7 +56,7 @@ const Container = ({
   return (
     <SelectChannelDropdown
       channels={dropdownChannels}
-      activeID={activeChannelID}
+      activeID={activeChannelId}
       onSelectChannel={(e) => handleSelectChannel(e)}
     />
   );
@@ -72,7 +72,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state) => ({
   storeChannels: state.channels.channels,
-  activeChannelID: state.channels.activeChannelID,
+  activeChannelId: state.channels.activeChannelId,
   isDbStale: state.channels.isDbStale,
 });
 

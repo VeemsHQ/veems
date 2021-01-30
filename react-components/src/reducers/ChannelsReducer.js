@@ -6,7 +6,7 @@ import {
 } from '../actions/ActionTypes';
 
 const initialState = {
-  activeChannelID: undefined,
+  activeChannelId: undefined,
   isChannelSyncModalOpen: false,
   channels: [],
   isDbStale: false,
@@ -17,7 +17,7 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case SET_ACTIVE_CHANNEL_ID:
-      return { ...state, activeChannelID: payload };
+      return { ...state, activeChannelId: payload };
     case SET_CHANNEL_SYNC_MODAL_OPEN:
       return { ...state, isChannelSyncModalOpen: payload };
     case SET_CHANNELS:

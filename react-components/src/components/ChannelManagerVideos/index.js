@@ -31,8 +31,10 @@ const Container = ({
       {
         action: aTypes.SET_ACTIVE_CHANNEL_ID,
         callback: async () => {
-          const channelId = store.getState().channels.activeChannelID;
+          const channelId = store.getState().channels.activeChannelId;
           const { response, data } = await getAllVideosForChannelRequest(channelId);
+          console.log(`callback ${channelId}`);
+          console.log(response);
           setData({
             channelId: channelId,
             videos: data,
@@ -58,7 +60,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state) => ({
   // When the selected channel changes, we want to re-render the videos.
-  channelId: state.channels.activeChannelID,
+  channelId: state.channels.activeChannelId,
 });
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
