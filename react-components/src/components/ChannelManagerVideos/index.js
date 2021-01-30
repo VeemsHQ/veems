@@ -13,10 +13,12 @@ const { store, persistor } = configureStore.getInstance();
 const Container = ({
   videos,
   channelId,
+  isLoading,
 }) => (
   <ChannelManagerVideos
     videos={videos}
     channelId={channelId}
+    isLoading={isLoading}
   />
 );
 
@@ -29,6 +31,7 @@ const mapStateToProps = (state) => ({
   // When the selected channel changes, we want to re-render the videos.
   channelId: state.channels.activeChannelId,
   videos: state.channels.activeChannelVideos,
+  isLoading: state.channels.activeChannelVideosLoading,
 });
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);

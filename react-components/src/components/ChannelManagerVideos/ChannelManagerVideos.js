@@ -7,6 +7,7 @@ import 'regenerator-runtime/runtime.js';
 export const ChannelManagerVideos = ({
   videos,
   channelId,
+  isLoading,
 }) => (
   <>
     <table className="table mt-4">
@@ -21,8 +22,58 @@ export const ChannelManagerVideos = ({
           <th scope="col">Likes/dislikes</th>
         </tr>
       </thead>
-      <tbody className="channel-videos">
-        {videos.map((video, index) => (
+      <tbody className={isLoading === true ? 'channel-videos channel-videos-placeholder' : 'channel-videos '}>
+        {isLoading && (
+          <>
+            <tr>
+              <td>
+                <div className="d-flex">
+                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <div className="metadata-container d-flex">
+                    <div className="content p-2">
+                      <h5 className="m-0 mb-1 bg-primary" />
+                      <div className="metadata">
+                        <div className="card-text placeholder-text" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div className="placeholder-text" />
+              </td>
+              <td><div className="placeholder-text" /></td>
+              <td><div className="placeholder-text bg-success" style={{ minWidth: 30 }} /></td>
+              <td><div className="placeholder-text" /></td>
+              <td><div className="placeholder-text" /></td>
+              <td><div className="placeholder-text" /></td>
+            </tr>
+            <tr>
+              <td>
+                <div className="d-flex">
+                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <div className="metadata-container d-flex">
+                    <div className="content p-2">
+                      <h5 className="m-0 mb-1 bg-primary" />
+                      <div className="metadata">
+                        <div className="card-text placeholder-text" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div className="placeholder-text" />
+              </td>
+              <td><div className="placeholder-text" /></td>
+              <td><div className="placeholder-text bg-success" style={{ minWidth: 30 }} /></td>
+              <td><div className="placeholder-text" /></td>
+              <td><div className="placeholder-text" /></td>
+              <td><div className="placeholder-text" /></td>
+            </tr>
+          </>
+        )}
+        {!isLoading && videos.map((video, index) => (
           <tr key={index}>
             <td>
               <div className="d-flex">

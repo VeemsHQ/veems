@@ -20,9 +20,12 @@ export const setSessionAction = (data) => async (dispatch) => {
 */
 
 export const setActiveChannelVideosAction = (channelId) => async (dispatch) => {
-  getAllVideosForChannelRequest(channelId).then((response) => (
-    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: response.data })
-  ));
+  // TODO:@ SET_ACTIVE_CHANNEL_VIDEOS_LOADING
+  dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
+  getAllVideosForChannelRequest(channelId).then((response) => {
+    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
+    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: response.data });
+  });
 };
 
 export const setActiveChannelAction = (id) => async (dispatch) => {

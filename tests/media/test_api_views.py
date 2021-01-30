@@ -642,7 +642,7 @@ class TestVideo:
     def test_returns_400_if_channel_id_query_param_empty(self, api_client):
         api_client, _ = api_client
 
-        response = api_client.get(f'/api/v1/video/?channel_id=')
+        response = api_client.get('/api/v1/video/?channel_id=')
 
         assert response.status_code == BAD_REQUEST
         assert response.json() == ['Missing required parameters']
