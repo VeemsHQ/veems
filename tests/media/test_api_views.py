@@ -608,3 +608,44 @@ class TestVideoLikeDislike:
             'dislikes_count': 0,
             'likesdislikes_percentage': 50,
         }
+
+
+class TestVideo:
+    def test_get_videos_for_channel(
+        self,
+        expected_video_resp_json,
+        api_client,
+        channel_factory,
+        video_with_transcodes_factory,
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        video_with_transcodes_factory(channel=channel)
+
+        response = api_client.get(f'/api/v1/video/?channel_id={channel.id}')
+
+        assert response.status_code == OK
+        resp_json = response.json()
+        assert len(resp_json) == 1
+        for video in resp_json:
+            assert video == expected_video_resp_json
+            assert video['channel_id'] == channel.id
+
+    def test_returns_400_if_channel_id_query_param_missing(self, api_client):
+        api_client, _ = api_client
+
+        response = api_client.get('/api/v1/video/')
+
+        assert response.status_code == BAD_REQUEST
+        assert response.json() == ['Missing required parameters']
+
+    def test_returns_400_if_channel_id_query_param_empty(self, api_client):
+        api_client, _ = api_client
+
+        response = api_client.get(f'/api/v1/video/?channel_id=')
+
+        assert response.status_code == BAD_REQUEST
+        assert response.json() == ['Missing required parameters']
+
+    def test_return_non_public_when_authed(self):
+        pass

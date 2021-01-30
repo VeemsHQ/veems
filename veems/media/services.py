@@ -243,6 +243,7 @@ def delete_video(id):
 
 
 def get_videos(channel_id=None):
+    # TODO: pass user_id and determine what to return exactly
     if channel_id:
         return models.Video.objects.filter(channel_id=channel_id)
     return models.Video.objects.all()

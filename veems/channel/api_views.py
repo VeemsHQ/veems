@@ -22,6 +22,8 @@ class ChannelAPIView(APIView):
 
 
 class ChannelDetailAPIView(APIView):
+    # TODO: only return non-public if authed as that use
+
     def get(self, request, channel_id, format=None):
         channel = services.get_channel(id=channel_id)
         serializer = serializers.ChannelSerializer(channel)
