@@ -1,4 +1,7 @@
 import * as aTypes from './ActionTypes';
+import {
+  getAllVideosForChannelRequest,
+} from '../api/api';
 
 /*
 |--------------------------------------------------------------------------
@@ -16,10 +19,15 @@ export const setSessionAction = (data) => async (dispatch) => {
 |--------------------------------------------------------------------------
 */
 
+export const setActiveChannelVideosAction = (channelId) => async (dispatch) => {
+  getAllVideosForChannelRequest(channelId).then((response) => (
+    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: response.data })
+  ));
+};
+
 export const setActiveChannelAction = (id) => async (dispatch) => {
+  setActiveChannelVideosAction(id)(dispatch);
   dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_ID, payload: id });
-  // TODO: Call get Channel Videos and set that in the state , RM subscribeToWatcher
-  console.log('setActiveChannelAction');
 };
 
 export const setChannelsAction = (channels) => async (dispatch) => {

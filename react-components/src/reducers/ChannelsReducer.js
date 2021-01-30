@@ -3,10 +3,13 @@ import {
   SET_CHANNEL_SYNC_MODAL_OPEN,
   SET_CHANNELS,
   SET_DB_STALE,
+  SET_ACTIVE_CHANNEL_VIDEOS,
 } from '../actions/ActionTypes';
 
 const initialState = {
   activeChannelId: undefined,
+  // TODO: from props
+  activeChannelVideos: [],
   isChannelSyncModalOpen: false,
   channels: [],
   isDbStale: false,
@@ -18,6 +21,8 @@ export default (state = initialState, action) => {
   switch (type) {
     case SET_ACTIVE_CHANNEL_ID:
       return { ...state, activeChannelId: payload };
+    case SET_ACTIVE_CHANNEL_VIDEOS:
+      return { ...state, activeChannelVideos: payload };
     case SET_CHANNEL_SYNC_MODAL_OPEN:
       return { ...state, isChannelSyncModalOpen: payload };
     case SET_CHANNELS:
