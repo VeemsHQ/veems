@@ -19,6 +19,7 @@ A next generation video sharing platform, with freedom of speech values.
 - [Telegram](https://veems.tv/telegram)
 - [Discord](https://discord.gg/RjCZMtZ)
 - [Twitter](https://twitter.com/veemshq)
+- [Reddit](https://www.reddit.com/r/VeemsHQ/)
 - [Twitch.tv](https://www.twitch.tv/richardarpanet)
 
 ## Contributing
