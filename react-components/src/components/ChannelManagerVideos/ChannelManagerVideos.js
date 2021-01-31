@@ -2,7 +2,8 @@ import React from 'react';
 
 import 'regenerator-runtime/runtime.js';
 
-// TODO: {video.description|truncatechars:150}
+const descMaxLen = 150;
+const truncate = (input, max) => (input.length > max ? `${input.substring(0, max + 1)}...` : input);
 
 export const ChannelManagerVideos = ({
   videos,
@@ -85,8 +86,8 @@ export const ChannelManagerVideos = ({
                   <div className="content p-2">
                     <h5 className="m-0 mb-1"><a href="#">{video.title}</a></h5>
                     <div className="metadata">
-                      <div className="card-text text-muted text-truncate">
-                        <a href="#">{video.description}</a>
+                      <div className="card-text text-muted text-wrap text-truncate">
+                        <a href="#">{truncate(video.description, descMaxLen)}</a>
                       </div>
                     </div>
                   </div>

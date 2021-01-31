@@ -20,7 +20,6 @@ export const setSessionAction = (data) => async (dispatch) => {
 */
 
 export const setActiveChannelVideosAction = (channelId) => async (dispatch) => {
-  // TODO:@ SET_ACTIVE_CHANNEL_VIDEOS_LOADING
   dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
   getAllVideosForChannelRequest(channelId).then((response) => {
     dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
@@ -34,9 +33,6 @@ export const setActiveChannelAction = (id) => async (dispatch) => {
 };
 
 export const setChannelsAction = (channels) => async (dispatch) => {
-  /* When we update channels in Redux, we need to notify other components
-    that the db channel may be stale.
-  */
   dispatch({ type: aTypes.SET_DB_STALE, payload: true });
   dispatch({ type: aTypes.SET_CHANNELS, payload: channels });
 };
