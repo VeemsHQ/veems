@@ -7,7 +7,6 @@ const truncate = (input, max) => (input.length > max ? `${input.substring(0, max
 
 export const ChannelManagerVideos = ({
   videos,
-  channelId,
   isLoading,
 }) => (
   <>

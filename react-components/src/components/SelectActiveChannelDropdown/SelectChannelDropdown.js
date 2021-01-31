@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import 'regenerator-runtime/runtime.js';
 
-export const SelectChannelDropdown = ({
+export const SelectActiveChannelDropdown = ({
   onSelectChannel,
   activeID,
   channels,
@@ -29,16 +29,16 @@ export const SelectChannelDropdown = ({
   );
 };
 
-SelectChannelDropdown.propTypes = {
+SelectActiveChannelDropdown.propTypes = {
   activeID: PropTypes.string,
   channels: PropTypes.arrayOf(PropTypes.shape()),
   onSelectChannel: PropTypes.func,
 };
 
-SelectChannelDropdown.defaultProps = {
+SelectActiveChannelDropdown.defaultProps = {
   activeID: '',
-  onSelectChannel: () => { Error('No callback defined for SelectChannelDropdown'); },
+  onSelectChannel: () => { Error('No callback defined for SelectActiveChannelDropdown'); },
   channels: [],
 };
 
-export default SelectChannelDropdown;
+export default SelectActiveChannelDropdown;

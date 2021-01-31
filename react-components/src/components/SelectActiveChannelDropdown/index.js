@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import SelectChannelDropdown from './SelectChannelDropdown';
+import SelectActiveChannelDropdown from './SelectActiveChannelDropdown';
 
 import {
   setActiveChannelAction,
@@ -54,7 +54,7 @@ const Container = ({
   };
 
   return (
-    <SelectChannelDropdown
+    <SelectActiveChannelDropdown
       channels={dropdownChannels}
       activeID={activeChannelId}
       onSelectChannel={(e) => handleSelectChannel(e)}
@@ -78,7 +78,7 @@ const mapStateToProps = (state) => ({
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-export const CreateSelectChannelContainer = ({
+export const CreateSelectActiveChannelDropdown = ({
   element,
   ...params
 }) => (
