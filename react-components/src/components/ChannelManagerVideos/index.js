@@ -25,10 +25,18 @@ const mapDispatchToProps = (dispatch) => ({
   ...bindActionCreators({}, dispatch),
 });
 
-const mapStateToProps = (state) => ({
-  videos: state.channels.activeChannelVideos,
-  isLoading: state.channels.activeChannelVideosLoading,
-});
+const mapStateToProps = (state, ownProps) => {
+  let videos;
+  if (state.channels.activeChannelVideos === undefined) {
+    videos = ownProps.videos;
+  } else {
+    videos = state.channels.activeChannelVideos;
+  }
+  return {
+    videos: videos,
+    isLoading: state.channels.activeChannelVideosLoading,
+  };
+};
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 

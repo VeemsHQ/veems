@@ -61,7 +61,7 @@
 {{ block.super }}
 <script type="text/javascript">
     var channels = JSON.parse(document.getElementById('channels').textContent);
-    app.CreateSelectChannelContainer({
+    app.CreateSelectActiveChannelDropdown({
         element: document.getElementById('select-channel-dropdown'),
         channels: channels,
     })

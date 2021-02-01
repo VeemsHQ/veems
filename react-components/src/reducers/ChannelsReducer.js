@@ -10,7 +10,7 @@ import {
 const initialState = {
   activeChannelId: undefined,
   // TODO: from props
-  activeChannelVideos: [],
+  activeChannelVideos: undefined,
   activeChannelVideosLoading: false,
   isChannelSyncModalOpen: false,
   channels: [],

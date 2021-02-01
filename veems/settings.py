@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_celery_beat',
     'django_celery_results',
+    'clear_cache',
     'rest_framework',
     'imagekit',
     'veems.common',
@@ -145,7 +146,7 @@ AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_S3_USE_SSL = os.environ.get('AWS_S3_USE_SSL', 'false').lower() == 'true'
 AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
-AWS_QUERYSTRING_EXPIRE = 3600
+IMAGEKIT_CACHE_TIMEOUT = AWS_QUERYSTRING_EXPIRE = 3600
 # Default bucket settings
 AWS_STORAGE_BUCKET_NAME = os.environ['BUCKET_STATIC']
 AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
