@@ -93,7 +93,7 @@ export const ChannelManagerVideos = ({
                   <div className="overlay align-items-center">
                     <a href="#" className="btn" data-toggle="modal" data-target="#videoDetailModal"><i className="material-icons text-secondary">create</i>
                     </a>
-                    <a href="{% url 'view-video' video.id %}" className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
+                    <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
                     <a href="#" className="btn"><i className="material-icons text-secondary">delete</i></a>
                   </div>
                 </div>
