@@ -19,6 +19,7 @@ A next generation video sharing platform, with freedom of speech values.
 - [Telegram](https://veems.tv/telegram)
 - [Discord](https://discord.gg/RjCZMtZ)
 - [Twitter](https://twitter.com/veemshq)
+- [Reddit](https://www.reddit.com/r/VeemsHQ/)
 - [Twitch.tv](https://www.twitch.tv/richardarpanet)
 
 ## Contributing
@@ -122,7 +123,9 @@ From within a Python 3.6+ virtualenv (we recommend using [pyenv](https://github.
 make install
 ```
 
-Set of the required environment variables for the application, see `.env.template` for examples. A few of the secrets relating to the hosting provider (ACCESS_KEY_ID, SECRET_ACCESS_KEY) you may need to request values for.
+Create a file called `.env` using `.env.template` as a template.
+
+Also **important** [export](https://bash.cyberciti.biz/guide/Export_Variables) all of the variables defined in your `.env` file within your current shell window. (If you fail to do this you will not be able to run the application outside of Docker).
 
 ## Running the tests
 
