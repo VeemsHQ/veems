@@ -21,7 +21,9 @@ class ChannelContextMixin:
             ).data
             context['channel_videos'] = videos_data
         channel = services.get_channel(id=channel_id)
-        channel_data = serializers.ChannelSummarySerializer(channel).data
+        channel_data = serializers.ChannelSummarySerializer(
+            instance=channel
+        ).data
         context['channel'] = channel_data
         context['is_owner'] = channel_data['user'] == self.request.user.id
         return context
