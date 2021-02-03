@@ -98,9 +98,7 @@ class VideoSerializer(CustomModelSerializer):
     video_renditions = VideoRenditionSerializer(
         many=True, read_only=True, source='renditions'
     )
-    transcode_jobs = TranscodeJobSerializer(
-        many=True, read_only=True, source='transcodejob_set'
-    )
+    transcode_jobs = TranscodeJobSerializer(many=True, read_only=True)
     playlist_file = serializers.SerializerMethodField(
         method_name='get_playlist_file'
     )

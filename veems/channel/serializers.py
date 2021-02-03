@@ -75,6 +75,7 @@ class ChannelSerializer(CustomModelSerializer):
             'created_date': {'read_only': True},
             'has_banner': {'read_only': True},
             'videos_count': {'read_only': True},
+            'videos': {'read_only': True},
         }
 
     def update(self, instance, validated_data):
