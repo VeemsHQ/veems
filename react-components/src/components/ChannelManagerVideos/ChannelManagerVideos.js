@@ -123,6 +123,7 @@ export const ChannelManagerVideos = ({
               </div>
             </td>
             <td>
+              <div className="text-muted">{video.visibility}</div>
               <div className="text-muted">Uploading...</div>
               <div className="progress">
                 <div
