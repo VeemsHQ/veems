@@ -131,7 +131,7 @@ class Video(BaseModel):
     )
     is_viewable = models.BooleanField(default=False, db_index=True)
     description = models.TextField(max_length=5000, null=True, blank=True)
-    tags = ArrayField(models.CharField(max_length=1000), null=True, blank=True)
+    tags = ArrayField(models.TextField(max_length=1000), null=True, blank=True)
     framerate = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, default=0)
     # Custom thumb is user uploaded
