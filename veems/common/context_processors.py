@@ -17,10 +17,10 @@ def global_context(request):
     context = {}
     if request.user.is_authenticated:
         channels = channel_services.get_channels(user_id=request.user.id)
-        channels_data = channel_serializers.ChannelSerializer(
+        channels_data = channel_serializers.ChannelSkeletonSerializer(
             instance=channels, user_id=request.user.id, many=True
         ).data
-        context['channels'] = channels_data
+        context['channel_summaries'] = channels_data
         try:
             context[
                 'selected_channel'
@@ -28,7 +28,7 @@ def global_context(request):
         except ObjectDoesNotExist:
             context['selected_channel'] = None
     else:
-        context['channels'] = []
+        context['channel_summaries'] = []
         context['selected_channel'] = None
     context['login_form'] = user_forms.CustomAuthenticationForm(request)
     context['next'] = request.GET.get('next') or ''

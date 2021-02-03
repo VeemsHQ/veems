@@ -136,6 +136,19 @@ class ChannelSlimSerializer(ChannelSerializer):
         }
 
 
+class ChannelSkeletonSerializer(ChannelSerializer):
+    class Meta:
+        model = models.Channel
+        fields = (
+            'id',
+            'name',
+        )
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'name': {'read_only': True},
+        }
+
+
 class ChannelAvatarSerializer(CustomModelSerializer):
     class Meta:
         model = models.Channel

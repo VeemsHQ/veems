@@ -15,7 +15,7 @@
                         <i class="material-icons  text-secondary" style="font-size: 72px !important">publish</i>
                     </div>
                     <select class="custom-select custom-select-md d-inline-block w-auto">
-                        {% for channel in channels %}
+                        {% for channel in channel_summaries %}
                         <option value="{{channel.id}}">{{channel.name}}</option>
                         {% endfor %}
                     </select>

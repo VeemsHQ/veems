@@ -14,7 +14,7 @@ class TestGlobalContext:
         context = context_processors.global_context(request=request)
 
         assert isinstance(context, dict)
-        assert len(context['channels']) == 1
+        assert len(context['channel_summaries']) == 1
         assert context['login_form']
         assert context['next'] == '/'
         assert context['selected_channel'] == channel.id
@@ -27,7 +27,7 @@ class TestGlobalContext:
         context = context_processors.global_context(request=request)
 
         assert isinstance(context, dict)
-        assert len(context['channels']) == 0
+        assert len(context['channel_summaries']) == 0
         assert context['login_form']
         assert context['next'] == '/'
         assert context['selected_channel'] is None
@@ -40,7 +40,7 @@ class TestGlobalContext:
         context = context_processors.global_context(request=request)
 
         assert isinstance(context, dict)
-        assert context['channels'] == []
+        assert context['channel_summaries'] == []
         assert context['login_form']
         assert context['next'] == '/'
         assert context['selected_channel'] is None
