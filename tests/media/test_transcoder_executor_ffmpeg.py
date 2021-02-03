@@ -19,7 +19,7 @@ def test_create_segments_for_video(tmpdir, video_with_renditions_and_segments):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
     video, _ = video_with_renditions_and_segments
-    video_rendition = video.videorendition_set.first()
+    video_rendition = video.renditions.first()
     video_rendition_id = video_rendition.id
     video_id = video_rendition.video_id
 

@@ -96,7 +96,7 @@ class VideoSerializer(CustomModelSerializer):
         self.cache = LRUCache(maxsize=1000)
 
     video_renditions = VideoRenditionSerializer(
-        many=True, read_only=True, source='videorendition_set'
+        many=True, read_only=True, source='renditions'
     )
     transcode_jobs = TranscodeJobSerializer(
         many=True, read_only=True, source='transcodejob_set'
@@ -153,7 +153,7 @@ class VideoSerializer(CustomModelSerializer):
         return url
 
     def get_video_renditions_count(self, instance):
-        return instance.videorendition_set.count()
+        return instance.renditions.count()
 
     def get_created_date(self, instance):
         return instance.created_on.date().isoformat()

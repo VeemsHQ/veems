@@ -37,7 +37,7 @@ def _get_rendition_playlists(video_record):
             'playlist_url': video_rendition.playlist_file.url,
             'bandwidth': int(video_rendition.metadata['format']['bit_rate']),
         }
-        for video_rendition in video_record.videorendition_set.all()
+        for video_rendition in video_record.renditions.all()
         if video_rendition.playlist_file
     ]
 

@@ -63,6 +63,10 @@ LOGGING = {
     },
 }
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -78,6 +82,7 @@ INSTALLED_APPS = [
     'clear_cache',
     'rest_framework',
     'imagekit',
+    'debug_toolbar',
     'veems.common',
     'veems.user',
     'veems.media',
@@ -91,6 +96,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -241,14 +241,16 @@ class VideoRendition(BaseModel):
     Either a piece of Audio/Video/Audio+Video.
     """
 
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE, related_name='renditions'
+    )
     file = models.FileField(
         upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND
     )
-    width = models.IntegerField(null=True)
-    height = models.IntegerField(null=True)
-    framerate = models.IntegerField(null=True)
-    duration = models.IntegerField(null=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    framerate = models.IntegerField(null=True, blank=True)
+    duration = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=30, null=False)
     ext = models.CharField(max_length=4, null=False)
     audio_codec = models.CharField(max_length=50, null=True, blank=True)
@@ -256,7 +258,7 @@ class VideoRendition(BaseModel):
     container = models.CharField(max_length=30, null=True, blank=True)
     codecs_string = models.CharField(max_length=100, null=True, blank=True)
     file_size = models.IntegerField()
-    metadata = models.JSONField(null=True)
+    metadata = models.JSONField(null=True, blank=True)
     playlist_file = models.FileField(
         upload_to=_video_rendition_playlist_file_upload_to,
         storage=STORAGE_BACKEND,
@@ -273,7 +275,9 @@ class VideoRendition(BaseModel):
 
 class VideoRenditionSegment(BaseModel):
     video_rendition = models.ForeignKey(
-        VideoRendition, on_delete=models.CASCADE
+        VideoRendition,
+        on_delete=models.CASCADE,
+        related_name='rendition_segments',
     )
     file = models.FileField(
         upload_to=_video_rendition_segment_upload_to,
@@ -293,7 +297,9 @@ class VideoRenditionSegment(BaseModel):
 
 class VideoRenditionThumbnail(BaseModel):
     video_rendition = models.ForeignKey(
-        VideoRendition, on_delete=models.CASCADE
+        VideoRendition,
+        on_delete=models.CASCADE,
+        related_name='rendition_thumbnails',
     )
     file = models.FileField(
         upload_to=_video_rendition_thumbnail_upload_to, storage=STORAGE_BACKEND
@@ -311,7 +317,12 @@ class VideoRenditionThumbnail(BaseModel):
 
 
 class TranscodeJob(BaseModel):
-    video = models.ForeignKey(Video, on_delete=models.CASCADE, null=True)
+    video = models.ForeignKey(
+        Video,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='transcode_jobs',
+    )
     profile = models.CharField(max_length=100)
     executor = models.CharField(max_length=20)
     status = models.CharField(
