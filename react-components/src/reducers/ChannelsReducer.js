@@ -8,8 +8,8 @@ import {
 } from '../actions/ActionTypes';
 
 export const initialState = {
-  activeChannelId: undefined,
-  activeChannelVideos: undefined,
+  activeChannelId: null,
+  activeChannelVideos: null,
   activeChannelVideosLoading: false,
   isChannelSyncModalOpen: false,
   channels: [],

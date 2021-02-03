@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state, ownProps) => {
   let videos;
-  if (state.channels.activeChannelVideos === undefined) {
+  if (state.channels.activeChannelVideos === null) {
     videos = ownProps.videos;
   } else {
     videos = state.channels.activeChannelVideos;

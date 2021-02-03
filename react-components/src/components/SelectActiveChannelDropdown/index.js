@@ -69,10 +69,9 @@ const mapDispatchToProps = (dispatch) => ({
   }, dispatch),
 });
 
-
 const mapStateToProps = (state, ownProps) => {
   let activeChannelId;
-  if (state.channels.activeChannelId === undefined) {
+  if (state.channels.activeChannelId === null) {
     activeChannelId = ownProps.activeChannelId;
   } else {
     activeChannelId = state.channels.activeChannelId;
