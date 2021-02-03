@@ -245,6 +245,9 @@ def delete_video(id):
 
 
 def get_videos(channel_id=None, user_id=None):
+    logger.info(
+        'Getting videos for channel %s, user %s...', channel_id, user_id
+    )
     filters = {}
     only_return_public = True
     if channel_id:
