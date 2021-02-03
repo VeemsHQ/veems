@@ -101,7 +101,7 @@ This section is work-in-progress, more to be added shortly.
 
 ## Installation
 
-First install OS dependencies, ffmpeg and ffprobe. You will also need Docker.
+**Step 1.** First install OS dependencies, ffmpeg and ffprobe. You will also need Docker.
 
 Linux:
 
@@ -117,53 +117,83 @@ Mac:
 brew install ffmpeg
 ```
 
+Windows: https://ffmpeg.org/download.html
+
+**Step 2.** Install application Python dependencies.
+
 From within a Python 3.6+ virtualenv (we recommend using [pyenv](https://github.com/pyenv/pyenv) to manage your virtualenvs).
 
 ```bash
 make install
 ```
 
-Create a file called `.env` using `.env.template` as a template.
+**Step 3.** Configure local environ variables.
+
+Next, create a file called `.env` using `.env.template` as a template.
 
 Also **important** [export](https://bash.cyberciti.biz/guide/Export_Variables) all of the variables defined in your `.env` file within your current shell window. (If you fail to do this you will not be able to run the application outside of Docker).
-
-## Running the tests
-
-Start up the supporting docker containers (RabbitMQ, Postgres, Localstack).
-Then run the tests.
-
-```bash
-make start-deps
-make test
-```
 
 ## Usage
 
 ### Running the webserver
 
+With Docker:
+
 ```bash
+make run
+```
+
+Without Docker:
+
+```bash
+cd ./react-components/ && npm run build-dev && cd ../
 make start-deps
 python manage.py collectstatic --noinput
 python manage.py migrate --noinput
 python manage.py runserver
 ```
 
-Via docker:
-
-```bash
-make run
-```
-
 Then visit http://localhost:8000/
+
+*You may notice there is a blank page, due to no data. Proceed to the next step to populate the DB with some example data.*
 
 ### Importing seed data
 
+This will create some Users, Channels and Videos.
+
+With Docker:
+
 ```bash
-make reset
+make docker-seed
 ```
 
+Without Docker:
+
+```bash
+make seed
+```
+
+## Running the tests
+
+Start up the supporting docker containers (RabbitMQ, Postgres, Localstack).
+Then run the tests.
+
+With Docker:
+
+```bash
+make docker-test
+```
+
+Without Docker:
+
+```bash
+make start-deps
+make test
+```
 
 ### Running the background [Celery](https://docs.celeryproject.org/en/stable/index.html) workers
+
+Optional: For advanced users only. (Workers are only required when env var `CELERY_TASK_ALWAYS_EAGER` is set to `false`)
 
 ```bash
 ./celeryworker-entrypoint.sh

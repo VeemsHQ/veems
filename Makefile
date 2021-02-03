@@ -42,8 +42,8 @@ start-deps:
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
 .ONESHELL:
-.PHONY: reset
-reset: install make-buckets-remote
+.PHONY: seed
+seed: install make-buckets-remote
 	python manage.py flush --noinput
 	python manage.py import_seed_data
 
@@ -54,8 +54,8 @@ run:
 	docker-compose run --service-port app_local
 
 .ONESHELL:
-.PHONY: run
-run_seed:
+.PHONY: docker-seed
+docker-seed:
 	docker-compose build app_local
 	docker-compose run --service-port app_local make reset
 
