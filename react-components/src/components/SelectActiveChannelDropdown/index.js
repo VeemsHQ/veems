@@ -52,7 +52,6 @@ const Container = ({
       window.SELECTED_CHANNEL_ID = channelId;
     }
   };
-
   return (
     <SelectActiveChannelDropdown
       channels={dropdownChannels}
@@ -70,11 +69,20 @@ const mapDispatchToProps = (dispatch) => ({
   }, dispatch),
 });
 
-const mapStateToProps = (state) => ({
-  storeChannels: state.channels.channels,
-  activeChannelId: state.channels.activeChannelId,
-  isDbStale: state.channels.isDbStale,
-});
+
+const mapStateToProps = (state, ownProps) => {
+  let activeChannelId;
+  if (state.channels.activeChannelId === undefined) {
+    activeChannelId = ownProps.activeChannelId;
+  } else {
+    activeChannelId = state.channels.activeChannelId;
+  }
+  return {
+    storeChannels: state.channels.channels,
+    activeChannelId: activeChannelId,
+    isDbStale: state.channels.isDbStale,
+  };
+};
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
