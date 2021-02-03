@@ -14,7 +14,7 @@ class VideoView(TemplateView):
             instance=video, user_id=self.request.user.id
         ).data
         context['video'] = video_data
-        channel_data = channel_serializers.ChannelSlimSerializer(
+        channel_data = channel_serializers.ChannelSummarySerializer(
             instance=video.channel
         ).data
         context['channel'] = channel_data

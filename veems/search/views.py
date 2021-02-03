@@ -18,10 +18,12 @@ class SearchView(TemplateView):
         search_query = self.request.GET['search_query']
         query_type = self.request.GET.get('type', '').lower() or 'videos'
         search_results = services.search(query=search_query)
-        context['video_results'] = media_serializers.VideoSlimSerializer(
+        context['video_results'] = media_serializers.VideoSummarySerializer(
             search_results['videos'], many=True
         ).data
-        context['channel_results'] = channel_serializers.ChannelSlimSerializer(
+        context[
+            'channel_results'
+        ] = channel_serializers.ChannelSummarySerializer(
             instance=search_results['channels'],
             many=True,
         ).data

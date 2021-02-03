@@ -17,7 +17,7 @@ def global_context(request):
     context = {}
     if request.user.is_authenticated:
         channels = channel_services.get_channels(user_id=request.user.id)
-        channels_data = channel_serializers.ChannelSkeletonSerializer(
+        channels_data = channel_serializers.ChannelSlimSummarySerializer(
             instance=channels, user_id=request.user.id, many=True
         ).data
         context['channel_summaries'] = channels_data

@@ -271,7 +271,7 @@ class VideoSerializer(CustomModelSerializer):
         }
 
 
-class VideoSlimSerializer(VideoSerializer):
+class VideoSummarySerializer(VideoSerializer):
     class Meta:
         model = VideoSerializer.Meta.model
         fields = [

@@ -102,7 +102,7 @@ class ChannelSerializer(CustomModelSerializer):
         return instance.created_on.date().isoformat()
 
 
-class ChannelSlimSerializer(ChannelSerializer):
+class ChannelSummarySerializer(ChannelSerializer):
     class Meta:
         model = models.Channel
         fields = (
@@ -136,7 +136,7 @@ class ChannelSlimSerializer(ChannelSerializer):
         }
 
 
-class ChannelSkeletonSerializer(ChannelSerializer):
+class ChannelSlimSummarySerializer(ChannelSerializer):
     class Meta:
         model = models.Channel
         fields = (
