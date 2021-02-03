@@ -7,7 +7,7 @@ import {
   SET_ACTIVE_CHANNEL_VIDEOS_LOADING,
 } from '../actions/ActionTypes';
 
-const initialState = {
+export const initialState = {
   activeChannelId: undefined,
   activeChannelVideos: undefined,
   activeChannelVideosLoading: false,
