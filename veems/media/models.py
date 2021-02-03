@@ -94,7 +94,9 @@ class Upload(BaseModel):
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='uploads'
     )
-    presigned_upload_url = models.URLField(max_length=1000)
+    presigned_upload_url = models.URLField(
+        max_length=1000, null=True, blank=True
+    )
     media_type = models.CharField(max_length=500)
     file = models.FileField(
         upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND
@@ -120,7 +122,7 @@ class Video(BaseModel):
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='videos'
     )
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=500, null=True, blank=True)
     visibility = models.CharField(
         max_length=10,
         choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
@@ -128,9 +130,9 @@ class Video(BaseModel):
         default='public',
     )
     is_viewable = models.BooleanField(default=False, db_index=True)
-    description = models.TextField(max_length=5000, null=True)
-    tags = ArrayField(models.CharField(max_length=1000), null=True)
-    framerate = models.IntegerField(null=True)
+    description = models.TextField(max_length=5000, null=True, blank=True)
+    tags = ArrayField(models.CharField(max_length=1000), null=True, blank=True)
+    framerate = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, default=0)
     # Custom thumb is user uploaded
     custom_thumbnail_image = models.ImageField(
@@ -249,15 +251,17 @@ class VideoRendition(BaseModel):
     duration = models.IntegerField(null=True)
     name = models.CharField(max_length=30, null=False)
     ext = models.CharField(max_length=4, null=False)
-    audio_codec = models.CharField(max_length=50, null=True)
-    video_codec = models.CharField(max_length=50, null=True)
-    container = models.CharField(max_length=30, null=True)
-    codecs_string = models.CharField(max_length=100, null=True)
+    audio_codec = models.CharField(max_length=50, null=True, blank=True)
+    video_codec = models.CharField(max_length=50, null=True, blank=True)
+    container = models.CharField(max_length=30, null=True, blank=True)
+    codecs_string = models.CharField(max_length=100, null=True, blank=True)
     file_size = models.IntegerField()
     metadata = models.JSONField(null=True)
     playlist_file = models.FileField(
         upload_to=_video_rendition_playlist_file_upload_to,
         storage=STORAGE_BACKEND,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
@@ -315,9 +319,9 @@ class TranscodeJob(BaseModel):
         choices=tuple((c, c) for c in TRANSCODE_JOB_CHOICES),
         db_index=True,
     )
-    started_on = models.DateTimeField(db_index=True, null=True)
-    ended_on = models.DateTimeField(db_index=True, null=True)
-    failure_context = models.TextField(null=True)
+    started_on = models.DateTimeField(db_index=True, null=True, blank=True)
+    ended_on = models.DateTimeField(db_index=True, null=True, blank=True)
+    failure_context = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return (

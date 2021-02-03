@@ -8,7 +8,9 @@ class BaseModel(models.Model):
     id = ShortUUIDField(primary_key=True, editable=False)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_on = models.DateTimeField(auto_now=True, db_index=True)
-    deleted_on = models.DateTimeField(db_index=True, null=True)
+    deleted_on = models.DateTimeField(
+        db_index=True, null=True, blank=True, default=None
+    )
 
     objects = managers.ObjectsManager()
     objects_all = managers.ObjectsAllManager()
@@ -16,3 +18,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
         ordering = ['created_on']
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)

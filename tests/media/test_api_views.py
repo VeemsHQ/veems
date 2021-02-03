@@ -647,6 +647,56 @@ class TestVideo:
         assert response.status_code == BAD_REQUEST
         assert response.json() == ['Missing required parameters']
 
-    def test_returns_non_public_when_authed(self):
-        # TODO: finish
-        pass
+    def test_doesnt_return_private_when_authed_user_not_channel_owner(
+        self,
+        expected_video_resp_json,
+        api_client,
+        channel_factory,
+        user_factory,
+        video_with_transcodes_factory,
+    ):
+        api_client, user = api_client
+        # Channel owned by someone else
+        channel = channel_factory(user=user_factory())
+        visibilities = ('private', 'public', 'unlisted')
+        for visibility in visibilities:
+            video_with_transcodes_factory(
+                channel=channel, visibility=visibility
+            )
+
+        response = api_client.get(f'/api/v1/video/?channel_id={channel.id}')
+
+        assert response.status_code == OK
+        resp_json = response.json()
+        assert len(resp_json) == 1
+        for video in resp_json:
+            assert video == expected_video_resp_json
+            assert video['channel_id'] == channel.id
+        # Since auth'd user owns this channel, not all visibilities returned
+        assert tuple(r['visibility'] for r in resp_json) == ('public',)
+
+    def test_returns_all_visibilities_when_authed_user_is_channel_owner(
+        self,
+        expected_video_resp_json,
+        api_client,
+        channel_factory,
+        video_with_transcodes_factory,
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        visibilities = ('private', 'public', 'unlisted')
+        for visibility in visibilities:
+            video_with_transcodes_factory(
+                channel=channel, visibility=visibility
+            )
+
+        response = api_client.get(f'/api/v1/video/?channel_id={channel.id}')
+
+        assert response.status_code == OK
+        resp_json = response.json()
+        assert len(resp_json) == 3
+        for video in resp_json:
+            assert video == expected_video_resp_json
+            assert video['channel_id'] == channel.id
+        # Since auth'd user owns this channel, all visibilities returned
+        assert tuple(r['visibility'] for r in resp_json) == visibilities

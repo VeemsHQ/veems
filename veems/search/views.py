@@ -22,7 +22,8 @@ class SearchView(TemplateView):
             search_results['videos'], many=True
         ).data
         context['channel_results'] = channel_serializers.ChannelSlimSerializer(
-            search_results['channels'], many=True
+            instance=search_results['channels'],
+            many=True,
         ).data
         context['search_query'] = search_query
         context['query_type'] = query_type

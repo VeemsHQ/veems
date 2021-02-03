@@ -66,7 +66,9 @@ class VideoAPIView(APIView):
         else:
             if not channel_id:
                 self._raise_missing_params()
-        videos = services.get_videos(channel_id=channel_id)
+        videos = services.get_videos(
+            channel_id=channel_id, user_id=request.user.id
+        )
         data = serializers.VideoSerializer(instance=videos, many=True).data
         return Response(data, status=OK)
 
