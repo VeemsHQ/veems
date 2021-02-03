@@ -59,7 +59,6 @@ class VideoAPIView(APIView):
         raise ValidationError('Missing required parameters')
 
     def get(self, request, format=None):
-        # TODO: validate channel
         try:
             channel_id = request.GET['channel_id']
         except KeyError:

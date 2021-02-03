@@ -22,7 +22,7 @@ class ChannelAPIView(APIView):
 
 
 class ChannelDetailAPIView(APIView):
-    # TODO: only return non-public if authed as that use
+    # TODO: only return non-public videos if auth'd as channel owner
 
     def get(self, request, channel_id, format=None):
         channel = services.get_channel(id=channel_id)

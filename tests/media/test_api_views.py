@@ -647,5 +647,6 @@ class TestVideo:
         assert response.status_code == BAD_REQUEST
         assert response.json() == ['Missing required parameters']
 
-    def test_return_non_public_when_authed(self):
+    def test_returns_non_public_when_authed(self):
+        # TODO: finish
         pass
