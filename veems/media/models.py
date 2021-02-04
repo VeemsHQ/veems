@@ -22,6 +22,7 @@ TRANSCODE_JOB_CHOICES = (
     'failed',
 )
 VIDEO_VISIBILITY_CHOICES = (
+    'draft',
     'private',
     'public',
     'unlisted',
