@@ -99,7 +99,8 @@ class Upload(BaseModel):
     )
     media_type = models.CharField(max_length=500)
     file = models.FileField(
-        upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND
+        upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND,
+        null=True, blank=True,
     )
     status = models.CharField(
         max_length=10,
@@ -245,7 +246,7 @@ class VideoRendition(BaseModel):
         Video, on_delete=models.CASCADE, related_name='renditions'
     )
     file = models.FileField(
-        upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND
+        upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND,
     )
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
