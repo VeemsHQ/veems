@@ -20,4 +20,4 @@ jobs:
         source .env
         pip install docker-compose
         make start-deps
-        make docker-test
+        # make docker-test
