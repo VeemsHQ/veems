@@ -584,8 +584,10 @@ def test_get_popular_videos(
     for visibility, is_viewable, deleted_on in zip(
         visibility_values, is_viewable_values, deleted_on_values
     ):
+        user = user_factory()
+        channel = channel_factory(user=user)
         video_with_transcodes_factory(
-            channel=channel_factory(user=user_factory()),
+            channel=channel,
             visibility=visibility,
             is_viewable=is_viewable,
             deleted_on=deleted_on,
