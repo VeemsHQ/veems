@@ -350,7 +350,7 @@ class VideoLikeDislike(BaseModel):
     video = models.ForeignKey(
         Video, on_delete=models.CASCADE, related_name='likedislikes'
     )
-    is_like = models.BooleanField(db_index=True, null=True)
+    is_like = models.BooleanField(db_index=True, null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'video')
