@@ -322,7 +322,7 @@ class TranscodeJob(BaseModel):
     video = models.ForeignKey(
         Video,
         on_delete=models.CASCADE,
-        null=True,
+        null=False, blank=False,
         related_name='transcode_jobs',
     )
     profile = models.CharField(max_length=100)

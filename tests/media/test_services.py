@@ -387,7 +387,7 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     )
 
     assert video_rendition.playlist_file
-    assert video_rendition.videorenditionsegment_set.count() == len(
+    assert video_rendition.rendition_segments.count() == len(
         segment_paths
     )
     exp_prefix = f'videos/{video.id}/renditions/{video_rendition.id}/segments'
@@ -447,7 +447,7 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     )
     assert (
         tuple(
-            video_rendition.videorenditionsegment_set.values_list(
+            video_rendition.rendition_segments.values_list(
                 'segment_number', 'file'
             )
         )

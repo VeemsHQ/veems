@@ -389,8 +389,8 @@ class TestTranscode:
         assert transcode_job.ended_on
 
         # Check Segments were created
-        assert video_rendition.videorenditionsegment_set.count() > 0
-        for segment in video_rendition.videorenditionsegment_set.all():
+        assert video_rendition.rendition_segments.count() > 0
+        for segment in video_rendition.rendition_segments.all():
             assert segment.segment_number is not None
             assert segment.file
 
