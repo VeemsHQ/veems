@@ -21,21 +21,22 @@
                 <td>
                     <div class="d-flex">
                         <a href="#" class="thumbnail d-inline-block mr-2">
-                            <img class="card-img-top" src="{{video.thumbnail_image_medium_url}}">
+                            <img class="card-img-top w-100" src="{{video.thumbnail_image_medium_url}}">
                             <div class="overlays">{{video.video_duration}}</div>
                         </a>
                         <div class="metadata-container d-flex">
                             <div class="content p-2">
                                 <h5 class="m-0 mb-1"><a href="#">{{video.title}}</a></h5>
                                 <div class="metadata">
-                                    <div class="card-text text-muted text-wrap text-truncate"><a href="#">{{video.description|truncatechars:150}}</a>
+                                    <div class="card-text text-muted text-wrap text-truncate"><a
+                                            href="#">{{video.description|truncatechars:150}}</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="overlay align-items-center">
-                                <a href="#" class="btn" data-toggle="modal" data-target="#videoDetailModal"><i
-                                        class="material-icons text-secondary">create</i></a>
-                                <a href="{% url 'view-video' video.id %}" class="btn" target="_blank"><i class="material-icons text-secondary">play_circle_outline</i></a>
+                                <a href="#" class="btn"><i class="material-icons text-secondary">create</i></a>
+                                <a href="{% url 'view-video' video.id %}" class="btn" target="_blank"><i
+                                        class="material-icons text-secondary">play_circle_outline</i></a>
                                 <a href="#" class="btn"><i class="material-icons text-secondary">delete</i></a>
                             </div>
                         </div>
@@ -74,6 +75,7 @@
 </script>
 
 <script>
+
     // TODO: replace with ReactJS component
     $(document).ready(function () {
         $('.tagsinput').tagsinput({

@@ -401,10 +401,11 @@ body {
     text-decoration: none;
 }
 
-.video-grid .thumbnail img {
+.thumbnail img {
     display: block;
     max-width: var(--video-thumb-width);
-    height: var(--video-thumb-height);
+    height: auto;
+    max-height: var(--video-thumb-height);
     width: auto;
     margin: 0 auto;
 }
@@ -623,7 +624,7 @@ hr {
 
 .thumbnail-grid .card {
     width: 100px;
-    height: 100px;
+    /* height: 100px; */
     border-radius: 0 !important;
 }
 
