@@ -89,17 +89,16 @@ class TranscodeJobSerializer(CustomModelSerializer):
 
 
 class VideoSerializer(CustomModelSerializer):
+    # TODO: Fix O(log n) here in Channel and Channel Videos API reponses.
     def __init__(self, user_id=None, *args, **kwargs):
         CustomModelSerializer.__init__(self, *args, **kwargs)
         self._user_id = user_id
         self.cache = LRUCache(maxsize=1000)
 
     video_renditions = VideoRenditionSerializer(
-        many=True, read_only=True, source='videorendition_set'
+        many=True, read_only=True, source='renditions'
     )
-    transcode_jobs = TranscodeJobSerializer(
-        many=True, read_only=True, source='transcodejob_set'
-    )
+    transcode_jobs = TranscodeJobSerializer(many=True, read_only=True)
     playlist_file = serializers.SerializerMethodField(
         method_name='get_playlist_file'
     )
@@ -152,7 +151,7 @@ class VideoSerializer(CustomModelSerializer):
         return url
 
     def get_video_renditions_count(self, instance):
-        return instance.videorendition_set.count()
+        return instance.renditions.count()
 
     def get_created_date(self, instance):
         return instance.created_on.date().isoformat()
@@ -270,7 +269,7 @@ class VideoSerializer(CustomModelSerializer):
         }
 
 
-class VideoSlimSerializer(VideoSerializer):
+class VideoSummarySerializer(VideoSerializer):
     class Meta:
         model = VideoSerializer.Meta.model
         fields = [

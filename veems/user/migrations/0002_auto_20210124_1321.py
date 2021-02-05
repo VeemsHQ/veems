@@ -13,6 +13,7 @@ def create_superuser(apps, schema_editor):
         username=os.environ['ADMIN_USERNAME'],
         email=os.environ['ADMIN_EMAIL'],
         last_login=timezone.now(),
+        deleted_on=None,
     )
     superuser.set_password(os.environ['ADMIN_PASSWORD'])
     superuser.save()

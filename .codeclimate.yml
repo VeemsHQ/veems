@@ -3,3 +3,5 @@ exclude_patterns:
 - "**/migrations/*.py"
 - "tests/**/*.py"
 - "tests/*.py"
+- "react-components/*.js"
+- "react-components/**/*.js"

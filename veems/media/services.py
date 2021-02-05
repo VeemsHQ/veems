@@ -6,11 +6,13 @@ import functools
 import operator
 
 import m3u8
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count
 from django.utils import timezone
 from django.core.files import File
 
 from . import models
+from ..channel import services as channel_services
 from .transcoder import transcoder_profiles
 
 logger = logging.getLogger(__name__)
@@ -35,7 +37,7 @@ def _get_rendition_playlists(video_record):
             'playlist_url': video_rendition.playlist_file.url,
             'bandwidth': int(video_rendition.metadata['format']['bit_rate']),
         }
-        for video_rendition in video_record.videorendition_set.all()
+        for video_rendition in video_record.renditions.all()
         if video_rendition.playlist_file
     ]
 
@@ -242,10 +244,26 @@ def delete_video(id):
     return video
 
 
-def get_videos(channel_id=None):
+def get_videos(channel_id=None, user_id=None):
+    logger.info(
+        'Getting videos for channel %s, user %s...', channel_id, user_id
+    )
+    filters = {}
+    only_return_public = True
     if channel_id:
-        return models.Video.objects.filter(channel_id=channel_id)
-    return models.Video.objects.all()
+        filters['channel_id'] = channel_id
+    if channel_id and user_id:
+        try:
+            channel_services.get_channel(id=channel_id, user_id=user_id)
+        except ObjectDoesNotExist:
+            # The auth'd user doesn't own this channel so don't return
+            # non-public videos.
+            only_return_public = True
+        else:
+            only_return_public = False
+    if only_return_public:
+        filters['visibility'] = 'public'
+    return models.Video.objects.filter(**filters)
 
 
 def get_popular_videos():

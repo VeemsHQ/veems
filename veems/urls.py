@@ -5,6 +5,7 @@ from django_registration.backends.activation.views import (
     RegistrationView,
     ActivationView,
 )
+import debug_toolbar
 
 from .media import api_views, views as media_views
 from .home import views as home_views
@@ -15,6 +16,7 @@ from .search import views as search_views
 
 
 urlpatterns = [
+    path('__debug__/', include(debug_toolbar.urls)),
     path('admin/', admin.site.urls),
     path('', home_views.IndexView.as_view(), name='index'),
     path(
@@ -120,7 +122,7 @@ urlpatterns = [
     path(
         'api/v1/upload/complete/<slug:upload_id>/', api_views.upload_complete
     ),
-    path('api/v1/video/', api_views.VideoDetailAPIView.as_view()),
+    path('api/v1/video/', api_views.VideoAPIView.as_view()),
     path(
         'api/v1/video/<slug:video_id>/', api_views.VideoDetailAPIView.as_view()
     ),

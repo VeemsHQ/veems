@@ -9,32 +9,44 @@ from . import services, serializers
 class ChannelAPIView(APIView):
     def get(self, request, format=None):
         channels = services.get_channels(user_id=request.user.id)
-        serializer = serializers.ChannelSlimSerializer(channels, many=True)
+        serializer = serializers.ChannelSummarySerializer(
+            instance=channels, many=True, user_id=request.user.id
+        )
         return Response(serializer.data)
 
     def post(self, request, format=None):
         request.data['user'] = request.user.id
-        serializer = serializers.ChannelSlimSerializer(data=request.data)
+        serializer = serializers.ChannelSummarySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         channel = serializer.save()
-        serializer = serializers.ChannelSlimSerializer(channel)
+        serializer = serializers.ChannelSummarySerializer(
+            instance=channel
+        )
         return Response(serializer.data, status=CREATED)
 
 
 class ChannelDetailAPIView(APIView):
+
     def get(self, request, channel_id, format=None):
         channel = services.get_channel(id=channel_id)
-        serializer = serializers.ChannelSerializer(channel)
+        serializer = serializers.ChannelSerializer(
+            instance=channel, user_id=request.user.id
+        )
         return Response(serializer.data)
 
     def put(self, request, channel_id, format=None):
         channel = services.get_channel(id=channel_id, user_id=request.user.id)
         serializer = serializers.ChannelSerializer(
-            channel, data=request.data, partial=True
+            instance=channel,
+            user_id=request.user.id,
+            data=request.data,
+            partial=True,
         )
         serializer.is_valid(raise_exception=True)
         channel = serializer.save()
-        serializer = serializers.ChannelSerializer(channel)
+        serializer = serializers.ChannelSerializer(
+            instance=channel, user_id=request.user.id
+        )
         return Response(serializer.data)
 
 

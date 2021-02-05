@@ -10,6 +10,8 @@ class TestChannelSerializer:
         video_factory(channel=channel)
         video_factory(channel=channel)
 
-        data = serializers.ChannelSerializer(instance=channel).data
+        data = serializers.ChannelSerializer(
+            user_id=channel.user_id, instance=channel
+        ).data
 
         assert data['videos_count'] == 2

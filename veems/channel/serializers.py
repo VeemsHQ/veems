@@ -2,12 +2,12 @@ from rest_framework import serializers
 
 from . import models
 from . import services
+from ..media import services as media_services
 from ..common.serializers import CustomModelSerializer
 from ..media.serializers import VideoSerializer
 
 
 class ChannelSerializer(CustomModelSerializer):
-    videos = VideoSerializer(many=True, read_only=True)
     followers_count = serializers.SerializerMethodField(
         method_name='get_followers_count'
     )
@@ -20,9 +20,23 @@ class ChannelSerializer(CustomModelSerializer):
     videos_count = serializers.SerializerMethodField(
         method_name='get_videos_count'
     )
+    videos = serializers.SerializerMethodField(method_name='get_videos')
+
+    def __init__(self, *, user_id=None, **kwargs):
+        CustomModelSerializer.__init__(self, **kwargs)
+        self._user_id = user_id
 
     def get_videos_count(self, instance):
-        return instance.videos.filter(visibility='public').count()
+        return self._get_videos(instance=instance).count()
+
+    def _get_videos(self, instance):
+        return media_services.get_videos(
+            channel_id=instance.id, user_id=self._user_id
+        )
+
+    def get_videos(self, instance):
+        instance = self._get_videos(instance=instance)
+        return VideoSerializer(many=True, instance=instance).data
 
     def get_followers_count(self, instance):
         return 0
@@ -61,6 +75,7 @@ class ChannelSerializer(CustomModelSerializer):
             'created_date': {'read_only': True},
             'has_banner': {'read_only': True},
             'videos_count': {'read_only': True},
+            'videos': {'read_only': True},
         }
 
     def update(self, instance, validated_data):
@@ -88,7 +103,7 @@ class ChannelSerializer(CustomModelSerializer):
         return instance.created_on.date().isoformat()
 
 
-class ChannelSlimSerializer(ChannelSerializer):
+class ChannelSummarySerializer(ChannelSerializer):
     class Meta:
         model = models.Channel
         fields = (
@@ -119,6 +134,19 @@ class ChannelSlimSerializer(ChannelSerializer):
             'created_date': {'read_only': True},
             'has_banner': {'read_only': True},
             'videos_count': {'read_only': True},
+        }
+
+
+class ChannelSlimSummarySerializer(ChannelSerializer):
+    class Meta:
+        model = models.Channel
+        fields = (
+            'id',
+            'name',
+        )
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'name': {'read_only': True},
         }
 
 

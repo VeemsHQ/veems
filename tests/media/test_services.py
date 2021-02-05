@@ -387,7 +387,7 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     )
 
     assert video_rendition.playlist_file
-    assert video_rendition.videorenditionsegment_set.count() == len(
+    assert video_rendition.rendition_segments.count() == len(
         segment_paths
     )
     exp_prefix = f'videos/{video.id}/renditions/{video_rendition.id}/segments'
@@ -447,7 +447,7 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     )
     assert (
         tuple(
-            video_rendition.videorenditionsegment_set.values_list(
+            video_rendition.rendition_segments.values_list(
                 'segment_number', 'file'
             )
         )
@@ -584,8 +584,10 @@ def test_get_popular_videos(
     for visibility, is_viewable, deleted_on in zip(
         visibility_values, is_viewable_values, deleted_on_values
     ):
+        user = user_factory()
+        channel = channel_factory(user=user)
         video_with_transcodes_factory(
-            channel=channel_factory(user=user_factory()),
+            channel=channel,
             visibility=visibility,
             is_viewable=is_viewable,
             deleted_on=deleted_on,
@@ -632,11 +634,66 @@ class TestGetVideos:
         )
         # Deleted videos shouldn't be returned
         services.delete_video(id=videos[-1].id)
+        # Non-public videos shouldn't be returned
+        video_factory(visibility='draft')
+        video_factory(visibility='private')
+        video_factory(visibility='unlisted')
 
         records = services.get_videos()
 
         assert tuple(records) == tuple(videos[:-1])
         assert all(not v.deleted_on for v in records)
+
+    def test_with_channel_id_and_user_id_of_owner_returns_non_public(
+        self, video_factory, channel_factory, user
+    ):
+        channel = channel_factory(user=user)
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel)
+        video_factory(channel=channel)
+        # Deleted videos shouldn't be returned
+        services.delete_video(id=video_factory(channel=channel).id)
+        # Non-public videos should be returned
+        video_factory(channel=channel, visibility='private')
+        video_factory(channel=channel, visibility='unlisted')
+        video_factory(channel=channel, visibility='draft')
+
+        records = services.get_videos(channel_id=channel.id, user_id=user.id)
+
+        assert len(records) == 5
+        # Check non public were returned
+        assert set(r.visibility for r in records) == {
+            'public',
+            'private',
+            'unlisted',
+            'draft',
+        }
+
+    def test_with_channel_id_and_user_id_of_non_owner_returns_only_public(
+        self, video_factory, user_factory, channel_factory, user
+    ):
+        channel = channel_factory(user=user)
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel_factory(user=user))
+        video_factory(channel=channel)
+        video_factory(channel=channel)
+        # Deleted videos shouldn't be returned
+        services.delete_video(id=video_factory(channel=channel).id)
+        # Non-public videos shouldn't be returned
+        video_factory(channel=channel, visibility='private')
+        video_factory(channel=channel, visibility='unlisted')
+        video_factory(channel=channel, visibility='draft')
+
+        records = services.get_videos(
+            channel_id=channel.id, user_id=user_factory().id
+        )
+
+        assert len(records) == 2
+        # Check public were returned
+        assert set(r.visibility for r in records) == {
+            'public',
+        }
 
     def test_with_channel_id(self, video_factory, channel_factory, user):
         channel = channel_factory(user=user)
@@ -646,6 +703,10 @@ class TestGetVideos:
         video_factory(channel=channel)
         # Deleted videos shouldn't be returned
         services.delete_video(id=video_factory(channel=channel).id)
+        # Non-public videos shouldn't be returned
+        video_factory(channel=channel, visibility='private')
+        video_factory(channel=channel, visibility='unlisted')
+        video_factory(channel=channel, visibility='draft')
 
         records = services.get_videos(channel_id=channel.id)
 

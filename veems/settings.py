@@ -63,6 +63,10 @@ LOGGING = {
     },
 }
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -75,8 +79,10 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_celery_beat',
     'django_celery_results',
+    'clear_cache',
     'rest_framework',
     'imagekit',
+    'debug_toolbar',
     'veems.common',
     'veems.user',
     'veems.media',
@@ -90,6 +96,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -145,7 +152,8 @@ AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_S3_USE_SSL = os.environ.get('AWS_S3_USE_SSL', 'false').lower() == 'true'
 AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
-AWS_QUERYSTRING_EXPIRE = 3600
+# 1 week
+IMAGEKIT_CACHE_TIMEOUT = AWS_QUERYSTRING_EXPIRE = 604800
 # Default bucket settings
 AWS_STORAGE_BUCKET_NAME = os.environ['BUCKET_STATIC']
 AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')

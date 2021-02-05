@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import SelectChannelDropdown from './SelectChannelDropdown';
+import SelectActiveChannelDropdown from './SelectActiveChannelDropdown';
 
 import {
   setActiveChannelAction,
@@ -23,7 +23,7 @@ const Container = ({
   isDbStale,
   storeChannels,
   channels,
-  activeChannelID,
+  activeChannelId,
   setChannelsDbStale,
   setActiveChannel,
 }) => {
@@ -44,18 +44,18 @@ const Container = ({
   }, [storeChannels]);
 
   const handleSelectChannel = async (e) => {
-    if (e.target.value) {
+    const channelId = e.target.value;
+    if (channelId) {
       // update the active channel in the store and on the server
-      setActiveChannel(e.target.value);
-      await setChannelRequest(e.target.value);
-      window.SELECTED_CHANNEL_ID = e.target.value;
+      setActiveChannel(channelId);
+      await setChannelRequest(channelId);
+      window.SELECTED_CHANNEL_ID = channelId;
     }
   };
-
   return (
-    <SelectChannelDropdown
+    <SelectActiveChannelDropdown
       channels={dropdownChannels}
-      activeID={activeChannelID}
+      activeID={activeChannelId}
       onSelectChannel={(e) => handleSelectChannel(e)}
     />
   );
@@ -69,15 +69,23 @@ const mapDispatchToProps = (dispatch) => ({
   }, dispatch),
 });
 
-const mapStateToProps = (state) => ({
-  storeChannels: state.channels.channels,
-  activeChannelID: state.channels.activeChannelID,
-  isDbStale: state.channels.isDbStale,
-});
+const mapStateToProps = (state, ownProps) => {
+  let activeChannelId;
+  if (state.channels.activeChannelId === null) {
+    activeChannelId = ownProps.activeChannelId;
+  } else {
+    activeChannelId = state.channels.activeChannelId;
+  }
+  return {
+    storeChannels: state.channels.channels,
+    activeChannelId: activeChannelId,
+    isDbStale: state.channels.isDbStale,
+  };
+};
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-export const CreateSelectChannelContainer = ({
+export const CreateSelectActiveChannelDropdown = ({
   element,
   ...params
 }) => (

@@ -13,81 +13,132 @@ EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
 EXAMPLE_BANNER_IMG = TEST_DATA_DIR / 'example-banner.jpeg'
 
 
-def test_get_channels(api_client, channel_factory, user_factory):
-    api_client, user = api_client
-    exp_channels = (
-        channel_factory(user=user).id,
-        channel_factory(user=user).id,
-    )
+class TestGetChannels:
+    def test(self, api_client, channel_factory, user_factory):
+        api_client, user = api_client
+        exp_channels = (
+            channel_factory(user=user).id,
+            channel_factory(user=user).id,
+        )
 
-    response = api_client.get('/api/v1/channel/')
+        response = api_client.get('/api/v1/channel/')
 
-    assert response.status_code == OK
-    assert len(response.json()) == len(exp_channels)
-    assert response.json()[0] == S(
-        {
-            'id': str,
-            'user': user.id,
-            'name': str,
-            'description': str,
-            'sync_videos_interested': bool,
-            'language': 'en',
-            'modified_on': str,
-            'is_selected': bool,
-            'followers_count': int,
-            'avatar_image_small_url': str,
-            'avatar_image_large_url': str,
-            'banner_image_small_url': str,
-            'banner_image_large_url': str,
-            'has_banner': bool,
-            'created_on': str,
-            'created_date': str,
-            'videos_count': int,
-        }
-    )
-    assert all(c['id'] in exp_channels for c in response.json())
+        assert response.status_code == OK
+        assert len(response.json()) == len(exp_channels)
+        assert response.json()[0] == S(
+            {
+                'id': str,
+                'user': user.id,
+                'name': str,
+                'description': str,
+                'sync_videos_interested': bool,
+                'language': 'en',
+                'modified_on': str,
+                'is_selected': bool,
+                'followers_count': int,
+                'avatar_image_small_url': str,
+                'avatar_image_large_url': str,
+                'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
+                'videos_count': int,
+            }
+        )
+        assert all(c['id'] in exp_channels for c in response.json())
 
 
-def test_get_channel(
-    api_client,
-    channel_factory,
-    video_with_transcodes_factory,
-    expected_video_resp_json,
-):
-    api_client, user = api_client
-    channel = channel_factory(user=user)
-    video_with_transcodes_factory(channel=channel)
+class TestGetChannel:
+    def test_authed_user_owns_channel(
+        self,
+        api_client,
+        channel_factory,
+        video_with_transcodes_factory,
+        expected_video_resp_json,
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        video_with_transcodes_factory(channel=channel, visibility='public')
+        video_with_transcodes_factory(channel=channel, visibility='private')
 
-    response = api_client.get(f'/api/v1/channel/{channel.id}/')
+        response = api_client.get(f'/api/v1/channel/{channel.id}/')
 
-    assert response.status_code == OK
-    resp_json = response.json()
-    assert resp_json == S(
-        {
-            'id': channel.id,
-            'user': user.id,
-            'name': str,
-            'description': str,
-            'sync_videos_interested': bool,
-            'language': 'en',
-            'modified_on': str,
-            'is_selected': bool,
-            'followers_count': int,
-            'avatar_image_small_url': str,
-            'avatar_image_large_url': str,
-            'banner_image_small_url': str,
-            'banner_image_large_url': str,
-            'has_banner': bool,
-            'created_on': str,
-            'created_date': str,
-            'videos': list,
-            'videos_count': int,
-        }
-    )
-    assert len(resp_json['videos']) == 1
-    assert resp_json['videos'][0] == expected_video_resp_json
-    assert resp_json['videos'][0]['video_renditions']
-    assert resp_json['videos'][0]['transcode_jobs']
+        assert response.status_code == OK
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'id': channel.id,
+                'user': user.id,
+                'name': str,
+                'description': str,
+                'sync_videos_interested': bool,
+                'language': 'en',
+                'modified_on': str,
+                'is_selected': bool,
+                'followers_count': int,
+                'avatar_image_small_url': str,
+                'avatar_image_large_url': str,
+                'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
+                'videos': list,
+                'videos_count': int,
+            }
+        )
+        assert len(resp_json['videos']) == 2
+        assert resp_json['videos_count'] == 2
+        for video in resp_json['videos']:
+            assert video == expected_video_resp_json
+            assert video['video_renditions']
+            assert video['transcode_jobs']
+            assert video['visibility'] in ('public', 'private')
+
+    def test_authed_user_does_not_own_channel(
+        self,
+        api_client,
+        channel_factory,
+        user_factory,
+        video_with_transcodes_factory,
+        expected_video_resp_json,
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user_factory())
+        video_with_transcodes_factory(channel=channel, visibility='public')
+        video_with_transcodes_factory(channel=channel, visibility='private')
+
+        response = api_client.get(f'/api/v1/channel/{channel.id}/')
+
+        assert response.status_code == OK
+        resp_json = response.json()
+        assert resp_json == S(
+            {
+                'id': channel.id,
+                'user': channel.user_id,
+                'name': str,
+                'description': str,
+                'sync_videos_interested': bool,
+                'language': 'en',
+                'modified_on': str,
+                'is_selected': bool,
+                'followers_count': int,
+                'avatar_image_small_url': str,
+                'avatar_image_large_url': str,
+                'banner_image_small_url': str,
+                'banner_image_large_url': str,
+                'has_banner': bool,
+                'created_on': str,
+                'created_date': str,
+                'videos': list,
+                'videos_count': int,
+            }
+        )
+        assert len(resp_json['videos']) == 1
+        assert resp_json['videos_count'] == 1
+        assert resp_json['videos'][0] == expected_video_resp_json
+        assert resp_json['videos'][0]['visibility'] == 'public'
 
 
 class TestCreateChannel:

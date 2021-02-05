@@ -22,6 +22,7 @@ TRANSCODE_JOB_CHOICES = (
     'failed',
 )
 VIDEO_VISIBILITY_CHOICES = (
+    'draft',
     'private',
     'public',
     'unlisted',
@@ -94,10 +95,13 @@ class Upload(BaseModel):
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='uploads'
     )
-    presigned_upload_url = models.URLField(max_length=1000)
+    presigned_upload_url = models.URLField(
+        max_length=1000, null=True, blank=True
+    )
     media_type = models.CharField(max_length=500)
     file = models.FileField(
-        upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND
+        upload_to=_upload_file_upload_to, storage=STORAGE_BACKEND,
+        null=True, blank=True,
     )
     status = models.CharField(
         max_length=10,
@@ -120,7 +124,7 @@ class Video(BaseModel):
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='videos'
     )
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=500, null=True, blank=True)
     visibility = models.CharField(
         max_length=10,
         choices=tuple((c, c) for c in VIDEO_VISIBILITY_CHOICES),
@@ -128,9 +132,9 @@ class Video(BaseModel):
         default='public',
     )
     is_viewable = models.BooleanField(default=False, db_index=True)
-    description = models.TextField(max_length=5000, null=True)
-    tags = ArrayField(models.CharField(max_length=1000), null=True)
-    framerate = models.IntegerField(null=True)
+    description = models.TextField(max_length=5000, null=True, blank=True)
+    tags = ArrayField(models.TextField(max_length=1000), null=True, blank=True)
+    framerate = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, default=0)
     # Custom thumb is user uploaded
     custom_thumbnail_image = models.ImageField(
@@ -239,25 +243,29 @@ class VideoRendition(BaseModel):
     Either a piece of Audio/Video/Audio+Video.
     """
 
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    file = models.FileField(
-        upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE, related_name='renditions'
     )
-    width = models.IntegerField(null=True)
-    height = models.IntegerField(null=True)
-    framerate = models.IntegerField(null=True)
-    duration = models.IntegerField(null=True)
+    file = models.FileField(
+        upload_to=_video_rendition_upload_to, storage=STORAGE_BACKEND,
+    )
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    framerate = models.IntegerField(null=True, blank=True)
+    duration = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=30, null=False)
     ext = models.CharField(max_length=4, null=False)
-    audio_codec = models.CharField(max_length=50, null=True)
-    video_codec = models.CharField(max_length=50, null=True)
-    container = models.CharField(max_length=30, null=True)
-    codecs_string = models.CharField(max_length=100, null=True)
+    audio_codec = models.CharField(max_length=50, null=True, blank=True)
+    video_codec = models.CharField(max_length=50, null=True, blank=True)
+    container = models.CharField(max_length=30, null=True, blank=True)
+    codecs_string = models.CharField(max_length=100, null=True, blank=True)
     file_size = models.IntegerField()
-    metadata = models.JSONField(null=True)
+    metadata = models.JSONField(null=True, blank=True)
     playlist_file = models.FileField(
         upload_to=_video_rendition_playlist_file_upload_to,
         storage=STORAGE_BACKEND,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
@@ -269,7 +277,9 @@ class VideoRendition(BaseModel):
 
 class VideoRenditionSegment(BaseModel):
     video_rendition = models.ForeignKey(
-        VideoRendition, on_delete=models.CASCADE
+        VideoRendition,
+        on_delete=models.CASCADE,
+        related_name='rendition_segments',
     )
     file = models.FileField(
         upload_to=_video_rendition_segment_upload_to,
@@ -289,7 +299,9 @@ class VideoRenditionSegment(BaseModel):
 
 class VideoRenditionThumbnail(BaseModel):
     video_rendition = models.ForeignKey(
-        VideoRendition, on_delete=models.CASCADE
+        VideoRendition,
+        on_delete=models.CASCADE,
+        related_name='rendition_thumbnails',
     )
     file = models.FileField(
         upload_to=_video_rendition_thumbnail_upload_to, storage=STORAGE_BACKEND
@@ -307,7 +319,12 @@ class VideoRenditionThumbnail(BaseModel):
 
 
 class TranscodeJob(BaseModel):
-    video = models.ForeignKey(Video, on_delete=models.CASCADE, null=True)
+    video = models.ForeignKey(
+        Video,
+        on_delete=models.CASCADE,
+        null=False, blank=False,
+        related_name='transcode_jobs',
+    )
     profile = models.CharField(max_length=100)
     executor = models.CharField(max_length=20)
     status = models.CharField(
@@ -315,9 +332,9 @@ class TranscodeJob(BaseModel):
         choices=tuple((c, c) for c in TRANSCODE_JOB_CHOICES),
         db_index=True,
     )
-    started_on = models.DateTimeField(db_index=True, null=True)
-    ended_on = models.DateTimeField(db_index=True, null=True)
-    failure_context = models.TextField(null=True)
+    started_on = models.DateTimeField(db_index=True, null=True, blank=True)
+    ended_on = models.DateTimeField(db_index=True, null=True, blank=True)
+    failure_context = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return (
@@ -333,7 +350,7 @@ class VideoLikeDislike(BaseModel):
     video = models.ForeignKey(
         Video, on_delete=models.CASCADE, related_name='likedislikes'
     )
-    is_like = models.BooleanField(db_index=True, null=True)
+    is_like = models.BooleanField(db_index=True, null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'video')

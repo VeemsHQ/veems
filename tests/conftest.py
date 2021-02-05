@@ -48,7 +48,7 @@ def user_factory(pasword):
     def make():
         unique = f'user{str(uuid4())[:5]}'
         email = f'{unique}@veems.tv'
-        user = get_user_model().objects.create(
+        user = get_user_model()(
             username=email,
             email=email,
         )
@@ -125,7 +125,7 @@ def video_with_transcodes_factory(
     simple_uploaded_file_factory,
     rendition_playlist_file,
 ):
-    def make(channel, visibility='draft', **video_kwargs):
+    def make(channel, visibility='public', **video_kwargs):
         user = channel.user
         video = video_factory(
             channel=channel,
@@ -223,7 +223,7 @@ def upload_factory(request):
             file_contents = file_.read()
         channel = channel or request.getfixturevalue('channel')
         upload = models.Upload.objects.create(
-            presigned_upload_url='htts://example.com/s3-blah',
+            presigned_upload_url='https://example.com/s3-blah',
             media_type='video',
             file=SimpleUploadedFile(video_path.name, file_contents),
             channel=channel,

@@ -3,6 +3,7 @@ from pathlib import Path
 from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
 
 from django.http import HttpResponse
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -51,6 +52,25 @@ def upload_complete(request, upload_id):
     models.Upload.objects.get(id=upload_id, channel__user_id=request.user.id)
     upload_manager.complete.delay(upload_id)
     return Response({}, status=OK)
+
+
+class VideoAPIView(APIView):
+    def _raise_missing_params(self):
+        raise ValidationError('Missing required parameters')
+
+    def get(self, request, format=None):
+        try:
+            channel_id = request.GET['channel_id']
+        except KeyError:
+            self._raise_missing_params()
+        else:
+            if not channel_id:
+                self._raise_missing_params()
+        videos = services.get_videos(
+            channel_id=channel_id, user_id=request.user.id
+        )
+        data = serializers.VideoSerializer(instance=videos, many=True).data
+        return Response(data, status=OK)
 
 
 class VideoDetailAPIView(APIView):

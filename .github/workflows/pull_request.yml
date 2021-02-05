@@ -17,7 +17,9 @@ jobs:
     - name: Run backend tests
       run: |
         cp .env.template .env
+        sed -e 's/^/export /' -i .env
         source .env
+        sed -e 's/export //' -i .env
         pip install docker-compose
         make start-deps
         make docker-test

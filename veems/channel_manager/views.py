@@ -42,7 +42,9 @@ class VideosView(ChannelManagerTemplateView):
         channel_id = channel_services.get_selected_channel_id(
             user=self.request.user
         )
-        channel_videos = media_services.get_videos(channel_id=channel_id)
+        channel_videos = media_services.get_videos(
+            channel_id=channel_id, user_id=self.request.user.id,
+        )
         channel_videos = media_serializers.VideoSerializer(
             instance=channel_videos, many=True
         ).data

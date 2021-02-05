@@ -16,7 +16,9 @@
     "import/no-named-as-default": 0,
     "jsx-a11y/click-events-have-key-events": "off",
     "no-shadow": "off",
+    "react/no-render-return-value": "off",
     "react/jsx-props-no-spreading": "off",
+    "import/prefer-default-export": "off",
     "react/destructuring-assignment": "off"
   }
 }

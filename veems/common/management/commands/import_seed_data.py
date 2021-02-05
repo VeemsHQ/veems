@@ -17,7 +17,7 @@ def _run():
     with seed_data.open('r') as file_:
         data = json.load(file_)
     for row in data:
-        user = get_user_model().objects.create(
+        user = get_user_model()(
             username=row['user']['username'],
             email=row['user']['email'],
             is_staff=True,

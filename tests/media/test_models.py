@@ -46,9 +46,16 @@ def test_video_rendition_upload_to(video_rendition):
     )
 
 
-def test_video_rendition_thumbnail_upload_to(video_rendition):
+def test_video_rendition_thumbnail_upload_to(
+    video_rendition, simple_uploaded_img_file
+):
     video_rendition_thumbnail = models.VideoRenditionThumbnail.objects.create(
-        video_rendition=video_rendition, time_offset_secs=1
+        video_rendition=video_rendition,
+        time_offset_secs=1,
+        height=10,
+        width=10,
+        ext='.jpg',
+        file=simple_uploaded_img_file,
     )
 
     result = models._video_rendition_thumbnail_upload_to(

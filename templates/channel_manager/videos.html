@@ -1,8 +1,8 @@
 {% extends "./_base_channel_manager.html" %}
-{% load static %}
+{% load static to_json %}
 {% block title %}Channel Videos{% endblock %}
 {% block content %}
-<div class="col">
+<div class="col" id="videos-table">
     <table class="table mt-4">
         <thead>
             <tr class="text-muted">
@@ -28,7 +28,7 @@
                             <div class="content p-2">
                                 <h5 class="m-0 mb-1"><a href="#">{{video.title}}</a></h5>
                                 <div class="metadata">
-                                    <div class="card-text text-muted text-truncate"><a href="#">{{video.description|truncatechars:150}}</a>
+                                    <div class="card-text text-muted text-wrap text-truncate"><a href="#">{{video.description|truncatechars:150}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -42,6 +42,7 @@
                     </div>
                 </td>
                 <td>
+                    <div class="text-muted">{{video.visibility}}</div>
                     <div class="text-muted">Uploading...</div>
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
@@ -53,17 +54,25 @@
                 <td>{{video.view_count}}</td>
                 <td>{{video.comment_count}}</td>
                 <td>{{video.likes_count}}/{{video.dislikes_count}}</td>
-
             </tr>
-
         </tbody>
         {% endfor %}
     </table>
-
 </div>
+
 {% include "../_modals/_modal_video_detail.html" %}
 {% endblock %}
+
 {% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+    var videos = {{ channel_videos | to_json }};
+    app.CreateChannelManagerVideos({
+        element: document.getElementById('videos-table'),
+        videos: videos
+    })
+</script>
+
 <script>
     // TODO: replace with ReactJS component
     $(document).ready(function () {

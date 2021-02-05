@@ -16,12 +16,14 @@ class ChannelContextMixin:
         )
         if include_videos:
             videos = media_services.get_videos(channel_id=channel_id)
-            videos_data = media_serializers.VideoSlimSerializer(
+            videos_data = media_serializers.VideoSummarySerializer(
                 videos, many=True
             ).data
             context['channel_videos'] = videos_data
         channel = services.get_channel(id=channel_id)
-        channel_data = serializers.ChannelSlimSerializer(channel).data
+        channel_data = serializers.ChannelSummarySerializer(
+            instance=channel
+        ).data
         context['channel'] = channel_data
         context['is_owner'] = channel_data['user'] == self.request.user.id
         return context

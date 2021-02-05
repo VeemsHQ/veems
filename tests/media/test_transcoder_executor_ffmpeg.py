@@ -19,7 +19,7 @@ def test_create_segments_for_video(tmpdir, video_with_renditions_and_segments):
     video_path = constants.VIDEO_PATH_1080_30FPS_VERT
     profile = transcoder_profiles.Webm360p
     video, _ = video_with_renditions_and_segments
-    video_rendition = video.videorendition_set.first()
+    video_rendition = video.renditions.first()
     video_rendition_id = video_rendition.id
     video_id = video_rendition.video_id
 
@@ -389,8 +389,8 @@ class TestTranscode:
         assert transcode_job.ended_on
 
         # Check Segments were created
-        assert video_rendition.videorenditionsegment_set.count() > 0
-        for segment in video_rendition.videorenditionsegment_set.all():
+        assert video_rendition.rendition_segments.count() > 0
+        for segment in video_rendition.rendition_segments.all():
             assert segment.segment_number is not None
             assert segment.file
 

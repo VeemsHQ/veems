@@ -44,6 +44,7 @@ class Channel(BaseModel):
     avatar_image = models.ImageField(
         upload_to=_channel_avatar_image_upload_to,
         storage=STORAGE_BACKEND,
+        null=True, blank=True,
     )
     avatar_image_small = ImageSpecField(
         source='avatar_image',
