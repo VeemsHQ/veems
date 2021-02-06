@@ -10,10 +10,14 @@ export const EditVideoButton = ({
   onModalClose,
   onModalOpen,
 }) => {
-  const [channelName, setChannelName] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+  const [visibility, setVisibility] = useState('public');
+
+  const onVisibilityChange = (e) => {
+    setVisibility(e.target.id);
+  };
 
   const renderModal = () => (
     <>
@@ -44,31 +48,28 @@ export const EditVideoButton = ({
                 <Form.Group>
                   <Form.Label>Thumbnail</Form.Label>
 
-                  <div className="thumbnail-grid card-group h-100">
-                    <div
-                      className="bg-secondary thumbnail card d-inline-flex align-items-center justify-content-center"
+                  <div className="thumbnail-grid d-flex align-items-around h-100 border rounded">
+                    <button
+                      type="button"
+                      className="remove-default-style thumbnail d-inline-flex w-100 align-items-center justify-content-center"
                     >
-                      <a href="#" className="text-secondary small"><i
-                        className="material-icons tidy align-middle text-secondary"
-                      >add_photo_alternate
-                      </i>Upload thumbnail
-                      </a>
-                    </div>
-                    <div className="bg-secondary thumbnail card">
+                      <span>
+                        <i
+                          className="material-icons tidy align-middle text-secondary"
+                        >add_photo_alternate
+                        </i>Upload thumbnail
+                      </span>
+                    </button>
+                    <div className="bg-secondary thumbnail">
                       <img
                         src="https://i.ytimg.com/vi/pJkgymyv0_s/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfMf5cCfG3GSPEB1LkYOuXFvgkOw"
                         className="img-fluid h-100"
                       />
                     </div>
                     <div
-                      className="small thumbnail shine card d-inline-flex align-items-center justify-content-center"
+                      className="thumbnail thumbnail-generating w-100 shine d-inline-flex align-items-center justify-content-center"
                     >
-                      Generating...
-                    </div>
-                    <div
-                      className="small thumbnail shine card d-inline-flex align-items-center justify-content-center"
-                    >
-                      Generating...
+                      Auto-generating...
                     </div>
                   </div>
 
@@ -79,8 +80,10 @@ export const EditVideoButton = ({
                   <div className="custom-control custom-radio">
                     <Form.Check
                       type="radio"
-                      id="default-radio"
+                      id="public"
                       label="Public"
+                      checked={visibility === 'public'}
+                      onChange={onVisibilityChange}
                       style={{ paddingLeft: 0 }}
                     />
                   </div>
@@ -88,8 +91,10 @@ export const EditVideoButton = ({
                   <div className="custom-control custom-radio">
                     <Form.Check
                       type="radio"
-                      id="default-radio"
+                      id="private"
                       label="Private"
+                      checked={visibility === 'private'}
+                      onChange={onVisibilityChange}
                       style={{ paddingLeft: 0 }}
                     />
                   </div>

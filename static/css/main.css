@@ -385,6 +385,19 @@ body {
     margin: 0 auto;
 }
 
+button.remove-default-style {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    margin: 0;
+    padding: 0;
+}
+button.remove-default-style:focus {
+    outline: none;
+}
+
 /* Medium devices (tablets, 768px and up) */
 
 @media (min-width: 768px) {
@@ -399,6 +412,13 @@ body {
 
 .video-grid h5 a:hover {
     text-decoration: none;
+}
+
+.thumbnail-generating {
+    max-width: var(--video-thumb-width);
+    height: auto;
+    max-height: var(--video-thumb-height);
+    width: auto;
 }
 
 .thumbnail img {
