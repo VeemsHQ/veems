@@ -30,6 +30,7 @@ const Container = () => {
   return (
     <EditVideoButton
       isModalOpen={modalOpen}
+      isLoading
       onSyncChannel={handleSyncChannel}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}

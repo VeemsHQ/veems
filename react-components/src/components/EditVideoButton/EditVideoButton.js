@@ -9,6 +9,7 @@ export const EditVideoButton = ({
   isModalOpen,
   onModalClose,
   onModalOpen,
+  isLoading,
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -21,6 +22,53 @@ export const EditVideoButton = ({
 
   const renderModal = () => (
     <>
+      {isLoading && (
+        <Modal show={isModalOpen} onHide={onModalClose()}>
+          <Form>
+
+            <Modal.Header closeButton>
+              <Modal.Title className="w-100"><div className="shine d-block w-75" style={{ height: '30px' }} /></Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <div className="row">
+                <div className="col-12 col-lg-8">
+
+                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+                  <div className="shine thumbnail mb-4" style={{ width: '200px', height: '100px' }} />
+                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+
+                </div>
+                <div className="col-12 col-lg-4">
+
+                  <div className="card" style={{ width: '18rem' }}>
+                    <div
+                      className="card-img-top shine d-flex align-items-center justify-content-center"
+                      style={{ width: 'auto', height: '171px' }}
+                    />
+                    <div className="card-body text-secondary bg-light">
+                      <p className="card-text">
+                        <div className="shine d-block w-100" style={{ height: '20px' }} />
+                      </p>
+                      <p className="card-text text-truncate">
+                        <div className="shine d-block w-100" style={{ height: '20px' }} />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Modal.Body>
+
+            <Modal.Footer className="bg-secondary text-muted">
+              <div className="shine d-block w-10 mr-auto" style={{ height: '30px' }} />
+            </Modal.Footer>
+
+          </Form>
+        </Modal>
+      )}
+      {!isLoading && (
       <Modal show={isModalOpen} onHide={onModalClose()}>
         <Form>
 
@@ -144,6 +192,7 @@ export const EditVideoButton = ({
 
         </Form>
       </Modal>
+      )}
     </>
   );
 
