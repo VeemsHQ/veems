@@ -51,7 +51,7 @@ export const EditVideoButton = ({
                       <a href="#" className="text-secondary small"><i
                         className="material-icons tidy align-middle text-secondary"
                       >add_photo_alternate
-                                                                   </i>Upload thumbnail
+                      </i>Upload thumbnail
                       </a>
                     </div>
                     <div className="bg-secondary thumbnail card">
@@ -61,12 +61,12 @@ export const EditVideoButton = ({
                       />
                     </div>
                     <div
-                      className="small thumbnail bg-secondary card d-inline-flex align-items-center justify-content-center"
+                      className="small thumbnail shine card d-inline-flex align-items-center justify-content-center"
                     >
                       Generating...
                     </div>
                     <div
-                      className="small thumbnail bg-secondary card d-inline-flex align-items-center justify-content-center"
+                      className="small thumbnail shine card d-inline-flex align-items-center justify-content-center"
                     >
                       Generating...
                     </div>
@@ -109,7 +109,7 @@ export const EditVideoButton = ({
 
                 <div className="card" style={{ width: '18rem' }}>
                   <div
-                    className="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                    className="card-img-top shine d-flex align-items-center justify-content-center"
                     style={{ width: 'auto', height: '171px' }}
                   >
                     Uploading video…
@@ -133,8 +133,8 @@ export const EditVideoButton = ({
             </div>
           </Modal.Body>
 
-          <Modal.Footer className="bg-secondary">
-            <div className="mr-auto">Status: Uploaded &amp; Processed</div>
+          <Modal.Footer className="bg-secondary text-muted">
+            <div className="mr-auto">Status: Uploaded &amp; Processing</div>
           </Modal.Footer>
 
         </Form>
