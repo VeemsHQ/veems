@@ -5,6 +5,13 @@ import Form from 'react-bootstrap/Form';
 
 import 'regenerator-runtime/runtime.js';
 
+const valueOrEmpty = (value) => ((value !== undefined && value !== null) ? value : '');
+
+const randomItem = (choices) => {
+  const index = Math.floor(Math.random() * choices.length);
+  return choices[index];
+};
+
 export const EditVideoButton = ({
   isModalOpen,
   onModalClose,
@@ -12,21 +19,24 @@ export const EditVideoButton = ({
   isLoading,
   videoData,
 }) => {
-  console.log('got1');
-  console.log(videoData);
   const [title2, setTitle] = useState('');
-  // console.log(title);
-  // console.log('got2');
+  const [description2, setDescription] = useState('');
+  const [tags2, setTags] = useState('');
+  const [visibility2, setVisibility] = useState('public');
 
-  const title = videoData !== null ? videoData.title : '';
-  console.log(title);
-  console.log(title);
-  console.log(title);
+  const title = valueOrEmpty(videoData.title);
+  const description = valueOrEmpty(videoData.description);
+  const tags = valueOrEmpty(videoData.tags);
+  const visibility = valueOrEmpty(videoData.visibility);
+  const primaryThumbnailUrl = videoData.thumbnail_image_medium_url;
 
-  const [description, setDescription] = useState('');
-  const [tags, setTags] = useState('');
-  const [visibility, setVisibility] = useState('public');
-
+  // Find ideal thumbnails to display given available at that time.
+  let renditionThumbnails = [];
+  if (videoData.video_renditions && videoData.video_renditions.length > 0) {
+    renditionThumbnails = videoData.video_renditions.map(
+      (r) => r.rendition_thumbnails.map((t) => t.file)[0],
+    );
+  }
   const onVisibilityChange = (e) => {
     setVisibility(e.target.id);
   };
@@ -61,10 +71,10 @@ export const EditVideoButton = ({
                     />
                     <div className="card-body text-secondary bg-light">
                       <p className="card-text">
-                        <div className="shine d-block w-100" style={{ height: '20px' }} />
+                        <span className="shine d-block w-100" style={{ height: '20px' }} />
                       </p>
                       <p className="card-text text-truncate">
-                        <div className="shine d-block w-100" style={{ height: '20px' }} />
+                        <span className="shine d-block w-100" style={{ height: '20px' }} />
                       </p>
                     </div>
                   </div>
@@ -106,30 +116,68 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Thumbnail</Form.Label>
-
-                  <div className="thumbnail-grid d-flex align-items-around h-100 border rounded">
+                  <div className="mb-1 text-muted" style={{ fontSize: '0.9em' }}>Select or upload a thumbnail that best shows what's in your video.</div>
+                  <div className="thumbnail-grid h-100">
                     <button
                       type="button"
-                      className="remove-default-style thumbnail d-inline-flex w-100 align-items-center justify-content-center"
+                      className="remove-default-style thumbnail border rounded thumbnail-small d-inline-flex align-items-center justify-content-center mr-2"
                     >
-                      <span>
+                      <span className="d-flex flex-column text-muted">
                         <i
                           className="material-icons tidy align-middle text-secondary"
                         >add_photo_alternate
                         </i>Upload thumbnail
                       </span>
                     </button>
-                    <div className="bg-secondary thumbnail">
-                      <img
-                        src="https://i.ytimg.com/vi/pJkgymyv0_s/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLCfMf5cCfG3GSPEB1LkYOuXFvgkOw"
-                        className="img-fluid h-100"
-                      />
-                    </div>
-                    <div
-                      className="thumbnail thumbnail-generating w-100 shine d-inline-flex align-items-center justify-content-center"
-                    >
-                      Auto-generating...
-                    </div>
+                    {renditionThumbnails.length > 0 && (
+                      <>
+                        <div className="thumbnail thumbnail-small mr-2 rounded">
+                          <img
+                            src={randomItem(renditionThumbnails)}
+                            alt=""
+                            className="img-fluid h-100"
+                          />
+                        </div>
+                        <div className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                          <img
+                            src={randomItem(renditionThumbnails)}
+                            alt=""
+                            className="img-fluid h-100"
+                          />
+                        </div>
+                        <div className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                          <img
+                            src={randomItem(renditionThumbnails)}
+                            alt=""
+                            className="img-fluid h-100"
+                          />
+                        </div>
+                        <div className="thumbnail thumbnail-small thumbnail-unselected rounded">
+                          <img
+                            src={randomItem(renditionThumbnails)}
+                            alt=""
+                            className="img-fluid h-100"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {renditionThumbnails.length === 0
+                    && (
+                      <>
+                        <div
+                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                        />
+                        <div
+                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                        />
+                        <div
+                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                        />
+                        <div
+                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center"
+                        />
+                      </>
+                    )}
                   </div>
 
                 </Form.Group>
@@ -172,12 +220,21 @@ export const EditVideoButton = ({
               <div className="col-12 col-lg-4">
 
                 <div className="card" style={{ width: '18rem' }}>
-                  <div
-                    className="card-img-top shine d-flex align-items-center justify-content-center"
-                    style={{ width: 'auto', height: '171px' }}
-                  >
-                    Uploading video…
-                  </div>
+                  {!primaryThumbnailUrl && (
+                    <div
+                      className="card-img-top shine d-flex align-items-center justify-content-center"
+                    >
+                      Uploading video…
+                    </div>
+                  )}
+                  {primaryThumbnailUrl && (
+                    <div
+                      className="card-img-top d-flex align-items-center justify-content-center"
+                      style={{ width: 'auto', height: '171px' }}
+                    >
+                      <img src={primaryThumbnailUrl} alt="" className="img-fluid w-100 h-100" />
+                    </div>
+                  )}
                   <div className="card-body text-secondary bg-light">
                     <p className="card-text">Video link<br />
                       <a

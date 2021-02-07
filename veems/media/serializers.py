@@ -76,7 +76,20 @@ class VideoLikeDislikeSerializer(CustomModelSerializer):
         }
 
 
+class VideoRenditionThumbnailSerializer(CustomModelSerializer):
+    # TODO: test
+
+    class Meta:
+        model = models.VideoRenditionThumbnail
+        fields = ['file']
+
+
 class VideoRenditionSerializer(CustomModelSerializer):
+    # TODO: test
+    rendition_thumbnails = VideoRenditionThumbnailSerializer(
+        many=True, read_only=True
+    )
+
     class Meta:
         model = models.VideoRendition
         exclude = ['file'] + DEFAULT_EXCLUDE

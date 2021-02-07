@@ -17,7 +17,7 @@ const { store, persistor } = configureStore.getInstance();
 const Container = ({ videoId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [videoData, setVideoData] = useState(null);
+  const [videoData, setVideoData] = useState({});
   const handleSyncChannel = () => {
     // todo when server calls in place
     // syncChannelRequest();
@@ -34,9 +34,8 @@ const Container = ({ videoId }) => {
     setIsLoading(false);
   };
 
-  console.log('fed1');
+  console.log(videoId);
   console.log(videoData);
-  console.log('fed2');
 
   return (
     <EditVideoButton

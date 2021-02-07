@@ -1,6 +1,8 @@
 :root {
     --video-thumb-width: 240px;
     --video-thumb-height: 134px;
+    --video-thumb-small-width: 127px;
+    --video-thumb-small-height: 70px;
     --video-thumb-large-width: 360px;
     --video-thumb-large-height: 200px;
     --search-thumb-width: 243px;
@@ -356,10 +358,20 @@ body {
     border-radius: 4px;
 }
 
-.thumbnail img {
-    width: inherit;
-    height: inherit;
+.thumbnail-medium {
+    width: var(--video-thumb-width);
+    height: var(--video-thumb-height);
+    min-width: var(--video-thumb-width);
+    min-height: var(--video-thumb-height);
 }
+
+.thumbnail-small {
+    width: var(--video-thumb-small-width);
+    height: var(--video-thumb-small-height);
+    min-width: var(--video-thumb-small-width);
+    min-height: var(--video-thumb-small-height);
+}
+
 
 .thumbnail-large {
     width: var(--video-thumb-large-width);
@@ -423,10 +435,10 @@ button.remove-default-style:focus {
 
 .thumbnail img {
     display: block;
-    max-width: var(--video-thumb-width);
-    height: auto;
-    max-height: var(--video-thumb-height);
-    width: auto;
+    /* max-width: var(--video-thumb-width);
+    max-height: var(--video-thumb-height); */
+    height: inherit;
+    /* width: auto; */
     margin: 0 auto;
 }
 
@@ -665,6 +677,19 @@ hr {
 
 .metrics-table {
     line-height: 2;
+}
+
+.thumbnail-grid {
+    display:flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.thumbnail-unselected {
+    opacity:0.5;
+}
+.thumbnail-unselected:hover {
+    opacity:1;
 }
 
 .thumbnail-grid .card {
