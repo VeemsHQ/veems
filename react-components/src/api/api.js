@@ -51,6 +51,15 @@ export const getAllVideosForChannelRequest = async (channelId) => {
   }
 };
 
+export const getVideoById = async (videoId) => {
+  try {
+    const res = await API.get(`${serverURL}/api/v1/video/${videoId}/`);
+    return res;
+  } catch (err) {
+    return err;
+  }
+};
+
 export const getChannelsRequest = async () => {
   try {
     const res = await API.get(`${serverURL}/api/v1/channel/`);

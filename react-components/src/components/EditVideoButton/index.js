@@ -10,11 +10,14 @@ import EditVideoButton from './EditVideoButton';
 import {
   setChannelSyncModalOpenAction,
 } from '../../actions/index';
+import { getVideoById } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
-const Container = () => {
+const Container = ({ videoId }) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [videoData, setVideoData] = useState(null);
   const handleSyncChannel = () => {
     // todo when server calls in place
     // syncChannelRequest();
@@ -22,15 +25,24 @@ const Container = () => {
 
   const handleEditVideoModalClose = () => {
     setModalOpen(false);
+    setIsLoading(true);
   };
-  const handleEditVideoModalOpen = () => {
+  const handleEditVideoModalOpen = async () => {
     setModalOpen(true);
+    const videoResponse = await getVideoById(videoId);
+    setVideoData(videoResponse.data);
+    setIsLoading(false);
   };
+
+  console.log('fed1');
+  console.log(videoData);
+  console.log('fed2');
 
   return (
     <EditVideoButton
       isModalOpen={modalOpen}
-      isLoading
+      isLoading={isLoading}
+      videoData={videoData}
       onSyncChannel={handleSyncChannel}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}

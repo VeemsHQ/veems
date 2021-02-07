@@ -120,6 +120,7 @@ export const ChannelManagerVideos = ({
                   </div>
                   <div className="overlay align-items-center">
                     <EditVideoButtonContainer
+                      videoId={video.id}
                       isModalOpen={isModalOpen}
                       onModalOpen={() => onModalOpen}
                       onModalClose={() => onModalClose}

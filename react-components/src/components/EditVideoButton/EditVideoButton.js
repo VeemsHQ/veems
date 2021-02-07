@@ -10,8 +10,19 @@ export const EditVideoButton = ({
   onModalClose,
   onModalOpen,
   isLoading,
+  videoData,
 }) => {
-  const [title, setTitle] = useState('');
+  console.log('got1');
+  console.log(videoData);
+  const [title2, setTitle] = useState('');
+  // console.log(title);
+  // console.log('got2');
+
+  const title = videoData !== null ? videoData.title : '';
+  console.log(title);
+  console.log(title);
+  console.log(title);
+
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
   const [visibility, setVisibility] = useState('public');
