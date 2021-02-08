@@ -13,17 +13,21 @@ const randomItem = (choices) => {
 };
 
 export const EditVideoButton = ({
+  isSaving,
   isModalOpen,
   onModalClose,
   onModalOpen,
   isLoading,
   videoData,
+  handleChange,
 }) => {
+  console.log('btn render');
   const [title2, setTitle] = useState('');
   const [description2, setDescription] = useState('');
   const [tags2, setTags] = useState('');
   const [visibility2, setVisibility] = useState('public');
 
+  const videoId = valueOrEmpty(videoData.id);
   const title = valueOrEmpty(videoData.title);
   const description = valueOrEmpty(videoData.description);
   const tags = valueOrEmpty(videoData.tags);
@@ -37,8 +41,8 @@ export const EditVideoButton = ({
       (r) => r.rendition_thumbnails.map((t) => t.file)[0],
     );
   }
-  const onVisibilityChange = (e) => {
-    setVisibility(e.target.id);
+  const onVisibilityChange = async (e) => {
+    handleChange({ visibility: e.target.name });
   };
 
   const renderModal = () => (
@@ -94,7 +98,7 @@ export const EditVideoButton = ({
         <Form>
 
           <Modal.Header closeButton>
-            <Modal.Title>Video Details</Modal.Title>
+            <Modal.Title>Video Details {isSaving && 'Saving...'}</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -188,6 +192,7 @@ export const EditVideoButton = ({
                     <Form.Check
                       type="radio"
                       id="public"
+                      name="public"
                       label="Public"
                       checked={visibility === 'public'}
                       onChange={onVisibilityChange}
@@ -199,6 +204,7 @@ export const EditVideoButton = ({
                     <Form.Check
                       type="radio"
                       id="private"
+                      name="private"
                       label="Private"
                       checked={visibility === 'private'}
                       onChange={onVisibilityChange}
@@ -238,8 +244,8 @@ export const EditVideoButton = ({
                   <div className="card-body text-secondary bg-light">
                     <p className="card-text">Video link<br />
                       <a
-                        href="https://veems.com/v/UCASvHD"
-                      >https://veems.com/v/UCASvHD
+                        href={`https://veems.com/v/${videoId}`}
+                      >{`https://veems.com/v/${videoId}`}
                       </a>
                     </p>
                     <p className="card-text text-truncate">Filename<br />

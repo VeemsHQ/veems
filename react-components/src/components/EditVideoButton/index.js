@@ -10,17 +10,26 @@ import EditVideoButton from './EditVideoButton';
 import {
   setChannelSyncModalOpenAction,
 } from '../../actions/index';
-import { getVideoById } from '../../api/api';
+import { getVideoById, updateVideo } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
 const Container = ({ videoId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
-  const handleSyncChannel = () => {
-    // todo when server calls in place
-    // syncChannelRequest();
+
+  const handleVideoUpdate = async (updatedFields) => {
+    // To give better UX, update the state before the server request.
+    setIsSaving(true);
+    let newData = Object.create(videoData);
+    newData = Object.assign(newData, updatedFields);
+    setVideoData(newData);
+    // Now do it for real.
+    const videoResponse = await updateVideo(videoId, updatedFields);
+    setVideoData(videoResponse.data);
+    setIsSaving(false);
   };
 
   const handleEditVideoModalClose = () => {
@@ -34,17 +43,15 @@ const Container = ({ videoId }) => {
     setIsLoading(false);
   };
 
-  console.log(videoId);
-  console.log(videoData);
-
   return (
     <EditVideoButton
+      isSaving={isSaving}
       isModalOpen={modalOpen}
       isLoading={isLoading}
       videoData={videoData}
-      onSyncChannel={handleSyncChannel}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}
+      handleChange={handleVideoUpdate}
     />
   );
 };

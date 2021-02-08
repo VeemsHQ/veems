@@ -60,6 +60,15 @@ export const getVideoById = async (videoId) => {
   }
 };
 
+export const updateVideo = async (videoId, data) => {
+  try {
+    const res = await API.put(`${serverURL}/api/v1/video/${videoId}/`, data);
+    return res;
+  } catch (err) {
+    return err;
+  }
+};
+
 export const getChannelsRequest = async () => {
   try {
     const res = await API.get(`${serverURL}/api/v1/channel/`);
