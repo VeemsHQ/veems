@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
+import debounce from 'lodash.debounce';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 
@@ -19,20 +20,17 @@ export const EditVideoButton = ({
   onModalOpen,
   isLoading,
   videoData,
-  handleChange,
+  onFormFieldChange,
 }) => {
-  console.log('btn render');
-  const [title2, setTitle] = useState('');
-  const [description2, setDescription] = useState('');
-  const [tags2, setTags] = useState('');
-  const [visibility2, setVisibility] = useState('public');
-
-  const videoId = valueOrEmpty(videoData.id);
-  const title = valueOrEmpty(videoData.title);
-  const description = valueOrEmpty(videoData.description);
-  const tags = valueOrEmpty(videoData.tags);
-  const visibility = valueOrEmpty(videoData.visibility);
-  const primaryThumbnailUrl = videoData.thumbnail_image_medium_url;
+  const saveStatus = isSaving ? 'Saving...' : 'Saved';
+  const [title, setTitle] = useState(valueOrEmpty(videoData.title));
+  const [videoId, setVideoId] = useState(valueOrEmpty(videoData.id));
+  const [description, setDescription] = useState(valueOrEmpty(videoData.description));
+  const [tags, setTags] = useState(valueOrEmpty(videoData.tags));
+  console.log(videoData.visibility);
+  const [visibility, setVisibility] = useState(valueOrEmpty(videoData.visibility));
+  console.log(visibility);
+  const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(videoData.thumbnail_image_medium_url);
 
   // Find ideal thumbnails to display given available at that time.
   let renditionThumbnails = [];
@@ -41,9 +39,26 @@ export const EditVideoButton = ({
       (r) => r.rendition_thumbnails.map((t) => t.file)[0],
     );
   }
+
+  const debouncedOnFormFieldChange = useCallback(
+    debounce((data) => onFormFieldChange(data), 1000),
+    [], // will be created only once initially
+  );
+
   const onVisibilityChange = async (e) => {
-    handleChange({ visibility: e.target.name });
+    debouncedOnFormFieldChange({ visibility: e.target.name });
   };
+
+  const handleFieldChange = (e) => {
+    console.log('handleFieldChange');
+    // TODO: on change here, also update ChannelManagerVideos
+    // console.log(e.target.name);
+    // console.log(e.target.value);
+    // debouncedOnFormFieldChange({ [e.target.name]: e.target.value });
+    // setTitle(e.target.value);
+  };
+
+  console.log(title);
 
   const renderModal = () => (
     <>
@@ -98,7 +113,7 @@ export const EditVideoButton = ({
         <Form>
 
           <Modal.Header closeButton>
-            <Modal.Title>Video Details {isSaving && 'Saving...'}</Modal.Title>
+            <Modal.Title>Video Details</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -107,15 +122,15 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Title</Form.Label>
-                  <Form.Control onChange={(e) => setTitle(e.target.value)} type="text" value={title} placeholder="Add a title that describes your video." required />
+                  <Form.Control onChange={(e) => handleFieldChange(e)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
                   <Form.Control.Feedback type="invalid">
                     Please provide a title.
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="exampleForm.ControlTextarea1">
+                <Form.Group>
                   <Form.Label>Description</Form.Label>
-                  <Form.Control as="textarea" rows={3} onChange={(e) => setDescription(e.target.value)} value={description} placeholder="Tell viewers about your video." />
+                  <Form.Control as="textarea" rows={3} onChange={(e) => handleFieldChange(e)} value={description} placeholder="Tell viewers about your video." />
                 </Form.Group>
 
                 <Form.Group>
@@ -215,7 +230,7 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Tags</Form.Label>
-                  <Form.Control onChange={(e) => setTags(e.target.value)} type="text" value={tags} placeholder="Up to 3 tags to describe your video." />
+                  <Form.Control onChange={(e) => handleFieldChange(e)} type="text" value={tags} placeholder="Up to 3 tags to describe your video." />
                   <div className="mt-1 mx-2 text-muted" style={{ fontSize: '0.9em' }}>Enter a comma after each tag.</div>
                   <Form.Control.Feedback type="invalid">
                     Please provide some tags.
@@ -225,17 +240,17 @@ export const EditVideoButton = ({
               </div>
               <div className="col-12 col-lg-4">
 
-                <div className="card" style={{ width: '18rem' }}>
+                <div className="card ml-0 ml-lg-auto" style={{ width: '18rem' }}>
                   {!primaryThumbnailUrl && (
                     <div
-                      className="card-img-top shine d-flex align-items-center justify-content-center"
+                      className="thumbnail thumbnail-medium w-100 shine d-flex align-items-center justify-content-center"
                     >
                       Uploading video…
                     </div>
                   )}
                   {primaryThumbnailUrl && (
                     <div
-                      className="card-img-top d-flex align-items-center justify-content-center"
+                      className="thumbnail thumbnail-medium w-100 d-flex align-items-center justify-content-center"
                       style={{ width: 'auto', height: '171px' }}
                     >
                       <img src={primaryThumbnailUrl} alt="" className="img-fluid w-100 h-100" />
@@ -262,6 +277,7 @@ export const EditVideoButton = ({
 
           <Modal.Footer className="bg-secondary text-muted">
             <div className="mr-auto">Status: Uploaded &amp; Processing</div>
+            <div className={`ml-auto text-light rounded py-1 px-2 ${isSaving ? 'bg-info' : 'bg-success'}`}>{saveStatus}</div>
           </Modal.Footer>
 
         </Form>

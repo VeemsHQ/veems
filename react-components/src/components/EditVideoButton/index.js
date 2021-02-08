@@ -51,7 +51,7 @@ const Container = ({ videoId }) => {
       videoData={videoData}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}
-      handleChange={handleVideoUpdate}
+      onFormFieldChange={handleVideoUpdate}
     />
   );
 };
