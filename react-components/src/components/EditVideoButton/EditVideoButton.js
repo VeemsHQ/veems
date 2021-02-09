@@ -22,14 +22,25 @@ export const EditVideoButton = ({
   videoData,
   onFormFieldChange,
 }) => {
-  console.log(videoData);
   const saveStatus = isSaving ? 'Saving...' : 'Saved';
-  const [title, setTitle] = useState(valueOrEmpty(videoData.title));
-  const [videoId, setVideoId] = useState(valueOrEmpty(videoData.id));
-  const [description, setDescription] = useState(valueOrEmpty(videoData.description));
-  const [tags, setTags] = useState(valueOrEmpty(videoData.tags));
-  const [visibility, setVisibility] = useState(valueOrEmpty(videoData.visibility));
-  const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(videoData.thumbnail_image_medium_url);
+  const videoId = valueOrEmpty(videoData.id);
+  const initialTitle = valueOrEmpty(videoData.title);
+  const initialDescription = valueOrEmpty(videoData.description);
+  const initialTags = valueOrEmpty(videoData.tags);
+  const initialVisibility = valueOrEmpty(videoData.visibility);
+  const primaryThumbnailUrl = videoData.thumbnail_image_medium_url;
+  const [title, setTitle] = useState(initialTitle);
+  const [description, setDescription] = useState(initialDescription);
+  console.log(`initialTags: ${initialTags}`);
+  const [tags, setTags] = useState(initialTags);
+  const [visibility, setVisibility] = useState(initialVisibility);
+
+  React.useEffect(() => {
+    setTitle(initialTitle);
+    setDescription(initialDescription);
+    setTags(initialTags);
+    setVisibility(initialVisibility);
+  }, [initialTitle, initialDescription, initialTags, initialVisibility]);
 
   // Find ideal thumbnails to display given available at that time.
   let renditionThumbnails = [];
@@ -39,25 +50,30 @@ export const EditVideoButton = ({
     );
   }
 
-  // const debouncedOnFormFieldChange = useCallback(
-  //   debounce((data) => onFormFieldChange(data), 1000),
-  //   [], // will be created only once initially
-  // );
+  const debouncedOnFormFieldChange = useCallback(
+    debounce((data) => onFormFieldChange(data), 1000),
+    [],
+  );
 
   const onVisibilityChange = async (e) => {
     debouncedOnFormFieldChange({ visibility: e.target.name });
   };
 
-  const handleFieldChange = (e) => {
-    console.log('handleFieldChange');
-    // TODO: on change here, also update ChannelManagerVideos
-    // console.log(e.target.name);
-    // console.log(e.target.value);
-    // debouncedOnFormFieldChange({ [e.target.name]: e.target.value });
-    // setTitle(e.target.value);
+  const onTagsChange = async (e) => {
+    const tags = e.target.value;
+    const tagsArray = tags.split(',').map((e) => e.trim());
+    debouncedOnFormFieldChange({ tags: tagsArray });
+    setTags(tags);
   };
 
-  console.log(title);
+  const handleFieldChange = (e, setterFunc) => {
+    // TODO: on change here, also update ChannelManagerVideos
+    console.log('handleFieldChange');
+    console.log(e.target.name);
+    console.log(e.target.value);
+    debouncedOnFormFieldChange({ [e.target.name]: e.target.value });
+    setterFunc(e.target.value);
+  };
 
   const renderModal = () => (
     <>
@@ -121,7 +137,7 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Title</Form.Label>
-                  <Form.Control onChange={(e) => handleFieldChange(e)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
+                  <Form.Control onChange={(e) => handleFieldChange(e, setTitle)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
                   <Form.Control.Feedback type="invalid">
                     Please provide a title.
                   </Form.Control.Feedback>
@@ -129,7 +145,7 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Description</Form.Label>
-                  <Form.Control as="textarea" rows={3} onChange={(e) => handleFieldChange(e)} value={description} placeholder="Tell viewers about your video." />
+                  <Form.Control as="textarea" rows={3} onChange={(e) => handleFieldChange(e, setDescription)} name="description" value={description} placeholder="Tell viewers about your video." />
                 </Form.Group>
 
                 <Form.Group>
@@ -229,7 +245,7 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Tags</Form.Label>
-                  <Form.Control onChange={(e) => handleFieldChange(e)} type="text" value={tags} placeholder="Up to 3 tags to describe your video." />
+                  <Form.Control onChange={(e) => onTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
                   <div className="mt-1 mx-2 text-muted" style={{ fontSize: '0.9em' }}>Enter a comma after each tag.</div>
                   <Form.Control.Feedback type="invalid">
                     Please provide some tags.
