@@ -22,14 +22,13 @@ export const EditVideoButton = ({
   videoData,
   onFormFieldChange,
 }) => {
+  console.log(videoData);
   const saveStatus = isSaving ? 'Saving...' : 'Saved';
   const [title, setTitle] = useState(valueOrEmpty(videoData.title));
   const [videoId, setVideoId] = useState(valueOrEmpty(videoData.id));
   const [description, setDescription] = useState(valueOrEmpty(videoData.description));
   const [tags, setTags] = useState(valueOrEmpty(videoData.tags));
-  console.log(videoData.visibility);
   const [visibility, setVisibility] = useState(valueOrEmpty(videoData.visibility));
-  console.log(visibility);
   const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(videoData.thumbnail_image_medium_url);
 
   // Find ideal thumbnails to display given available at that time.
@@ -40,10 +39,10 @@ export const EditVideoButton = ({
     );
   }
 
-  const debouncedOnFormFieldChange = useCallback(
-    debounce((data) => onFormFieldChange(data), 1000),
-    [], // will be created only once initially
-  );
+  // const debouncedOnFormFieldChange = useCallback(
+  //   debounce((data) => onFormFieldChange(data), 1000),
+  //   [], // will be created only once initially
+  // );
 
   const onVisibilityChange = async (e) => {
     debouncedOnFormFieldChange({ visibility: e.target.name });
