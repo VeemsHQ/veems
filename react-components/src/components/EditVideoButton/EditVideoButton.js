@@ -31,7 +31,6 @@ export const EditVideoButton = ({
   const primaryThumbnailUrl = videoData.thumbnail_image_medium_url;
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
-  console.log(`initialTags: ${initialTags}`);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
 
@@ -51,27 +50,24 @@ export const EditVideoButton = ({
   }
 
   const debouncedOnFormFieldChange = useCallback(
-    debounce((data) => onFormFieldChange(data), 1000),
+    debounce((videoData, data) => onFormFieldChange(videoData, data), 1000),
     [],
   );
 
   const onVisibilityChange = async (e) => {
-    debouncedOnFormFieldChange({ visibility: e.target.name });
+    debouncedOnFormFieldChange(videoData, { visibility: e.target.name });
   };
 
   const onTagsChange = async (e) => {
     const tags = e.target.value;
     const tagsArray = tags.split(',').map((e) => e.trim());
-    debouncedOnFormFieldChange({ tags: tagsArray });
+    debouncedOnFormFieldChange(videoData, { tags: tagsArray });
     setTags(tags);
   };
 
   const handleFieldChange = (e, setterFunc) => {
     // TODO: on change here, also update ChannelManagerVideos
-    console.log('handleFieldChange');
-    console.log(e.target.name);
-    console.log(e.target.value);
-    debouncedOnFormFieldChange({ [e.target.name]: e.target.value });
+    debouncedOnFormFieldChange(videoData, { [e.target.name]: e.target.value });
     setterFunc(e.target.value);
   };
 

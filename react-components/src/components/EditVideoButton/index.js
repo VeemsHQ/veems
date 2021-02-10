@@ -19,12 +19,16 @@ const Container = ({ videoId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
+  console.log('1');
+  console.log(videoData);
+  console.log('2');
 
-  const handleVideoUpdate = async (updatedFields) => {
+  const handleVideoUpdate = async (videoData, updatedFields) => {
     // To give better UX, update the state before the server request.
     setIsSaving(true);
     let newData = Object.create(videoData);
     newData = Object.assign(newData, updatedFields);
+    console.log(newData);
     setVideoData(newData);
     // Now do it for real.
     const videoResponse = await updateVideo(videoId, updatedFields);
@@ -39,8 +43,8 @@ const Container = ({ videoId }) => {
   const handleEditVideoModalOpen = async () => {
     setModalOpen(true);
     const videoResponse = await getVideoById(videoId);
-    setVideoData(videoResponse.data);
     setIsLoading(false);
+    setVideoData(videoResponse.data);
   };
 
   return (
