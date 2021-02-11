@@ -56,7 +56,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail  d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />
@@ -79,7 +79,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail  d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />

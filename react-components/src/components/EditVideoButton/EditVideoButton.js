@@ -21,6 +21,7 @@ export const EditVideoButton = ({
   isLoading,
   videoData,
   onFormFieldChange,
+  apiErrors,
 }) => {
   const saveStatus = isSaving ? 'Saving...' : 'Saved';
   const videoId = valueOrEmpty(videoData.id);
@@ -55,7 +56,7 @@ export const EditVideoButton = ({
   );
 
   const onVisibilityChange = async (e) => {
-    debouncedOnFormFieldChange(videoData, { visibility: e.target.name });
+    onFormFieldChange(videoData, { visibility: e.target.name });
   };
 
   const onTagsChange = async (e) => {
@@ -133,15 +134,15 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Title</Form.Label>
-                  <Form.Control onChange={(e) => handleFieldChange(e, setTitle)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
+                  <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.title : false)} onChange={(e) => handleFieldChange(e, setTitle)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
                   <Form.Control.Feedback type="invalid">
-                    Please provide a title.
+                    Please provide a title, up to 500 characters in length.
                   </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group>
                   <Form.Label>Description</Form.Label>
-                  <Form.Control as="textarea" rows={3} onChange={(e) => handleFieldChange(e, setDescription)} name="description" value={description} placeholder="Tell viewers about your video." />
+                  <Form.Control as="textarea" isInvalid={Boolean(apiErrors ? apiErrors.description : false)} rows={3} onChange={(e) => handleFieldChange(e, setDescription)} name="description" value={description} placeholder="Tell viewers about your video." />
                 </Form.Group>
 
                 <Form.Group>
@@ -241,7 +242,7 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Tags</Form.Label>
-                  <Form.Control onChange={(e) => onTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
+                  <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.tags : false)} onChange={(e) => onTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
                   <div className="mt-1 mx-2 text-muted" style={{ fontSize: '0.9em' }}>Enter a comma after each tag.</div>
                   <Form.Control.Feedback type="invalid">
                     Please provide some tags.
@@ -288,7 +289,8 @@ export const EditVideoButton = ({
 
           <Modal.Footer className="bg-secondary text-muted">
             <div className="mr-auto">Status: Uploaded &amp; Processing</div>
-            <div className={`ml-auto text-light rounded py-1 px-2 ${isSaving ? 'bg-info' : 'bg-success'}`}>{saveStatus}</div>
+            <div className="ml-auto py-1 px-2 text-danger">{apiErrors ? 'Please correct the form errors shown above and resubmit.' : ''}</div>
+            <div className={`text-light rounded py-1 px-2 ${isSaving ? 'bg-info' : 'bg-success'}`}>{saveStatus}</div>
           </Modal.Footer>
 
         </Form>

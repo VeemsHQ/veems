@@ -450,6 +450,7 @@ button.remove-default-style:focus {
     position: relative;
     height: 94px;
     width: 168px;
+    min-width: 168px;
 }
 
 .select2-container {

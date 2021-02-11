@@ -3,6 +3,7 @@ import {
   setChannelsAction,
   setChannelSyncModalOpenAction,
   setChannelsDbStaleAction,
+  fetchActiveChannelVideosAction,
 } from './ChannelManager';
 import {
   setSessionAction,
@@ -14,4 +15,5 @@ export {
   setChannelSyncModalOpenAction,
   setChannelsDbStaleAction,
   setSessionAction,
+  fetchActiveChannelVideosAction,
 };

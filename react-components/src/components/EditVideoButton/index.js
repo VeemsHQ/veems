@@ -9,31 +9,37 @@ import EditVideoButton from './EditVideoButton';
 
 import {
   setChannelSyncModalOpenAction,
+  fetchActiveChannelVideosAction,
 } from '../../actions/index';
 import { getVideoById, updateVideo } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
-const Container = ({ videoId }) => {
+const Container = ({ videoId, fetchActiveChannelVideos }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
-  console.log('1');
-  console.log(videoData);
-  console.log('2');
+  const [apiErrors, setApiErrors] = useState(null);
 
   const handleVideoUpdate = async (videoData, updatedFields) => {
     // To give better UX, update the state before the server request.
     setIsSaving(true);
     let newData = Object.create(videoData);
     newData = Object.assign(newData, updatedFields);
-    console.log(newData);
     setVideoData(newData);
     // Now do it for real.
-    const videoResponse = await updateVideo(videoId, updatedFields);
-    setVideoData(videoResponse.data);
-    setIsSaving(false);
+    const { response, data } = await updateVideo(videoId, updatedFields);
+    if (response?.status === 400) {
+      setApiErrors(response?.data);
+      setIsSaving(false);
+    } else {
+      setApiErrors(null);
+      setVideoData(data);
+      setIsSaving(false);
+      // Update the Channel Videos list on the page beneath
+      await fetchActiveChannelVideos(videoData.channel_id, false);
+    }
   };
 
   const handleEditVideoModalClose = () => {
@@ -43,8 +49,8 @@ const Container = ({ videoId }) => {
   const handleEditVideoModalOpen = async () => {
     setModalOpen(true);
     const videoResponse = await getVideoById(videoId);
-    setIsLoading(false);
     setVideoData(videoResponse.data);
+    setIsLoading(false);
   };
 
   return (
@@ -53,6 +59,7 @@ const Container = ({ videoId }) => {
       isModalOpen={modalOpen}
       isLoading={isLoading}
       videoData={videoData}
+      apiErrors={apiErrors}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}
       onFormFieldChange={handleVideoUpdate}
@@ -64,13 +71,11 @@ const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
     setChannelSyncModalOpen: setChannelSyncModalOpenAction,
+    fetchActiveChannelVideos: fetchActiveChannelVideosAction,
   }, dispatch),
 });
 
-const mapStateToProps = (state) => ({
-});
-
-export const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
+export const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
 // NOTE: This does not render to the DOM like other components.
 export const EditVideoButtonContainer = ({
