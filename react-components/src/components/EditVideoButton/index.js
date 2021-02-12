@@ -13,7 +13,9 @@ import {
   createToastAction,
 } from '../../actions/index';
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
-import { getVideoById, updateVideo, updateVideoCustomThumbnail } from '../../api/api';
+import {
+  getVideoById, updateVideo, updateVideoCustomThumbnail, setExistingThumbnailAsPrimary,
+} from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -36,9 +38,18 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
-  const updateParentState = async (channelId) => {
+  const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
-    await fetchActiveChannelVideos(channelId, false);
+    fetchActiveChannelVideos(channelId, false);
+  };
+
+  const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
+    setIsThumbUploading(true);
+    const videoId = videoData.id;
+    const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
+    setVideoData(data);
+    setIsThumbUploading(false);
+    updateParentState(data.channel_id);
   };
 
   const handleVideoUpdate = async (videoData, updatedFields = null) => {
@@ -63,7 +74,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
         createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
         setApiErrors(null);
         setVideoData(data);
-        await updateParentState(data.channel_id);
+        updateParentState(data.channel_id);
       }
     }
   };
@@ -92,7 +103,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     }
     setIsThumbUploading(false);
     createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
-    await updateParentState(videoData.channel_id);
+    updateParentState(videoData.channel_id);
   };
 
   return (
@@ -108,6 +119,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
       onModalClose={() => handleEditVideoModalClose}
       onFormFieldChange={handleVideoUpdate}
       onInputThumbnailChange={handleInputThumbnailChange}
+      onSetExistingThumbnailAsPrimary={handleSetExistingThumbnailAsPrimary}
     />
   );
 };

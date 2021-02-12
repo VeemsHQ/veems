@@ -24,6 +24,7 @@ export const EditVideoButton = ({
   videoData,
   onFormFieldChange,
   onInputThumbnailChange,
+  onSetExistingThumbnailAsPrimary,
   apiErrors,
 }) => {
   const saveButtonText = isSaving ? 'Saving...' : 'Save Changes';
@@ -50,8 +51,20 @@ export const EditVideoButton = ({
   let renditionThumbnails = [];
   if (videoData.video_renditions && videoData.video_renditions.length > 0) {
     renditionThumbnails = videoData.video_renditions.map(
-      (r) => r.rendition_thumbnails.map((t) => t.file)[0],
+      (r) => r.rendition_thumbnails.map((t) => t)[0],
     );
+  }
+
+  let defaultThumbs = [];
+  if (renditionThumbnails.length >= 3) {
+    const thumb0 = randomItem(renditionThumbnails);
+    const thumb1 = randomItem(renditionThumbnails);
+    const thumb2 = randomItem(renditionThumbnails);
+    defaultThumbs = [
+      [thumb0.id, thumb0.file],
+      [thumb1.id, thumb1.file],
+      [thumb2.id, thumb2.file],
+    ];
   }
 
   const debouncedOnFormFieldChange = useCallback(
@@ -83,6 +96,11 @@ export const EditVideoButton = ({
   const handleUploadThumbButtonClick = (e) => {
     e.preventDefault();
     inputThumbnailFile.current.click();
+  };
+
+  const handleExistingThumbnailClick = async (e) => {
+    const videoRenditionThumbnailId = e.target.dataset.id;
+    onSetExistingThumbnailAsPrimary(videoRenditionThumbnailId);
   };
 
   const renderModal = () => (
@@ -177,13 +195,13 @@ export const EditVideoButton = ({
                       </span>
                     </button>
                     <input type="file" onChange={onInputThumbnailChange} id="custom_thumbnail_image" ref={inputThumbnailFile} className="d-none" />
-                    {renditionThumbnails.length > 0 && (
+                    {defaultThumbs.length > 0 && (
                       <>
                         {!isThumbnailUploading && (
-                        <button type="button" className="thumbnail thumbnail-small mr-2 rounded">
+                        <button type="button" className="thumbnail thumbnail-small thumbnail-selected mr-2 rounded d-flex align-items-center">
                           <img
                             src={primaryThumbnailUrl}
-                            alt=""
+                            alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
@@ -193,30 +211,33 @@ export const EditVideoButton = ({
                           className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
                         />
                         )}
-                        <button type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                        <button data-id={defaultThumbs[0][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
-                            src={randomItem(renditionThumbnails)}
-                            alt=""
+                            src={defaultThumbs[0][1]}
+                            data-id={defaultThumbs[0][0]}
+                            alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
-                        <button type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                        <button data-id={defaultThumbs[1][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
-                            src={randomItem(renditionThumbnails)}
-                            alt=""
+                            src={defaultThumbs[1][1]}
+                            data-id={defaultThumbs[1][0]}
+                            alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
-                        <button type="button" className="thumbnail thumbnail-small thumbnail-unselected rounded">
+                        <button data-id={defaultThumbs[2][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected rounded">
                           <img
-                            src={randomItem(renditionThumbnails)}
-                            alt=""
+                            src={defaultThumbs[2][1]}
+                            data-id={defaultThumbs[2][0]}
+                            alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
                       </>
                     )}
-                    {renditionThumbnails.length === 0
+                    {defaultThumbs.length === 0
                     && (
                       <>
                         <div

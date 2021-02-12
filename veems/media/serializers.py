@@ -81,7 +81,7 @@ class VideoRenditionThumbnailSerializer(CustomModelSerializer):
 
     class Meta:
         model = models.VideoRenditionThumbnail
-        fields = ['file']
+        fields = ['id', 'file']
 
 
 class VideoRenditionSerializer(CustomModelSerializer):

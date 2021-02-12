@@ -342,6 +342,18 @@ body {
     background: #000;
 }
 
+.thumbnail-grid .thumbnail:hover {
+    outline: 3px solid var(--primary);
+    border-radius: 0 !important;
+    border-color: var(--dark);
+}
+
+.thumbnail-selected {
+    outline: 3px solid var(--primary);
+    border-radius: 0 !important;
+    border-color: var(--dark);
+}
+
 .thumbnail .card-img-top {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -351,6 +363,23 @@ body {
     position: absolute;
     bottom: 5px;
     right: 5px;
+    font-size: 0.9rem;
+    background: #000;
+    color: #fff;
+    padding: 1px 3px;
+    border-radius: 4px;
+}
+
+.thumbnail .overlays-cented {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px; /* Need a specific value to work */
+
     font-size: 0.9rem;
     background: #000;
     color: #fff;
@@ -409,6 +438,9 @@ button.remove-default-style {
 button.remove-default-style:focus {
     outline: none;
 }
+button.remove-default-style:hover {
+    outline: none !important
+}
 
 /* Medium devices (tablets, 768px and up) */
 
@@ -455,11 +487,6 @@ button.remove-default-style:focus {
 
 .select2-container {
     width: 100% !important;
-}
-
-.thumbnail-small {
-    height: 47px;
-    width: 84px;
 }
 
 .video-grid-side .metadata-container {
@@ -691,12 +718,6 @@ hr {
 }
 .thumbnail-unselected:hover {
     opacity:1;
-}
-
-.thumbnail-grid .card {
-    width: 100px;
-    /* height: 100px; */
-    border-radius: 0 !important;
 }
 
 .channel-videos .overlay {

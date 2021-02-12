@@ -6,15 +6,14 @@ import {
 } from '../actions/index';
 
 const { store } = configureStore.getInstance();
-const TOAST_PAYLOAD_VIDEO_DETAIL_SERVER_ERROR = {
-  header: 'Oops',
-  body: MSG_SERVER_ERROR,
-  isError: true,
-};
 
 const handleError = (error) => {
   if (error.response.status >= 500) {
-    store.dispatch(createToastAction(TOAST_PAYLOAD_VIDEO_DETAIL_SERVER_ERROR));
+    store.dispatch(createToastAction({
+      header: 'Oops',
+      body: MSG_SERVER_ERROR,
+      isError: true,
+    }));
   }
 };
 
@@ -90,6 +89,16 @@ export const getVideoById = async (videoId) => {
 export const updateVideo = async (videoId, data) => {
   try {
     const res = await API.put(`${serverURL}/api/v1/video/${videoId}/`, data);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+};
+
+export const setExistingThumbnailAsPrimary = async (videoId, videoRenditionThumbnailId) => {
+  try {
+    const res = await API.post(`${serverURL}/api/v1/video/${videoId}/thumbnail/${videoRenditionThumbnailId}/`);
     return res;
   } catch (err) {
     handleError(err);
