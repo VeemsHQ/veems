@@ -82,7 +82,6 @@ export const EditVideoButton = ({
 
   const handleUploadThumbButtonClick = (e) => {
     e.preventDefault();
-    console.log('handleUploadThumbButtonClick');
     inputThumbnailFile.current.click();
   };
 

@@ -79,6 +79,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   };
 
   const handleInputThumbnailChange = async (e) => {
+    console.log(e.target.files);
     const file = e.target.files[0];
     setIsThumbUploading(true);
     await updateVideoCustomThumbnail(videoData.id, file);
@@ -87,6 +88,8 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
       setVideoData(data);
     }
     setIsThumbUploading(false);
+    // Update the Channel Videos list on the page beneath
+    await fetchActiveChannelVideos(videoData.channel_id, false);
   };
 
   return (
