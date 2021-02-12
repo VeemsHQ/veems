@@ -12,7 +12,7 @@ import {
   fetchActiveChannelVideosAction,
   createToastAction,
 } from '../../actions/index';
-import { MSG_SERVER_ERROR, MSG_CORRECT_FORM_ERRORS } from '../../constants';
+import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import { getVideoById, updateVideo } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
@@ -24,11 +24,6 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
 const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
   header: 'Oops',
   body: MSG_CORRECT_FORM_ERRORS,
-  isError: true,
-};
-const TOAST_PAYLOAD_VIDEO_DETAIL_SERVER_ERROR = {
-  header: 'Oops',
-  body: MSG_SERVER_ERROR,
   isError: true,
 };
 
@@ -53,18 +48,14 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
       newData = Object.assign(newData, updatedFields);
       setVideoData(newData);
       const { response, data } = await updateVideo(videoData.id, updatedFields);
-      if (response?.status >= 500) {
-        setIsSaving(false);
-        createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SERVER_ERROR);
-      } else if (response?.status === 400) {
+      setIsSaving(false);
+      if (response?.status === 400) {
         createToast(TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT);
         setApiErrors(response?.data);
-        setIsSaving(false);
       } else {
         createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
         setApiErrors(null);
         setVideoData(data);
-        setIsSaving(false);
         // Update the Channel Videos list on the page beneath
         await fetchActiveChannelVideos(videoData.channel_id, false);
       }
@@ -78,10 +69,8 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
 
   const handleEditVideoModalOpen = async () => {
     setModalOpen(true);
-    const { response, data } = await getVideoById(videoId);
-    if (response?.status >= 500) {
-      createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SERVER_ERROR);
-    } else {
+    const { data } = await getVideoById(videoId);
+    if (data) {
       setVideoData(data);
     }
     setIsLoading(false);

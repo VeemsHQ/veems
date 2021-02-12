@@ -22,7 +22,6 @@ const Container = ({
   isError = false,
   removeToast,
 }) => {
-  console.log(`toast! ${show}`);
   const handleToastClose = () => {
     removeToast();
   };
@@ -70,7 +69,6 @@ const mapStateToProps = (state) => {
     return { show: false };
   }
   const props = { ...{ show: true }, ...state.globals.toast };
-  console.log(props);
   return props;
 };
 
