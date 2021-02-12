@@ -27,16 +27,16 @@ const Container = ({ videoId, fetchActiveChannelVideos }) => {
   const handleVideoUpdate = async (videoData, updatedFields = null) => {
     // To give better UX, update the state before the server request.
     setIsSaving(true);
-    let newData = Object.create(videoData);
-    newData = Object.assign(newData, updatedFields);
-    setVideoData(newData);
     // Now do it for real.
     if (!updatedFields) {
       // If no fields updated, pretend to do it.
       await new Promise((r) => setTimeout(r, 300));
       setIsSaving(false);
     } else {
-      const { response, data } = await updateVideo(videoId, updatedFields);
+      let newData = Object.create(videoData);
+      newData = Object.assign(newData, updatedFields);
+      setVideoData(newData);
+      const { response, data } = await updateVideo(videoData.id, updatedFields);
       if (response?.status >= 500) {
         setPrimaryApiError(MSG_SERVER_ERROR);
         setIsSaving(false);

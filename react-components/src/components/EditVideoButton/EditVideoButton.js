@@ -56,11 +56,11 @@ export const EditVideoButton = ({
     [],
   );
 
-  const onVisibilityChange = async (e) => {
+  const handleVisibilityChange = async (e) => {
     onFormFieldChange(videoData, { visibility: e.target.name });
   };
 
-  const onTagsChange = async (e) => {
+  const handleTagsChange = async (e) => {
     const tags = e.target.value;
     const tagsArray = tags.split(',').map((e) => e.trim());
     debouncedOnFormFieldChange(videoData, { tags: tagsArray });
@@ -68,12 +68,12 @@ export const EditVideoButton = ({
   };
 
   const handleFieldChange = (e, setterFunc) => {
-    // TODO: on change here, also update ChannelManagerVideos
     debouncedOnFormFieldChange(videoData, { [e.target.name]: e.target.value });
     setterFunc(e.target.value);
   };
 
-  const handleSaveChangesClicked = async () => {
+  const handleSaveChangesClicked = async (e) => {
+    e.preventDefault();
     onFormFieldChange(videoData);
   };
 
@@ -227,7 +227,7 @@ export const EditVideoButton = ({
                       name="public"
                       label="Public"
                       checked={visibility === 'public'}
-                      onChange={onVisibilityChange}
+                      onChange={handleVisibilityChange}
                       style={{ paddingLeft: 0 }}
                     />
                   </div>
@@ -239,7 +239,7 @@ export const EditVideoButton = ({
                       name="private"
                       label="Private"
                       checked={visibility === 'private'}
-                      onChange={onVisibilityChange}
+                      onChange={handleVisibilityChange}
                       style={{ paddingLeft: 0 }}
                     />
                   </div>
@@ -247,7 +247,7 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Tags</Form.Label>
-                  <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.tags : false)} onChange={(e) => onTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
+                  <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.tags : false)} onChange={(e) => handleTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
                   <div className="mt-1 mx-2 text-muted" style={{ fontSize: '0.9em' }}>Enter a comma after each tag.</div>
                   <Form.Control.Feedback type="invalid">
                     Please provide some tags.
