@@ -36,9 +36,9 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
-  const updateParentState = async () => {
+  const updateParentState = async (channelId) => {
     // Update the Channel Videos list on the page beneath
-    await fetchActiveChannelVideos(videoData.channel_id, false);
+    await fetchActiveChannelVideos(channelId, false);
   };
 
   const handleVideoUpdate = async (videoData, updatedFields = null) => {
@@ -63,7 +63,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
         createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
         setApiErrors(null);
         setVideoData(data);
-        await updateParentState();
+        await updateParentState(data.channel_id);
       }
     }
   };
@@ -92,7 +92,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     }
     setIsThumbUploading(false);
     createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
-    await updateParentState();
+    await updateParentState(videoData.channel_id);
   };
 
   return (
