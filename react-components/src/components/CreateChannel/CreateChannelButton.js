@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Toast from 'react-bootstrap/Toast';
 
+import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import 'regenerator-runtime/runtime.js';
 
 export const CreateChannelButton = ({
@@ -36,7 +37,7 @@ export const CreateChannelButton = ({
       setShowChannelModal(false);
     } else {
       setApiErrors(apiErrors_);
-      setPrimaryFormError('Please correct the form errors shown above and resubmit.');
+      setPrimaryFormError(MSG_CORRECT_FORM_ERRORS);
     }
   };
 

@@ -11,6 +11,7 @@ import {
   setChannelSyncModalOpenAction,
   fetchActiveChannelVideosAction,
 } from '../../actions/index';
+import { MSG_SERVER_ERROR, MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import { getVideoById, updateVideo } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
@@ -21,24 +22,36 @@ const Container = ({ videoId, fetchActiveChannelVideos }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
   const [apiErrors, setApiErrors] = useState(null);
+  const [primaryApiError, setPrimaryApiError] = useState('');
 
-  const handleVideoUpdate = async (videoData, updatedFields) => {
+  const handleVideoUpdate = async (videoData, updatedFields = null) => {
     // To give better UX, update the state before the server request.
     setIsSaving(true);
     let newData = Object.create(videoData);
     newData = Object.assign(newData, updatedFields);
     setVideoData(newData);
     // Now do it for real.
-    const { response, data } = await updateVideo(videoId, updatedFields);
-    if (response?.status === 400) {
-      setApiErrors(response?.data);
+    if (!updatedFields) {
+      // If no fields updated, pretend to do it.
+      await new Promise((r) => setTimeout(r, 300));
       setIsSaving(false);
     } else {
-      setApiErrors(null);
-      setVideoData(data);
-      setIsSaving(false);
-      // Update the Channel Videos list on the page beneath
-      await fetchActiveChannelVideos(videoData.channel_id, false);
+      const { response, data } = await updateVideo(videoId, updatedFields);
+      if (response?.status >= 500) {
+        setPrimaryApiError(MSG_SERVER_ERROR);
+        setIsSaving(false);
+      } else if (response?.status === 400) {
+        setApiErrors(response?.data);
+        setPrimaryApiError(MSG_CORRECT_FORM_ERRORS);
+        setIsSaving(false);
+      } else {
+        setApiErrors(null);
+        setPrimaryApiError('');
+        setVideoData(data);
+        setIsSaving(false);
+        // Update the Channel Videos list on the page beneath
+        await fetchActiveChannelVideos(videoData.channel_id, false);
+      }
     }
   };
 
@@ -46,10 +59,15 @@ const Container = ({ videoId, fetchActiveChannelVideos }) => {
     setModalOpen(false);
     setIsLoading(true);
   };
+
   const handleEditVideoModalOpen = async () => {
     setModalOpen(true);
-    const videoResponse = await getVideoById(videoId);
-    setVideoData(videoResponse.data);
+    const { response, data } = await getVideoById(videoId);
+    if (response?.status >= 500) {
+      setPrimaryApiError(MSG_SERVER_ERROR);
+    } else {
+      setVideoData(data);
+    }
     setIsLoading(false);
   };
 
@@ -60,6 +78,7 @@ const Container = ({ videoId, fetchActiveChannelVideos }) => {
       isLoading={isLoading}
       videoData={videoData}
       apiErrors={apiErrors}
+      primaryApiError={primaryApiError}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}
       onFormFieldChange={handleVideoUpdate}

@@ -22,8 +22,9 @@ export const EditVideoButton = ({
   videoData,
   onFormFieldChange,
   apiErrors,
+  primaryApiError,
 }) => {
-  const saveStatus = isSaving ? 'Saving...' : 'Saved';
+  const saveStatus = isSaving ? 'Saving...' : 'Save Changes';
   const videoId = valueOrEmpty(videoData.id);
   const initialTitle = valueOrEmpty(videoData.title);
   const initialDescription = valueOrEmpty(videoData.description);
@@ -70,6 +71,10 @@ export const EditVideoButton = ({
     // TODO: on change here, also update ChannelManagerVideos
     debouncedOnFormFieldChange(videoData, { [e.target.name]: e.target.value });
     setterFunc(e.target.value);
+  };
+
+  const handleSaveChangesClicked = async () => {
+    onFormFieldChange(videoData);
   };
 
   const renderModal = () => (
@@ -289,8 +294,8 @@ export const EditVideoButton = ({
 
           <Modal.Footer className="bg-secondary text-muted">
             <div className="mr-auto">Status: Uploaded &amp; Processing</div>
-            <div className="ml-auto py-1 px-2 text-danger">{apiErrors ? 'Please correct the form errors shown above and resubmit.' : ''}</div>
-            <div className={`text-light rounded py-1 px-2 ${isSaving ? 'bg-info' : 'bg-success'}`}>{saveStatus}</div>
+            <div className="ml-auto py-1 px-2 text-danger">{primaryApiError || ''}</div>
+            <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveStatus}</button>
           </Modal.Footer>
 
         </Form>
@@ -301,7 +306,7 @@ export const EditVideoButton = ({
 
   return (
     <>
-      <a href="#" onClick={onModalOpen()} className="btn"><i className="material-icons text-secondary">create</i></a>
+      <button type="button" onClick={onModalOpen()} className="btn"><i className="material-icons text-secondary">create</i></button>
       {renderModal()}
     </>
   );
