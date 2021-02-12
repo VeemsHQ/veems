@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import Toast from 'react-bootstrap/Toast';
 
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import 'regenerator-runtime/runtime.js';
 
 export const CreateChannelButton = ({
   onCreateChannel,
+  onSuccess,
 }) => {
   const [showChannelModal, setShowChannelModal] = useState(false);
   const [apiErrors, setApiErrors] = useState({});
@@ -18,7 +18,6 @@ export const CreateChannelButton = ({
   const [primaryFormError, setPrimaryFormError] = useState('');
   const [isChannelSynced, setIsChannelSynced] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [showToast, setShowToast] = useState(false);
 
   const createChannelHandler = async (e) => {
     const form = e.currentTarget;
@@ -29,11 +28,11 @@ export const CreateChannelButton = ({
       setValidated(true);
       return;
     }
+    onSuccess();
     const [isChannelCreated, apiErrors_] = await onCreateChannel(
       channelName, channelDescription, isChannelSynced,
     );
     if (isChannelCreated) {
-      setShowToast(true);
       setShowChannelModal(false);
     } else {
       setApiErrors(apiErrors_);
@@ -82,37 +81,6 @@ export const CreateChannelButton = ({
     </>
   );
 
-  const renderToast = () => (
-    <div
-      aria-live="polite"
-      aria-atomic="true"
-      style={{
-        position: 'fixed',
-        top: '0',
-        right: '0',
-        height: '2px',
-        width: '100%',
-        zIndex: '9999',
-      }}
-    >
-      <Toast
-        style={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-        }}
-        show={showToast}
-        autohide
-        onClose={() => setShowToast(!showToast)}
-      >
-        <Toast.Header>
-          <strong className="mr-auto">Success</strong>
-        </Toast.Header>
-        <Toast.Body>Your new channel has been created.</Toast.Body>
-      </Toast>
-    </div>
-  );
-
   return (
     <>
       <div>
@@ -121,7 +89,6 @@ export const CreateChannelButton = ({
         </a>
       </div>
       {renderModal()}
-      {renderToast()}
     </>
   );
 };

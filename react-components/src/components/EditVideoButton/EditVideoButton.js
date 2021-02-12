@@ -22,7 +22,6 @@ export const EditVideoButton = ({
   videoData,
   onFormFieldChange,
   apiErrors,
-  primaryApiError,
 }) => {
   const saveStatus = isSaving ? 'Saving...' : 'Save Changes';
   const videoId = valueOrEmpty(videoData.id);
@@ -294,7 +293,6 @@ export const EditVideoButton = ({
 
           <Modal.Footer className="bg-secondary text-muted">
             <div className="mr-auto">Status: Uploaded &amp; Processing</div>
-            <div className="ml-auto py-1 px-2 text-danger">{primaryApiError || ''}</div>
             <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveStatus}</button>
           </Modal.Footer>
 

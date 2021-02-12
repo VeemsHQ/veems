@@ -3,7 +3,9 @@ import {
   getAllVideosForChannelRequest,
 } from '../api/api';
 
-export const fetchActiveChannelVideosAction = (channelId, loadingIndication = true) => async (dispatch) => {
+export const fetchActiveChannelVideosAction = (
+  channelId, loadingIndication = true,
+) => async (dispatch) => {
   if (loadingIndication) {
     dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
   }

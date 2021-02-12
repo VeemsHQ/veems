@@ -64,7 +64,7 @@
 {% include "../_modals/_modal_video_detail.html" %}
 {% endblock %}
 
-{% block scripts %}
+{% block extra_scripts %}
 {{ block.super }}
 <script type="text/javascript">
     var videos = {{ channel_videos | to_json }};
