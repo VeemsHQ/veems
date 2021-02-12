@@ -36,6 +36,11 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
+  const updateParentState = async () => {
+    // Update the Channel Videos list on the page beneath
+    await fetchActiveChannelVideos(videoData.channel_id, false);
+  };
+
   const handleVideoUpdate = async (videoData, updatedFields = null) => {
     // To give better UX, update the state before the server request.
     setIsSaving(true);
@@ -58,8 +63,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
         createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
         setApiErrors(null);
         setVideoData(data);
-        // Update the Channel Videos list on the page beneath
-        await fetchActiveChannelVideos(videoData.channel_id, false);
+        await updateParentState();
       }
     }
   };
@@ -79,7 +83,6 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   };
 
   const handleInputThumbnailChange = async (e) => {
-    console.log(e.target.files);
     const file = e.target.files[0];
     setIsThumbUploading(true);
     await updateVideoCustomThumbnail(videoData.id, file);
@@ -88,8 +91,8 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
       setVideoData(data);
     }
     setIsThumbUploading(false);
-    // Update the Channel Videos list on the page beneath
-    await fetchActiveChannelVideos(videoData.channel_id, false);
+    createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
+    await updateParentState();
   };
 
   return (
