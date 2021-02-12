@@ -29,6 +29,14 @@ export const API = axios.create({
   }],
   transformResponse: axios.defaults.transformResponse.concat((data) => data),
 });
+const API_MULTIPART = axios.create({
+  timeout: 5000,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+    'X-CSRFTOKEN': window.CSRF_TOKEN,
+  },
+  transformResponse: axios.defaults.transformResponse.concat((data) => data),
+});
 
 const serverURL = window.API_BASE_URL;
 
@@ -82,6 +90,20 @@ export const getVideoById = async (videoId) => {
 export const updateVideo = async (videoId, data) => {
   try {
     const res = await API.put(`${serverURL}/api/v1/video/${videoId}/`, data);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+};
+
+export const updateVideoCustomThumbnail = async (videoId, thumbFile) => {
+  const formData = new FormData();
+  formData.append('file', thumbFile);
+  try {
+    const res = await API_MULTIPART.post(
+      `${serverURL}/api/v1/video/${videoId}/thumbnail/`, formData,
+    );
     return res;
   } catch (err) {
     handleError(err);

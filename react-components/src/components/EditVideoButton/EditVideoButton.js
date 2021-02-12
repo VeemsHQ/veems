@@ -14,16 +14,20 @@ const randomItem = (choices) => {
 };
 
 export const EditVideoButton = ({
+  inputThumbnailFile,
   isSaving,
+  isThumbnailUploading,
   isModalOpen,
   onModalClose,
   onModalOpen,
   isLoading,
   videoData,
   onFormFieldChange,
+  onInputThumbnailChange,
   apiErrors,
 }) => {
-  const saveStatus = isSaving ? 'Saving...' : 'Save Changes';
+  const saveButtonText = isSaving ? 'Saving...' : 'Save Changes';
+  const uploadThumbnailButtonText = isThumbnailUploading ? 'Uploading...' : 'Upload thumbnail';
   const videoId = valueOrEmpty(videoData.id);
   const initialTitle = valueOrEmpty(videoData.title);
   const initialDescription = valueOrEmpty(videoData.description);
@@ -74,6 +78,12 @@ export const EditVideoButton = ({
   const handleSaveChangesClicked = async (e) => {
     e.preventDefault();
     onFormFieldChange(videoData);
+  };
+
+  const handleUploadThumbButtonClick = (e) => {
+    e.preventDefault();
+    console.log('handleUploadThumbButtonClick');
+    inputThumbnailFile.current.click();
   };
 
   const renderModal = () => (
@@ -151,49 +161,60 @@ export const EditVideoButton = ({
 
                 <Form.Group>
                   <Form.Label>Thumbnail</Form.Label>
-                  <div className="mb-1 text-muted" style={{ fontSize: '0.9em' }}>Select or upload a thumbnail that best shows what's in your video.</div>
+                  <div className="mb-1 text-muted" style={{ fontSize: '0.9em' }}>
+                    Select or upload a thumbnail that best shows what's in your video.
+                  </div>
                   <div className="thumbnail-grid h-100">
                     <button
                       type="button"
+                      onClick={handleUploadThumbButtonClick}
                       className="remove-default-style thumbnail border rounded thumbnail-small d-inline-flex align-items-center justify-content-center mr-2"
                     >
                       <span className="d-flex flex-column text-muted">
                         <i
                           className="material-icons tidy align-middle text-secondary"
                         >add_photo_alternate
-                        </i>Upload thumbnail
+                        </i>{uploadThumbnailButtonText}
                       </span>
                     </button>
+                    <input type="file" onChange={onInputThumbnailChange} id="custom_thumbnail_image" ref={inputThumbnailFile} className="d-none" />
                     {renditionThumbnails.length > 0 && (
                       <>
-                        <div className="thumbnail thumbnail-small mr-2 rounded">
+                        {!isThumbnailUploading && (
+                        <button type="button" className="thumbnail thumbnail-small mr-2 rounded">
+                          <img
+                            src={primaryThumbnailUrl}
+                            alt=""
+                            className="img-fluid h-100"
+                          />
+                        </button>
+                        )}
+                        {isThumbnailUploading && (
+                        <div
+                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                        />
+                        )}
+                        <button type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
                             src={randomItem(renditionThumbnails)}
                             alt=""
                             className="img-fluid h-100"
                           />
-                        </div>
-                        <div className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                        </button>
+                        <button type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
                             src={randomItem(renditionThumbnails)}
                             alt=""
                             className="img-fluid h-100"
                           />
-                        </div>
-                        <div className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                        </button>
+                        <button type="button" className="thumbnail thumbnail-small thumbnail-unselected rounded">
                           <img
                             src={randomItem(renditionThumbnails)}
                             alt=""
                             className="img-fluid h-100"
                           />
-                        </div>
-                        <div className="thumbnail thumbnail-small thumbnail-unselected rounded">
-                          <img
-                            src={randomItem(renditionThumbnails)}
-                            alt=""
-                            className="img-fluid h-100"
-                          />
-                        </div>
+                        </button>
                       </>
                     )}
                     {renditionThumbnails.length === 0
@@ -257,14 +278,21 @@ export const EditVideoButton = ({
               <div className="col-12 col-lg-4">
 
                 <div className="card ml-0 ml-lg-auto" style={{ width: '18rem' }}>
-                  {!primaryThumbnailUrl && (
+                  {!primaryThumbnailUrl && !isThumbnailUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 shine d-flex align-items-center justify-content-center"
                     >
                       Uploading video…
                     </div>
                   )}
-                  {primaryThumbnailUrl && (
+                  {isThumbnailUploading && (
+                    <div
+                      className="thumbnail thumbnail-medium w-100 shine d-flex align-items-center justify-content-center"
+                    >
+                      Uploading thumbnail...
+                    </div>
+                  )}
+                  {primaryThumbnailUrl && !isThumbnailUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 d-flex align-items-center justify-content-center"
                       style={{ width: 'auto', height: '171px' }}
@@ -293,7 +321,7 @@ export const EditVideoButton = ({
 
           <Modal.Footer className="bg-secondary text-muted">
             <div className="mr-auto">Status: Uploaded &amp; Processing</div>
-            <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveStatus}</button>
+            <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveButtonText}</button>
           </Modal.Footer>
 
         </Form>

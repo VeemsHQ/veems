@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,7 +13,7 @@ import {
   createToastAction,
 } from '../../actions/index';
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
-import { getVideoById, updateVideo } from '../../api/api';
+import { getVideoById, updateVideo, updateVideoCustomThumbnail } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -29,10 +29,12 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
 
 const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
   const [apiErrors, setApiErrors] = useState(null);
+  const inputThumbnailFile = useRef(null);
 
   const handleVideoUpdate = async (videoData, updatedFields = null) => {
     // To give better UX, update the state before the server request.
@@ -76,8 +78,21 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     setIsLoading(false);
   };
 
+  const handleInputThumbnailChange = async (e) => {
+    const file = e.target.files[0];
+    setIsThumbUploading(true);
+    await updateVideoCustomThumbnail(videoData.id, file);
+    const { data } = await getVideoById(videoData.id);
+    if (data) {
+      setVideoData(data);
+    }
+    setIsThumbUploading(false);
+  };
+
   return (
     <EditVideoButton
+      inputThumbnailFile={inputThumbnailFile}
+      isThumbnailUploading={isThumbnailUploading}
       isSaving={isSaving}
       isModalOpen={modalOpen}
       isLoading={isLoading}
@@ -86,6 +101,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}
       onFormFieldChange={handleVideoUpdate}
+      onInputThumbnailChange={handleInputThumbnailChange}
     />
   );
 };
