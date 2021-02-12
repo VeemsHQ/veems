@@ -287,6 +287,13 @@ def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
     with image_path.open('rb') as file_:
         video_record.default_thumbnail_image = File(file_)
         video_record.save()
+    cached_attrs = (
+        'default_thumbnail_image_small',
+        'default_thumbnail_image_medium',
+        'default_thumbnail_image_large',
+    )
+    for attr in cached_attrs:
+        getattr(video_record, attr).generate(force=True)
     logger.info('Done setting default thumbnail for video %s', video_record.id)
     return video_record
 
@@ -316,8 +323,20 @@ def _generate_default_thumbnail_image(image_path):
 
 def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
     logger.info('Setting custom thumbnail for video %s...', video_record.id)
+    had_image_before = bool(video_record.custom_thumbnail_image)
+    if had_image_before:
+        video_record.custom_thumbnail_image.delete()
     video_record.custom_thumbnail_image = thumbnail_image
     video_record.save()
+    # TODO: test
+    if had_image_before:
+        cached_attrs = (
+            'custom_thumbnail_image_small',
+            'custom_thumbnail_image_medium',
+            'custom_thumbnail_image_large',
+        )
+        for attr in cached_attrs:
+            getattr(video_record, attr).generate(force=True)
     return video_record
 
 
