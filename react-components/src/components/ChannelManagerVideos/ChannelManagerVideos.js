@@ -34,7 +34,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />
@@ -57,7 +57,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail  d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />
@@ -80,7 +80,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail  d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />
@@ -106,8 +106,8 @@ export const ChannelManagerVideos = ({
           <tr key={index}>
             <td>
               <div className="d-flex">
-                <a href="#" className="thumbnail d-inline-block mr-2">
-                  <img className="card-img-top w-100" src={video.thumbnail_image_medium_url} alt={video.title} />
+                <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2">
+                  <img className="h-100" src={video.thumbnail_image_medium_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
                 </a>
                 <div className="metadata-container d-flex">

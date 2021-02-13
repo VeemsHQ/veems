@@ -10,7 +10,7 @@
             <div class="video-grid px-2 m-0 card-group d-flex flex-wrap">
                 {% for video in videos_popular %}
                 <div class="card mt-1">
-                    <a href="{% url 'view-video' video.id %}" class="thumbnail">
+                    <a href="{% url 'view-video' video.id %}" class="thumbnail thumbnail-medium">
                         <img class="card-img-top" src="{{video.thumbnail_image_medium_url}}">
                         <div class="overlays">{{video.duration_human}}</div>
                     </a>

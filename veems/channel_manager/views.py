@@ -49,6 +49,7 @@ class VideosView(ChannelManagerTemplateView):
             instance=channel_videos, many=True
         ).data
         context['channel_videos'] = channel_videos
+        context['channel_id'] = channel_id
         return context
 
 

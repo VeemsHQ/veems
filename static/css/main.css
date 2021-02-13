@@ -470,7 +470,7 @@ button.remove-default-style:hover {
     /* max-width: var(--video-thumb-width);
     max-height: var(--video-thumb-height); */
     height: inherit;
-    /* width: auto; */
+    width: auto;
     margin: 0 auto;
 }
 

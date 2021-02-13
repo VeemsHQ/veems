@@ -317,7 +317,7 @@ export const EditVideoButton = ({
                       className="thumbnail thumbnail-medium w-100 d-flex align-items-center justify-content-center"
                       style={{ width: 'auto', height: '171px' }}
                     >
-                      <img src={primaryThumbnailUrl} alt="" className="img-fluid w-100 h-100" />
+                      <img src={primaryThumbnailUrl} alt="" className="img-fluid h-100" />
                     </div>
                   )}
                   <div className="card-body text-secondary bg-light">

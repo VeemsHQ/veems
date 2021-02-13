@@ -8,6 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 import {
   fetchActiveChannelVideosAction,
+  setActiveChannelAction,
 } from '../../actions/index';
 import ChannelManagerVideos from './ChannelManagerVideos';
 
@@ -18,8 +19,10 @@ const Container = ({
   isLoading,
   channelId,
   fetchActiveChannelVideos,
+  setActiveChannel,
 }) => {
   useEffect(() => {
+    setActiveChannel(channelId);
     fetchActiveChannelVideos(channelId);
   }, [channelId]);
 
@@ -33,20 +36,29 @@ const Container = ({
 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
-  ...bindActionCreators({ fetchActiveChannelVideos: fetchActiveChannelVideosAction }, dispatch),
+  ...bindActionCreators({
+    setActiveChannel: setActiveChannelAction,
+    fetchActiveChannelVideos: fetchActiveChannelVideosAction,
+  }, dispatch),
 });
 
 const mapStateToProps = (state, ownProps) => {
   let videos = [];
+  let channelId = null;
   if (state.channels.activeChannelVideos === null) {
     videos = ownProps.videos;
   } else {
     videos = state.channels.activeChannelVideos;
   }
+  if (state.channels.activeChannelId === null) {
+    channelId = ownProps.channelId;
+  } else {
+    channelId = state.channels.activeChannelId;
+  }
   return {
     videos: videos,
     isLoading: state.channels.activeChannelVideosLoading,
-    channelId: state.channels.activeChannelId,
+    channelId: channelId,
   };
 };
 

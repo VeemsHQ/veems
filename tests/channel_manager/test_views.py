@@ -44,6 +44,7 @@ class TestVideosView:
         response = client.get('/channel/videos/')
 
         assert response.status_code == OK
+        assert response.context['channel_id'] == channel.id
         assert len(response.context['channel_videos']) == 2
         for video in response.context['channel_videos']:
             assert video == expected_video_resp_json

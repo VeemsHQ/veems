@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
-from imagekit.processors import SmartResize
+from imagekit.processors import ResizeToCover
 from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
@@ -147,19 +147,19 @@ class Video(BaseModel):
     )
     custom_thumbnail_image_small = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[SmartResize(320, 180)],
+        processors=[ResizeToCover(320, 180,)],
         format='JPEG',
         options={'quality': 90},
     )
     custom_thumbnail_image_medium = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[SmartResize(480, 260)],
+        processors=[ResizeToCover(480, 260,)],
         format='JPEG',
         options={'quality': 90},
     )
     custom_thumbnail_image_large = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[SmartResize(1280, 720)],
+        processors=[ResizeToCover(1280, 720,)],
         format='JPEG',
         options={'quality': 90},
     )
@@ -172,19 +172,19 @@ class Video(BaseModel):
     )
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[SmartResize(320, 180)],
+        processors=[ResizeToCover(320, 180,)],
         format='JPEG',
         options={'quality': 90},
     )
     default_thumbnail_image_medium = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[SmartResize(480, 260)],
+        processors=[ResizeToCover(480, 260,)],
         format='JPEG',
         options={'quality': 90},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[SmartResize(1280, 720)],
+        processors=[ResizeToCover(1280, 720,)],
         format='JPEG',
         options={'quality': 90},
     )
