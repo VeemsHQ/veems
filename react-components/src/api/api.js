@@ -29,7 +29,7 @@ export const API = axios.create({
   transformResponse: axios.defaults.transformResponse.concat((data) => data),
 });
 const API_MULTIPART = axios.create({
-  timeout: 5000,
+  timeout: 50000,
   headers: {
     'Content-Type': 'multipart/form-data',
     'X-CSRFTOKEN': window.CSRF_TOKEN,
