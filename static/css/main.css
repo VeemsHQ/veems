@@ -471,6 +471,14 @@ button.remove-default-style:hover {
     max-height: var(--video-thumb-height); */
     height: inherit;
     width: auto;
+}
+
+.thumbnail img {
+    display: block;
+    /* max-width: var(--video-thumb-width);
+    max-height: var(--video-thumb-height); */
+    height: inherit;
+    /* width: auto; */
     margin: 0 auto;
 }
 
