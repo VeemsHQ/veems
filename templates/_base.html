@@ -41,7 +41,9 @@
 {% block body %}
 {% endblock %}
 
-{% block scripts %}
+<div id="toasts-container"></div>
+
+{% block extra_scripts %}
 {% endblock %}
 
 <script>
@@ -50,6 +52,10 @@
     {% else %}
     window.SELECTED_CHANNEL_ID;
     {% endif %}
+
+    app.CreateToastContainer({
+        element: document.getElementById('toasts-container'),
+    })
 </script>
 
 {% include "./_modals/_modal_login.html" %}

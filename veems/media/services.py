@@ -5,7 +5,9 @@ import subprocess
 import functools
 import operator
 
+from django.core.files.base import ContentFile
 import m3u8
+from imagekit.exceptions import MissingSource
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count
 from django.utils import timezone
@@ -287,6 +289,13 @@ def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
     with image_path.open('rb') as file_:
         video_record.default_thumbnail_image = File(file_)
         video_record.save()
+    cached_attrs = (
+        'default_thumbnail_image_small',
+        'default_thumbnail_image_medium',
+        'default_thumbnail_image_large',
+    )
+    for attr in cached_attrs:
+        getattr(video_record, attr).generate(force=True)
     logger.info('Done setting default thumbnail for video %s', video_record.id)
     return video_record
 
@@ -314,10 +323,40 @@ def _generate_default_thumbnail_image(image_path):
         raise RuntimeError(result.stderr)
 
 
+def set_video_custom_thumbnail_image_from_rendition_thumbnail(
+    *, video_record, video_rendition_thumbnail_id
+):
+    rendition_thumb = models.VideoRenditionThumbnail.objects.get(
+        id=video_rendition_thumbnail_id
+    )
+    source_file = rendition_thumb.file
+    content = ContentFile(source_file.read())
+    video_record = set_video_custom_thumbnail_image(
+        video_record=video_record, thumbnail_image=content
+    )
+    return video_record
+
+
 def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
     logger.info('Setting custom thumbnail for video %s...', video_record.id)
-    video_record.custom_thumbnail_image = thumbnail_image
-    video_record.save()
+    had_image_before = bool(video_record.custom_thumbnail_image)
+    if had_image_before:
+        video_record.custom_thumbnail_image.delete()
+    # Filename does not matter as it's overwritten by models.py
+    # we however need to specify something at this point.
+    filename = 'temp.jpeg'
+    video_record.custom_thumbnail_image.save(filename, thumbnail_image)
+    if had_image_before:
+        cached_attrs = (
+            'custom_thumbnail_image_small',
+            'custom_thumbnail_image_medium',
+            'custom_thumbnail_image_large',
+        )
+        for attr in cached_attrs:
+            try:
+                getattr(video_record, attr).generate(force=True)
+            except MissingSource:
+                pass
     return video_record
 
 

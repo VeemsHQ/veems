@@ -76,7 +76,18 @@ class VideoLikeDislikeSerializer(CustomModelSerializer):
         }
 
 
+class VideoRenditionThumbnailSerializer(CustomModelSerializer):
+
+    class Meta:
+        model = models.VideoRenditionThumbnail
+        fields = ['id', 'file']
+
+
 class VideoRenditionSerializer(CustomModelSerializer):
+    rendition_thumbnails = VideoRenditionThumbnailSerializer(
+        many=True, read_only=True
+    )
+
     class Meta:
         model = models.VideoRendition
         exclude = ['file'] + DEFAULT_EXCLUDE
@@ -89,7 +100,6 @@ class TranscodeJobSerializer(CustomModelSerializer):
 
 
 class VideoSerializer(CustomModelSerializer):
-    # TODO: Fix O(log n) here in Channel and Channel Videos API reponses.
     def __init__(self, user_id=None, *args, **kwargs):
         CustomModelSerializer.__init__(self, *args, **kwargs)
         self._user_id = user_id

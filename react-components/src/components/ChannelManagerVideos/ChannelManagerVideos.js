@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { EditVideoButtonContainer } from '../EditVideoButton';
+import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
+
 import 'regenerator-runtime/runtime.js';
 
 const descMaxLen = 150;
@@ -8,6 +11,9 @@ const truncate = (input, max) => (input.length > max ? `${input.substring(0, max
 export const ChannelManagerVideos = ({
   videos,
   isLoading,
+  isEditModalOpen,
+  onEditModalClose,
+  onEditModalOpen,
 }) => (
   <>
     <table className="table mt-4">
@@ -51,7 +57,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail  d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />
@@ -74,7 +80,7 @@ export const ChannelManagerVideos = ({
             <tr>
               <td>
                 <div className="d-flex">
-                  <a href="#" className="thumbnail d-inline-block mr-2 bg-secondary" />
+                  <a href="#" className="thumbnail  d-inline-block mr-2 bg-secondary" />
                   <div className="metadata-container d-flex">
                     <div className="content p-2">
                       <h5 className="m-0 mb-1 bg-primary" />
@@ -101,7 +107,7 @@ export const ChannelManagerVideos = ({
             <td>
               <div className="d-flex">
                 <a href="#" className="thumbnail d-inline-block mr-2">
-                  <img className="card-img-top" src={video.thumbnail_image_medium_url} alt={video.title} />
+                  <img className="card-img-top w-100" src={video.thumbnail_image_medium_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
                 </a>
                 <div className="metadata-container d-flex">
@@ -114,10 +120,16 @@ export const ChannelManagerVideos = ({
                     </div>
                   </div>
                   <div className="overlay align-items-center">
-                    <a href="#" className="btn" data-toggle="modal" data-target="#videoDetailModal"><i className="material-icons text-secondary">create</i>
-                    </a>
+                    <EditVideoButtonContainer
+                      videoId={video.id}
+                      isModalOpen={isEditModalOpen}
+                      onModalOpen={() => onEditModalOpen}
+                      onModalClose={() => onEditModalClose}
+                    />
                     <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
-                    <a href="#" className="btn"><i className="material-icons text-secondary">delete</i></a>
+
+                    <DeleteVideoButtonContainer videoId={video.id} />
+                    <a href="#" className="btn"><i className="material-icons text-secondary d-none">delete</i></a>
                   </div>
                 </div>
               </div>

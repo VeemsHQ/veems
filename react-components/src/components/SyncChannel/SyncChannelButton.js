@@ -6,10 +6,9 @@ import Form from 'react-bootstrap/Form';
 
 import 'regenerator-runtime/runtime.js';
 
-// Styling
 export const StyledLink = styled.a`
     color: #fff !important;
-`; // Bootstrap is overriding color here so having to use !important. Needs investigation.
+`;
 
 export const SyncChannelButton = ({
   isModalOpen,
@@ -69,7 +68,7 @@ export const SyncChannelButton = ({
                 label={(
                   <><label>I want to sync my YouTube
                     content to Veems and agree to
-                  </label> <a href="#"> these terms</a><label>. I have also read and understand <a href="#"> how the program works</a>.</label>
+                    </label> <a href="#"> these terms</a><label>. I have also read and understand <a href="#"> how the program works</a>.</label>
                   </>
                 )}
               />

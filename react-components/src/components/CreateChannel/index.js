@@ -1,23 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-// Redux
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-// Components
 import CreateChannelButton from './CreateChannelButton';
-
-// Actions
 import {
   setChannelSyncModalOpenAction,
   setActiveChannelAction,
   setChannelsAction,
+  createToastAction,
 } from '../../actions/index';
-
-// api
 import {
   createChannelRequest,
   getChannelsRequest,
@@ -25,12 +20,19 @@ import {
 
 const { store, persistor } = configureStore.getInstance();
 
-// Component connected to Redux store
 const Container = ({
   setChannelSyncModalOpen,
   setActiveChannel,
   setChannels,
+  createToast,
 }) => {
+  const handleCreateSuccessToast = async () => {
+    createToast({
+      header: 'Success',
+      body: 'New Channel was created!',
+    });
+  };
+
   const handleCreateChannel = async (name, desc, isSynced) => {
     const { response, data } = await createChannelRequest(name, desc, isSynced);
 
@@ -63,7 +65,10 @@ const Container = ({
   };
 
   return (
-    <CreateChannelButton onCreateChannel={handleCreateChannel} />
+    <CreateChannelButton
+      onCreateChannel={handleCreateChannel}
+      onSuccess={handleCreateSuccessToast}
+    />
   );
 };
 
@@ -73,15 +78,12 @@ const mapDispatchToProps = (dispatch) => ({
     setChannelSyncModalOpen: setChannelSyncModalOpenAction,
     setActiveChannel: setActiveChannelAction,
     setChannels: setChannelsAction,
+    createToast: createToastAction,
   }, dispatch),
 });
 
 const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
-/* Entry point for DOM element render and subsequent button render.
-This only deal with the above and handling API requests. The SyncChannel
-component will manage logic.
-*/
 export const CreateChannelContainer = ({
   element,
   ...params

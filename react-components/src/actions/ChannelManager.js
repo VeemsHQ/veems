@@ -3,10 +3,16 @@ import {
   getAllVideosForChannelRequest,
 } from '../api/api';
 
-export const fetchActiveChannelVideosAction = (channelId) => async (dispatch) => {
-  dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
+export const fetchActiveChannelVideosAction = (
+  channelId, loadingIndication = true,
+) => async (dispatch) => {
+  if (loadingIndication) {
+    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
+  }
   getAllVideosForChannelRequest(channelId).then((response) => {
-    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
+    if (loadingIndication) {
+      dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
+    }
     dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: response.data });
   });
 };

@@ -1,18 +1,12 @@
 {% extends "../_base.html" %}
-{% load nav_active static %}
-
-{% block extra_head %}
-<link href="{% static 'css/bootstrap-tagsinput.css' %}" rel="stylesheet">
-{% endblock %}
+{% load nav_active to_json %}
 
 {% block body %}
-
 <body class="bg-white">
     <div class="container-fluid middle-col-nomargin">
         <div class="row">
             {% include "../_top_nav.html" %}
         </div>
-        {{ channel_summaries|json_script:"channels" }}
         <div class="row justify-content-around">
             <div class="col h-100">
                 <div class="title-band d-flex align-items-center mt-5 pt-5 pb-2 px-0 mb-0 border-bottom">
@@ -57,15 +51,16 @@
         </div>
     </div>
 </body>
+{% endblock %}
 
+{% block extra_scripts %}
 {{ block.super }}
 <script type="text/javascript">
-    var channels = JSON.parse(document.getElementById('channels').textContent);
+    var channels = {{ channel_summaries | to_json }};
     app.CreateSelectActiveChannelDropdown({
         element: document.getElementById('select-channel-dropdown'),
         activeChannelId: window.SELECTED_CHANNEL_ID,
         channels: channels,
     })
 </script>
-
 {% endblock %}

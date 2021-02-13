@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Toast from 'react-bootstrap/Toast';
-
 import 'regenerator-runtime/runtime.js';
 
 export const VideoLikeDislikeWidget = ({
@@ -8,16 +6,11 @@ export const VideoLikeDislikeWidget = ({
   handleVideoDisliked,
   handleVideoNeither,
   videoData,
-  apiError,
-  setApiError,
 }) => {
-  const [showToast, setShowToast] = useState(false);
-
   const likeVideo = async (e) => {
     e.preventDefault();
     if (videoData.isLiked === false || videoData.isLiked === null) {
       await handleVideoLiked();
-      setShowToast(true);
     } else {
       await handleVideoNeither();
     }
@@ -27,86 +20,9 @@ export const VideoLikeDislikeWidget = ({
     e.preventDefault();
     if (videoData.isLiked === true || videoData.isLiked === null) {
       await handleVideoDisliked();
-      setShowToast(true);
     } else {
       await handleVideoNeither();
     }
-  };
-
-  const renderErrorToast = () => (
-    <div
-      aria-live="polite"
-      aria-atomic="true"
-      style={{
-        position: 'relative',
-        top: '0',
-        right: '0',
-        height: '2px',
-        width: '200%',
-        zIndex: '9999',
-        overflow: 'visible',
-      }}
-    >
-      <Toast
-        style={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-        }}
-        show={apiError !== ''}
-        autohide
-        onClose={() => setApiError('')}
-      >
-        <Toast.Header>
-          <strong className="mr-auto">Oops</strong>
-        </Toast.Header>
-        <Toast.Body>{apiError}</Toast.Body>
-      </Toast>
-    </div>
-  );
-
-  const renderToast = () => {
-    if (apiError !== false && apiError !== '') {
-      return renderErrorToast();
-    }
-    let action;
-    if (videoData.isLiked === true) {
-      action = 'liked';
-    } else if (videoData.isLiked === false) {
-      action = 'disliked';
-    } else {
-      return '';
-    }
-    return (
-      <div
-        aria-live="polite"
-        aria-atomic="true"
-        style={{
-          position: 'fixed',
-          top: '0',
-          right: '0',
-          height: '2px',
-          width: '100%',
-          zIndex: '9999',
-        }}
-      >
-        <Toast
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 20,
-          }}
-          show={showToast}
-          autohide
-          onClose={() => setShowToast(!showToast)}
-        >
-          <Toast.Header>
-            <strong className="mr-auto">Success</strong>
-          </Toast.Header>
-          <Toast.Body>You {action} this video.</Toast.Body>
-        </Toast>
-      </div>
-    );
   };
 
   const getLikeControlTextColor = () => (videoData.isLiked === true ? 'text-primary' : 'text-muted');
@@ -128,10 +44,10 @@ export const VideoLikeDislikeWidget = ({
             <a href="#" onClick={(e) => likeVideo(e)} title="I like this" className={`btn btn-sm d-flex align-items-center ${getLikeControlTextColor()}`}><i
               className="small material-icons align-middle"
             >thumb_up_alt
-            </i><span
-                className="ml-2"
-              >{videoData.likesCount}
-              </span>
+                                                                                                                                                          </i><span
+              className="ml-2"
+            >{videoData.likesCount}
+                </span>
             </a>
             <a
               href="#"
@@ -141,10 +57,10 @@ export const VideoLikeDislikeWidget = ({
             ><i
               className="small material-icons align-middle"
             >thumb_down_alt
-             </i><span
-                className="ml-2"
-              >{videoData.dislikesCount}
-              </span>
+            </i><span
+               className="ml-2"
+             >{videoData.dislikesCount}
+                 </span>
             </a>
           </div>
           <div className="progress likedislike-progress">
@@ -159,7 +75,6 @@ export const VideoLikeDislikeWidget = ({
           </div>
         </div>
       </div>
-      {renderToast()}
     </>
   );
 };

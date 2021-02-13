@@ -1,6 +1,8 @@
 :root {
     --video-thumb-width: 240px;
     --video-thumb-height: 134px;
+    --video-thumb-small-width: 127px;
+    --video-thumb-small-height: 70px;
     --video-thumb-large-width: 360px;
     --video-thumb-large-height: 200px;
     --search-thumb-width: 243px;
@@ -340,6 +342,18 @@ body {
     background: #000;
 }
 
+.thumbnail-grid .thumbnail:hover {
+    outline: 3px solid var(--primary);
+    border-radius: 0 !important;
+    border-color: var(--dark);
+}
+
+.thumbnail-selected {
+    outline: 3px solid var(--primary);
+    border-radius: 0 !important;
+    border-color: var(--dark);
+}
+
 .thumbnail .card-img-top {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -356,10 +370,37 @@ body {
     border-radius: 4px;
 }
 
-.thumbnail img {
-    width: inherit;
-    height: inherit;
+.thumbnail .overlays-cented {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px; /* Need a specific value to work */
+
+    font-size: 0.9rem;
+    background: #000;
+    color: #fff;
+    padding: 1px 3px;
+    border-radius: 4px;
 }
+
+.thumbnail-medium {
+    width: var(--video-thumb-width);
+    height: var(--video-thumb-height);
+    min-width: var(--video-thumb-width);
+    min-height: var(--video-thumb-height);
+}
+
+.thumbnail-small {
+    width: var(--video-thumb-small-width);
+    height: var(--video-thumb-small-height);
+    min-width: var(--video-thumb-small-width);
+    min-height: var(--video-thumb-small-height);
+}
+
 
 .thumbnail-large {
     width: var(--video-thumb-large-width);
@@ -385,6 +426,22 @@ body {
     margin: 0 auto;
 }
 
+button.remove-default-style {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    margin: 0;
+    padding: 0;
+}
+button.remove-default-style:focus {
+    outline: none;
+}
+button.remove-default-style:hover {
+    outline: none !important
+}
+
 /* Medium devices (tablets, 768px and up) */
 
 @media (min-width: 768px) {
@@ -401,11 +458,19 @@ body {
     text-decoration: none;
 }
 
-.video-grid .thumbnail img {
-    display: block;
+.thumbnail-generating {
     max-width: var(--video-thumb-width);
-    height: var(--video-thumb-height);
+    height: auto;
+    max-height: var(--video-thumb-height);
     width: auto;
+}
+
+.thumbnail img {
+    display: block;
+    /* max-width: var(--video-thumb-width);
+    max-height: var(--video-thumb-height); */
+    height: inherit;
+    /* width: auto; */
     margin: 0 auto;
 }
 
@@ -417,15 +482,11 @@ body {
     position: relative;
     height: 94px;
     width: 168px;
+    min-width: 168px;
 }
 
 .select2-container {
     width: 100% !important;
-}
-
-.thumbnail-small {
-    height: 47px;
-    width: 84px;
 }
 
 .video-grid-side .metadata-container {
@@ -609,6 +670,31 @@ hr {
     }
 }
 
+.shine {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 100%;
+    display: inline-block;
+    position: relative;
+
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeholderShimmer;
+    -webkit-animation-timing-function: linear;
+    }
+
+    @-webkit-keyframes placeholderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+
+  100% {
+    background-position: 468px 0;
+  }
+}
+
 .btn-warning {
     border-color: #e0a800 !important;
 }
@@ -621,10 +707,17 @@ hr {
     line-height: 2;
 }
 
-.thumbnail-grid .card {
-    width: 100px;
-    height: 100px;
-    border-radius: 0 !important;
+.thumbnail-grid {
+    display:flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.thumbnail-unselected {
+    opacity:0.5;
+}
+.thumbnail-unselected:hover {
+    opacity:1;
 }
 
 .channel-videos .overlay {

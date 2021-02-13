@@ -320,6 +320,7 @@ class TestVideoDetail:
                     'video': video.id,
                     'video_codec': 'vp9',
                     'width': 256,
+                    'rendition_thumbnails': list,
                 }
             ],
             'transcode_jobs': [
@@ -700,3 +701,38 @@ class TestVideo:
             assert video['channel_id'] == channel.id
         # Since auth'd user owns this channel, all visibilities returned
         assert tuple(r['visibility'] for r in resp_json) == visibilities
+
+
+class TestVideoThumbnailSelectAPIView:
+    def test_post_sets_custom_thumbnail_for_video_from_rendition_thumbnail(
+        self, client, video, rendition_thumbnail, api_client
+    ):
+        api_client, user = api_client
+        video.channel.user = user
+        video.channel.save()
+        assert not video.custom_thumbnail_image
+
+        response = api_client.post(
+            f'/api/v1/video/{video.id}/thumbnail/{rendition_thumbnail.id}/'
+        )
+
+        assert response.status_code == OK
+        video.refresh_from_db()
+        assert video.custom_thumbnail_image
+        resp_json = response.json()
+        # Video primary thumbnail now set to custom from the rendition thumb
+        assert 'custom/' in resp_json['thumbnail_image_large_url']
+        assert 'custom/' in resp_json['thumbnail_image_medium_url']
+        assert 'custom/' in resp_json['thumbnail_image_small_url']
+
+    def test_post_cannot_update_another_users_thumbnail(
+        self, client, video, rendition_thumbnail, api_client
+    ):
+        api_client, user = api_client
+        assert user.id != video.channel.user.id
+
+        response = api_client.post(
+            f'/api/v1/video/{video.id}/thumbnail/{rendition_thumbnail.id}/'
+        )
+
+        assert response.status_code == NOT_FOUND
