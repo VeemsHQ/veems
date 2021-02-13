@@ -54,13 +54,13 @@ export const CreateChannelButton = ({
               <Form.Control.Feedback type="invalid">{apiErrors ? apiErrors.name : ''}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group controlId="exampleForm.ControlTextarea1">
+            <Form.Group controlId="control_description">
               <Form.Label>Channel Description</Form.Label>
               <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.description : false)} onChange={(e) => setChannelDescription(e.target.value)} name="description" as="textarea" rows={4} placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places." />
               <Form.Control.Feedback type="invalid">{apiErrors ? apiErrors.description : ''}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group controlId="formBasicCheckbox">
+            <Form.Group controlId="control_sync_videos_interested">
               <Form.Check checked={isChannelSynced} onChange={() => setIsChannelSynced(!isChannelSynced)} type="checkbox" id="sync_videos_interested" name="sync_videos_interested" label={<><label htmlFor="sync_videos_interested">I'd like to sync videos from my YouTube Channel. </label> <a href="#"> Learn more about channel syncing</a></>} />
             </Form.Group>
             <p className="text-muted">

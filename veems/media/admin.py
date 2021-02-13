@@ -21,6 +21,9 @@ class VideoAdmin(admin.ModelAdmin):
         TranscodeJobInline,
     ]
 
+    def get_queryset(self, request):
+        return models.Video.objects_all.all()
+
 
 class VideoRenditionAdmin(admin.ModelAdmin):
     inlines = [

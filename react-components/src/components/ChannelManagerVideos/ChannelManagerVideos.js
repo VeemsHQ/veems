@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { EditVideoButtonContainer } from '../EditVideoButton';
+import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
 
 import 'regenerator-runtime/runtime.js';
 
@@ -10,9 +11,9 @@ const truncate = (input, max) => (input.length > max ? `${input.substring(0, max
 export const ChannelManagerVideos = ({
   videos,
   isLoading,
-  isModalOpen,
-  onModalClose,
-  onModalOpen,
+  isEditModalOpen,
+  onEditModalClose,
+  onEditModalOpen,
 }) => (
   <>
     <table className="table mt-4">
@@ -121,12 +122,14 @@ export const ChannelManagerVideos = ({
                   <div className="overlay align-items-center">
                     <EditVideoButtonContainer
                       videoId={video.id}
-                      isModalOpen={isModalOpen}
-                      onModalOpen={() => onModalOpen}
-                      onModalClose={() => onModalClose}
+                      isModalOpen={isEditModalOpen}
+                      onModalOpen={() => onEditModalOpen}
+                      onModalClose={() => onEditModalClose}
                     />
                     <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
-                    <a href="#" className="btn"><i className="material-icons text-secondary">delete</i></a>
+
+                    <DeleteVideoButtonContainer videoId={video.id} />
+                    <a href="#" className="btn"><i className="material-icons text-secondary d-none">delete</i></a>
                   </div>
                 </div>
               </div>
