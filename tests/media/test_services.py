@@ -387,9 +387,7 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     )
 
     assert video_rendition.playlist_file
-    assert video_rendition.rendition_segments.count() == len(
-        segment_paths
-    )
+    assert video_rendition.rendition_segments.count() == len(segment_paths)
     exp_prefix = f'videos/{video.id}/renditions/{video_rendition.id}/segments'
     exp_segment_numbers_and_filenames = (
         (
@@ -824,3 +822,18 @@ def test_get_video_likedislike(video, user):
     assert record.is_like is True
     assert record.video == video
     assert record.user == user
+
+
+def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
+    video, rendition_thumbnail
+):
+    assert not video.custom_thumbnail_image
+
+    updated_video = (
+        services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
+            video_record=video,
+            video_rendition_thumbnail_id=rendition_thumbnail.id,
+        )
+    )
+
+    assert updated_video.custom_thumbnail_image

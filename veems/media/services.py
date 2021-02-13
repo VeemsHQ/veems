@@ -5,6 +5,7 @@ import subprocess
 import functools
 import operator
 
+from django.core.files.base import ContentFile
 import m3u8
 from imagekit.exceptions import MissingSource
 from django.core.exceptions import ObjectDoesNotExist
@@ -325,11 +326,14 @@ def _generate_default_thumbnail_image(image_path):
 def set_video_custom_thumbnail_image_from_rendition_thumbnail(
     *, video_record, video_rendition_thumbnail_id
 ):
-    rendition_thumb = models.VideoRenditionThumbnail.objects.get(id=video_rendition_thumbnail_id)
-    from django.core.files.base import ContentFile
+    rendition_thumb = models.VideoRenditionThumbnail.objects.get(
+        id=video_rendition_thumbnail_id
+    )
     source_file = rendition_thumb.file
     content = ContentFile(source_file.read())
-    video_record =set_video_custom_thumbnail_image(video_record=video_record, thumbnail_image=content)
+    video_record = set_video_custom_thumbnail_image(
+        video_record=video_record, thumbnail_image=content
+    )
     return video_record
 
 
@@ -338,9 +342,10 @@ def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
     had_image_before = bool(video_record.custom_thumbnail_image)
     if had_image_before:
         video_record.custom_thumbnail_image.delete()
-    video_record.custom_thumbnail_image = thumbnail_image
-    video_record.save()
-    # TODO: test
+    # Filename does not matter as it's overwritten by models.py
+    # we however need to specify something at this point.
+    filename = 'temp.jpeg'
+    video_record.custom_thumbnail_image.save(filename, thumbnail_image)
     if had_image_before:
         cached_attrs = (
             'custom_thumbnail_image_small',

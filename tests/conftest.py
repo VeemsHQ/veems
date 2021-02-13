@@ -314,6 +314,41 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
 
 
 @pytest.fixture
+def rendition_thumbnail(
+    video,
+    rendition_playlist_file,
+    simple_uploaded_file_factory,
+    simple_uploaded_img_file,
+):
+    file_ = simple_uploaded_file_factory(video_path=constants.VID_360P_24FPS)
+    video_rendition = models.VideoRendition.objects.create(
+        video=video,
+        file=file_.open(),
+        playlist_file=rendition_playlist_file,
+        file_size=1000,
+        width=256,
+        height=144,
+        duration=10,
+        ext='webm',
+        container='webm',
+        audio_codec='opus',
+        video_codec='vp9',
+        name='144p',
+        framerate=30,
+        metadata={'example': 'metadata'},
+    )
+    video_rendition_thumbnail = models.VideoRenditionThumbnail.objects.create(
+        video_rendition=video_rendition,
+        time_offset_secs=1,
+        height=10,
+        width=10,
+        ext='.jpg',
+        file=simple_uploaded_img_file,
+    )
+    return video_rendition_thumbnail
+
+
+@pytest.fixture
 def expected_channel_resp_json():
     return S(
         {

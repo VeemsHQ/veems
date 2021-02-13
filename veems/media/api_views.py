@@ -145,7 +145,6 @@ class VideoThumbnailSelectAPIView(APIView):
     def post(
         self, request, video_id, video_rendition_thumbnail_id, format=None
     ):
-        # TODO: test
         video = services.get_video(
             id=video_id, channel__user_id=request.user.id
         )
