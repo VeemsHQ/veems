@@ -112,6 +112,7 @@ def persist_video_rendition(
             video=video_record,
             file=File(file_),
             name=profile.name,
+            profile=profile.name,
             width=metadata_summary['width'],
             height=metadata_summary['height'],
             duration=metadata_summary['duration'],
@@ -366,7 +367,7 @@ def set_video_custom_thumbnail_image_from_rendition_thumbnail(
         file_.write(rendition_thumb.file.read())
         result_file = _resize_thumbnail_to_exact_profile_size(
             thumbnail_path=Path(temp_thumb_file.name),
-            profile_name=rendition_thumb.video_rendition.name,
+            profile_name=rendition_thumb.video_rendition.profile,
         )
         with result_file.open('rb') as rfile_:
             content = ContentFile(rfile_.read())

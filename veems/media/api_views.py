@@ -148,11 +148,12 @@ class VideoThumbnailSelectAPIView(APIView):
         video = services.get_video(
             id=video_id, channel__user_id=request.user.id
         )
-        video, _ = (
-            services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
-                video_record=video,
-                video_rendition_thumbnail_id=video_rendition_thumbnail_id,
-            )
+        (
+            video,
+            _,
+        ) = services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
+            video_record=video,
+            video_rendition_thumbnail_id=video_rendition_thumbnail_id,
         )
         data = serializers.VideoSerializer(instance=video).data
         return Response(data)

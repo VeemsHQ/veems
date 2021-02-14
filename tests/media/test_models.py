@@ -15,6 +15,7 @@ def video_rendition(video, simple_uploaded_file):
         video=video,
         file=simple_uploaded_file,
         name='webm_360p',
+        profile='webm_360p',
         ext='webm',
         file_size=1,
     )

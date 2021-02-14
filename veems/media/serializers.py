@@ -77,7 +77,6 @@ class VideoLikeDislikeSerializer(CustomModelSerializer):
 
 
 class VideoRenditionThumbnailSerializer(CustomModelSerializer):
-
     class Meta:
         model = models.VideoRenditionThumbnail
         fields = ['id', 'file']

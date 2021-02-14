@@ -167,6 +167,7 @@ def video_with_transcodes_factory(
             audio_codec='opus',
             video_codec='vp9',
             name='webm_144p',
+            profile='webm_144p',
             framerate=30,
             metadata={'example': 'metadata'},
         )
@@ -280,7 +281,8 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
         video_rendition = models.VideoRendition.objects.create(
             video=video,
             file=simple_uploaded_file,
-            name=f'{height}p',
+            name=f'webm_{height}p',
+            profile=f'webm_{height}p',
             ext='webm',
             framerate=30,
             file_size=1,
@@ -334,6 +336,7 @@ def rendition_thumbnail(
         audio_codec='opus',
         video_codec='vp9',
         name='webm_144p',
+        profile='webm_144p',
         framerate=30,
         metadata={'example': 'metadata'},
     )

@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from ..common.models import BaseModel
 from ..channel.models import Channel
 from . import storage_backends
+from .transcoder import transcoder_profiles
 
 STORAGE_BACKEND = storage_backends.MediaStorage
 UPLOAD_CHOICES = (
@@ -26,6 +27,9 @@ VIDEO_VISIBILITY_CHOICES = (
     'private',
     'public',
     'unlisted',
+)
+TRANSCODE_PROFILE_NAME_CHOICES = tuple(
+    (p.name, p.name) for p in transcoder_profiles.PROFILES
 )
 
 
@@ -147,20 +151,34 @@ class Video(BaseModel):
     )
     custom_thumbnail_image_small = ImageSpecField(
         source='custom_thumbnail_image',
-        # TODO: cover and fit and crop
-        processors=[ResizeToFill(426, 240,)],
+        processors=[
+            ResizeToFill(
+                426,
+                240,
+            )
+        ],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_medium = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[ResizeToFill(640, 360,)],
+        processors=[
+            ResizeToFill(
+                640,
+                360,
+            )
+        ],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_large = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[ResizeToFill(1280, 720,)],
+        processors=[
+            ResizeToFill(
+                1280,
+                720,
+            )
+        ],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
@@ -173,19 +191,34 @@ class Video(BaseModel):
     )
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFill(426, 240,)],
+        processors=[
+            ResizeToFill(
+                426,
+                240,
+            )
+        ],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_medium = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFill(640, 360,)],
+        processors=[
+            ResizeToFill(
+                640,
+                360,
+            )
+        ],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToFill(1280, 720,)],
+        processors=[
+            ResizeToFill(
+                1280,
+                720,
+            )
+        ],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
@@ -257,7 +290,12 @@ class VideoRendition(BaseModel):
     height = models.IntegerField(null=True, blank=True)
     framerate = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
-    name = models.CharField(max_length=30, null=False)
+    name = models.CharField(max_length=30)
+    profile = models.CharField(
+        max_length=30,
+        default=None,
+        choices=TRANSCODE_PROFILE_NAME_CHOICES,
+    )
     ext = models.CharField(max_length=4, null=False)
     audio_codec = models.CharField(max_length=50, null=True, blank=True)
     video_codec = models.CharField(max_length=50, null=True, blank=True)
@@ -330,7 +368,9 @@ class TranscodeJob(BaseModel):
         blank=False,
         related_name='transcode_jobs',
     )
-    profile = models.CharField(max_length=100)
+    profile = models.CharField(
+        max_length=100, choices=TRANSCODE_PROFILE_NAME_CHOICES
+    )
     executor = models.CharField(max_length=20)
     status = models.CharField(
         max_length=10,
