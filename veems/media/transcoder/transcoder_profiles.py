@@ -31,7 +31,7 @@ class Webm144p(BaseProfile):
 
 class Webm240p(BaseProfile):
     name = 'webm_240p'
-    width = 320
+    width = 426
     height = 240
     average_rate = 150
     min_rate = 75

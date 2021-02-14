@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToCover
+from imagekit.processors import ResizeToFill
 from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
@@ -148,19 +148,19 @@ class Video(BaseModel):
     custom_thumbnail_image_small = ImageSpecField(
         source='custom_thumbnail_image',
         # TODO: cover and fit and crop
-        processors=[ResizeToCover(320, 240,)],
+        processors=[ResizeToFill(426, 240,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_medium = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[ResizeToCover(640, 360,)],
+        processors=[ResizeToFill(640, 360,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_large = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[ResizeToCover(1280, 720,)],
+        processors=[ResizeToFill(1280, 720,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
@@ -173,19 +173,19 @@ class Video(BaseModel):
     )
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToCover(320, 240,)],
+        processors=[ResizeToFill(426, 240,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_medium = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToCover(640, 360,)],
+        processors=[ResizeToFill(640, 360,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToCover(1280, 720,)],
+        processors=[ResizeToFill(1280, 720,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
