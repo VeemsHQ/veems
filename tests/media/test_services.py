@@ -360,7 +360,7 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     video_rendition = models.VideoRendition.objects.create(
         video=video,
         file=simple_uploaded_file,
-        name='360p',
+        name='webm_360p',
         ext='webm',
         file_size=1,
     )
@@ -829,11 +829,15 @@ def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
 ):
     assert not video.custom_thumbnail_image
 
-    updated_video = (
+    updated_video, thumbnail_path = (
         services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
             video_record=video,
             video_rendition_thumbnail_id=rendition_thumbnail.id,
         )
     )
 
+    # TODO: tests with diff input res, assert on output img res.
     assert updated_video.custom_thumbnail_image
+    metadata = services.get_metadata(thumbnail_path)
+    assert metadata['summary']['width'] == transcoder_profiles.Webm144p.width
+    assert metadata['summary']['height'] == transcoder_profiles.Webm144p.height

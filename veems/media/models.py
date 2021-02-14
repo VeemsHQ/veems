@@ -147,21 +147,21 @@ class Video(BaseModel):
     )
     custom_thumbnail_image_small = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[ResizeToCover(320, 180,)],
+        processors=[ResizeToCover(320, 240,)],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_medium = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[ResizeToCover(480, 260,)],
+        processors=[ResizeToCover(640, 360,)],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_large = ImageSpecField(
         source='custom_thumbnail_image',
         processors=[ResizeToCover(1280, 720,)],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     # Default thumb is picked from the video frames
     default_thumbnail_image = models.ImageField(
@@ -172,21 +172,21 @@ class Video(BaseModel):
     )
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToCover(320, 180,)],
+        processors=[ResizeToCover(320, 240,)],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_medium = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[ResizeToCover(480, 260,)],
+        processors=[ResizeToCover(640, 360,)],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
         processors=[ResizeToCover(1280, 720,)],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
 
     def __str__(self):

@@ -508,7 +508,7 @@ class TestVideoPlaylist:
             container='webm',
             audio_codec='opus',
             video_codec='vp9',
-            name='144p',
+            name='webm_144p',
             framerate=30,
             metadata=services.get_metadata(VIDEO_PATH),
         )

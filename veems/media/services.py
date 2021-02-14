@@ -3,7 +3,9 @@ import json
 import logging
 import subprocess
 import functools
+from pathlib import Path
 import operator
+import tempfile
 
 from django.core.files.base import ContentFile
 import m3u8
@@ -16,6 +18,7 @@ from django.core.files import File
 from . import models
 from ..channel import services as channel_services
 from .transcoder import transcoder_profiles
+from .transcoder.transcoder_executor import ffmpeg
 
 logger = logging.getLogger(__name__)
 
@@ -330,11 +333,26 @@ def set_video_custom_thumbnail_image_from_rendition_thumbnail(
         id=video_rendition_thumbnail_id
     )
     source_file = rendition_thumb.file
-    content = ContentFile(source_file.read())
+    # content = ContentFile(source_file.read())
+
+    temp_thumb_file = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
+    with temp_thumb_file as file_:
+        file_.write(source_file.read())
+
+    result_file = ffmpeg._resize_thumbnail_to_exact_profile_size(
+        thumbnail_path=Path(temp_thumb_file.name),
+        profile_name=rendition_thumb.video_rendition.name,
+    )
+    with result_file.open('rb') as file_:
+        content = ContentFile(file_.read())
+    import q; q('setrt')
+    # TODO:
+    # write to tmp
+    # resize and crop
     video_record = set_video_custom_thumbnail_image(
         video_record=video_record, thumbnail_image=content
     )
-    return video_record
+    return video_record, result_file
 
 
 def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):

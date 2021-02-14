@@ -107,7 +107,7 @@ export const ChannelManagerVideos = ({
             <td>
               <div className="d-flex">
                 <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2">
-                  <img className="h-100" src={video.thumbnail_image_medium_url} alt={video.title} />
+                  <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
                 </a>
                 <div className="metadata-container d-flex">

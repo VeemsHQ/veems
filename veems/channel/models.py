@@ -50,13 +50,13 @@ class Channel(BaseModel):
         source='avatar_image',
         processors=[ResizeToFill(44, 44)],
         format='JPEG',
-        options={'quality': 70},
+        options={'quality': 90, 'optimize': True},
     )
     avatar_image_large = ImageSpecField(
         source='avatar_image',
         processors=[ResizeToFill(88, 88)],
         format='JPEG',
-        options={'quality': 85},
+        options={'quality': 90, 'optimize': True},
     )
     banner_image = models.ImageField(
         upload_to=_channel_banner_image_upload_to,
@@ -68,13 +68,13 @@ class Channel(BaseModel):
         source='banner_image',
         processors=[ResizeToFit(2560, 1440)],
         format='JPEG',
-        options={'quality': 85},
+        options={'quality': 90, 'optimize': True},
     )
     banner_image_small = ImageSpecField(
         source='banner_image',
         processors=[ResizeToFit(1360, 765)],
         format='JPEG',
-        options={'quality': 70},
+        options={'quality': 90, 'optimize': True},
     )
 
     # User may have many Channels, but only one may be selected

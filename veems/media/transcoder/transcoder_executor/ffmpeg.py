@@ -210,6 +210,28 @@ def _get_thumbnail_time_offsets(video_path):
     return tuple(offsets)
 
 
+def _resize_thumbnail_to_exact_profile_size(*, thumbnail_path, profile_name):
+    profile = transcoder_profiles.get_profile(profile_name)
+    assert thumbnail_path.exists()
+    command = (
+        'ffmpeg '
+        f'-i {thumbnail_path} '
+        f'-filter_complex [0]scale={profile.width}:{profile.height},'
+        'setsar=1,boxblur=15:15[b];[b]eq=brightness=-0.2[b];'
+        f'[0]scale=-2:{profile.height}[v];'
+        '[b][v]overlay=(W-w)/2 '
+        f'{thumbnail_path} '
+        # Sets quality to 1 (high)
+        '-q:v 1 '
+        '-y '
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and thumbnail_path.exists():
+        return Path(thumbnail_path)
+    else:
+        raise RuntimeError(result.stderr)
+
+
 def _ffmpeg_generate_thumbnails(*, video_file_path, profile):
     """
     Generate a thumbnail image for every 30 secs of video.
@@ -228,6 +250,8 @@ def _ffmpeg_generate_thumbnails(*, video_file_path, profile):
             '-vf select="eq(pict_type\,I)" '  # noqa: W605
             f'-vf scale={scale} '
             '-vframes 1 '
+            # Sets quality to 1 (high)
+            '-q:v 1 '
             '-y '
             f'{thumb_path}'
         )
@@ -244,6 +268,8 @@ def _ffmpeg_generate_thumbnails(*, video_file_path, profile):
                 f'-i {video_file_path} '
                 f'-vf scale={scale} '
                 '-vframes 1 '
+                # Sets quality to 1 (high)
+                '-q:v 1 '
                 '-y '
                 f'{thumb_path}'
             )
