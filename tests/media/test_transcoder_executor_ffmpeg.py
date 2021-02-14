@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest.mock import ANY
+import shutil
 
 import pytest
 import m3u8
@@ -491,3 +492,22 @@ class TestTranscode:
         assert not models.VideoRendition.objects.filter(
             video=transcode_job.video
         ).count()
+
+
+def test_ffmpeg_generate_thumbnails(tmpdir):
+    video_path = Path(tmpdir / constants.VID_1920_X_960.name)
+    shutil.copyfile(constants.VID_1920_X_960, video_path)
+
+    thumbnails = ffmpeg._ffmpeg_generate_thumbnails(
+        video_file_path=video_path,
+        profile=transcoder_profiles.Webm720p,
+    )
+
+    assert thumbnails
+    for offset, thumb_path in thumbnails:
+        assert offset > 0
+        assert thumb_path.exists()
+        metadata = services.get_metadata(thumb_path)
+        # Height is fixed and width is auto.
+        assert metadata['summary']['height'] == 720
+        assert metadata['summary']['width'] == 1440

@@ -210,21 +210,25 @@ def _get_thumbnail_time_offsets(video_path):
     return tuple(offsets)
 
 
-def _ffmpeg_generate_thumbnails(*, video_file_path):
+def _ffmpeg_generate_thumbnails(*, video_file_path, profile):
     """
     Generate a thumbnail image for every 30 secs of video.
     """
     time_offsets = _get_thumbnail_time_offsets(video_path=video_file_path)
     thumbnails = []
+    scale = f'-2:{profile.height}'
     for offset in time_offsets:
         thumb_path = video_file_path.parent / f'{offset}.jpg'
         command = (
             'ffmpeg '
             f'-ss {offset} '
             f'-i {video_file_path} '
+            # These are filters to detect a change in scenery.
             '-vf "select=gt(scene\,0.4)" '  # noqa: W605
             '-vf select="eq(pict_type\,I)" '  # noqa: W605
+            f'-vf scale={scale} '
             '-vframes 1 '
+            '-y '
             f'{thumb_path}'
         )
         result = subprocess.run(command.split(), capture_output=True)
@@ -238,7 +242,9 @@ def _ffmpeg_generate_thumbnails(*, video_file_path):
                 'ffmpeg '
                 f'-ss {offset} '
                 f'-i {video_file_path} '
+                f'-vf scale={scale} '
                 '-vframes 1 '
+                '-y '
                 f'{thumb_path}'
             )
             result = subprocess.run(
@@ -284,5 +290,7 @@ def _ffmpeg_transcode_video(*, source_file_path, profile, output_file_path):
         )
     if not output_file_path.exists():
         raise TranscodeException('No file output from transcode process')
-    thumbnails = _ffmpeg_generate_thumbnails(video_file_path=output_file_path)
+    thumbnails = _ffmpeg_generate_thumbnails(
+        profile=profile, video_file_path=output_file_path
+    )
     return output_file_path, tuple(thumbnails)
