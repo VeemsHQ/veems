@@ -147,6 +147,7 @@ class Video(BaseModel):
     )
     custom_thumbnail_image_small = ImageSpecField(
         source='custom_thumbnail_image',
+        # TODO: cover and fit and crop
         processors=[ResizeToCover(320, 240,)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
