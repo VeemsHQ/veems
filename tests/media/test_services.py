@@ -833,6 +833,7 @@ def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
         services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
             video_record=video,
             video_rendition_thumbnail_id=rendition_thumbnail.id,
+            delete_tempfile=False,
         )
     )
 

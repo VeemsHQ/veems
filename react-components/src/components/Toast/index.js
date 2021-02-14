@@ -32,7 +32,7 @@ const Container = ({
       aria-atomic="true"
       style={{
         position: 'fixed',
-        top: '0',
+        bottom: '0',
         right: '0',
         height: '2px',
         width: '100%',
@@ -42,8 +42,9 @@ const Container = ({
       <Toast
         style={{
           position: 'absolute',
-          top: 20,
-          right: 20,
+          bottom: '0px',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
         }}
         show={show}
         delay={DELAY}
