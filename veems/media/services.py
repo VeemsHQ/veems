@@ -34,6 +34,7 @@ def _get_rendition_playlists(video_record):
             'height': video_rendition.height,
             'frame_rate': video_rendition.framerate,
             'name': video_rendition.name,
+            'profile': video_rendition.profile,
             'codecs_string': video_rendition.codecs_string,
             'resolution': (
                 f'{get_width(video_rendition.height)}x{video_rendition.height}'
