@@ -1,6 +1,6 @@
 :root {
-    --video-thumb-width: 240px;
-    --video-thumb-height: 134px;
+    --video-thumb-medium-width: 240px;
+    --video-thumb-medium-height: 134px;
     --video-thumb-small-width: 127px;
     --video-thumb-small-height: 70px;
     --video-thumb-large-width: 360px;
@@ -388,10 +388,10 @@ body {
 }
 
 .thumbnail-medium {
-    width: var(--video-thumb-width);
-    height: var(--video-thumb-height);
-    min-width: var(--video-thumb-width);
-    min-height: var(--video-thumb-height);
+    width: var(--video-thumb-medium-width);
+    height: var(--video-thumb-medium-height);
+    min-width: var(--video-thumb-medium-width);
+    min-height: var(--video-thumb-medium-height);
 }
 
 .thumbnail-small {
@@ -459,16 +459,24 @@ button.remove-default-style:hover {
 }
 
 .thumbnail-generating {
-    max-width: var(--video-thumb-width);
+    max-width: var(--video-thumb-medium-width);
     height: auto;
-    max-height: var(--video-thumb-height);
+    max-height: var(--video-thumb-medium-height);
     width: auto;
 }
 
 .thumbnail img {
     display: block;
-    /* max-width: var(--video-thumb-width);
-    max-height: var(--video-thumb-height); */
+    /* max-width: var(--video-thumb-medium-width);
+    max-height: var(--video-thumb-medium-height); */
+    height: inherit;
+    width: auto;
+}
+
+.thumbnail img {
+    display: block;
+    /* max-width: var(--video-thumb-medium-width);
+    max-height: var(--video-thumb-medium-height); */
     height: inherit;
     /* width: auto; */
     margin: 0 auto;
@@ -481,7 +489,8 @@ button.remove-default-style:hover {
 .video-grid-side .thumbnail, .channel-videos .thumbnail {
     position: relative;
     height: 94px;
-    width: 168px;
+    /* width: 168px; */
+    width: auto;
     min-width: 168px;
 }
 

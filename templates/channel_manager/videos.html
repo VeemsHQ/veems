@@ -20,8 +20,8 @@
             <tr>
                 <td>
                     <div class="d-flex">
-                        <a href="#" class="thumbnail d-inline-block mr-2">
-                            <img class="card-img-top w-100" src="{{video.thumbnail_image_medium_url}}">
+                        <a href="#" class="thumbnail thumbnail-small d-inline-block mr-2">
+                            <img class="h-100" src="{{video.thumbnail_image_small_url}}">
                             <div class="overlays">{{video.video_duration}}</div>
                         </a>
                         <div class="metadata-container d-flex">
@@ -70,6 +70,7 @@
     var videos = {{ channel_videos | to_json }};
     app.CreateChannelManagerVideos({
         element: document.getElementById('videos-table'),
+        channelId: "{{channel_id}}",
         videos: videos
     })
 </script>

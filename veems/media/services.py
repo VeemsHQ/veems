@@ -3,7 +3,9 @@ import json
 import logging
 import subprocess
 import functools
+from pathlib import Path
 import operator
+import tempfile
 
 from django.core.files.base import ContentFile
 import m3u8
@@ -32,6 +34,7 @@ def _get_rendition_playlists(video_record):
             'height': video_rendition.height,
             'frame_rate': video_rendition.framerate,
             'name': video_rendition.name,
+            'profile': video_rendition.profile,
             'codecs_string': video_rendition.codecs_string,
             'resolution': (
                 f'{get_width(video_rendition.height)}x{video_rendition.height}'
@@ -110,6 +113,7 @@ def persist_video_rendition(
             video=video_record,
             file=File(file_),
             name=profile.name,
+            profile=profile.name,
             width=metadata_summary['width'],
             height=metadata_summary['height'],
             duration=metadata_summary['duration'],
@@ -323,18 +327,55 @@ def _generate_default_thumbnail_image(image_path):
         raise RuntimeError(result.stderr)
 
 
+def _resize_thumbnail_to_exact_profile_size(*, thumbnail_path, profile_name):
+    logger.info('Resizing thumbnail to size for profile %s', profile_name)
+    profile = transcoder_profiles.get_profile(profile_name)
+    command = (
+        'ffmpeg '
+        f'-i {thumbnail_path} '
+        f'-filter_complex [0]scale={profile.width}:{profile.height},'
+        'setsar=1,boxblur=15:15[b];[b]eq=brightness=-0.2[b];'
+        f'[0]scale=-2:{profile.height}[v];'
+        '[b][v]overlay=(W-w)/2 '
+        f'{thumbnail_path} '
+        '-y '
+    )
+    result = subprocess.run(command.split(), capture_output=True)
+    if result.returncode == 0 and thumbnail_path.exists():
+        return Path(thumbnail_path)
+    else:
+        raise RuntimeError(result.stderr)
+
+
 def set_video_custom_thumbnail_image_from_rendition_thumbnail(
-    *, video_record, video_rendition_thumbnail_id
+    *,
+    video_record,
+    video_rendition_thumbnail_id,
+    delete_tempfile=True,
 ):
+    logger.info(
+        'Setting custom_thumbnail_image for video %s using rendition thumb %s',
+        video_record.id,
+        video_rendition_thumbnail_id,
+    )
     rendition_thumb = models.VideoRenditionThumbnail.objects.get(
         id=video_rendition_thumbnail_id
     )
-    source_file = rendition_thumb.file
-    content = ContentFile(source_file.read())
+    temp_thumb_file = tempfile.NamedTemporaryFile(
+        suffix='.jpg', delete=delete_tempfile
+    )
+    with temp_thumb_file as file_:
+        file_.write(rendition_thumb.file.read())
+        result_file = _resize_thumbnail_to_exact_profile_size(
+            thumbnail_path=Path(temp_thumb_file.name),
+            profile_name=rendition_thumb.video_rendition.profile,
+        )
+        with result_file.open('rb') as rfile_:
+            content = ContentFile(rfile_.read())
     video_record = set_video_custom_thumbnail_image(
         video_record=video_record, thumbnail_image=content
     )
-    return video_record
+    return video_record, result_file
 
 
 def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
@@ -344,7 +385,7 @@ def set_video_custom_thumbnail_image(*, video_record, thumbnail_image):
         video_record.custom_thumbnail_image.delete()
     # Filename does not matter as it's overwritten by models.py
     # we however need to specify something at this point.
-    filename = 'temp.jpeg'
+    filename = 'temp.jpg'
     video_record.custom_thumbnail_image.save(filename, thumbnail_image)
     if had_image_before:
         cached_attrs = (

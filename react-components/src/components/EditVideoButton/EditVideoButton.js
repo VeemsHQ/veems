@@ -34,7 +34,7 @@ export const EditVideoButton = ({
   const initialDescription = valueOrEmpty(videoData.description);
   const initialTags = valueOrEmpty(videoData.tags);
   const initialVisibility = valueOrEmpty(videoData.visibility);
-  const primaryThumbnailUrl = videoData.thumbnail_image_medium_url;
+  const primaryThumbnailUrl = videoData.thumbnail_image_small_url;
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
@@ -50,13 +50,13 @@ export const EditVideoButton = ({
   // Find ideal thumbnails to display given available at that time.
   let renditionThumbnails = [];
   if (videoData.video_renditions && videoData.video_renditions.length > 0) {
-    renditionThumbnails = videoData.video_renditions.map(
-      (r) => r.rendition_thumbnails.map((t) => t)[0],
-    );
+    // Find heightest resolution rendition.
+    const bestRendition = videoData.video_renditions.sort((a, b) => b.height - a.height)[0];
+    renditionThumbnails = bestRendition.rendition_thumbnails;
   }
 
   let defaultThumbs = [];
-  if (renditionThumbnails.length >= 3) {
+  if (renditionThumbnails.length > 0) {
     const thumb0 = randomItem(renditionThumbnails);
     const thumb1 = randomItem(renditionThumbnails);
     const thumb2 = randomItem(renditionThumbnails);
@@ -317,7 +317,7 @@ export const EditVideoButton = ({
                       className="thumbnail thumbnail-medium w-100 d-flex align-items-center justify-content-center"
                       style={{ width: 'auto', height: '171px' }}
                     >
-                      <img src={primaryThumbnailUrl} alt="" className="img-fluid w-100 h-100" />
+                      <img src={primaryThumbnailUrl} alt="" className="img-fluid h-100" />
                     </div>
                   )}
                   <div className="card-body text-secondary bg-light">

@@ -14,7 +14,8 @@ def video_rendition(video, simple_uploaded_file):
     return models.VideoRendition.objects.create(
         video=video,
         file=simple_uploaded_file,
-        name='360p',
+        name='webm_360p',
+        profile='webm_360p',
         ext='webm',
         file_size=1,
     )

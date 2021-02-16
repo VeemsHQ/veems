@@ -19,14 +19,11 @@ class ChannelAPIView(APIView):
         serializer = serializers.ChannelSummarySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         channel = serializer.save()
-        serializer = serializers.ChannelSummarySerializer(
-            instance=channel
-        )
+        serializer = serializers.ChannelSummarySerializer(instance=channel)
         return Response(serializer.data, status=CREATED)
 
 
 class ChannelDetailAPIView(APIView):
-
     def get(self, request, channel_id, format=None):
         channel = services.get_channel(id=channel_id)
         serializer = serializers.ChannelSerializer(

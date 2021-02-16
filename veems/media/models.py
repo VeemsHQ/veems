@@ -3,12 +3,13 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.templatetags.static import static
 from imagekit.models import ImageSpecField
-from imagekit.processors import SmartResize
+from imagekit.processors import ResizeToFill
 from django.contrib.auth import get_user_model
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
 from . import storage_backends
+from .transcoder import transcoder_profiles
 
 STORAGE_BACKEND = storage_backends.MediaStorage
 UPLOAD_CHOICES = (
@@ -26,6 +27,9 @@ VIDEO_VISIBILITY_CHOICES = (
     'private',
     'public',
     'unlisted',
+)
+TRANSCODE_PROFILE_NAME_CHOICES = tuple(
+    (p.name, p.name) for p in transcoder_profiles.PROFILES
 )
 
 
@@ -147,21 +151,36 @@ class Video(BaseModel):
     )
     custom_thumbnail_image_small = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[SmartResize(320, 180)],
+        processors=[
+            ResizeToFill(
+                426,
+                240,
+            )
+        ],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_medium = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[SmartResize(480, 260)],
+        processors=[
+            ResizeToFill(
+                640,
+                360,
+            )
+        ],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     custom_thumbnail_image_large = ImageSpecField(
         source='custom_thumbnail_image',
-        processors=[SmartResize(1280, 720)],
+        processors=[
+            ResizeToFill(
+                1280,
+                720,
+            )
+        ],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     # Default thumb is picked from the video frames
     default_thumbnail_image = models.ImageField(
@@ -172,21 +191,36 @@ class Video(BaseModel):
     )
     default_thumbnail_image_small = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[SmartResize(320, 180)],
+        processors=[
+            ResizeToFill(
+                426,
+                240,
+            )
+        ],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_medium = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[SmartResize(480, 260)],
+        processors=[
+            ResizeToFill(
+                640,
+                360,
+            )
+        ],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
     default_thumbnail_image_large = ImageSpecField(
         source='default_thumbnail_image',
-        processors=[SmartResize(1280, 720)],
+        processors=[
+            ResizeToFill(
+                1280,
+                720,
+            )
+        ],
         format='JPEG',
-        options={'quality': 90},
+        options={'quality': 90, 'optimize': True},
     )
 
     def __str__(self):
@@ -256,7 +290,12 @@ class VideoRendition(BaseModel):
     height = models.IntegerField(null=True, blank=True)
     framerate = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
-    name = models.CharField(max_length=30, null=False)
+    name = models.CharField(max_length=30)
+    profile = models.CharField(
+        max_length=30,
+        default=None,
+        choices=TRANSCODE_PROFILE_NAME_CHOICES,
+    )
     ext = models.CharField(max_length=4, null=False)
     audio_codec = models.CharField(max_length=50, null=True, blank=True)
     video_codec = models.CharField(max_length=50, null=True, blank=True)
@@ -329,7 +368,9 @@ class TranscodeJob(BaseModel):
         blank=False,
         related_name='transcode_jobs',
     )
-    profile = models.CharField(max_length=100)
+    profile = models.CharField(
+        max_length=100, choices=TRANSCODE_PROFILE_NAME_CHOICES
+    )
     executor = models.CharField(max_length=20)
     status = models.CharField(
         max_length=10,

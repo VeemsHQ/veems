@@ -360,7 +360,8 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
     video_rendition = models.VideoRendition.objects.create(
         video=video,
         file=simple_uploaded_file,
-        name='360p',
+        name='webm_360p',
+        profile='webm_360p',
         ext='webm',
         file_size=1,
     )
@@ -464,7 +465,8 @@ def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
             'height': 360,
             'playlist_url': mocker.ANY,
             'width': 640,
-            'name': '360p',
+            'name': 'webm_360p',
+            'profile': 'webm_360p',
             'resolution': '640x360',
             'bandwidth': 182464,
             'frame_rate': 30,
@@ -474,7 +476,8 @@ def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
             'height': 1080,
             'playlist_url': mocker.ANY,
             'width': 1920,
-            'name': '1080p',
+            'name': 'webm_1080p',
+            'profile': 'webm_1080p',
             'resolution': '1920x1080',
             'bandwidth': 5127303,
             'frame_rate': 30,
@@ -829,11 +832,17 @@ def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
 ):
     assert not video.custom_thumbnail_image
 
-    updated_video = (
-        services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
-            video_record=video,
-            video_rendition_thumbnail_id=rendition_thumbnail.id,
-        )
+    (
+        updated_video,
+        thumbnail_path,
+    ) = services.set_video_custom_thumbnail_image_from_rendition_thumbnail(
+        video_record=video,
+        video_rendition_thumbnail_id=rendition_thumbnail.id,
+        delete_tempfile=False,
     )
 
+    # TODO: tests with diff input res, assert on output img res.
     assert updated_video.custom_thumbnail_image
+    metadata = services.get_metadata(thumbnail_path)
+    assert metadata['summary']['width'] == transcoder_profiles.Webm144p.width
+    assert metadata['summary']['height'] == transcoder_profiles.Webm144p.height
