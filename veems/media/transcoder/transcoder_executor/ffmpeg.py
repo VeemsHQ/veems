@@ -76,26 +76,23 @@ def transcode(*, transcode_job, source_file_path):
                 transcode_job,
                 transcode_job.video_id,
             )
+            video = transcode_job.video
+            video.refresh_from_db()
             video_rendition = services.persist_video_rendition(
-                video_record=transcode_job.video,
+                video_record=video,
                 video_path=output_file_path,
                 metadata=metadata_transcoded,
                 profile=profile,
                 codecs_string=None,
             )
-            if not (
-                transcode_job.video.duration and transcode_job.video.framerate
-            ):
-                logger.info(
-                    'Updating video %s metadata...', transcode_job.video_id
-                )
-                transcode_job.video.duration = video_rendition.duration
-                transcode_job.video.framerate = video_rendition.framerate
-                transcode_job.video.save()
+            video.refresh_from_db()
+            if not (video.duration and video.framerate):
+                logger.info('Updating video %s metadata...', video.id)
+                video.duration = video_rendition.duration
+                video.framerate = video_rendition.framerate
+                video.save(update_fields=('duration', 'framerate'))
             else:
-                logger.info(
-                    'Video metadata already set %s', transcode_job.video_id
-                )
+                logger.info('Video metadata already set %s', video.id)
             logger.info(
                 'Creating segments for video %s %s...',
                 transcode_job,
@@ -113,7 +110,7 @@ def transcode(*, transcode_job, source_file_path):
                 video_id=video_rendition.video_id,
             )
             video_rendition.codecs_string = codecs_string
-            video_rendition.save()
+            video_rendition.save(update_fields=('codecs_string',))
             logger.info(
                 'Persisting transcoded video segments %s %s %s...',
                 len(segment_paths),
@@ -138,7 +135,7 @@ def transcode(*, transcode_job, source_file_path):
                 thumbnail_paths=tuple(t[1] for t in thumbnails),
             )
             services.mark_transcode_job_completed(transcode_job=transcode_job)
-            services.mark_video_as_viewable(video=transcode_job.video)
+            services.mark_video_as_viewable(video=video)
             logger.info('Completed transcode job %s', transcode_job)
             return video_rendition, thumbnail_records
 

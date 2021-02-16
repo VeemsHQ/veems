@@ -115,7 +115,7 @@ export const ChannelManagerVideos = ({
                     <h5 className="m-0 mb-1"><a href="#">{video.title}</a></h5>
                     <div className="metadata">
                       <div className="card-text text-muted text-wrap text-truncate">
-                        <a href="#">{truncate(video.description, descMaxLen)}</a>
+                        <a href="#">{truncate(video.description ? video.description : '', descMaxLen)}</a>
                       </div>
                     </div>
                   </div>
