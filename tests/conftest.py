@@ -384,6 +384,7 @@ def expected_video_resp_json():
             'channel_id': str,
             'channel_name': str,
             'channel': str,
+            'filename': str,
             'comment_count': int,
             'created_date_human': str,
             'created_date': str,
