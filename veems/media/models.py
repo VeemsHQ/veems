@@ -139,6 +139,7 @@ class Video(BaseModel):
     )
     is_viewable = models.BooleanField(default=False, db_index=True)
     description = models.TextField(max_length=5000, null=True, blank=True)
+    filename = models.TextField(max_length=500)
     tags = ArrayField(models.TextField(max_length=1000), null=True, blank=True)
     framerate = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, default=0)

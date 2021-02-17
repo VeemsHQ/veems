@@ -22,6 +22,7 @@ def test_prepare(user, channel_factory):
     assert video.visibility == 'public'
     assert upload.channel == channel
     assert video.channel == channel
+    assert video.filename == 'MyFile.mp4'
 
 
 class TestComplete:
