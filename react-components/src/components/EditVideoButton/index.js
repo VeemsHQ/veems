@@ -16,6 +16,7 @@ import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import {
   getVideoById, updateVideo, updateVideoCustomThumbnail, setExistingThumbnailAsPrimary,
 } from '../../api/api';
+import { randomItem } from '../../utils';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -29,12 +30,36 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
   isError: true,
 };
 
+
+const getAutogenThumbnailChoices = (videoData) => {
+  let renditionThumbnails = [];
+  if (videoData.video_renditions && videoData.video_renditions.length > 0) {
+    // Find heightest resolution rendition.
+    const bestRendition = videoData.video_renditions.sort((a, b) => b.height - a.height)[0];
+    renditionThumbnails = bestRendition.rendition_thumbnails;
+  }
+  if (renditionThumbnails.length > 0) {
+    const thumb0 = randomItem(renditionThumbnails);
+    const thumb1 = randomItem(renditionThumbnails);
+    const thumb2 = randomItem(renditionThumbnails);
+    return [
+      [thumb0.id, thumb0.file],
+      [thumb1.id, thumb1.file],
+      [thumb2.id, thumb2.file],
+    ];
+  } else{
+    return [];
+  }
+}
+
 const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
+  const [autogenThumbnailChoices, setAutogenThumbnailChoices] = useState([]);
+
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
@@ -89,6 +114,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     const { data } = await getVideoById(videoId);
     if (data) {
       setVideoData(data);
+      setAutogenThumbnailChoices(getAutogenThumbnailChoices(data));
     }
     setIsLoading(false);
   };
@@ -114,6 +140,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
       isModalOpen={modalOpen}
       isLoading={isLoading}
       videoData={videoData}
+      autogenThumbnailChoices={autogenThumbnailChoices}
       apiErrors={apiErrors}
       onModalOpen={() => handleEditVideoModalOpen}
       onModalClose={() => handleEditVideoModalClose}

@@ -6,12 +6,7 @@ import Form from 'react-bootstrap/Form';
 
 import 'regenerator-runtime/runtime.js';
 
-const valueOrEmpty = (value) => ((value !== undefined && value !== null) ? value : '');
-
-const randomItem = (choices) => {
-  const index = Math.floor(Math.random() * choices.length);
-  return choices[index];
-};
+import { valueOrEmpty } from '../../utils';
 
 export const EditVideoButton = ({
   inputThumbnailFile,
@@ -25,6 +20,7 @@ export const EditVideoButton = ({
   onFormFieldChange,
   onInputThumbnailChange,
   onSetExistingThumbnailAsPrimary,
+  autogenThumbnailChoices,
   apiErrors,
 }) => {
   const saveButtonText = isSaving ? 'Saving...' : 'Save Changes';
@@ -34,41 +30,21 @@ export const EditVideoButton = ({
   const initialDescription = valueOrEmpty(videoData.description);
   const initialTags = valueOrEmpty(videoData.tags);
   const initialVisibility = valueOrEmpty(videoData.visibility);
-  const initialFilename = valueOrEmpty(videoData.filename);
+  const filename = valueOrEmpty(videoData.filename);
   const primaryThumbnailUrl = videoData.thumbnail_image_small_url;
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
-  const [filename, setFilename] = useState(initialFilename);
 
   React.useEffect(() => {
     setTitle(initialTitle);
     setDescription(initialDescription);
     setTags(initialTags);
     setVisibility(initialVisibility);
-    setFilename(initialFilename);
-  }, [initialTitle, initialDescription, initialTags, initialVisibility, initialFilename]);
+  }, [videoData]);
 
-  // Find ideal thumbnails to display given available at that time.
-  let renditionThumbnails = [];
-  if (videoData.video_renditions && videoData.video_renditions.length > 0) {
-    // Find heightest resolution rendition.
-    const bestRendition = videoData.video_renditions.sort((a, b) => b.height - a.height)[0];
-    renditionThumbnails = bestRendition.rendition_thumbnails;
-  }
 
-  let defaultThumbs = [];
-  if (renditionThumbnails.length > 0) {
-    const thumb0 = randomItem(renditionThumbnails);
-    const thumb1 = randomItem(renditionThumbnails);
-    const thumb2 = randomItem(renditionThumbnails);
-    defaultThumbs = [
-      [thumb0.id, thumb0.file],
-      [thumb1.id, thumb1.file],
-      [thumb2.id, thumb2.file],
-    ];
-  }
 
   const debouncedOnFormFieldChange = useCallback(
     debounce((videoData, data) => onFormFieldChange(videoData, data), 1000),
@@ -198,7 +174,7 @@ export const EditVideoButton = ({
                       </span>
                     </button>
                     <input type="file" onChange={onInputThumbnailChange} id="custom_thumbnail_image" ref={inputThumbnailFile} className="d-none" />
-                    {defaultThumbs.length > 0 && (
+                    {autogenThumbnailChoices.length > 0 && (
                       <>
                         {!isThumbnailUploading && (
                         <button type="button" className="thumbnail thumbnail-small thumbnail-selected mr-2 rounded d-flex align-items-center">
@@ -214,33 +190,33 @@ export const EditVideoButton = ({
                           className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
                         />
                         )}
-                        <button data-id={defaultThumbs[0][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                        <button data-id={autogenThumbnailChoices[0][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
-                            src={defaultThumbs[0][1]}
-                            data-id={defaultThumbs[0][0]}
+                            src={autogenThumbnailChoices[0][1]}
+                            data-id={autogenThumbnailChoices[0][0]}
                             alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
-                        <button data-id={defaultThumbs[1][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
+                        <button data-id={autogenThumbnailChoices[1][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
-                            src={defaultThumbs[1][1]}
-                            data-id={defaultThumbs[1][0]}
+                            src={autogenThumbnailChoices[1][1]}
+                            data-id={autogenThumbnailChoices[1][0]}
                             alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
-                        <button data-id={defaultThumbs[2][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected rounded">
+                        <button data-id={autogenThumbnailChoices[2][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected rounded">
                           <img
-                            src={defaultThumbs[2][1]}
-                            data-id={defaultThumbs[2][0]}
+                            src={autogenThumbnailChoices[2][1]}
+                            data-id={autogenThumbnailChoices[2][0]}
                             alt="Thumbnail"
                             className="img-fluid h-100"
                           />
                         </button>
                       </>
                     )}
-                    {defaultThumbs.length === 0
+                    {autogenThumbnailChoices.length === 0
                     && (
                       <>
                         <div
