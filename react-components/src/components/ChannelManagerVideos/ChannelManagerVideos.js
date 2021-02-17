@@ -112,10 +112,10 @@ export const ChannelManagerVideos = ({
           <tr key={index}>
             <td>
               <div className="d-flex">
-                <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2">
+                <button type="button" onClick={handleSetEditModalOpen}  className="thumbnail thumbnail-small d-inline-block mr-2">
                   <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
-                </a>
+                </button>
                 <div className="metadata-container d-flex">
                   <div className="content p-2">
                     <h5 className="m-0 mb-1"><a href="#">{video.title}</a></h5>
@@ -132,7 +132,7 @@ export const ChannelManagerVideos = ({
                       onSetModalClosed={handleSetEditModalClosed}
                       isModalOpen={isEditModalOpen}
                     />
-                    <button type="button" onClick={() => handleSetEditModalOpen()} className="btn"><i className="material-icons text-secondary">create</i></button>
+                    <button type="button" onClick={handleSetEditModalOpen} className="btn"><i className="material-icons text-secondary">create</i></button>
                     <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
                     <DeleteVideoButtonContainer videoId={video.id} />
                     <a href="#" className="btn"><i className="material-icons text-secondary d-none">delete</i></a>
