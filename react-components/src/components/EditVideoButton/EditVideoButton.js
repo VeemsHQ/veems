@@ -34,18 +34,21 @@ export const EditVideoButton = ({
   const initialDescription = valueOrEmpty(videoData.description);
   const initialTags = valueOrEmpty(videoData.tags);
   const initialVisibility = valueOrEmpty(videoData.visibility);
+  const initialFilename = valueOrEmpty(videoData.filename);
   const primaryThumbnailUrl = videoData.thumbnail_image_small_url;
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
+  const [filename, setFilename] = useState(initialFilename);
 
   React.useEffect(() => {
     setTitle(initialTitle);
     setDescription(initialDescription);
     setTags(initialTags);
     setVisibility(initialVisibility);
-  }, [initialTitle, initialDescription, initialTags, initialVisibility]);
+    setFilename(initialFilename);
+  }, [initialTitle, initialDescription, initialTags, initialVisibility, initialFilename]);
 
   // Find ideal thumbnails to display given available at that time.
   let renditionThumbnails = [];
@@ -330,7 +333,7 @@ export const EditVideoButton = ({
                     <p className="card-text text-truncate">Filename<br />
                       <span
                         className="text-dark"
-                      >uploadingFileName.mp4
+                      >{filename}
                       </span>
                     </p>
                   </div>

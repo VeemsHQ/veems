@@ -40,7 +40,9 @@ def prepare(*, user, filename, channel_id):
     )
     upload.save()
     title = _default_video_title_from_filename(filename)
-    video = services.create_video(upload=upload, title=title)
+    video = services.create_video(
+        upload=upload, title=title, filename=filename
+    )
     logger.info(
         'Done preparing upload for user %s, draft video %s', user.id, video.id
     )
