@@ -31,7 +31,7 @@ def update_channel(*, channel, **kwargs):
         if field == 'user':
             raise RuntimeError('Updating of channel user is not permitted')
         setattr(channel, field, val)
-    channel.save()
+    channel.save(update_fields=tuple(kwargs.keys()))
     if channel.is_selected:
         channel.user.channels.exclude(id=channel.id).update(is_selected=False)
     return channel
@@ -54,12 +54,12 @@ def get_channels(user_id=None):
 def set_channel_avatar_image(*, channel, avatar_image):
     logger.info('Setting avatar image for channel %s...', channel.id)
     channel.avatar_image = avatar_image
-    channel.save()
+    channel.save(update_fields=('avatar_image',))
     return channel
 
 
 def set_channel_banner_image(*, channel, banner_image):
     logger.info('Setting banner image for channel %s...', channel.id)
     channel.banner_image = banner_image
-    channel.save()
+    channel.save(update_fields=('banner_image',))
     return channel

@@ -67,4 +67,4 @@ def complete(upload_id):
 
 def _mark_upload_completed(upload):
     upload.status = 'completed'
-    upload.save()
+    upload.save(update_fields=('status',))

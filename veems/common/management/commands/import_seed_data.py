@@ -41,7 +41,7 @@ def _run():
                 )
                 video_record.title = video['title']
                 video_record.description = video['description']
-                video_record.save()
+                video_record.save(update_fields=('title', 'description'))
                 print('Created Video', video_record.id)
                 with path.open('rb') as file_:
                     # Upload the file completely outside of Django
@@ -50,7 +50,7 @@ def _run():
                     )
                     resp.raise_for_status()
                     upload.file = File(file_)
-                    upload.save()
+                    upload.save(update_fields=('file',))
                 upload_manager.complete(upload_id=upload.id)
 
 

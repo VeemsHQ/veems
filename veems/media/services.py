@@ -79,13 +79,15 @@ def generate_master_playlist(video_id):
 def mark_transcode_job_completed(*, transcode_job):
     transcode_job.status = 'completed'
     transcode_job.ended_on = timezone.now()
-    transcode_job.save()
+    transcode_job.save(update_fields=('status', 'ended_on'))
+    transcode_job.refresh_from_db()
     return transcode_job
 
 
 def mark_video_as_viewable(*, video):
     video.is_viewable = True
-    video.save()
+    video.save(update_fields=('is_viewable',))
+    video.refresh_from_db()
     return video
 
 
@@ -93,14 +95,27 @@ def mark_transcode_job_failed(*, transcode_job, failure_context=None):
     transcode_job.status = 'failed'
     transcode_job.failure_context = failure_context
     transcode_job.ended_on = timezone.now()
-    transcode_job.save()
+    transcode_job.save(
+        update_fields=(
+            'status',
+            'failure_context',
+            'ended_on',
+        )
+    )
+    transcode_job.refresh_from_db()
     return transcode_job
 
 
 def mark_transcode_job_processing(*, transcode_job):
     transcode_job.status = 'processing'
     transcode_job.started_on = timezone.now()
-    transcode_job.save()
+    transcode_job.save(
+        update_fields=(
+            'status',
+            'started_on',
+        )
+    )
+    transcode_job.refresh_from_db()
     return transcode_job
 
 
@@ -133,7 +148,7 @@ def persist_video_rendition_segments(
 ):
     with segments_playlist_file.open('rb') as file_:
         video_rendition.playlist_file = File(file_)
-        video_rendition.save()
+        video_rendition.save(update_fields=('playlist_file',))
     for segment_path in segments:
         with segment_path.open('rb') as file_:
             models.VideoRenditionSegment.objects.create(
@@ -246,7 +261,7 @@ def delete_video(id):
     logger.info('Deleting video %s...', id)
     video = get_video(include_deleted=True, id=id)
     video.deleted_on = timezone.now()
-    video.save()
+    video.save(update_fields=('deleted_on',))
     return video
 
 
@@ -292,7 +307,7 @@ def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
     image_path = _generate_default_thumbnail_image(image_path=image_path)
     with image_path.open('rb') as file_:
         video_record.default_thumbnail_image = File(file_)
-        video_record.save()
+        video_record.save(update_fields=('default_thumbnail_image',))
     cached_attrs = (
         'default_thumbnail_image_small',
         'default_thumbnail_image_medium',
@@ -301,6 +316,7 @@ def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):
     for attr in cached_attrs:
         getattr(video_record, attr).generate(force=True)
     logger.info('Done setting default thumbnail for video %s', video_record.id)
+    video_record.refresh_from_db()
     return video_record
 
 
