@@ -36,6 +36,7 @@ export const EditVideoButton = ({
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
+  const [filename, setFilename] = useState(initialFilename);
 
   React.useEffect(() => {
     setTitle(initialTitle);
@@ -43,8 +44,6 @@ export const EditVideoButton = ({
     setTags(initialTags);
     setVisibility(initialVisibility);
   }, [videoData]);
-
-
 
   const debouncedOnFormFieldChange = useCallback(
     debounce((videoData, data) => onFormFieldChange(videoData, data), 1000),
