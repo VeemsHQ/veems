@@ -34,7 +34,7 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
 const getAutogenThumbnailChoices = (videoData) => {
   let renditionThumbnails = [];
   if (videoData.video_renditions && videoData.video_renditions.length > 0) {
-    // Find heightest resolution rendition.
+    // Find highest resolution rendition.
     const bestRendition = videoData.video_renditions.sort((a, b) => b.height - a.height)[0];
     renditionThumbnails = bestRendition.rendition_thumbnails;
   }
