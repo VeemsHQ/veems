@@ -8,7 +8,7 @@ import 'regenerator-runtime/runtime.js';
 
 import { valueOrEmpty } from '../../utils';
 
-export const EditVideoButton = ({
+export const VideoEditModal = ({
   inputThumbnailFile,
   isSaving,
   isThumbnailUploading,
@@ -36,7 +36,6 @@ export const EditVideoButton = ({
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
-  const [filename, setFilename] = useState(initialFilename);
 
   React.useEffect(() => {
     setTitle(initialTitle);
@@ -330,10 +329,9 @@ export const EditVideoButton = ({
 
   return (
     <>
-      <button type="button" onClick={onModalOpen()} className="btn"><i className="material-icons text-secondary">create</i></button>
       {renderModal()}
     </>
   );
 };
 
-export default EditVideoButton;
+export default VideoEditModal;

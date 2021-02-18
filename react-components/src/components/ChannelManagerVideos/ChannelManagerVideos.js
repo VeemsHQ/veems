@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-import { EditVideoButtonContainer } from '../EditVideoButton';
+import { VideoEditModalContainer } from '../VideoEditModal';
 import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
 
 import 'regenerator-runtime/runtime.js';
@@ -11,11 +11,17 @@ const truncate = (input, max) => (input.length > max ? `${input.substring(0, max
 export const ChannelManagerVideos = ({
   videos,
   isLoading,
-  isEditModalOpen,
-  onEditModalClose,
-  onEditModalOpen,
-}) => (
-  <>
+}) => {
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const handleSetEditModalOpen = () => {
+    setEditModalOpen(true);
+  }
+
+  const handleSetEditModalClosed = () => {
+    setEditModalOpen(false);
+  }
+
+  return(<>
     <table className="table mt-4">
       <thead>
         <tr className="text-muted">
@@ -106,10 +112,10 @@ export const ChannelManagerVideos = ({
           <tr key={index}>
             <td>
               <div className="d-flex">
-                <a href="#" className="thumbnail thumbnail-small d-inline-block mr-2">
+                <button type="button" onClick={handleSetEditModalOpen}  className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
                   <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
-                </a>
+                </button>
                 <div className="metadata-container d-flex">
                   <div className="content p-2">
                     <h5 className="m-0 mb-1"><a href="#">{video.title}</a></h5>
@@ -120,14 +126,14 @@ export const ChannelManagerVideos = ({
                     </div>
                   </div>
                   <div className="overlay align-items-center">
-                    <EditVideoButtonContainer
+                    <VideoEditModalContainer
                       videoId={video.id}
+                      onSetModalOpen={handleSetEditModalOpen}
+                      onSetModalClosed={handleSetEditModalClosed}
                       isModalOpen={isEditModalOpen}
-                      onModalOpen={() => onEditModalOpen}
-                      onModalClose={() => onEditModalClose}
                     />
+                    <button type="button" onClick={handleSetEditModalOpen} className="btn"><i className="material-icons text-secondary">create</i></button>
                     <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
-
                     <DeleteVideoButtonContainer videoId={video.id} />
                     <a href="#" className="btn"><i className="material-icons text-secondary d-none">delete</i></a>
                   </div>
@@ -158,7 +164,7 @@ export const ChannelManagerVideos = ({
         ))}
       </tbody>
     </table>
-  </>
-);
+  </>);
+};
 
 export default ChannelManagerVideos;

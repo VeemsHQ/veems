@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import EditVideoButton from './EditVideoButton';
+import VideoEditModal from './VideoEditModal';
 
 import {
   setChannelSyncModalOpenAction,
@@ -52,8 +52,7 @@ const getAutogenThumbnailChoices = (videoData) => {
   }
 }
 
-const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+const Container = ({ videoId, fetchActiveChannelVideos, createToast, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -62,6 +61,12 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
+
+  React.useEffect(async() => {
+    if(isModalOpen) {
+    await handleEditVideoModalOpen();
+    }
+  }, [isModalOpen]);
 
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
@@ -104,13 +109,10 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     }
   };
 
-  const handleEditVideoModalClose = () => {
-    setModalOpen(false);
-    setIsLoading(true);
-  };
-
   const handleEditVideoModalOpen = async () => {
-    setModalOpen(true);
+    console.log('handleEditVideoModalOpen');
+    setIsLoading(true);
+    onSetModalOpen();
     const { data } = await getVideoById(videoId);
     if (data) {
       setVideoData(data);
@@ -133,17 +135,17 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   };
 
   return (
-    <EditVideoButton
+    <VideoEditModal
       inputThumbnailFile={inputThumbnailFile}
       isThumbnailUploading={isThumbnailUploading}
       isSaving={isSaving}
-      isModalOpen={modalOpen}
+      isModalOpen={isModalOpen}
       isLoading={isLoading}
       videoData={videoData}
       autogenThumbnailChoices={autogenThumbnailChoices}
       apiErrors={apiErrors}
       onModalOpen={() => handleEditVideoModalOpen}
-      onModalClose={() => handleEditVideoModalClose}
+      onModalClose={() => onSetModalClosed}
       onFormFieldChange={handleVideoUpdate}
       onInputThumbnailChange={handleInputThumbnailChange}
       onSetExistingThumbnailAsPrimary={handleSetExistingThumbnailAsPrimary}
@@ -163,7 +165,7 @@ const mapDispatchToProps = (dispatch) => ({
 export const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
 // NOTE: This does not render to the DOM like other components.
-export const EditVideoButtonContainer = ({
+export const VideoEditModalContainer = ({
   element,
   ...params
 }) => (
