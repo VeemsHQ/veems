@@ -86,6 +86,11 @@ urlpatterns = [
         name='channel-manager-videos',
     ),
     path(
+        'upload/',
+        channel_manager_views.upload_redirect,
+        name='upload',
+    ),
+    path(
         'channel/monetization/',
         channel_manager_views.MonetizationView.as_view(),
         name='channel-manager-monetization',

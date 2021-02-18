@@ -13,9 +13,10 @@
 </div>
 <div id="actions" class="border my-3 rounded p-3">
     <h4>Actions</h4>
-    <div><a href="#" class="btn btn-outline-secondary" data-toggle="modal" data-target="#uploadModal"><i
-                class="material-icons align-middle">backup</i> Upload
-            Video</a>
+    <div>
+        <a href="{% url 'upload' %}" class="btn btn-outline-secondary">
+        <i class="material-icons align-middle">backup</i> Upload Video
+        </a>
     </div>
     <div><a href="{% url 'channel-manager-sync' %}" class="mt-2 btn btn-outline-secondary"><i
                 class="material-icons align-middle">sync</i>
