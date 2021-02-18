@@ -8,7 +8,7 @@ import 'regenerator-runtime/runtime.js';
 
 import { valueOrEmpty } from '../../utils';
 
-export const VideoEditModal = ({
+export const VideoDetailModal = ({
   inputThumbnailFile,
   isSaving,
   isThumbnailUploading,
@@ -334,4 +334,4 @@ export const VideoEditModal = ({
   );
 };
 
-export default VideoEditModal;
+export default VideoDetailModal;

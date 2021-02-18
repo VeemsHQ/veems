@@ -5,7 +5,8 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import VideoEditModal from './VideoEditModal';
+import VideoDetailModal from './VideoDetailModal';
+import FileUploadChooseModal from './FileUploadChooseModal';
 
 import {
   setChannelSyncModalOpenAction,
@@ -52,7 +53,8 @@ const getAutogenThumbnailChoices = (videoData) => {
   }
 }
 
-const Container = ({ videoId, fetchActiveChannelVideos, createToast, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
+const Container = ({ videoId, fetchActiveChannelVideos, createToast, isChooseFileUploadModalOpen, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
+
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -61,6 +63,10 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast, isModalOpen
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
+
+  console.log('isChooseFileUploadModalOpen');
+  console.log(videoId);
+  console.log(isChooseFileUploadModalOpen);
 
   React.useEffect(async() => {
     if(isModalOpen) {
@@ -134,8 +140,16 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast, isModalOpen
     updateParentState(videoData.channel_id);
   };
 
+  if(isChooseFileUploadModalOpen === true) {
+    return (
+      <FileUploadChooseModal
+        isModalOpen={isChooseFileUploadModalOpen}
+      />
+    );
+  }
+
   return (
-    <VideoEditModal
+    <VideoDetailModal
       inputThumbnailFile={inputThumbnailFile}
       isThumbnailUploading={isThumbnailUploading}
       isSaving={isSaving}
@@ -165,7 +179,7 @@ const mapDispatchToProps = (dispatch) => ({
 export const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
 // NOTE: This does not render to the DOM like other components.
-export const VideoEditModalContainer = ({
+export const VideoDetailModalContainer = ({
   element,
   ...params
 }) => (

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import { VideoEditModalContainer } from '../VideoEditModal';
+import { VideoDetailModalContainer } from '../VideoDetailModal';
 import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
 
 import 'regenerator-runtime/runtime.js';
@@ -126,8 +126,9 @@ export const ChannelManagerVideos = ({
                     </div>
                   </div>
                   <div className="overlay align-items-center">
-                    <VideoEditModalContainer
+                    <VideoDetailModalContainer
                       videoId={video.id}
+                      isChooseFileUploadModalOpen={true}
                       onSetModalOpen={handleSetEditModalOpen}
                       onSetModalClosed={handleSetEditModalClosed}
                       isModalOpen={isEditModalOpen}
