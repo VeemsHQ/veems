@@ -141,6 +141,7 @@ const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, 
   };
 
   const handleFileSelect = async (acceptedFiles) => {
+    // https://github.com/cvisionai/tator/blob/e7dd26489ab50637e480c22ded01673e27f5cad9/main/static/js/tasks/upload-worker.js
     console.log('----setIsFileSelected');
     setIsFileSelected(true);
 
@@ -155,6 +156,7 @@ const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, 
       const uploadId = data.upload_id;
       const videoId = data.video_id;
       const presignedUploadUrl = data.presigned_upload_url;
+      console.log(presignedUploadUrl);
       // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
       // setApiErrors(null);
       // setVideoData(data);

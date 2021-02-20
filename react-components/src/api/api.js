@@ -118,6 +118,31 @@ export const uploadPrepare = async (channelId, filename) => {
   }
 }
 
+// const FILE_CHUNK_SIZE = 10_000_000
+
+// export const uploadParts = async (file, urls) => {
+//   const formData = new FormData();
+
+//   // append the fields in presignedPostData in formData
+//   Object.keys(presignedPostData.fields).forEach(key => {
+//     formData.append(key, presignedPostData.fields[key]);
+//   });
+
+//   // append the file
+//   formData.append("file", file.src);
+
+//   // post the data on the s3 url
+//   API_MULTIPART.post(presignedPostData.url, formData,.then(function (response) {
+//     console.log(response);
+//   })
+//     .catch(function (error) {
+//       console.log(error);
+//     });
+
+// };
+// }
+
+
 export const setExistingThumbnailAsPrimary = async (videoId, videoRenditionThumbnailId) => {
   try {
     const res = await API.post(`${serverURL}/api/v1/video/${videoId}/thumbnail/${videoRenditionThumbnailId}/`);
