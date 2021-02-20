@@ -16,7 +16,7 @@ import {
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import {
   getVideoById, updateVideo, updateVideoCustomThumbnail, setExistingThumbnailAsPrimary,
-  uploadPrepare,
+  uploadPrepare, uploadVideoParts,
 } from '../../api/api';
 import { randomItem } from '../../utils';
 
@@ -65,8 +65,6 @@ const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, 
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
-
-  console.log(channelId);
 
   React.useEffect(async () => {
     if (isModalOpen) {
@@ -140,23 +138,44 @@ const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, 
     updateParentState(videoData.channel_id);
   };
 
+  const updateUploadProgress = () => {
+    return 1
+  }
+
   const handleFileSelect = async (acceptedFiles) => {
     // https://github.com/cvisionai/tator/blob/e7dd26489ab50637e480c22ded01673e27f5cad9/main/static/js/tasks/upload-worker.js
+    // https://www.altostra.com/blog/multipart-uploads-with-s3-presigned-url
     console.log('----setIsFileSelected');
     setIsFileSelected(true);
 
-    const filename = acceptedFiles[0].name;
+    const file = acceptedFiles[0]
+    const filename = file.name;
+    const chunkSize = 10 * 1024 * 1024; // 10MB;
+    const fileSize = file.size;
+    const numParts = Math.ceil(fileSize / chunkSize)
 
-    const { response, data } = await uploadPrepare(channelId, filename);
+    const { response, data } = await uploadPrepare(channelId, filename, numParts);
     setIsSaving(false);
     if (response?.status === 400) {
       alert('upload error');
     } else {
       console.log(data);
+
       const uploadId = data.upload_id;
       const videoId = data.video_id;
-      const presignedUploadUrl = data.presigned_upload_url;
-      console.log(presignedUploadUrl);
+      const presignedUploadUrls = data.presigned_upload_urls;
+      console.log(presignedUploadUrls.length);
+
+      const parts = await uploadVideoParts(
+        presignedUploadUrls,
+        file,
+        numParts,
+        fileSize,
+        chunkSize,
+        updateUploadProgress,
+      )
+      console.log('Done uploadVideoParts');
+      console.log(parts);
       // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
       // setApiErrors(null);
       // setVideoData(data);

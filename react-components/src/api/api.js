@@ -106,9 +106,9 @@ export const updateVideo = async (videoId, data) => {
   }
 };
 
-export const uploadPrepare = async (channelId, filename) => {
+export const uploadPrepare = async (channelId, filename, numParts) => {
   const url = '/api/v1/upload/prepare/'
-  const data = { channel_id: channelId, filename: filename };
+  const data = { channel_id: channelId, filename: filename, num_parts: numParts };
   try {
     const res = await API.put(url, data);
     return res;
@@ -116,6 +116,33 @@ export const uploadPrepare = async (channelId, filename) => {
     handleError(err);
     return err;
   }
+}
+
+
+export const uploadVideoParts = async (presignedUploadUrls, file, numParts, fileSize, chunkSize, progressCallback) => {
+  console.log('uploadVideoParts);');
+  let parts = [];
+  var options = {
+    headers: {
+      'Content-Type': file.type
+    }
+  };
+  for (let idx = 0; idx < numParts; idx++) {
+    const startByte = chunkSize * idx;
+    const stopByte = Math.min(startByte + chunkSize, fileSize);
+    const url = presignedUploadUrls[idx];
+    debugger;
+    const body = file.slice(startByte, stopByte);
+    try {
+      const res = await axios.create().put(url, body, options);
+      console.log(res.headers);
+      parts.push({ etag: res.headers.get("ETag"), part_number: idx + 1 });
+    } catch (err) {
+      handleError(err);
+      throw err;
+    }
+  }
+  return parts;
 }
 
 // const FILE_CHUNK_SIZE = 10_000_000
