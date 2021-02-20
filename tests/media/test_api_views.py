@@ -31,7 +31,13 @@ class TestUploadPrepare:
         self, api_client_no_auth, channel
     ):
         api_client = api_client_no_auth
-        body = json.dumps({'filename': 'MyFile.mp4', 'channel_id': channel.id})
+        body = json.dumps(
+            {
+                'filename': 'MyFile.mp4',
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
+        )
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
@@ -41,12 +47,18 @@ class TestUploadPrepare:
         assert models.Upload.objects.count() == 0
         assert models.Video.objects.count() == 0
 
-    def test_put_with_filename_returns_upload_id(
+    def test_put_with_filename_and_num_parts_returns_upload_id(
         self, api_client, channel_factory
     ):
         api_client, user = api_client
         channel = channel_factory(user=user)
-        body = json.dumps({'filename': 'MyFile.mp4', 'channel_id': channel.id})
+        body = json.dumps(
+            {
+                'filename': 'MyFile.mp4',
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
+        )
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
@@ -55,21 +67,28 @@ class TestUploadPrepare:
         assert response.status_code == CREATED
         assert models.Upload.objects.filter(channel__user=user).count() == 1
         assert models.Video.objects.filter(channel__user=user).count() == 1
+        assert models.Upload.objects.first().presigned_upload_urls
         assert response.json() == {
             'upload_id': models.Upload.objects.first().id,
             'video_id': models.Video.objects.first().id,
-            'presigned_upload_url': (
-                models.Upload.objects.first().presigned_upload_url
+            'presigned_upload_urls': (
+                models.Upload.objects.first().presigned_upload_urls
             ),
         }
 
     def test_returns_404_when_attempting_to_upload_to_another_users_channel(
         self, user_factory, api_client, channel_factory
     ):
-        api_client, user = api_client
+        api_client, _ = api_client
         another_user = user_factory()
         channel = channel_factory(user=another_user)
-        body = json.dumps({'filename': 'MyFile.mp4', 'channel_id': channel.id})
+        body = json.dumps(
+            {
+                'filename': 'MyFile.mp4',
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
+        )
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
@@ -82,8 +101,13 @@ class TestUploadPrepare:
         self,
         api_client,
     ):
-        api_client, user = api_client
-        body = json.dumps({'filename': 'MyFile.mp4'})
+        api_client, _ = api_client
+        body = json.dumps(
+            {
+                'filename': 'MyFile.mp4',
+                'num_parts': 3,
+            }
+        )
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
@@ -92,26 +116,53 @@ class TestUploadPrepare:
         assert response.status_code == BAD_REQUEST
         assert response.json() == {'detail': 'channel_id not provided'}
 
-    def test_put_without_filename_returns_400(
-        self, api_client, channel_factory
-    ):
-        api_client, user = api_client
-        channel = channel_factory(user=user)
-        body = json.dumps({'channel_id': channel.id})
+    def test_put_without_num_parts_returns_400(self, api_client, channel):
+        api_client, _ = api_client
+        body = json.dumps(
+            {
+                'filename': 'MyFile.mp4',
+                'channel_id': channel.id,
+            }
+        )
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
         )
 
         assert response.status_code == BAD_REQUEST
-        assert response.json() == {'detail': 'Filename not provided'}
+        assert response.json() == {'detail': 'num_parts not provided'}
+
+    def test_put_without_filename_returns_400(
+        self, api_client, channel_factory
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        body = json.dumps(
+            {
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
+        )
+
+        response = api_client.put(
+            self.URL, body, content_type='application/json'
+        )
+
+        assert response.status_code == BAD_REQUEST
+        assert response.json() == {'detail': 'filename not provided'}
 
     def test_put_with_invalid_filename_returns_400(
         self, api_client, channel_factory
     ):
         api_client, user = api_client
         channel = channel_factory(user=user)
-        body = json.dumps({'filename': 'MyFile', 'channel_id': channel.id})
+        body = json.dumps(
+            {
+                'filename': 'MyFile',
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
+        )
 
         response = api_client.put(
             self.URL, body, content_type='application/json'
@@ -127,7 +178,11 @@ class TestUploadComplete:
         api_client, user = api_client
         channel = channel_factory(user=user)
         body = json.dumps(
-            {'filename': VIDEO_PATH.name, 'channel_id': channel.id}
+            {
+                'filename': VIDEO_PATH.name,
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
         )
         url = '/api/v1/upload/prepare/'
         response = api_client.put(url, body, content_type='application/json')
@@ -135,14 +190,19 @@ class TestUploadComplete:
         return resp_json['upload_id']
 
     def test_put_with_upload_id_triggers_transcoding_process(
-        self, api_client, settings, mocker, upload_id, channel_factory
+        self,
+        api_client,
+        mocker,
+        upload_id,
     ):
-        api_client, user = api_client
-        channel = channel_factory(user=user)
+        api_client, _ = api_client
         mock_upload_manager = mocker.patch(f'{MODULE}.upload_manager')
-        body = json.dumps(
-            {'filename': VIDEO_PATH.name, 'channel_id': channel.id}
-        )
+        parts = [
+            {'etag': '123456789', 'part_number': '1'},
+            {'etag': '123456789', 'part_number': '2'},
+            {'etag': '123456789', 'part_number': '3'},
+        ]
+        body = json.dumps({'parts': parts})
 
         url = f'/api/v1/upload/complete/{upload_id}/'
         response = api_client.put(url, body, content_type='application/json')
@@ -150,13 +210,27 @@ class TestUploadComplete:
         assert response.status_code == OK
 
         assert mock_upload_manager.complete.delay.called
-        mock_upload_manager.complete.delay.assert_called_once_with(upload_id)
+        mock_upload_manager.complete.delay.assert_called_once_with(
+            upload_id=upload_id, parts=parts
+        )
+
+    def test_returns_400_if_body_missing_parts(self, api_client, upload_id):
+        api_client, _ = api_client
+        url = f'/api/v1/upload/complete/{upload_id}/'
+        response = api_client.put(url, {}, content_type='application/json')
+
+        assert response.status_code == BAD_REQUEST
 
     def test_returns_404_when_user_attempts_to_complete_another_users_upload(
         self, upload_id, api_client_factory
     ):
         another_user_api_client, _ = api_client_factory()
-        body = json.dumps({'filename': VIDEO_PATH.name})
+        parts = [
+            {'etag': '123456789', 'part_number': '1'},
+            {'etag': '123456789', 'part_number': '2'},
+            {'etag': '123456789', 'part_number': '3'},
+        ]
+        body = json.dumps({'parts': parts})
 
         url = f'/api/v1/upload/complete/{upload_id}/'
         response = another_user_api_client.put(
@@ -169,7 +243,12 @@ class TestUploadComplete:
     def test_returns_403_when_auth_headers_not_provided(
         self, api_client_no_auth, upload_id
     ):
-        body = json.dumps({'filename': 'MyFile.mp4'})
+        parts = [
+            {'etag': '123456789', 'part_number': '1'},
+            {'etag': '123456789', 'part_number': '2'},
+            {'etag': '123456789', 'part_number': '3'},
+        ]
+        body = json.dumps({'parts': parts})
 
         url = f'/api/v1/upload/complete/{upload_id}/'
         response = api_client_no_auth.put(

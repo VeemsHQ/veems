@@ -73,7 +73,11 @@ def test_video_rendition_thumbnail_upload_to(
 class TestUpload:
     def test_set_file_using_uploaded_file(self, channel):
         upload = models.Upload.objects.create(
-            presigned_upload_url='https://example.com',
+            presigned_upload_urls=[
+                'https://objectstorage/?part_num=1',
+                'https://objectstorage/?part_num=2',
+                'https://objectstorage/?part_num=3',
+            ],
             media_type='video',
             channel=channel,
         )
@@ -95,7 +99,11 @@ class TestUpload:
         # bucket completely outside of the application itself
         # (on the client side using pre-signed-url upload process
         upload = models.Upload.objects.create(
-            presigned_upload_url='https://example.com',
+            presigned_upload_urls=[
+                'https://objectstorage/?part_num=1',
+                'https://objectstorage/?part_num=2',
+                'https://objectstorage/?part_num=3',
+            ],
             media_type='video',
             channel=channel,
         )

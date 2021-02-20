@@ -99,8 +99,12 @@ class Upload(BaseModel):
     channel = models.ForeignKey(
         Channel, on_delete=models.CASCADE, related_name='uploads'
     )
-    presigned_upload_url = models.URLField(
-        max_length=1000, null=True, blank=True
+    presigned_upload_urls = ArrayField(
+        models.URLField(max_length=500), null=True
+    )
+    # The upload_id within the Object Storage backend itself.
+    provider_upload_id = models.CharField(
+        max_length=400, null=True, blank=True
     )
     media_type = models.CharField(max_length=500)
     file = models.FileField(

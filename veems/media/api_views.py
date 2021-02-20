@@ -17,12 +17,17 @@ logger = logging.getLogger(__name__)
 
 @api_view(['PUT'])
 def upload_prepare(request):
-    # TODO: check, authed user
     try:
         filename = request.data['filename']
     except KeyError:
         return Response(
-            {'detail': 'Filename not provided'}, status=BAD_REQUEST
+            {'detail': 'filename not provided'}, status=BAD_REQUEST
+        )
+    try:
+        num_parts = int(request.data['num_parts'])
+    except KeyError:
+        return Response(
+            {'detail': 'num_parts not provided'}, status=BAD_REQUEST
         )
     try:
         channel_id = request.data['channel_id']
@@ -36,11 +41,12 @@ def upload_prepare(request):
         user=request.user,
         filename=filename,
         channel_id=channel_id,
+        num_parts=num_parts,
     )
     return Response(
         {
             'upload_id': upload.id,
-            'presigned_upload_url': upload.presigned_upload_url,
+            'presigned_upload_urls': upload.presigned_upload_urls,
             'video_id': video.id,
         },
         status=CREATED,
@@ -49,9 +55,14 @@ def upload_prepare(request):
 
 @api_view(['PUT'])
 def upload_complete(request, upload_id):
+    try:
+        parts = request.data['parts']
+    except KeyError:
+        return Response({'detail': 'parts not provided'}, status=BAD_REQUEST)
+    # TODO: validate 'parts' with serializer
     # Verify the auth'd user owns this upload.
     models.Upload.objects.get(id=upload_id, channel__user_id=request.user.id)
-    upload_manager.complete.delay(upload_id)
+    upload_manager.complete.delay(upload_id=upload_id, parts=parts)
     return Response({}, status=OK)
 
 

@@ -224,7 +224,11 @@ def upload_factory(request):
             file_contents = file_.read()
         channel = channel or request.getfixturevalue('channel')
         upload = models.Upload.objects.create(
-            presigned_upload_url='https://example.com/s3-blah',
+            presigned_upload_urls=[
+                'https://objectstorage/?part_num=1',
+                'https://objectstorage/?part_num=2',
+                'https://objectstorage/?part_num=3',
+            ],
             media_type='video',
             file=SimpleUploadedFile(video_path.name, file_contents),
             channel=channel,
