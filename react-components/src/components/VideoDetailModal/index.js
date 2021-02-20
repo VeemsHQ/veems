@@ -16,6 +16,7 @@ import {
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import {
   getVideoById, updateVideo, updateVideoCustomThumbnail, setExistingThumbnailAsPrimary,
+  uploadPrepare,
 } from '../../api/api';
 import { randomItem } from '../../utils';
 
@@ -48,29 +49,28 @@ const getAutogenThumbnailChoices = (videoData) => {
       [thumb1.id, thumb1.file],
       [thumb2.id, thumb2.file],
     ];
-  } else{
+  } else {
     return [];
   }
 }
 
-const Container = ({ videoId, fetchActiveChannelVideos, createToast, isChooseFileUploadModalOpen, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
+const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, isChooseFileUploadModalOpen, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
 
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isFileSelected, setIsFileSelected] = useState(false);
   const [videoData, setVideoData] = useState({});
   const [autogenThumbnailChoices, setAutogenThumbnailChoices] = useState([]);
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
-  console.log('isChooseFileUploadModalOpen');
-  console.log(videoId);
-  console.log(isChooseFileUploadModalOpen);
+  console.log(channelId);
 
-  React.useEffect(async() => {
-    if(isModalOpen) {
-    await handleEditVideoModalOpen();
+  React.useEffect(async () => {
+    if (isModalOpen) {
+      await handleEditVideoModalOpen();
     }
   }, [isModalOpen]);
 
@@ -140,9 +140,34 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast, isChooseFil
     updateParentState(videoData.channel_id);
   };
 
-  if(isChooseFileUploadModalOpen === true) {
+  const handleFileSelect = async (acceptedFiles) => {
+    console.log('----setIsFileSelected');
+    setIsFileSelected(true);
+
+    const filename = acceptedFiles[0].name;
+
+    const { response, data } = await uploadPrepare(channelId, filename);
+    setIsSaving(false);
+    if (response?.status === 400) {
+      alert('upload error');
+    } else {
+      console.log(data);
+      const uploadId = data.upload_id;
+      const videoId = data.video_id;
+      const presignedUploadUrl = data.presigned_upload_url;
+      // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
+      // setApiErrors(null);
+      // setVideoData(data);
+      // updateParentState(data.channel_id);
+    }
+
+  }
+
+  if (isChooseFileUploadModalOpen === true) {
     return (
       <FileUploadChooseModal
+        isFileSelected={isFileSelected}
+        onFileSelect={handleFileSelect}
         isModalOpen={isChooseFileUploadModalOpen}
       />
     );

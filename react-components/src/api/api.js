@@ -106,6 +106,18 @@ export const updateVideo = async (videoId, data) => {
   }
 };
 
+export const uploadPrepare = async (channelId, filename) => {
+  const url = '/api/v1/upload/prepare/'
+  const data = { channel_id: channelId, filename: filename };
+  try {
+    const res = await API.put(url, data);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+}
+
 export const setExistingThumbnailAsPrimary = async (videoId, videoRenditionThumbnailId) => {
   try {
     const res = await API.post(`${serverURL}/api/v1/video/${videoId}/thumbnail/${videoRenditionThumbnailId}/`);

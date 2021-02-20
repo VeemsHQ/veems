@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 import { VideoDetailModalContainer } from '../VideoDetailModal';
 import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
@@ -10,6 +10,7 @@ const truncate = (input, max) => (input.length > max ? `${input.substring(0, max
 
 export const ChannelManagerVideos = ({
   videos,
+  channelId,
   isLoading,
 }) => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -21,7 +22,7 @@ export const ChannelManagerVideos = ({
     setEditModalOpen(false);
   }
 
-  return(<>
+  return (<>
     <table className="table mt-4">
       <thead>
         <tr className="text-muted">
@@ -112,7 +113,7 @@ export const ChannelManagerVideos = ({
           <tr key={index}>
             <td>
               <div className="d-flex">
-                <button type="button" onClick={handleSetEditModalOpen}  className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
+                <button type="button" onClick={handleSetEditModalOpen} className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
                   <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
                 </button>
@@ -128,6 +129,7 @@ export const ChannelManagerVideos = ({
                   <div className="overlay align-items-center">
                     <VideoDetailModalContainer
                       videoId={video.id}
+                      channelId={channelId}
                       isChooseFileUploadModalOpen={true}
                       onSetModalOpen={handleSetEditModalOpen}
                       onSetModalClosed={handleSetEditModalClosed}

@@ -29,6 +29,7 @@ const Container = ({
   return (
     <ChannelManagerVideos
       videos={videos}
+      channelId={channelId}
       isLoading={isLoading}
     />
   );

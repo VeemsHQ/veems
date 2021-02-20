@@ -378,8 +378,8 @@ body {
     margin-bottom: auto;
     margin-left: auto;
     margin-right: auto;
-    width: 100px; /* Need a specific value to work */
-
+    width: 100px;
+    /* Need a specific value to work */
     font-size: 0.9rem;
     background: #000;
     color: #fff;
@@ -400,7 +400,6 @@ body {
     min-width: var(--video-thumb-small-width);
     min-height: var(--video-thumb-small-height);
 }
-
 
 .thumbnail-large {
     width: var(--video-thumb-large-width);
@@ -435,9 +434,11 @@ button.remove-default-style {
     margin: 0;
     padding: 0;
 }
+
 button.remove-default-style:focus {
     outline: none;
 }
+
 button.remove-default-style:hover {
     outline: none !important
 }
@@ -686,22 +687,29 @@ hr {
     background-size: 800px 100%;
     display: inline-block;
     position: relative;
-
     -webkit-animation-duration: 1s;
     -webkit-animation-fill-mode: forwards;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-name: placeholderShimmer;
     -webkit-animation-timing-function: linear;
+}
+
+@-webkit-keyframes placeholderShimmer {
+    0% {
+        background-position: -468px 0;
     }
+    100% {
+        background-position: 468px 0;
+    }
+}
 
-    @-webkit-keyframes placeholderShimmer {
-  0% {
-    background-position: -468px 0;
-  }
-
-  100% {
-    background-position: 468px 0;
-  }
+@-webkit-keyframes placeholderShimmer {
+    0% {
+        background-position: -468px 0;
+    }
+    100% {
+        background-position: 468px 0;
+    }
 }
 
 .btn-warning {
@@ -717,16 +725,17 @@ hr {
 }
 
 .thumbnail-grid {
-    display:flex;
+    display: flex;
     flex-direction: row;
     position: relative;
 }
 
 .thumbnail-unselected {
-    opacity:0.5;
+    opacity: 0.5;
 }
+
 .thumbnail-unselected:hover {
-    opacity:1;
+    opacity: 1;
 }
 
 .channel-videos .overlay {
@@ -776,10 +785,13 @@ hr {
 }
 
 @keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
-
 
 @keyframes fading {
     0% {

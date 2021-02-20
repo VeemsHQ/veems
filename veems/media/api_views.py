@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 @api_view(['PUT'])
 def upload_prepare(request):
+    # TODO: check, authed user
     try:
         filename = request.data['filename']
     except KeyError:
