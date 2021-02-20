@@ -131,10 +131,11 @@ export const uploadVideoParts = async (presignedUploadUrls, file, numParts, file
     const startByte = chunkSize * idx;
     const stopByte = Math.min(startByte + chunkSize, fileSize);
     const url = presignedUploadUrls[idx];
-    debugger;
+    var axiosInstance = axios.create();
+    delete axiosInstance.defaults.headers.put['Content-Type']
     const body = file.slice(startByte, stopByte);
     try {
-      const res = await axios.create().put(url, body, options);
+      const res = await axiosInstance.create().put(url, body, options);
       console.log(res.headers);
       parts.push({ etag: res.headers.get("ETag"), part_number: idx + 1 });
     } catch (err) {
