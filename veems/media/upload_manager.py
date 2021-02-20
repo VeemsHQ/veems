@@ -25,6 +25,20 @@ def _get_presigned_upload_url(*, upload, filename, num_parts):
     )
     provider_upload_id = response['UploadId']
     urls = []
+    provider.put_bucket_cors(
+        Bucket=bucket_name,
+        CORSConfiguration={
+            'CORSRules': [
+                {
+                    'AllowedHeaders': ['*'],
+                    'AllowedMethods': ['GET', 'PUT'],
+                    'AllowedOrigins': ['*'],
+                    'ExposeHeaders': ['ETag'],
+                    'MaxAgeSeconds': ONE_DAY_IN_SECS,
+                }
+            ]
+        },
+    )
     for part_number in range(num_parts):
         part_number = part_number + 1
         url = provider.generate_presigned_url(

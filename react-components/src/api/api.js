@@ -18,7 +18,7 @@ const handleError = (error) => {
 };
 
 export const API = axios.create({
-  timeout: 5000,
+  timeout: 50000,
   headers: {
     'Content-Type': 'application/json',
     'X-CSRFTOKEN': window.CSRF_TOKEN,
@@ -118,6 +118,18 @@ export const uploadPrepare = async (channelId, filename, numParts) => {
   }
 }
 
+export const uploadComplete = async (uploadId, parts) => {
+  const url = `/api/v1/upload/complete/${uploadId}/`
+  const data = { parts: parts };
+  try {
+    const res = await API.put(url, data);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+}
+
 
 export const uploadVideoParts = async (presignedUploadUrls, file, numParts, fileSize, chunkSize, progressCallback) => {
   console.log('uploadVideoParts);');
@@ -134,14 +146,11 @@ export const uploadVideoParts = async (presignedUploadUrls, file, numParts, file
     var axiosInstance = axios.create();
     delete axiosInstance.defaults.headers.put['Content-Type']
     const body = file.slice(startByte, stopByte);
-    try {
-      const res = await axiosInstance.create().put(url, body, options);
-      console.log(res.headers);
-      parts.push({ etag: res.headers.get("ETag"), part_number: idx + 1 });
-    } catch (err) {
-      handleError(err);
-      throw err;
-    }
+    const res = await axiosInstance.put(url, body);
+    console.log(res.headers.etag);
+    parts.push({ etag: res.headers.etag, part_number: idx + 1 });
+    console.log(parts);
+
   }
   return parts;
 }

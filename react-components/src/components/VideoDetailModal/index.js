@@ -16,7 +16,7 @@ import {
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import {
   getVideoById, updateVideo, updateVideoCustomThumbnail, setExistingThumbnailAsPrimary,
-  uploadPrepare, uploadVideoParts,
+  uploadPrepare, uploadVideoParts, uploadComplete,
 } from '../../api/api';
 import { randomItem } from '../../utils';
 
@@ -175,7 +175,9 @@ const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, 
         updateUploadProgress,
       )
       console.log('Done uploadVideoParts');
+      await uploadComplete(uploadId, parts);
       console.log(parts);
+      console.log('upload done1!')
       // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
       // setApiErrors(null);
       // setVideoData(data);
