@@ -54,8 +54,8 @@ const getAutogenThumbnailChoices = (videoData) => {
   }
 }
 
-const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, isChooseFileUploadModalOpen, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
-
+const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, createToast, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
+  const [isChooseFileUploadModalOpen, setIsChooseFileUploadModalOpen] = useState(videoId === null)
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -185,7 +185,6 @@ const Container = ({ videoId, channelId, fetchActiveChannelVideos, createToast, 
     }
 
   }
-
   if (isChooseFileUploadModalOpen === true) {
     return (
       <FileUploadChooseModal

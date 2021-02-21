@@ -81,62 +81,47 @@ export const VideoDetailModal = ({
   };
 
   const renderModal = () => (
-    <>
-      {isLoading && (
-        <Modal show={isModalOpen} onHide={onModalClose()}>
-          <Form>
+    <Modal show={isModalOpen} onHide={onModalClose()}>
+      <Form>
 
-            <Modal.Header closeButton>
-              <Modal.Title className="w-100"><div className="shine d-block w-75" style={{ height: '30px' }} /></Modal.Title>
-            </Modal.Header>
+        <Modal.Header closeButton>
+          {isLoading && (<Modal.Title className="w-100"><div className="shine d-block w-75" style={{ height: '30px' }} /></Modal.Title>)}
+          {!isLoading && (<Modal.Title>Video Details</Modal.Title>)}
 
-            <Modal.Body>
-              <div className="row">
-                <div className="col-12 col-lg-8">
+        </Modal.Header>
 
-                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
-                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
-                  <div className="shine thumbnail mb-4" style={{ width: '200px', height: '100px' }} />
-                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
-                  <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+        <Modal.Body>
+          {isLoading && (
+            <div className="row">
+              <div className="col-12 col-lg-8">
 
-                </div>
-                <div className="col-12 col-lg-4">
+                <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+                <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+                <div className="shine thumbnail mb-4" style={{ width: '200px', height: '100px' }} />
+                <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
+                <div className="shine d-block w-75 mb-4" style={{ height: '30px' }} />
 
-                  <div className="card" style={{ width: '18rem' }}>
-                    <div
-                      className="card-img-top shine d-flex align-items-center justify-content-center"
-                      style={{ width: 'auto', height: '171px' }}
-                    />
-                    <div className="card-body text-secondary bg-light">
-                      <p className="card-text">
-                        <span className="shine d-block w-100" style={{ height: '20px' }} />
-                      </p>
-                      <p className="card-text text-truncate">
-                        <span className="shine d-block w-100" style={{ height: '20px' }} />
-                      </p>
-                    </div>
+              </div>
+              <div className="col-12 col-lg-4">
+
+                <div className="card" style={{ width: '18rem' }}>
+                  <div
+                    className="card-img-top shine d-flex align-items-center justify-content-center"
+                    style={{ width: 'auto', height: '171px' }}
+                  />
+                  <div className="card-body text-secondary bg-light">
+                    <p className="card-text">
+                      <span className="shine d-block w-100" style={{ height: '20px' }} />
+                    </p>
+                    <p className="card-text text-truncate">
+                      <span className="shine d-block w-100" style={{ height: '20px' }} />
+                    </p>
                   </div>
                 </div>
               </div>
-            </Modal.Body>
-
-            <Modal.Footer className="bg-secondary text-muted">
-              <div className="shine d-block w-10 mr-auto" style={{ height: '30px' }} />
-            </Modal.Footer>
-
-          </Form>
-        </Modal>
-      )}
-      {!isLoading && (
-      <Modal show={isModalOpen} onHide={onModalClose()}>
-        <Form>
-
-          <Modal.Header closeButton>
-            <Modal.Title>Video Details</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
+            </div>
+          )}
+          {!isLoading && (
             <div className="row">
               <div className="col-12 col-lg-8">
 
@@ -175,18 +160,18 @@ export const VideoDetailModal = ({
                     {autogenThumbnailChoices.length > 0 && (
                       <>
                         {!isThumbnailUploading && (
-                        <button type="button" className="thumbnail thumbnail-small thumbnail-selected mr-2 rounded d-flex align-items-center">
-                          <img
-                            src={primaryThumbnailUrl}
-                            alt="Thumbnail"
-                            className="img-fluid h-100"
-                          />
-                        </button>
+                          <button type="button" className="thumbnail thumbnail-small thumbnail-selected mr-2 rounded d-flex align-items-center">
+                            <img
+                              src={primaryThumbnailUrl}
+                              alt="Thumbnail"
+                              className="img-fluid h-100"
+                            />
+                          </button>
                         )}
                         {isThumbnailUploading && (
-                        <div
-                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
-                        />
+                          <div
+                            className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                          />
                         )}
                         <button data-id={autogenThumbnailChoices[0][0]} onClick={(e) => handleExistingThumbnailClick(e)} type="button" className="thumbnail thumbnail-small thumbnail-unselected mr-2 rounded">
                           <img
@@ -215,22 +200,22 @@ export const VideoDetailModal = ({
                       </>
                     )}
                     {autogenThumbnailChoices.length === 0
-                    && (
-                      <>
-                        <div
-                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
-                        />
-                        <div
-                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
-                        />
-                        <div
-                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
-                        />
-                        <div
-                          className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center"
-                        />
-                      </>
-                    )}
+                      && (
+                        <>
+                          <div
+                            className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                          />
+                          <div
+                            className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                          />
+                          <div
+                            className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
+                          />
+                          <div
+                            className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center"
+                          />
+                        </>
+                      )}
                   </div>
 
                 </Form.Group>
@@ -314,17 +299,21 @@ export const VideoDetailModal = ({
                 </div>
               </div>
             </div>
-          </Modal.Body>
-
-          <Modal.Footer className="bg-secondary text-muted">
-            <div className="mr-auto">Status: Uploaded &amp; Processing</div>
-            <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveButtonText}</button>
-          </Modal.Footer>
-
-        </Form>
-      </Modal>
-      )}
-    </>
+          )}
+        </Modal.Body>
+        <Modal.Footer className="bg-secondary text-muted">
+          {isLoading && (
+            <div className="shine d-block w-10 mr-auto" style={{ height: '30px' }} />
+          )}
+          {!isLoading && (
+            <>
+              <div className="mr-auto">Status: Uploaded &amp; Processing</div>
+              <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveButtonText}</button>
+            </>
+          )}
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 
   return (

@@ -30,7 +30,7 @@ const TOAST_BAD_REQUEST_PAYLOAD = {
 
 const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
 
@@ -42,26 +42,31 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const handleDelete = async (e) => {
     e.preventDefault();
     const videoId = videoData.id;
+    if (videoId === undefined) {
+      console.log('no video on delete');
+      console.log(videoData);
+    }
     setIsSaving(true);
     const { response } = await deleteVideo(videoId);
-    setModalOpen(false);
+    updateParentState(videoData.channel_id);
     setIsSaving(false);
+    setModalOpen(false);
     if (response?.status === 400) {
       createToast(TOAST_BAD_REQUEST_PAYLOAD);
     } else {
       createToast(TOAST_SUCCESS_PAYLOAD);
       setVideoData({});
-      updateParentState(videoData.channel_id);
     }
   };
 
   const handleDeleteVideoModalClose = () => {
     setModalOpen(false);
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   const handleDeleteVideoModalOpen = async () => {
     setModalOpen(true);
+    setIsLoading(true);
     const { data } = await getVideoById(videoId);
     if (data) {
       setVideoData(data);

@@ -130,7 +130,6 @@ export const ChannelManagerVideos = ({
                     <VideoDetailModalContainer
                       videoId={video.id}
                       channelId={channelId}
-                      isChooseFileUploadModalOpen={true}
                       onSetModalOpen={handleSetEditModalOpen}
                       onSetModalClosed={handleSetEditModalClosed}
                       isModalOpen={isEditModalOpen}
