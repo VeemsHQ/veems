@@ -11,14 +11,14 @@ export const FileUploadChooseModal = ({
     isModalOpen,
     isFileSelected,
     onFileSelect,
-    onModalClose,
+    onModalClose = null,
     onModalOpen = null,
 }) => {
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: onFileSelect, disabled: isFileSelected
     });
     const renderModal = () => (
-        <Modal show={isModalOpen} onHide={onModalClose()}>
+        <Modal show={isModalOpen}>
             <Modal.Header closeButton>
                 <Modal.Title>Upload video</Modal.Title>
             </Modal.Header>

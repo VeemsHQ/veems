@@ -13,9 +13,13 @@ export const ChannelManagerVideos = ({
   channelId,
   isLoading,
 }) => {
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
+  const [isEditModalOpen, setEditModalOpen] = useState(queryParamUploadModalOpen);
   const [activeVideoId, setActiveVideoId] = useState(null);
   const handleSetEditModalOpen = (videoId) => {
+    console.log('handle');
+    console.log(videoId)
     setActiveVideoId(videoId);
     setEditModalOpen(true);
   }
@@ -111,16 +115,12 @@ export const ChannelManagerVideos = ({
             </tr>
           </>
         )}
-        {
-          activeVideoId && (
-            <VideoDetailModalContainer
-              videoId={activeVideoId}
-              channelId={channelId}
-              onSetModalOpen={() => handleSetEditModalOpen(activeVideoId)}
-              onSetModalClosed={handleSetEditModalClosed}
-              isModalOpen={isEditModalOpen} />
-          )
-        }
+        <VideoDetailModalContainer
+          videoId={activeVideoId}
+          channelId={channelId}
+          onSetModalOpen={() => handleSetEditModalOpen(activeVideoId)}
+          onSetModalClosed={handleSetEditModalClosed}
+          isModalOpen={isEditModalOpen} />
         {!isLoading && videos.map((video, index) => (
           <tr key={index}>
             <td>

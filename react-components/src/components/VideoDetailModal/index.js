@@ -55,7 +55,7 @@ const getAutogenThumbnailChoices = (videoData) => {
 }
 
 const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, createToast, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
-  const [isChooseFileUploadModalOpen, setIsChooseFileUploadModalOpen] = useState(videoId !== null)
+  const [activeVideoId, setActiveVideoId] = useState(videoId);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -66,13 +66,13 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
-  console.log(`video id on detail: ${videoId}`)
-
   React.useEffect(async () => {
-    if (isModalOpen) {
+
+    if (isModalOpen && activeVideoId) {
+      console.log('>>>>>>>>>>>>');
       await handleEditVideoModalOpen();
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, activeVideoId]);
 
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
@@ -102,6 +102,7 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
       newData = Object.assign(newData, updatedFields);
       setVideoData(newData);
       const { response, data } = await updateVideo(videoData.id, updatedFields);
+      setActiveVideoId(videoData.id);
       setIsSaving(false);
       if (response?.status === 400) {
         createToast(TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT);
@@ -119,7 +120,7 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     console.log('handleEditVideoModalOpen');
     setIsLoading(true);
     onSetModalOpen();
-    const { data } = await getVideoById(videoId);
+    const { data } = await getVideoById(activeVideoId);
     if (data) {
       setVideoData(data);
       setAutogenThumbnailChoices(getAutogenThumbnailChoices(data));
@@ -178,9 +179,9 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
       )
       console.log('Done uploadVideoParts');
       await uploadComplete(uploadId, parts);
-      console.log(parts);
       console.log('upload done1!')
-      setIsChooseFileUploadModalOpen(false);
+      setActiveVideoId(videoId);
+      onSetModalOpen(true);
       setIsFileSelected(false);
       // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
       // setApiErrors(null);
@@ -189,14 +190,13 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     }
 
   }
-  console.log(`isChooseFileUploadModalOpen: ${isChooseFileUploadModalOpen}`)
-  if (isChooseFileUploadModalOpen) {
+  if (!videoId) {
     return (
       <FileUploadChooseModal
         isFileSelected={isFileSelected}
         onFileSelect={handleFileSelect}
-        onModalClose={setIsChooseFileUploadModalOpen(false)}
-        isModalOpen={isChooseFileUploadModalOpen}
+        // onModalClose={() => setIsChooseFileUploadModalOpen(false)}
+        isModalOpen={true}
       />
     );
   } else {
