@@ -55,7 +55,7 @@ const getAutogenThumbnailChoices = (videoData) => {
 }
 
 const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, createToast, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
-  const [isChooseFileUploadModalOpen, setIsChooseFileUploadModalOpen] = useState(videoId === null)
+  const [isChooseFileUploadModalOpen, setIsChooseFileUploadModalOpen] = useState(videoId !== null)
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -65,6 +65,8 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
+
+  console.log(`video id on detail: ${videoId}`)
 
   React.useEffect(async () => {
     if (isModalOpen) {
@@ -178,6 +180,8 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
       await uploadComplete(uploadId, parts);
       console.log(parts);
       console.log('upload done1!')
+      setIsChooseFileUploadModalOpen(false);
+      setIsFileSelected(false);
       // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
       // setApiErrors(null);
       // setVideoData(data);
@@ -185,33 +189,35 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     }
 
   }
-  if (isChooseFileUploadModalOpen === true) {
+  console.log(`isChooseFileUploadModalOpen: ${isChooseFileUploadModalOpen}`)
+  if (isChooseFileUploadModalOpen) {
     return (
       <FileUploadChooseModal
         isFileSelected={isFileSelected}
         onFileSelect={handleFileSelect}
+        onModalClose={setIsChooseFileUploadModalOpen(false)}
         isModalOpen={isChooseFileUploadModalOpen}
       />
     );
+  } else {
+    return (
+      <VideoDetailModal
+        inputThumbnailFile={inputThumbnailFile}
+        isThumbnailUploading={isThumbnailUploading}
+        isSaving={isSaving}
+        isModalOpen={isModalOpen}
+        isLoading={isLoading}
+        videoData={videoData}
+        autogenThumbnailChoices={autogenThumbnailChoices}
+        apiErrors={apiErrors}
+        onModalOpen={() => handleEditVideoModalOpen}
+        onModalClose={() => onSetModalClosed}
+        onFormFieldChange={handleVideoUpdate}
+        onInputThumbnailChange={handleInputThumbnailChange}
+        onSetExistingThumbnailAsPrimary={handleSetExistingThumbnailAsPrimary}
+      />
+    );
   }
-
-  return (
-    <VideoDetailModal
-      inputThumbnailFile={inputThumbnailFile}
-      isThumbnailUploading={isThumbnailUploading}
-      isSaving={isSaving}
-      isModalOpen={isModalOpen}
-      isLoading={isLoading}
-      videoData={videoData}
-      autogenThumbnailChoices={autogenThumbnailChoices}
-      apiErrors={apiErrors}
-      onModalOpen={() => handleEditVideoModalOpen}
-      onModalClose={() => onSetModalClosed}
-      onFormFieldChange={handleVideoUpdate}
-      onInputThumbnailChange={handleInputThumbnailChange}
-      onSetExistingThumbnailAsPrimary={handleSetExistingThumbnailAsPrimary}
-    />
-  );
 };
 
 const mapDispatchToProps = (dispatch) => ({
