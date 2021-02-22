@@ -18,7 +18,7 @@ export const FileUploadChooseModal = ({
         onDrop: onFileSelect, disabled: isFileSelected
     });
     const renderModal = () => (
-        <Modal show={isModalOpen}>
+        <Modal show={isModalOpen} onHide={onModalClose()}>
             <Modal.Header closeButton>
                 <Modal.Title>Upload video</Modal.Title>
             </Modal.Header>

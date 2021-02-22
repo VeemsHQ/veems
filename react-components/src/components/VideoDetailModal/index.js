@@ -56,22 +56,24 @@ const getAutogenThumbnailChoices = (videoData) => {
 
 const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, createToast, isModalOpen, onSetModalOpen, onSetModalClosed }) => {
   const [activeVideoId, setActiveVideoId] = useState(videoId);
+  const [showFileSelect, setShowFileSelect] = useState(isModalOpen && !videoId);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [videoData, setVideoData] = useState({});
   const [autogenThumbnailChoices, setAutogenThumbnailChoices] = useState([]);
+  const [percentageUploaded, setPercentageUploaded] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
   React.useEffect(async () => {
-
     if (isModalOpen && activeVideoId) {
-      console.log('>>>>>>>>>>>>');
       await handleEditVideoModalOpen();
     }
+    setShowFileSelect(isModalOpen && !activeVideoId);
   }, [isModalOpen, activeVideoId]);
 
   const updateParentState = (channelId) => {
@@ -117,7 +119,6 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
   };
 
   const handleEditVideoModalOpen = async () => {
-    console.log('handleEditVideoModalOpen');
     setIsLoading(true);
     onSetModalOpen();
     const { data } = await getVideoById(activeVideoId);
@@ -141,62 +142,67 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     updateParentState(videoData.channel_id);
   };
 
-  const updateUploadProgress = () => {
-    return 1
+  const updateUploadProgress = async (percentageDone) => {
+    console.debug(`Upload progress updated: ${percentageDone}`);
+    setPercentageUploaded(percentageDone);
+  }
+
+  const uploadVideo = async (file, uploadPrepareResult) => {
+    updateUploadProgress(0);
+    const chunkSize = 2 * 1024 * 1024; // 0.5MB;
+    const fileSize = file.size;
+    const numParts = Math.ceil(fileSize / chunkSize)
+    const uploadId = uploadPrepareResult.upload_id;
+    const presignedUploadUrls = uploadPrepareResult.presigned_upload_urls;
+    console.debug('Uploading video parts')
+    const parts = await uploadVideoParts(
+      presignedUploadUrls,
+      file,
+      numParts,
+      fileSize,
+      chunkSize,
+      updateUploadProgress,
+    )
+    console.debug('Uploading video parts completed')
+    await uploadComplete(uploadId, parts);
   }
 
   const handleFileSelect = async (acceptedFiles) => {
     // https://github.com/cvisionai/tator/blob/e7dd26489ab50637e480c22ded01673e27f5cad9/main/static/js/tasks/upload-worker.js
     // https://www.altostra.com/blog/multipart-uploads-with-s3-presigned-url
-    console.log('----setIsFileSelected');
+    console.debug('Video file was selected, starting upload...')
     setIsFileSelected(true);
-
+    // TODO: num files validation
     const file = acceptedFiles[0]
     const filename = file.name;
-    const chunkSize = 10 * 1024 * 1024; // 10MB;
+    const chunkSize = 2 * 1024 * 1024; // 0.5MB;
     const fileSize = file.size;
     const numParts = Math.ceil(fileSize / chunkSize)
 
+    setIsUploading(true);
     const { response, data } = await uploadPrepare(channelId, filename, numParts);
     setIsSaving(false);
     if (response?.status === 400) {
       alert('upload error');
     } else {
-      console.log(data);
-
-      const uploadId = data.upload_id;
-      const videoId = data.video_id;
-      const presignedUploadUrls = data.presigned_upload_urls;
-      console.log(presignedUploadUrls.length);
-
-      const parts = await uploadVideoParts(
-        presignedUploadUrls,
-        file,
-        numParts,
-        fileSize,
-        chunkSize,
-        updateUploadProgress,
-      )
-      console.log('Done uploadVideoParts');
-      await uploadComplete(uploadId, parts);
-      console.log('upload done1!')
-      setActiveVideoId(videoId);
+      setActiveVideoId(data.video_id);
+      await uploadVideo(file, data);
+      setIsUploading(false);
       onSetModalOpen(true);
       setIsFileSelected(false);
-      // createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
-      // setApiErrors(null);
-      // setVideoData(data);
-      // updateParentState(data.channel_id);
+      setShowFileSelect(false);
     }
 
   }
-  if (!videoId) {
+  if (showFileSelect === true) {
     return (
       <FileUploadChooseModal
         isFileSelected={isFileSelected}
         onFileSelect={handleFileSelect}
         // onModalClose={() => setIsChooseFileUploadModalOpen(false)}
         isModalOpen={true}
+        onModalOpen={() => handleEditVideoModalOpen}
+        onModalClose={() => onSetModalClosed}
       />
     );
   } else {
@@ -209,6 +215,8 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
         isLoading={isLoading}
         videoData={videoData}
         autogenThumbnailChoices={autogenThumbnailChoices}
+        percentageUploaded={percentageUploaded}
+        isUploading={isUploading}
         apiErrors={apiErrors}
         onModalOpen={() => handleEditVideoModalOpen}
         onModalClose={() => onSetModalClosed}

@@ -16,7 +16,9 @@ export const VideoDetailModal = ({
   onModalClose,
   onModalOpen,
   isLoading,
+  isUploading,
   videoData,
+  percentageUploaded,
   onFormFieldChange,
   onInputThumbnailChange,
   onSetExistingThumbnailAsPrimary,
@@ -24,6 +26,7 @@ export const VideoDetailModal = ({
   apiErrors,
 }) => {
   const saveButtonText = isSaving ? 'Saving...' : 'Save Changes';
+  const statusText = !isUploading ? 'Uploaded & Processing' : 'Uploading...'
   const uploadThumbnailButtonText = isThumbnailUploading ? 'Uploading...' : 'Upload thumbnail';
   const videoId = valueOrEmpty(videoData.id);
   const initialTitle = valueOrEmpty(videoData.title);
@@ -307,7 +310,15 @@ export const VideoDetailModal = ({
           )}
           {!isLoading && (
             <>
-              <div className="mr-auto">Status: Uploaded &amp; Processing</div>
+              {!isUploading && (<div className="mr-auto">{statusText}</div>)}
+              {isUploading && (
+                <div className="mr-auto d-flex align-items-center w-75">
+                  <div className="mr-2">{statusText}</div>
+                  <div className="progress w-25">
+                    <div className="progress-bar progress-bar-striped progress-bar-animated"
+                      role="progressbar" style={{ width: `${percentageUploaded}%` }} aria-valuenow={percentageUploaded} aria-valuemin="0"
+                      aria-valuemax="100">{percentageUploaded}%</div>
+                  </div></div>)}
               <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveButtonText}</button>
             </>
           )}

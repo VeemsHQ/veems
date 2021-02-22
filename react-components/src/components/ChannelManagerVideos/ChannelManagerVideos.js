@@ -18,8 +18,6 @@ export const ChannelManagerVideos = ({
   const [isEditModalOpen, setEditModalOpen] = useState(queryParamUploadModalOpen);
   const [activeVideoId, setActiveVideoId] = useState(null);
   const handleSetEditModalOpen = (videoId) => {
-    console.log('handle');
-    console.log(videoId)
     setActiveVideoId(videoId);
     setEditModalOpen(true);
   }

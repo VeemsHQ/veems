@@ -8,7 +8,7 @@ import {
 const { store } = configureStore.getInstance();
 
 const handleError = (error) => {
-  if (error.response.status >= 500) {
+  if (error.response === undefined || error.response.status >= 500) {
     store.dispatch(createToastAction({
       header: 'Oops',
       body: MSG_SERVER_ERROR,
@@ -132,13 +132,7 @@ export const uploadComplete = async (uploadId, parts) => {
 
 
 export const uploadVideoParts = async (presignedUploadUrls, file, numParts, fileSize, chunkSize, progressCallback) => {
-  console.log('uploadVideoParts);');
   let parts = [];
-  var options = {
-    headers: {
-      'Content-Type': file.type
-    }
-  };
   for (let idx = 0; idx < numParts; idx++) {
     const startByte = chunkSize * idx;
     const stopByte = Math.min(startByte + chunkSize, fileSize);
@@ -147,38 +141,12 @@ export const uploadVideoParts = async (presignedUploadUrls, file, numParts, file
     delete axiosInstance.defaults.headers.put['Content-Type']
     const body = file.slice(startByte, stopByte);
     const res = await axiosInstance.put(url, body);
-    console.log(res.headers.etag);
+    const percentageComplete = Math.floor(100 * idx / (numParts - 1));
+    progressCallback(percentageComplete)
     parts.push({ etag: res.headers.etag, part_number: idx + 1 });
-    console.log(parts);
-
   }
   return parts;
 }
-
-// const FILE_CHUNK_SIZE = 10_000_000
-
-// export const uploadParts = async (file, urls) => {
-//   const formData = new FormData();
-
-//   // append the fields in presignedPostData in formData
-//   Object.keys(presignedPostData.fields).forEach(key => {
-//     formData.append(key, presignedPostData.fields[key]);
-//   });
-
-//   // append the file
-//   formData.append("file", file.src);
-
-//   // post the data on the s3 url
-//   API_MULTIPART.post(presignedPostData.url, formData,.then(function (response) {
-//     console.log(response);
-//   })
-//     .catch(function (error) {
-//       console.log(error);
-//     });
-
-// };
-// }
-
 
 export const setExistingThumbnailAsPrimary = async (videoId, videoRenditionThumbnailId) => {
   try {

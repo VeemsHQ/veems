@@ -43,8 +43,8 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     e.preventDefault();
     const videoId = videoData.id;
     if (videoId === undefined) {
-      console.log('no video on delete');
-      console.log(videoData);
+      console.warning('no video on delete');
+      console.warning(videoData);
     }
     setIsSaving(true);
     const { response } = await deleteVideo(videoId);
