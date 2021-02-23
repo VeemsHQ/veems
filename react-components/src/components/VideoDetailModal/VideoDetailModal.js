@@ -263,21 +263,21 @@ export const VideoDetailModal = ({
               <div className="col-12 col-lg-4">
 
                 <div className="card ml-0 ml-lg-auto" style={{ width: '18rem' }}>
-                  {!primaryThumbnailUrl && !isThumbnailUploading && (
+                  {isUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 shine d-flex align-items-center justify-content-center"
                     >
                       Uploading video…
                     </div>
                   )}
-                  {isThumbnailUploading && (
+                  {!isUploading && isThumbnailUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 shine d-flex align-items-center justify-content-center"
                     >
                       Uploading thumbnail...
                     </div>
                   )}
-                  {primaryThumbnailUrl && !isThumbnailUploading && (
+                  {!isUploading && primaryThumbnailUrl && !isThumbnailUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 d-flex align-items-center justify-content-center"
                       style={{ width: 'auto', height: '171px' }}

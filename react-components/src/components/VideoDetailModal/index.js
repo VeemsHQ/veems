@@ -22,6 +22,7 @@ import { randomItem } from '../../utils';
 
 const { store, persistor } = configureStore.getInstance();
 
+const UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024;
 const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
   header: 'Success',
   body: 'Your video was saved',
@@ -76,6 +77,16 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     setShowFileSelect(isModalOpen && !activeVideoId);
   }, [isModalOpen, activeVideoId]);
 
+  // React.useEffect(async () => {
+  //   console.log(`isModalOpen: ${videoId}`)
+  //   console.log(`videoId: ${videoId}`)
+  //   setActiveVideoId(videoId)
+  //   if (isModalOpen && videoId) {
+  //     await handleEditVideoModalOpen(videoId);
+  //   }
+  //   setShowFileSelect(isModalOpen && !videoId);
+  // }, [isModalOpen, videoId]);
+
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
     fetchActiveChannelVideos(channelId, false);
@@ -118,10 +129,10 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     }
   };
 
-  const handleEditVideoModalOpen = async () => {
+  const handleEditVideoModalOpen = async (videoId = null) => {
     setIsLoading(true);
     onSetModalOpen();
-    const { data } = await getVideoById(activeVideoId);
+    const { data } = await getVideoById(videoId ? videoId : activeVideoId);
     if (data) {
       setVideoData(data);
       setAutogenThumbnailChoices(getAutogenThumbnailChoices(data));
@@ -149,9 +160,8 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
 
   const uploadVideo = async (file, uploadPrepareResult) => {
     updateUploadProgress(0);
-    const chunkSize = 2 * 1024 * 1024; // 0.5MB;
     const fileSize = file.size;
-    const numParts = Math.ceil(fileSize / chunkSize)
+    const numParts = Math.ceil(fileSize / UPLOAD_CHUNK_SIZE)
     const uploadId = uploadPrepareResult.upload_id;
     const presignedUploadUrls = uploadPrepareResult.presigned_upload_urls;
     console.debug('Uploading video parts')
@@ -160,7 +170,7 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
       file,
       numParts,
       fileSize,
-      chunkSize,
+      UPLOAD_CHUNK_SIZE,
       updateUploadProgress,
     )
     console.debug('Uploading video parts completed')
@@ -175,9 +185,8 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     // TODO: num files validation
     const file = acceptedFiles[0]
     const filename = file.name;
-    const chunkSize = 2 * 1024 * 1024; // 0.5MB;
     const fileSize = file.size;
-    const numParts = Math.ceil(fileSize / chunkSize)
+    const numParts = Math.ceil(fileSize / UPLOAD_CHUNK_SIZE)
 
     setIsUploading(true);
     const { response, data } = await uploadPrepare(channelId, filename, numParts);
@@ -185,6 +194,7 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
     if (response?.status === 400) {
       alert('upload error');
     } else {
+      console.debug(`Setting active videoId ${data.video_id}`);
       setActiveVideoId(data.video_id);
       await uploadVideo(file, data);
       setIsUploading(false);
