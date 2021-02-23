@@ -244,6 +244,7 @@ def get_metadata(video_path):
         'audio_codec': audio_codec_name,
         'file_size': int(format_['size']),
         'video_aspect_ratio': video_stream.get('display_aspect_ratio'),
+        # TODO: fails on images, make func for images
         'video_bit_rate': int(format_['bit_rate']),
     }
     return {
