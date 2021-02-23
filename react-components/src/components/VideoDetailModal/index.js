@@ -71,11 +71,20 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
   const inputThumbnailFile = useRef(null);
 
   React.useEffect(async () => {
-    if (isModalOpen && activeVideoId) {
-      await handleEditVideoModalOpen();
-    }
     setShowFileSelect(isModalOpen && !activeVideoId);
-  }, [isModalOpen, activeVideoId]);
+    if (videoId) {
+      setActiveVideoId(videoId);
+      setShowFileSelect(isModalOpen && !videoId);
+      if (isModalOpen && activeVideoId) {
+        await handleEditVideoModalOpen(videoId);
+      }
+    } else {
+      if (isModalOpen && activeVideoId) {
+        await handleEditVideoModalOpen();
+        setShowFileSelect(isModalOpen && !activeVideoId);
+      }
+    }
+  }, [isModalOpen, activeVideoId, videoId]);
 
   // React.useEffect(async () => {
   //   console.log(`isModalOpen: ${videoId}`)
