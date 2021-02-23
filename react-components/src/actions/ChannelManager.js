@@ -9,12 +9,11 @@ export const fetchActiveChannelVideosAction = (
   if (loadingIndication) {
     dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
   }
-  getAllVideosForChannelRequest(channelId).then((response) => {
-    if (loadingIndication) {
-      dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
-    }
-    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: response.data });
-  });
+  const { data } = await getAllVideosForChannelRequest(channelId)
+  if (loadingIndication) {
+    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
+  }
+  dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: data });
 };
 
 export const setActiveChannelAction = (id) => async (dispatch) => {

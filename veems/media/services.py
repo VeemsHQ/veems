@@ -207,7 +207,11 @@ def get_metadata(video_path):
         try:
             duration_str = video_stream['tags']['DURATION'].split('.')[0]
         except KeyError:
-            duration_secs = float(probe_data['format']['duration'])
+            try:
+                duration_secs = float(probe_data['format']['duration'])
+            except KeyError:
+                # TODO: test, its img
+                duration_secs = None
         else:
             struct_time = time.strptime(duration_str, '%H:%M:%S')
             hours = struct_time.tm_hour * 3600
