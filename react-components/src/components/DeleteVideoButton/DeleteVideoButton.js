@@ -19,15 +19,17 @@ export const DeleteVideoButton = ({
   const videoId = valueOrEmpty(videoData.id);
   const initialTitle = valueOrEmpty(videoData.title);
   const initialCreatedDate = valueOrEmpty(videoData.created_date_human);
-  const primaryThumbnailUrl = videoData.thumbnail_image_small_url;
+  const initialPrimaryThumbnailUrl = videoData.thumbnail_image_small_url;
+  const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(initialPrimaryThumbnailUrl);
   const [videoCreatedDate, setVideoCreatedDate] = useState(initialCreatedDate);
   const [videoTitle, setTitle] = useState(initialTitle);
   const [isCheckboxUnderstoodChecked, setIsCheckboxUnderstoodChecked] = useState(false);
-
   React.useEffect(() => {
-    setTitle(initialTitle);
-    setVideoCreatedDate(initialCreatedDate);
-  }, [initialTitle, initialCreatedDate]);
+    setVideoCreatedDate(videoData.created_date_human);
+    setPrimaryThumbnailUrl(videoData.thumbnail_image_small_url);
+    setTitle(videoData.title);
+    setIsCheckboxUnderstoodChecked(false);
+  }, [videoData]);
 
   const renderModal = () => (
     <Modal size="lg" show={isModalOpen} onHide={onModalClose()}>

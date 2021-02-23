@@ -34,9 +34,9 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
 
-  const updateParentState = (channelId) => {
+  const updateParentState = async (channelId) => {
     // Update the Channel Videos list on the page beneath
-    fetchActiveChannelVideos(channelId, false);
+    await fetchActiveChannelVideos(channelId, false);
   };
 
   const handleDelete = async (e) => {
@@ -48,7 +48,7 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
     }
     setIsSaving(true);
     const { response } = await deleteVideo(videoId);
-    updateParentState(videoData.channel_id);
+    await updateParentState(videoData.channel_id);
     setIsSaving(false);
     setModalOpen(false);
     if (response?.status === 400) {
