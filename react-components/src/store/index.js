@@ -10,6 +10,18 @@ import { initialState as ChannelsReducerInitialState } from '../reducers/Channel
 // 1 week. Must match IMAGEKIT_CACHE_TIMEOUT, AWS_QUERYSTRING_EXPIRE in settings.py
 const staticAssetsAuthTokenTimeout = 604800;
 /* eslint-disable no-underscore-dangle */
+// const blacklistFilter = createBlacklistFilter(
+//   'channels',
+//   // Clear this data between page reloads.
+//   [
+//     'activeVideoDetailData',
+//     'uploadingVideosFeedback',
+//     'uploadingVideos',
+//     'isVideoFileSelectorVisible',
+//     'isVideoDetailModalOpen',
+//     'displayUploadModal',
+//   ]
+// );
 const persistConfig = {
   key: 'root',
   storage,
@@ -30,6 +42,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     traceLimit: 25,
     // eslint-disable-next-line no-mixed-operators
   }) || compose;
+
 
 /* Singleton for store to make sure we don't duplicate between components */
 export class configureStore {
@@ -52,6 +65,9 @@ export class configureStore {
     this.store = createStore(this.persistedReducer, composeEnhancers(
       applyMiddleware(ReduxThunk),
     ));
+    this.store.dispatch({
+      type: 'RESET_DATA_ON_PAGE_LOAD',
+    })
     this.persistor = persistStore(this.store);
   }
 }

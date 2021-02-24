@@ -162,13 +162,15 @@ const Container = ({
     // setShowFileSelect(false);
 
   }
+  console.log(`isVideoFileSelectorVisible:${isVideoFileSelectorVisible}`);
+  console.log(`isModalOpen:${isModalOpen}`);
   if (isVideoFileSelectorVisible === true) {
     return (
       <FileUploadChooseModal
         isFileSelected={isFileSelected}
         onFileSelect={handleFileSelect}
         // onModalClose={() => setIsChooseFileUploadModalOpen(false)}
-        isModalOpen={true}
+        isModalOpen={isModalOpen}
         onModalOpen={() => handleEditVideoModalOpen}
         onModalClose={() => closeVideoDetailModal}
       />

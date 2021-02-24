@@ -15,9 +15,6 @@ export const ChannelManagerVideos = ({
   onVideoDetailModalOpen,
   onVideoDetailModalClose,
 }) => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
-  const [isEditModalOpen, setEditModalOpen] = useState(queryParamUploadModalOpen);
   const [activeVideoId, setActiveVideoId] = useState(null);
 
   return (<>

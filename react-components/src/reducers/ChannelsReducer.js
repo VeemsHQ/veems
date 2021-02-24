@@ -9,7 +9,8 @@ import {
   SET_VIDEO_UPLOADING_FEEDBACK,
   SET_ACTIVE_VIDEO_DETAIL_DATA,
   SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE,
-  SET_VIDEO_DETAIL_MODAL_OPEN
+  SET_VIDEO_DETAIL_MODAL_OPEN,
+  RESET_DATA_ON_PAGE_LOAD,
 } from '../actions/ActionTypes';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -38,6 +39,23 @@ export default (state = initialState, action) => {
   let newState = null;
 
   switch (type) {
+    case RESET_DATA_ON_PAGE_LOAD:
+      console.log('RESET_DATA_ON_PAGE_LOAD');
+      const state2 = {
+        ...state, ...{
+          activeVideoDetailData: initialState.activeVideoDetailData,
+          uploadingVideos: initialState.uploadingVideos,
+          uploadingVideosFeedback: initialState.uploadingVideosFeedback,
+          isVideoFileSelectorVisible: initialState.isVideoFileSelectorVisible,
+          isVideoDetailModalOpen: initialState.isVideoDetailModalOpen,
+          displayUploadModal: initialState.displayUploadModal,
+        }
+      }
+      console.log(state2);
+      console.log(state2.queryParamUploadModalOpen);
+      console.log(state2.displayUploadModal);
+      console.log(state2.isVideoDetailModalOpen);
+      return state2
     case SET_ACTIVE_CHANNEL_ID:
       console.debug('Reduce SET_ACTIVE_CHANNEL_ID');
       return { ...state, activeChannelId: payload };
@@ -58,6 +76,7 @@ export default (state = initialState, action) => {
       return { ...state, isDbStale: payload };
     case SET_VIDEO_DETAIL_MODAL_OPEN:
       console.debug('Reduce SET_VIDEO_DETAIL_MODAL_OPEN');
+      console.log(payload);
       return { ...state, isVideoDetailModalOpen: payload };
     case SET_ACTIVE_VIDEO_DETAIL_DATA:
       console.debug('Reduce SET_ACTIVE_VIDEO_DETAIL_DATA');
