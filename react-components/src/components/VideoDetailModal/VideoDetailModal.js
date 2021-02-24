@@ -84,7 +84,7 @@ export const VideoDetailModal = ({
   };
 
   const renderModal = () => (
-    <Modal show={isModalOpen} onHide={onModalClose()}>
+    <Modal show={isModalOpen} onShow={() => onModalOpen(videoId)} onHide={onModalClose()}>
       <Form>
 
         <Modal.Header closeButton>

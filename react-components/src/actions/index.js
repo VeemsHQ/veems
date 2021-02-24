@@ -4,6 +4,13 @@ import {
   setChannelSyncModalOpenAction,
   setChannelsDbStaleAction,
   fetchActiveChannelVideosAction,
+  setActiveVideoDetailDataAction,
+  startVideoUploadAction,
+  setActiveVideoDetailThumbnailAsPrimaryAction,
+  setFileSelectorVisibleAction,
+  updateActiveVideoDetailMetadataAction,
+  openVideoDetailModalAction,
+  closeVideoDetailModalAction,
 } from './ChannelManager';
 import {
   setSessionAction,
@@ -20,4 +27,11 @@ export {
   setChannelSyncModalOpenAction,
   setChannelsDbStaleAction,
   fetchActiveChannelVideosAction,
+  setActiveVideoDetailDataAction,
+  startVideoUploadAction,
+  setActiveVideoDetailThumbnailAsPrimaryAction,
+  setFileSelectorVisibleAction,
+  updateActiveVideoDetailMetadataAction,
+  openVideoDetailModalAction,
+  closeVideoDetailModalAction,
 };

@@ -12,19 +12,13 @@ export const ChannelManagerVideos = ({
   videos,
   channelId,
   isLoading,
+  onVideoDetailModalOpen,
+  onVideoDetailModalClose,
 }) => {
   const urlParams = new URLSearchParams(window.location.search);
   const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
   const [isEditModalOpen, setEditModalOpen] = useState(queryParamUploadModalOpen);
   const [activeVideoId, setActiveVideoId] = useState(null);
-  const handleSetEditModalOpen = (videoId) => {
-    setActiveVideoId(videoId);
-    setEditModalOpen(true);
-  }
-  const handleSetEditModalClosed = () => {
-    setEditModalOpen(false);
-    setActiveVideoId(null);
-  }
 
   return (<>
     <table className="table mt-4">
@@ -116,14 +110,14 @@ export const ChannelManagerVideos = ({
         <VideoDetailModalContainer
           videoId={activeVideoId}
           channelId={channelId}
-          onSetModalOpen={() => handleSetEditModalOpen(activeVideoId)}
-          onSetModalClosed={handleSetEditModalClosed}
-          isModalOpen={isEditModalOpen} />
+          onSetModalOpen={() => onVideoDetailModalOpen(activeVideoId)}
+          onSetModalClosed={onVideoDetailModalClose}
+        />
         {!isLoading && videos.map((video, index) => (
           <tr key={index}>
             <td>
               <div className="d-flex">
-                <button type="button" onClick={() => handleSetEditModalOpen(video.id)} className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
+                <button type="button" onClick={() => onVideoDetailModalOpen(video.id)} className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
                   <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
                   <div className="overlays">{video.video_duration}</div>
                 </button>
@@ -137,7 +131,7 @@ export const ChannelManagerVideos = ({
                     </div>
                   </div>
                   <div className="overlay align-items-center">
-                    <button type="button" onClick={() => handleSetEditModalOpen(video.id)} className="btn"><i className="material-icons text-secondary">create</i></button>
+                    <button type="button" onClick={() => onVideoDetailModalOpen(video.id)} className="btn"><i className="material-icons text-secondary">create</i></button>
                     <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
                     <DeleteVideoButtonContainer videoId={video.id} />
                     <a href="#" className="btn"><i className="material-icons text-secondary d-none">delete</i></a>
