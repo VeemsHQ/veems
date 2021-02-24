@@ -206,6 +206,22 @@ const Container = ({ videoId = null, channelId, fetchActiveChannelVideos, create
       console.debug(`Setting active videoId ${data.video_id}`);
       setActiveVideoId(data.video_id);
       await uploadVideo(file, data);
+      /*
+      TODO:
+      Call a function.
+      If not video.is_viewable:
+
+      - Every 10 seconds.
+      - Call get video and update the video metadata for:
+        - Auto gen thumbnails
+        - primary thumbnail
+
+      Store this in localstorage uploadFeedback object.
+
+      If video.is_viewable:
+       - Update the status to: Ready
+      */
+
       setIsUploading(false);
       onSetModalOpen(true);
       setIsFileSelected(false);
