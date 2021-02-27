@@ -101,6 +101,7 @@ const _updateUploadProgress = async (percentageDone) => {
     percentageUploaded: percentageDone
   };
   store.dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
+  // TODO: get the video
 }
 
 const _uploadVideo = async (file, uploadPrepareResult) => {
