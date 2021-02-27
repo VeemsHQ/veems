@@ -15,8 +15,6 @@ export const ChannelManagerVideos = ({
   onVideoDetailModalOpen,
   onVideoDetailModalClose,
 }) => {
-  const [activeVideoId, setActiveVideoId] = useState(null);
-
   return (<>
     <table className="table mt-4">
       <thead>
@@ -105,9 +103,8 @@ export const ChannelManagerVideos = ({
           </>
         )}
         <VideoDetailModalContainer
-          videoId={activeVideoId}
           channelId={channelId}
-          onSetModalOpen={() => onVideoDetailModalOpen(activeVideoId)}
+          onSetModalOpen={() => onVideoDetailModalOpen()}
           onSetModalClosed={onVideoDetailModalClose}
         />
         {!isLoading && videos.map((video, index) => (

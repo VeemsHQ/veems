@@ -32,10 +32,11 @@ const persistConfig = {
       autoExpire: true,
     }),
   ],
+  blacklist: ['temp'],
 };
 
 // todo: remove when not in dev. Add proper dev check.
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+const composeEnhancers = window.__RED
   // eslint-disable-next-line no-mixed-operators
   && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
     trace: true,
@@ -61,13 +62,11 @@ export class configureStore {
   }
 
   static setInstance() {
-    this.persistedReducer = persistReducer(persistConfig, reducer);
+    // this.persistedReducer = persistReducer(persistConfig, reducer);
+    this.persistedReducer = reducer;
     this.store = createStore(this.persistedReducer, composeEnhancers(
       applyMiddleware(ReduxThunk),
     ));
-    this.store.dispatch({
-      type: 'RESET_DATA_ON_PAGE_LOAD',
-    })
     this.persistor = persistStore(this.store);
   }
 }

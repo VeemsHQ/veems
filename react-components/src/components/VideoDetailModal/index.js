@@ -83,10 +83,15 @@ const Container = ({
   };
 
   const handleEditVideoModalOpen = async (openedVideoId = null) => {
+    if (openedVideoId === null) {
+      openedVideoId = videoId;
+    }
+    if (!videoId) {
+      return null;
+    }
     setIsLoading(true);
     openVideoDetailModalAction(openedVideoId);
     // onSetModalOpen();
-    console.log(`>>>> HANDLE OPEN ${openedVideoId}`);
     setActiveVideoDetailData(openedVideoId);
     // const { data } = await getVideoById(videoId ? videoId : activeVideoId);
     // if (data) {
@@ -162,8 +167,6 @@ const Container = ({
     // setShowFileSelect(false);
 
   }
-  console.log(`isVideoFileSelectorVisible:${isVideoFileSelectorVisible}`);
-  console.log(`isModalOpen:${isModalOpen}`);
   if (isVideoFileSelectorVisible === true) {
     return (
       <FileUploadChooseModal
@@ -203,24 +206,24 @@ const mapStateToProps = (state, ownProps) => {
   let autogenThumbnailChoices = [];
   let videoData = null;
   let channelId = null;
-  if (state.channels.activeVideoDetailData) {
-    videoId = state.channels.activeVideoDetailData.id;
-    autogenThumbnailChoices = state.channels.activeVideoDetailData.autogenThumbnailChoices;
-    videoData = state.channels.activeVideoDetailData.video;
-    channelId = state.channels.activeVideoDetailData.video.channel_id;
+  if (state.temp.activeVideoDetailData) {
+    videoId = state.temp.activeVideoDetailData.id;
+    autogenThumbnailChoices = state.temp.activeVideoDetailData.autogenThumbnailChoices;
+    videoData = state.temp.activeVideoDetailData.video;
+    channelId = state.temp.activeVideoDetailData.video.channel_id;
   } else {
     videoId = ownProps.videoId;
     videoData = null;
     channelId = ownProps.channelId;
   }
   return {
-    uploadingVideos: state.channels.uploadingVideos,
+    uploadingVideos: state.temp.uploadingVideos,
     videoId: videoId,
     autogenThumbnailChoices: autogenThumbnailChoices,
     videoData: videoData,
     channelId: state.channels.activeChannelId,
-    isVideoFileSelectorVisible: state.channels.isVideoFileSelectorVisible,
-    isModalOpen: state.channels.isVideoDetailModalOpen,
+    isVideoFileSelectorVisible: state.temp.isVideoFileSelectorVisible,
+    isModalOpen: state.temp.isVideoDetailModalOpen,
   };
 };
 
