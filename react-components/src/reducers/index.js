@@ -8,6 +8,14 @@ import ChannelsReducer, { initialState as ChannelsReducerInitialState } from './
 import TempReducer from './TempReducer';
 
 const staticAssetsAuthTokenTimeout = 604800;
+
+const rootPersistConfig = {
+  key: 'root',
+  storage: storage,
+  blacklist: ['globals', 'channels', 'temp'],
+};
+
+
 const globalsConfig = {
   key: 'globals',
   storage: storage,
@@ -27,11 +35,12 @@ const channelsConfig = {
 const tempConfig = {
   key: 'temp',
   storage: storage,
-  whitelist: ['activeVideoDetailData'],
 };
 
-export default combineReducers({
+const rootReducer = combineReducers({
   globals: persistReducer(globalsConfig, GlobalsReducer),
   channels: persistReducer(channelsConfig, ChannelsReducer),
   temp: persistReducer(tempConfig, TempReducer),
 });
+
+export default persistReducer(rootPersistConfig, rootReducer);

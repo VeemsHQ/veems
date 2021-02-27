@@ -80,14 +80,12 @@ export const closeVideoDetailModalAction = () => async (dispatch) => {
 
 export const setActiveVideoDetailDataAction = (videoId) => async (dispatch) => {
   const { data } = await getVideoById(videoId);
-  console.log(22);
   dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
 };
 
 export const setActiveVideoDetailThumbnailAsPrimaryAction = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
   const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
   fetchActiveChannelVideosAction(data.channel_id, false)(dispatch);
-  console.log(33);
   dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
 };
 

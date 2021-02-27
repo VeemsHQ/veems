@@ -10,7 +10,7 @@ import { randomItem } from '../utils';
 const urlParams = new URLSearchParams(window.location.search);
 const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
 export const initialState = {
-    uploadingVideosFeedback: null,// DEL onreload
+    uploadingVideosFeedback: {},// DEL onreload
     uploadingVideos: null,// DEL onreload
     activeVideoDetailData: {
         video: {},
@@ -26,6 +26,7 @@ export const initialState = {
 export default (state = initialState, action) => {
     const { payload, type } = action;
     let newState = null;
+    let videoId = null;
 
     switch (type) {
         case SET_VIDEO_DETAIL_MODAL_OPEN:
@@ -42,7 +43,7 @@ export default (state = initialState, action) => {
             return { ...state, activeVideoDetailData: activeVideoDetailData };
         case START_VIDEO_UPLOADING:
             console.debug('Reduce START_VIDEO_UPLOADING');
-            const videoId = payload;
+            videoId = payload;
             newState = { ...state.uploadingVideos, [videoId]: {} };
             return { ...state, uploadingVideos: newState };
         case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE:
@@ -50,9 +51,17 @@ export default (state = initialState, action) => {
             return { ...state, isVideoFileSelectorVisible: payload };
         case SET_VIDEO_UPLOADING_FEEDBACK:
             console.debug('Reduce SET_VIDEO_UPLOADING_FEEDBACK');
-            const feedback = state.uploadingVideos[videoId];
-            const newFeedback = { ...feedback, payload };
+            videoId = state.activeVideoDetailData.id;
+            let newFeedback;
+            if (state.uploadingVideos) {
+                const feedback = state.uploadingVideos[videoId];
+                newFeedback = { ...feedback, payload };
+            } else {
+                newFeedback = payload
+            }
             newState = { ...state.uploadingVideos, [videoId]: newFeedback };
+            console.log('<>>>> state');
+            console.log(newState);
             return { ...state, uploadingVideos: newState };
         default:
             return state;

@@ -37,7 +37,7 @@ const Container = ({
   uploadingVideos, setActiveVideoDetailData, isVideoFileSelectorVisible,
   setFileSelectorVisible,
   updateActiveVideoDetailMetadata, openVideoDetailModal,
-  closeVideoDetailModal
+  closeVideoDetailModal,
 }) => {
   // TODO: redux
   // const [activeVideoId, setActiveVideoId] = useState(videoId);
@@ -46,10 +46,20 @@ const Container = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [percentageUploaded, setPercentageUploaded] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
+  // const [isUploading, setIsUploading] = useState(false);
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
+
+  let isUploading = false;
+  if (uploadingVideos && uploadingVideos[videoId]) {
+    console.log(`uploadingVideos:`)
+    console.log(uploadingVideos[videoId]);
+    if (uploadingVideos[videoId].percentageUploaded) {
+      isUploading = uploadingVideos[videoId].percentageUploaded < 100;
+    }
+  }
+  console.log(`isUploading: ${isUploading}`)
 
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
@@ -120,10 +130,8 @@ const Container = ({
     console.debug('Video file was selected, starting upload...')
     setIsFileSelected(true);
 
-    console.log('CALL 1');
     startVideoUpload(channelId, acceptedFiles[0]);
     setFileSelectorVisible(false);
-    console.log('CALL 2');
     // // TODO: num files validation
     // const file = acceptedFiles[0]
     // const filename = file.name;
