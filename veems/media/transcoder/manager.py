@@ -33,6 +33,9 @@ def create_transcodes(video_id):
                 status='created',
             ).id
             task_transcode_args.append((video.id, transcode_job_id))
+
+    # TODO: test set status
+    services.set_upload_status(upload=upload, status='processing')
     tasks = [
         task_transcode.s(video_id=video_id, transcode_job_id=transcode_job_id)
         for video_id, transcode_job_id in task_transcode_args
@@ -42,6 +45,8 @@ def create_transcodes(video_id):
     )
     callback = task_on_all_transcodes_completed.s(video.id)
     async_result = chord(tasks, callback).delay()
+    # TODO: test set status
+    services.set_upload_status(upload=upload, status='completed')
     return async_result
 
 
@@ -75,6 +80,8 @@ def task_transcode(*args, video_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name),
         )
+    # TODO: test set status
+    services.set_upload_status(upload=upload, status='processing_viewable')
     logger.info('Task transcode completed %s %s', video_id, transcode_job_id)
     return True
 

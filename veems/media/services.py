@@ -91,6 +91,14 @@ def mark_video_as_viewable(*, video):
     return video
 
 
+def set_upload_status(*, upload, status):
+    # TODO: test
+    upload.status = status
+    upload.save(update_fields=('status',))
+    upload.refresh_from_db()
+    return upload
+
+
 def mark_transcode_job_failed(*, transcode_job, failure_context=None):
     transcode_job.status = 'failed'
     transcode_job.failure_context = failure_context

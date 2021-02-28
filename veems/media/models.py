@@ -16,6 +16,7 @@ UPLOAD_CHOICES = (
     'draft',
     'uploaded',
     'processing',
+    'processing_viewable',
     'completed',
 )
 TRANSCODE_JOB_CHOICES = (
@@ -116,7 +117,7 @@ class Upload(BaseModel):
         blank=True,
     )
     status = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=tuple((c, c) for c in UPLOAD_CHOICES),
         default='draft',
         db_index=True,
