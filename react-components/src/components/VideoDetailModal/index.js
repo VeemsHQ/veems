@@ -41,11 +41,13 @@ const Container = ({
 }) => {
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [percentageUploaded, setPercentageUploaded] = useState(0);
+  // TODO: replace with uploadStatus, single var
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isViewable, setIsViewable] = useState(false);
 
   // TODO: if isUploading=true, prevent leaving page.
 
@@ -58,27 +60,34 @@ const Container = ({
     } else {
       setIsLoading(true);
     }
-    if (videoData.is_viewable === false) {
-      setIsProcessing(true)
-    } else {
-      setIsProcessing(false);
-    }
 
     if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
-      setIsUploading(true);
-      console.log('FEEDBACk DATA ');
-      console.log(uploadingVideos[videoId]);
+      if (uploadingVideos[videoId].isViewable !== undefined) {
+        setIsUploading(uploadingVideos[videoId].isViewable === false);
+        setIsViewable(uploadingVideos[videoId].isViewable === true);
+        setIsProcessing(uploadingVideos[videoId].isProcessing === true);
+      }
+
+      if (uploadingVideos[videoId].isProcessing !== undefined) {
+        setIsProcessing(uploadingVideos[videoId].isProcessing === true);
+      }
+
       if (uploadingVideos[videoId].percentageUploaded) {
         setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
         if (uploadingVideos[videoId].percentageUploaded == 100) {
           setIsUploading(false);
+          setIsViewable(true);
         }
       }
     } else {
       setIsUploading(false);
+      setIsProcessing(false);
+      setIsViewable(true);
     }
-    console.log(videoId);
-    console.log(uploadingVideos);
+    if (videoId && uploadingVideos) {
+      console.log(videoId);
+      console.log(uploadingVideos[videoId]);
+    }
 
   }, [videoData, uploadingVideos]);
 
@@ -228,6 +237,7 @@ const Container = ({
         percentageUploaded={percentageUploaded}
         isUploading={isUploading}
         isProcessing={isProcessing}
+        isViewable={isViewable}
         apiErrors={apiErrors}
         onModalOpen={(videoId) => handleEditVideoModalOpen(videoId)}
         onModalClose={() => closeVideoDetailModal}

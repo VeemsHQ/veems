@@ -144,10 +144,10 @@ export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
 };
 
 const provideUploadFeedback = (videoId, uploadId) => async (dispatch) => {
+  console.debug(`Upload feedback process running for video ${videoId}, upload ${uploadId}...`)
+  const delayBetweenChecks = 5000;
   while (true) {
-    console.log('######## Feedback loop');
     const { data } = await getUploadById(uploadId);
-    console.log(data);
 
     const isViewable = data.status === 'processing_viewable' || data.status === 'completed'
     const isUploaded = data.status != 'draft';
@@ -158,12 +158,12 @@ const provideUploadFeedback = (videoId, uploadId) => async (dispatch) => {
       isViewable: isViewable,
       isProcessing: isProcessing,
     };
+    console.debug(`Upload feedback: ${feedback}`);
     dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
-    if (isViewable && isProcessingCompleted) {
-      console.log('Feedback exit ##########');
+    if (isViewable && !isProcessing) {
+      console.debug('Upload feedback process exiting');
       break
     }
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, delayBetweenChecks));
   }
-
 }

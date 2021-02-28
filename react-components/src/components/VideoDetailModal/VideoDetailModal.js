@@ -17,6 +17,7 @@ export const VideoDetailModal = ({
   onModalOpen,
   isLoading,
   isUploading,
+  isViewable,
   isProcessing,
   videoData,
   percentageUploaded,
@@ -30,8 +31,14 @@ export const VideoDetailModal = ({
   let statusText = '';
   if (isUploading) {
     statusText = 'Uploading...'
-  } else if (isProcessing) {
-    statusText = 'Uploaded & Processing'
+  } else if (isProcessing && !isViewable) {
+    statusText = 'Uploaded & processing'
+  } else if (isProcessing && isViewable) {
+    statusText = 'Viewable & processing'
+  } else if (!isProcessing && isViewable) {
+    statusText = 'Viewable & finished processing'
+  } else {
+    statusText = 'Unknown';
   }
   const uploadThumbnailButtonText = isThumbnailUploading ? 'Uploading...' : 'Upload thumbnail';
   const videoId = valueOrEmpty(videoData.id);

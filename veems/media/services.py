@@ -22,6 +22,11 @@ from .transcoder import transcoder_profiles
 logger = logging.getLogger(__name__)
 
 
+def get_upload(id):
+    # TODO: test
+    return models.Upload.objects.get(id=id)
+
+
 def _get_rendition_playlists(video_record):
     def get_width(height):
         return [

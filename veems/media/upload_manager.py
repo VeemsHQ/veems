@@ -120,12 +120,14 @@ def complete(*, upload_id, parts):
         },
         UploadId=provider_upload_id,
     )
-    transcode_manager.create_transcodes(video_id=upload.video.id)
-    _mark_upload_completed(upload)
+    transcode_manager.create_transcodes(video_id=upload.video_id)
+    # TODO: test
+    services.set_upload_status(upload=upload, status='uploaded')
+    # _mark_upload_completed(upload)
     logger.info(
         'Completed Upload %s, transcoding started for video %s',
         upload.id,
-        upload.video.id,
+        upload.video_id,
     )
 
 
