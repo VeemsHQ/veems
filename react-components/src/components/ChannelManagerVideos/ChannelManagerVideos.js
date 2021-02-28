@@ -107,7 +107,7 @@ export const ChannelManagerVideos = ({
           onSetModalOpen={() => onVideoDetailModalOpen()}
           onSetModalClosed={onVideoDetailModalClose}
         />
-        {!isLoading && videos.map((video, index) => (
+        {!isLoading && videos && videos.map((video, index) => (
           <tr key={index}>
             <td>
               <div className="d-flex">

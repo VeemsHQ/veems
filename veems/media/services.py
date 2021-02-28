@@ -248,6 +248,11 @@ def get_metadata(video_path):
         audio_codec_name = audio_stream['codec_name']
     except TypeError:
         audio_codec_name = None
+    try:
+        bit_rate = int(format_['bit_rate'])
+    except KeyError:
+        # TODO: test, its img
+        bit_rate = 0
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
@@ -258,7 +263,7 @@ def get_metadata(video_path):
         'file_size': int(format_['size']),
         'video_aspect_ratio': video_stream.get('display_aspect_ratio'),
         # TODO: fails on images, make func for images
-        'video_bit_rate': int(format_['bit_rate']),
+        'video_bit_rate': bit_rate,
     }
     return {
         'video_stream': video_stream,

@@ -1,5 +1,9 @@
 version: "3.2"
 services:
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
   rabbit:
     image: rabbitmq:latest
     environment:
@@ -36,8 +40,8 @@ services:
       - AWS_REGION=${AWS_REGION}
     volumes:
       - ./aws:/docker-entrypoint-initaws.d
-      - './.localstack:/tmp/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - "./.localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
   app:
     build: .
     ports:

@@ -52,14 +52,10 @@ def create_transcodes(video_id):
 @async_task()
 def task_on_all_transcodes_completed(task_results, video_id, upload_id):
     # TODO: test
-    # TODO: this is never called
     if not task_results:
         logger.warning('Not all transcodes successful for Video %s', video_id)
     upload = services.get_upload(id=upload_id)
     services.set_upload_status(upload=upload, status='completed')
-    import q
-
-    q('task_on_all_transcodes_completed')
     logger.info('Transcodes completes callback executed')
 
 

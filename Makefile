@@ -37,7 +37,7 @@ start-deps-remote:
 
 .ONESHELL:
 start-deps:
-	docker-compose up -d postgres rabbit localstack
+	docker-compose up -d postgres rabbit localstack redis
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC} || true
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
