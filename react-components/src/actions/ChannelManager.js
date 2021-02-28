@@ -136,22 +136,26 @@ export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
     console.error('UPLOAD FAILED');
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
+    provideUploadFeedback(data.video_id, data.upload_id)(dispatch);
     setActiveVideoDetailDataAction(data.video_id)(dispatch);
-    console.debug(`Setting active videoId ${data.video_id}`);
-    // setActiveVideoId(data.video_id);
     await _uploadVideo(file, data);
-    // TODO:
+  }
+};
 
+const provideUploadFeedback = (videoId, uploadId) => async (dispatch) => {
+  while (true) {
+    console.log('######## Feedback loop');
+    const { data } = await getVideoById(videoId);
+    console.log(data.is_viewable);
+    const feedback = {
+      isViewable: data.is_viewable
+    };
+    dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
+    if (data.is_viewable) {
+      console.log('Feedback exit ##########');
+      break
+    }
+    await new Promise((r) => setTimeout(r, 3000));
   }
 
-  // TODO: set video as uploading
-
-  // if (loadingIndication) {
-  //   dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
-  // }
-  // const { data } = await getAllVideosForChannelRequest(channelId)
-  // if (loadingIndication) {
-  //   dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
-  // }
-  // dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: data });
-};
+}

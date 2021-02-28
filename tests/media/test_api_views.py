@@ -24,6 +24,12 @@ VIDEO_PATH = constants.VID_360P_24FPS
 TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 
 
+class TestUploadDetail:
+
+    def test(self, api_client, channel_factory):
+        pass
+
+
 class TestUploadPrepare:
     URL = '/api/v1/upload/prepare/'
 

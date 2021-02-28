@@ -17,6 +17,7 @@ export const VideoDetailModal = ({
   onModalOpen,
   isLoading,
   isUploading,
+  isProcessing,
   videoData,
   percentageUploaded,
   onFormFieldChange,
@@ -26,7 +27,12 @@ export const VideoDetailModal = ({
   apiErrors,
 }) => {
   const saveButtonText = isSaving ? 'Saving...' : 'Save Changes';
-  const statusText = !isUploading ? 'Uploaded & Processing' : 'Uploading...'
+  let statusText = '';
+  if (isUploading) {
+    statusText = 'Uploading...'
+  } else if (isProcessing) {
+    statusText = 'Uploaded & Processing'
+  }
   const uploadThumbnailButtonText = isThumbnailUploading ? 'Uploading...' : 'Upload thumbnail';
   const videoId = valueOrEmpty(videoData.id);
   const initialTitle = valueOrEmpty(videoData.title);

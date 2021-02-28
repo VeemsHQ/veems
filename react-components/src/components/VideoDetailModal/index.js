@@ -37,16 +37,17 @@ const Container = ({
   uploadingVideos, setActiveVideoDetailData, isVideoFileSelectorVisible,
   setFileSelectorVisible,
   updateActiveVideoDetailMetadata, openVideoDetailModal,
-  closeVideoDetailModal,
+  closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary,
 }) => {
-  // TODO: redux
-  // const [activeVideoId, setActiveVideoId] = useState(videoId);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [percentageUploaded, setPercentageUploaded] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+
+  // TODO: if isUploading=true, prevent leaving page.
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
@@ -57,9 +58,16 @@ const Container = ({
     } else {
       setIsLoading(true);
     }
+    if (videoData.is_viewable === false) {
+      setIsProcessing(true)
+    } else {
+      setIsProcessing(false);
+    }
 
     if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
       setIsUploading(true);
+      console.log('FEEDBACk DATA ');
+      console.log(uploadingVideos[videoId]);
       if (uploadingVideos[videoId].percentageUploaded) {
         setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
         if (uploadingVideos[videoId].percentageUploaded == 100) {
@@ -69,11 +77,10 @@ const Container = ({
     } else {
       setIsUploading(false);
     }
+    console.log(videoId);
+    console.log(uploadingVideos);
 
   }, [videoData, uploadingVideos]);
-
-  console.log(`>> CALLED: ${isUploading} ${percentageUploaded}`);
-  console.log(`isLoading: ${isLoading}`)
 
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
@@ -82,8 +89,12 @@ const Container = ({
 
   const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
     setIsThumbUploading(true);
-    const videoId = setActiveVideoDetailData.id;
-    setActiveVideoDetailThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
+    console.log(setActiveVideoDetailData);
+    console.log(setActiveVideoDetailData);
+    console.log(setActiveVideoDetailData);
+    console.log(setActiveVideoDetailData);
+    const videoId = videoData.id;
+    await setActiveVideoDetailThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
     // const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
     // setVideoData(data);
     setIsThumbUploading(false);
@@ -130,14 +141,16 @@ const Container = ({
   const handleInputThumbnailChange = async (e) => {
     const file = e.target.files[0];
     setIsThumbUploading(true);
-    await updateVideoCustomThumbnail(setActiveVideoDetailData.id, file);
-    const { data } = await getVideoById(setActiveVideoDetailData.id);
-    if (data) {
-      setVideoData(data);
-    }
+    await updateVideoCustomThumbnail(videoData.id, file);
+
+    setActiveVideoDetailData(videoData.id);
+    // const { data } = await getVideoById(videoData.id);
+    // if (data) {
+    //   setVideoData(data);
+    // }
     setIsThumbUploading(false);
     createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
-    updateParentState(setActiveVideoDetailData.video.channel_id);
+    updateParentState(videoData.channel_id);
   };
 
   const handleFileSelect = async (acceptedFiles) => {
@@ -203,7 +216,6 @@ const Container = ({
       />
     );
   } else {
-    console.log('!!! render!');
     return (
       <VideoDetailModal
         inputThumbnailFile={inputThumbnailFile}
@@ -215,6 +227,7 @@ const Container = ({
         autogenThumbnailChoices={autogenThumbnailChoices}
         percentageUploaded={percentageUploaded}
         isUploading={isUploading}
+        isProcessing={isProcessing}
         apiErrors={apiErrors}
         onModalOpen={(videoId) => handleEditVideoModalOpen(videoId)}
         onModalClose={() => closeVideoDetailModal}

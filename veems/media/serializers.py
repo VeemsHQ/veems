@@ -231,6 +231,7 @@ class VideoSerializer(CustomModelSerializer):
             'filename',
             'visibility',
             'description',
+            'is_viewable',
             'tags',
             'video_renditions',
             'transcode_jobs',
@@ -256,6 +257,7 @@ class VideoSerializer(CustomModelSerializer):
         ]
         extra_kwargs = {
             'channel': {'read_only': True},
+            'is_viewable': {'read_only': True},
             'filename': {'read_only': True},
             'upload': {'read_only': True},
             'video_renditions': {'read_only': True},
