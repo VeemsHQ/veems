@@ -7,6 +7,7 @@ import {
   getVideoById,
   setExistingThumbnailAsPrimary,
   updateVideo,
+  getUploadById,
 } from '../api/api';
 import { MSG_CORRECT_FORM_ERRORS } from '../constants';
 import { configureStore } from '../store';
@@ -145,13 +146,20 @@ export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
 const provideUploadFeedback = (videoId, uploadId) => async (dispatch) => {
   while (true) {
     console.log('######## Feedback loop');
-    const { data } = await getVideoById(videoId);
-    console.log(data.is_viewable);
+    const { data } = await getUploadById(uploadId);
+    console.log(data);
+
+    const isViewable = data.status === 'processing_viewable' || data.status === 'completed'
+    const isUploaded = data.status != 'draft';
+    const isProcessing = isUploaded && data.status != 'completed';
+
     const feedback = {
-      isViewable: data.is_viewable
+      isUploaded: isUploaded,
+      isViewable: isViewable,
+      isProcessing: isProcessing,
     };
     dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
-    if (data.is_viewable) {
+    if (isViewable && isProcessingCompleted) {
       console.log('Feedback exit ##########');
       break
     }
