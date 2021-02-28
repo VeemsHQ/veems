@@ -35,12 +35,13 @@ const channelsConfig = {
 const tempConfig = {
   key: 'temp',
   storage: storage,
+  whitelist: [],
 };
 
 const rootReducer = combineReducers({
   globals: persistReducer(globalsConfig, GlobalsReducer),
   channels: persistReducer(channelsConfig, ChannelsReducer),
-  temp: persistReducer(tempConfig, TempReducer),
+  temp: TempReducer,
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);

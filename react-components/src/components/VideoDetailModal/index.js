@@ -46,20 +46,34 @@ const Container = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [percentageUploaded, setPercentageUploaded] = useState(0);
-  // const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
-  let isUploading = false;
-  if (uploadingVideos && uploadingVideos[videoId]) {
-    console.log(`uploadingVideos:`)
-    console.log(uploadingVideos[videoId]);
-    if (uploadingVideos[videoId].percentageUploaded) {
-      isUploading = uploadingVideos[videoId].percentageUploaded < 100;
+  useEffect(() => {
+    if (videoData.id) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
     }
-  }
-  console.log(`isUploading: ${isUploading}`)
+
+    if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
+      setIsUploading(true);
+      if (uploadingVideos[videoId].percentageUploaded) {
+        setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
+        if (uploadingVideos[videoId].percentageUploaded == 100) {
+          setIsUploading(false);
+        }
+      }
+    } else {
+      setIsUploading(false);
+    }
+
+  }, [videoData, uploadingVideos]);
+
+  console.log(`>> CALLED: ${isUploading} ${percentageUploaded}`);
+  console.log(`isLoading: ${isLoading}`)
 
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
@@ -99,7 +113,8 @@ const Container = ({
     if (!videoId) {
       return null;
     }
-    setIsLoading(true);
+    // TODO: readd this
+    // setIsLoading(true);
     openVideoDetailModalAction(openedVideoId);
     // onSetModalOpen();
     setActiveVideoDetailData(openedVideoId);
@@ -108,7 +123,8 @@ const Container = ({
     //   setVideoData(data);
     //   setAutogenThumbnailChoices(getAutogenThumbnailChoices(data));
     // }
-    setIsLoading(false);
+    // TODO: readd this
+    // setIsLoading(false);
   };
 
   const handleInputThumbnailChange = async (e) => {
@@ -187,6 +203,7 @@ const Container = ({
       />
     );
   } else {
+    console.log('!!! render!');
     return (
       <VideoDetailModal
         inputThumbnailFile={inputThumbnailFile}

@@ -22,7 +22,6 @@ const Container = ({
   setActiveChannel,
   openVideoDetailModal,
   closeVideoDetailModal,
-
 }) => {
   useEffect(() => {
     setActiveChannel(channelId);

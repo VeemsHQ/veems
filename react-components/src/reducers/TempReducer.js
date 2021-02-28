@@ -55,13 +55,11 @@ export default (state = initialState, action) => {
             let newFeedback;
             if (state.uploadingVideos) {
                 const feedback = state.uploadingVideos[videoId];
-                newFeedback = { ...feedback, payload };
+                newFeedback = { ...feedback, ...payload };
             } else {
                 newFeedback = payload
             }
             newState = { ...state.uploadingVideos, [videoId]: newFeedback };
-            console.log('<>>>> state');
-            console.log(newState);
             return { ...state, uploadingVideos: newState };
         default:
             return state;

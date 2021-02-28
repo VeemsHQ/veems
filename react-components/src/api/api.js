@@ -141,7 +141,7 @@ export const uploadVideoParts = async (presignedUploadUrls, file, numParts, file
     delete axiosInstance.defaults.headers.put['Content-Type']
     const body = file.slice(startByte, stopByte);
     const res = await axiosInstance.put(url, body);
-    const percentageComplete = Math.floor(100 * idx / (numParts - 1));
+    const percentageComplete = Math.round(100 * idx / (numParts - 1));
     progressCallback(percentageComplete)
     parts.push({ etag: res.headers.etag, part_number: idx + 1 });
   }
