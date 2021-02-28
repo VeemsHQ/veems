@@ -82,6 +82,12 @@ class VideoRenditionThumbnailSerializer(CustomModelSerializer):
         fields = ['id', 'file']
 
 
+class UploadSerializer(CustomModelSerializer):
+    class Meta:
+        model = models.Upload
+        fields = ['id', 'channel_id', 'status']
+
+
 class VideoRenditionSerializer(CustomModelSerializer):
     rendition_thumbnails = VideoRenditionThumbnailSerializer(
         many=True, read_only=True

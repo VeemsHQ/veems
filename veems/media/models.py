@@ -14,6 +14,8 @@ from .transcoder import transcoder_profiles
 STORAGE_BACKEND = storage_backends.MediaStorage
 UPLOAD_CHOICES = (
     'draft',
+    'uploaded',
+    'processing',
     'completed',
 )
 TRANSCODE_JOB_CHOICES = (

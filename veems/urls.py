@@ -124,6 +124,7 @@ urlpatterns = [
         channel_api_views.ChannelBannerAPIView.as_view(),
     ),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
+    path('api/v1/upload/<slug:upload_id>/', api_views.upload_detail),
     path(
         'api/v1/upload/complete/<slug:upload_id>/', api_views.upload_complete
     ),

@@ -25,9 +25,31 @@ TEST_DATA_DIR = Path(__file__).parent.parent / 'test_data'
 
 
 class TestUploadDetail:
-
     def test(self, api_client, channel_factory):
-        pass
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        body = json.dumps(
+            {
+                'filename': 'MyFile.mp4',
+                'channel_id': channel.id,
+                'num_parts': 3,
+            }
+        )
+        response = api_client.put(
+            '/api/v1/upload/prepare/', body, content_type='application/json'
+        )
+        upload_id = response.json()['upload_id']
+
+        response = api_client.get(f'/api/v1/upload/{upload_id}/')
+
+        assert response.status_code == OK
+        assert response.json() == S(
+            {
+                'channel_id': channel.id,
+                'id': upload_id,
+                'status': 'draft',
+            }
+        )
 
 
 class TestUploadPrepare:

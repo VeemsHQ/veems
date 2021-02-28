@@ -56,13 +56,16 @@ def upload_prepare(request):
 @api_view(['GET'])
 def upload_detail(request, upload_id):
     # TODO: test and auth verify tests
-    models.Upload.objects.get(id=upload_id, channel__user_id=request.user.id)
-    # upload_manager.complete.delay(upload_id=upload_id, parts=parts)
-    return Response({}, status=OK)
+    upload = models.Upload.objects.get(
+        id=upload_id, channel__user_id=request.user.id
+    )
+    data = serializers.UploadSerializer(instance=upload).data
+    return Response(data, status=OK)
 
 
 @api_view(['PUT'])
 def upload_complete(request, upload_id):
+    # TODO: set to status=`processing`.
     try:
         parts = request.data['parts']
     except KeyError:

@@ -86,6 +86,16 @@ export const getVideoById = async (videoId) => {
   }
 };
 
+export const getUploadById = async (uploadId) => {
+  try {
+    const res = await API.get(`${serverURL}/api/v1/upload/${uploadId}/`);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+};
+
 export const deleteVideo = async (videoId) => {
   try {
     const res = await API.delete(`${serverURL}/api/v1/video/${videoId}/`);
