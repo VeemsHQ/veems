@@ -240,9 +240,11 @@ def upload_factory(request):
 
 @pytest.fixture
 def video_factory(upload_factory, request):
-    def make(video_path=VIDEO_PATH, channel=None, **kwargs):
+    def make(video_path=VIDEO_PATH, channel=None, upload=None, **kwargs):
         channel = channel or request.getfixturevalue('channel')
-        upload = upload_factory(video_path=video_path, channel=channel)
+        upload = upload or upload_factory(
+            video_path=video_path, channel=channel
+        )
         return models.Video.objects.create(
             upload=upload, channel=channel, **kwargs
         )
@@ -320,39 +322,59 @@ def video_with_renditions_and_segments(video, simple_uploaded_file, tmpdir):
 
 
 @pytest.fixture
-def rendition_thumbnail(
-    video,
+def rendition_thumbnails_factory(
+    request,
     rendition_playlist_file,
     simple_uploaded_file_factory,
     simple_uploaded_img_file,
 ):
-    file_ = simple_uploaded_file_factory(video_path=constants.VID_360P_24FPS)
-    video_rendition = models.VideoRendition.objects.create(
-        video=video,
-        file=file_.open(),
-        playlist_file=rendition_playlist_file,
-        file_size=1000,
-        width=256,
-        height=144,
-        duration=10,
-        ext='webm',
-        container='webm',
-        audio_codec='opus',
-        video_codec='vp9',
-        name='webm_144p',
-        profile='webm_144p',
-        framerate=30,
-        metadata={'example': 'metadata'},
-    )
-    video_rendition_thumbnail = models.VideoRenditionThumbnail.objects.create(
-        video_rendition=video_rendition,
-        time_offset_secs=1,
-        height=10,
-        width=10,
-        ext='.jpg',
-        file=simple_uploaded_img_file,
-    )
-    return video_rendition_thumbnail
+    def make(video=None, width=256, height=144, num_thumbnails=1):
+        video = video or request.getfixturevalue('video')
+        file_ = simple_uploaded_file_factory(
+            video_path=constants.VID_360P_24FPS
+        )
+        video_rendition = models.VideoRendition.objects.create(
+            video=video,
+            file=file_.open(),
+            playlist_file=rendition_playlist_file,
+            file_size=1000,
+            width=width,
+            height=height,
+            duration=10,
+            ext='webm',
+            container='webm',
+            audio_codec='opus',
+            video_codec='vp9',
+            name='webm_144p',
+            profile='webm_144p',
+            framerate=30,
+            metadata={'example': 'metadata'},
+        )
+        thumbnails = []
+        for _ in range(num_thumbnails):
+            with simple_uploaded_img_file.open() as file_:
+                video_rendition_thumbnail = (
+                    models.VideoRenditionThumbnail.objects.create(
+                        video_rendition=video_rendition,
+                        time_offset_secs=1,
+                        height=10,
+                        width=10,
+                        ext='.jpg',
+                        file=file_,
+                    )
+                )
+            thumbnails.append(video_rendition_thumbnail)
+        return thumbnails
+
+    return make
+
+
+@pytest.fixture
+def rendition_thumbnail(
+    video,
+    rendition_thumbnails_factory,
+):
+    return rendition_thumbnails_factory(video=video)[0]
 
 
 @pytest.fixture
