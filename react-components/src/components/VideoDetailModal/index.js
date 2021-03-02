@@ -39,6 +39,7 @@ const Container = ({
   updateActiveVideoDetailMetadata, openVideoDetailModal,
   closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary,
 }) => {
+  const [_autogenThumbnailChoices, setAutogenThumbnailChoices] = useState(autogenThumbnailChoices);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -66,9 +67,11 @@ const Container = ({
         setIsUploading(uploadingVideos[videoId].isViewable === false);
         setIsViewable(uploadingVideos[videoId].isViewable === true);
         setIsProcessing(uploadingVideos[videoId].isProcessing === true);
+        setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
       }
 
       if (uploadingVideos[videoId].isProcessing !== undefined) {
+        setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
         setIsProcessing(uploadingVideos[videoId].isProcessing === true);
       }
 

@@ -66,7 +66,6 @@ export default (state = initialState, action) => {
     }
 };
 
-
 const getAutogenThumbnailChoices = (videoData) => {
     let renditionThumbnails = [];
     if (videoData.video_renditions && videoData.video_renditions.length > 0) {
