@@ -326,7 +326,7 @@ def rendition_thumbnails_factory(
     request,
     rendition_playlist_file,
     simple_uploaded_file_factory,
-    simple_uploaded_img_file,
+    simple_uploaded_img_file_factory,
 ):
     def make(video=None, width=256, height=144, num_thumbnails=1):
         video = video or request.getfixturevalue('video')
@@ -352,17 +352,16 @@ def rendition_thumbnails_factory(
         )
         thumbnails = []
         for _ in range(num_thumbnails):
-            with simple_uploaded_img_file.open() as file_:
-                video_rendition_thumbnail = (
-                    models.VideoRenditionThumbnail.objects.create(
-                        video_rendition=video_rendition,
-                        time_offset_secs=1,
-                        height=10,
-                        width=10,
-                        ext='.jpg',
-                        file=file_,
-                    )
+            video_rendition_thumbnail = (
+                models.VideoRenditionThumbnail.objects.create(
+                    video_rendition=video_rendition,
+                    time_offset_secs=1,
+                    height=height,
+                    width=width,
+                    ext='.jpg',
+                    file=simple_uploaded_img_file_factory(),
                 )
+            )
             thumbnails.append(video_rendition_thumbnail)
         return thumbnails
 
