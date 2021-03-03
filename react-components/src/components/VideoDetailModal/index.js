@@ -40,6 +40,7 @@ const Container = ({
   closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary,
 }) => {
   const [_autogenThumbnailChoices, setAutogenThumbnailChoices] = useState(autogenThumbnailChoices);
+  const [thumbsUpdatedFromUploadFeedback, setThumbsUpdatedFromUploadFeedback] = useState(false);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -64,22 +65,26 @@ const Container = ({
 
     if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
       if (uploadingVideos[videoId].isViewable !== undefined) {
-        setIsUploading(uploadingVideos[videoId].isViewable === false);
-        setIsViewable(uploadingVideos[videoId].isViewable === true);
+        setIsUploading(uploadingVideos[videoId].isViewable);
+        setIsViewable(uploadingVideos[videoId].isViewable);
         setIsProcessing(uploadingVideos[videoId].isProcessing === true);
-        setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
       }
 
       if (uploadingVideos[videoId].isProcessing !== undefined) {
-        setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
         setIsProcessing(uploadingVideos[videoId].isProcessing === true);
+      }
+
+      if (uploadingVideos[videoId].autogenThumbnailChoices && uploadingVideos[videoId].autogenThumbnailChoices.length >= 3) {
+        if (!thumbsUpdatedFromUploadFeedback && uploadingVideos[videoId].autogenThumbnailChoices) {
+          setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
+          setThumbsUpdatedFromUploadFeedback(true);
+        }
       }
 
       if (uploadingVideos[videoId].percentageUploaded) {
         setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
         if (uploadingVideos[videoId].percentageUploaded == 100) {
           setIsUploading(false);
-          setIsViewable(true);
         }
       }
     } else {
@@ -236,7 +241,7 @@ const Container = ({
         isModalOpen={isModalOpen}
         isLoading={isLoading}
         videoData={videoData}
-        autogenThumbnailChoices={autogenThumbnailChoices}
+        autogenThumbnailChoices={_autogenThumbnailChoices}
         percentageUploaded={percentageUploaded}
         isUploading={isUploading}
         isProcessing={isProcessing}

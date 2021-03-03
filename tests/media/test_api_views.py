@@ -33,6 +33,7 @@ class TestUploadDetail:
         upload_factory,
         rendition_thumbnails_factory,
         video_factory,
+        transcode_job_factory,
     ):
         api_client, user = api_client
         channel = channel_factory(user=user)
@@ -42,18 +43,20 @@ class TestUploadDetail:
 
         # Create 2 Video Renditions with 3 Thumbnails each.
         num_thumbs_per_rendition = 3
-        rendition_thumbnails_factory(
-            video=video,
-            width=transcoder_profiles.Webm360p.width,
-            height=transcoder_profiles.Webm360p.height,
-            num_thumbnails=num_thumbs_per_rendition,
-        )
-        rendition_thumbnails_factory(
-            video=video,
-            width=transcoder_profiles.Webm1080p.width,
-            height=transcoder_profiles.Webm1080p.height,
-            num_thumbnails=num_thumbs_per_rendition,
-        )
+        for profile_cls in (
+            transcoder_profiles.Webm360p,
+            transcoder_profiles.Webm1080p,
+        ):
+            rendition_thumbnails_factory(
+                video=video,
+                width=profile_cls.width,
+                height=profile_cls.height,
+                num_thumbnails=num_thumbs_per_rendition,
+            )
+            transcode_job_factory(
+                profile=profile_cls.name,
+                video_record=video,
+            )
 
         response = api_client.get(f'/api/v1/upload/{upload_id}/')
 
