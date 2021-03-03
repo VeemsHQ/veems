@@ -62,7 +62,9 @@ const Container = ({
     } else {
       setIsLoading(true);
     }
-
+    if (uploadingVideos) {
+      setIsUploading(true);
+    }
     if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
       if (uploadingVideos[videoId].isViewable !== undefined) {
         setIsUploading(uploadingVideos[videoId].isViewable);
