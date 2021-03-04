@@ -18,7 +18,7 @@ const handleError = (error) => {
 };
 
 export const API = axios.create({
-  timeout: 50000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     'X-CSRFTOKEN': window.CSRF_TOKEN,
@@ -29,7 +29,7 @@ export const API = axios.create({
   transformResponse: axios.defaults.transformResponse.concat((data) => data),
 });
 const API_MULTIPART = axios.create({
-  timeout: 50000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'multipart/form-data',
     'X-CSRFTOKEN': window.CSRF_TOKEN,

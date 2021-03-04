@@ -18,6 +18,7 @@ const { store } = configureStore.getInstance();
 export const fetchActiveChannelVideosAction = (
   channelId, loadingIndication = true,
 ) => async (dispatch) => {
+  console.log('Fetching active channel videos...');
   if (loadingIndication) {
     dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
   }
@@ -64,7 +65,6 @@ export const updateActiveVideoDetailMetadataAction = (videoId, updatedFields) =>
   } else {
     dispatch({ type: aTypes.CREATE_TOAST, payload: TOAST_PAYLOAD_VIDEO_DETAIL_SAVED });
     // setApiErrors(null);
-    console.log(11);
     dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
     fetchActiveChannelVideosAction(data.channel_id, false)(dispatch);
   }
@@ -72,7 +72,7 @@ export const updateActiveVideoDetailMetadataAction = (videoId, updatedFields) =>
 
 export const openVideoDetailModalAction = (videoId) => async (dispatch) => {
   console.log(`openVideoDetailModalAction: ${videoId}`);
-  setActiveVideoDetailDataAction(videoId)(dispatch);
+  await setActiveVideoDetailDataAction(videoId)(dispatch);
   dispatch({ type: aTypes.SET_VIDEO_DETAIL_MODAL_OPEN, payload: true });
 }
 
@@ -105,8 +105,6 @@ const _updateUploadProgress = async (percentageDone) => {
 }
 
 const _uploadVideo = async (file, uploadPrepareResult) => {
-  // updateUploadProgress(0);
-
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const fileSize = file.size;
   const numParts = Math.ceil(fileSize / chunkSize)
@@ -126,8 +124,6 @@ const _uploadVideo = async (file, uploadPrepareResult) => {
 }
 
 export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
-
-  // const file = acceptedFiles[0]
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const filename = file.name;
   const fileSize = file.size;
@@ -138,13 +134,13 @@ export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
     console.error('UPLOAD FAILED');
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
-    provideUploadFeedback(data.video_id, data.upload_id)(dispatch);
+    provideUploadFeedback(data.video_id, data.upload_id, channelId)(dispatch);
     setActiveVideoDetailDataAction(data.video_id)(dispatch);
     await _uploadVideo(file, data);
   }
 };
 
-const provideUploadFeedback = (videoId, uploadId) => async (dispatch) => {
+const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch) => {
   console.debug(`Upload feedback process running for video ${videoId}, upload ${uploadId}...`)
   const delayBetweenChecks = 5000;
   while (true) {
@@ -161,10 +157,10 @@ const provideUploadFeedback = (videoId, uploadId) => async (dispatch) => {
       isProcessing: isProcessing,
       autogenThumbnailChoices: autogenThumbnailChoices,
     };
-    console.debug(`Upload feedback: ${feedback}`);
     dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
     if (isViewable && !isProcessing) {
       console.debug('Upload feedback process exiting');
+      fetchActiveChannelVideosAction(channelId, false)(dispatch);
       break
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));

@@ -10,7 +10,6 @@ import { randomItem } from '../utils';
 const urlParams = new URLSearchParams(window.location.search);
 const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
 export const initialState = {
-    uploadingVideosFeedback: {},// DEL onreload
     uploadingVideos: null,// DEL onreload
     activeVideoDetailData: {
         video: {},
@@ -31,10 +30,22 @@ export default (state = initialState, action) => {
     switch (type) {
         case SET_VIDEO_DETAIL_MODAL_OPEN:
             console.debug('Reduce SET_VIDEO_DETAIL_MODAL_OPEN');
-            console.log(payload);
-            return { ...state, isVideoDetailModalOpen: payload };
+            if (payload === false) {
+                // On modal close, clear all related state.
+                return {
+                    ...state,
+                    ...{
+                        isVideoDetailModalOpen: false,
+                        displayUploadModal: false,
+                        activeVideoDetailData: initialState.activeVideoDetailData,
+                    }
+                };
+            } else {
+                return { ...state, isVideoDetailModalOpen: payload };
+            }
         case SET_ACTIVE_VIDEO_DETAIL_DATA:
             console.debug('Reduce SET_ACTIVE_VIDEO_DETAIL_DATA');
+            console.log(payload);
             const activeVideoDetailData = {
                 video: payload,
                 id: payload.id,

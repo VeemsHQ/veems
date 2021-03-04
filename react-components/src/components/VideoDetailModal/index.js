@@ -94,10 +94,6 @@ const Container = ({
       setIsProcessing(false);
       setIsViewable(true);
     }
-    if (videoId && uploadingVideos) {
-      console.log(videoId);
-      console.log(uploadingVideos[videoId]);
-    }
 
   }, [videoData, uploadingVideos]);
 
@@ -108,16 +104,9 @@ const Container = ({
 
   const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
     setIsThumbUploading(true);
-    console.log(setActiveVideoDetailData);
-    console.log(setActiveVideoDetailData);
-    console.log(setActiveVideoDetailData);
-    console.log(setActiveVideoDetailData);
     const videoId = videoData.id;
     await setActiveVideoDetailThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
-    // const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
-    // setVideoData(data);
     setIsThumbUploading(false);
-    // updateParentState(data.channel_id);
   };
 
   const handleVideoUpdate = async (videoData, updatedFields = null) => {
@@ -140,7 +129,7 @@ const Container = ({
     if (openedVideoId === null) {
       openedVideoId = videoId;
     }
-    if (!videoId) {
+    if (!openedVideoId) {
       return null;
     }
     // TODO: readd this
