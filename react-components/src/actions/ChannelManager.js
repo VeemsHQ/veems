@@ -14,6 +14,15 @@ import { configureStore } from '../store';
 import { randomItem } from '../utils';
 
 const { store } = configureStore.getInstance();
+const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
+  header: 'Success',
+  body: 'Your video was saved',
+};
+const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
+  header: 'Oops',
+  body: MSG_CORRECT_FORM_ERRORS,
+  isError: true,
+};
 
 export const fetchActiveChannelVideosAction = (
   channelId, loadingIndication = true,
@@ -45,16 +54,6 @@ export const setChannelSyncModalOpenAction = (state) => async (dispatch) => {
 
 export const setChannelsDbStaleAction = (state) => async (dispatch) => {
   dispatch({ type: aTypes.SET_DB_STALE, payload: state });
-};
-
-const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
-  header: 'Success',
-  body: 'Your video was saved',
-};
-const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
-  header: 'Oops',
-  body: MSG_CORRECT_FORM_ERRORS,
-  isError: true,
 };
 
 export const updateActiveVideoDetailMetadataAction = (videoId, updatedFields) => async (dispatch) => {

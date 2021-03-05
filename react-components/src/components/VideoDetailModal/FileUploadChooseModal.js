@@ -1,8 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner'
 
 import 'regenerator-runtime/runtime.js';

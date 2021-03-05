@@ -59,6 +59,7 @@ const Container = ({
   useEffect(() => {
     if (videoData.id) {
       setIsLoading(false);
+      setAutogenThumbnailChoices(videoData.autogenThumbnailChoices);
     } else {
       setIsLoading(true);
     }
@@ -224,6 +225,8 @@ const Container = ({
       />
     );
   } else {
+    console.log(`_autogenThumbnailChoices:`);
+    console.log(_autogenThumbnailChoices);
     return (
       <VideoDetailModal
         inputThumbnailFile={inputThumbnailFile}
