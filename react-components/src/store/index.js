@@ -10,30 +10,7 @@ import { initialState as ChannelsReducerInitialState } from '../reducers/Channel
 // 1 week. Must match IMAGEKIT_CACHE_TIMEOUT, AWS_QUERYSTRING_EXPIRE in settings.py
 const staticAssetsAuthTokenTimeout = 604800;
 /* eslint-disable no-underscore-dangle */
-// const blacklistFilter = createBlacklistFilter(
-//   'channels',
-//   // Clear this data between page reloads.
-//   [
-//     'activeVideoDetailData',
-//     'uploadingVideosFeedback',
-//     'uploadingVideos',
-//     'isVideoFileSelectorVisible',
-//     'isVideoDetailModalOpen',
-//     'displayUploadModal',
-//   ]
-// );
-const persistConfig = {
-  key: 'root',
-  storage,
-  transforms: [
-    expireReducer('channels', {
-      expireSeconds: staticAssetsAuthTokenTimeout,
-      expiredState: ChannelsReducerInitialState,
-      autoExpire: true,
-    }),
-  ],
-  blacklist: ['temp'],
-};
+
 
 // todo: remove when not in dev. Add proper dev check.
 const composeEnhancers = window.__RED
@@ -62,7 +39,6 @@ export class configureStore {
   }
 
   static setInstance() {
-    // this.persistedReducer = persistReducer(persistConfig, reducer);
     this.persistedReducer = reducer;
     this.store = createStore(this.persistedReducer, composeEnhancers(
       applyMiddleware(ReduxThunk),

@@ -1,20 +1,20 @@
 import { combineReducers } from 'redux';
 import expireReducer from 'redux-persist-expire';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import GlobalsReducer from './GlobalsReducer';
 import ChannelsReducer, { initialState as ChannelsReducerInitialState } from './ChannelsReducer';
 import TempReducer from './TempReducer';
+import VideoReducer from './Video';
 
 const staticAssetsAuthTokenTimeout = 604800;
 
 const rootPersistConfig = {
   key: 'root',
   storage: storage,
-  blacklist: ['globals', 'channels', 'temp'],
+  blacklist: ['globals', 'channels', 'temp', 'video'],
 };
-
 
 const globalsConfig = {
   key: 'globals',
@@ -32,16 +32,12 @@ const channelsConfig = {
   ],
   storage: storage,
 };
-const tempConfig = {
-  key: 'temp',
-  storage: storage,
-  whitelist: [],
-};
 
 const rootReducer = combineReducers({
   globals: persistReducer(globalsConfig, GlobalsReducer),
   channels: persistReducer(channelsConfig, ChannelsReducer),
   temp: TempReducer,
+  video: VideoReducer,
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);

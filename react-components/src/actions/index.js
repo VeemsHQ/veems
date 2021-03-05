@@ -17,6 +17,10 @@ import {
   createToastAction,
   removeToastAction,
 } from './Globals';
+import {
+  toggleVideoLike,
+  toggleVideoDislike,
+} from './Video';
 
 export {
   setSessionAction,
@@ -34,4 +38,6 @@ export {
   updateActiveVideoDetailMetadataAction,
   openVideoDetailModalAction,
   closeVideoDetailModalAction,
+  toggleVideoLike,
+  toggleVideoDislike,
 };
