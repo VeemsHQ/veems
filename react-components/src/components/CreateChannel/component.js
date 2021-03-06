@@ -7,11 +7,11 @@ import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import 'regenerator-runtime/runtime.js';
 
 export const CreateChannelButton = ({
-  onCreateChannel,
-  onSuccess,
+  createChannel,
+  showModal,
+  apiErrors,
+  setCreateChannelShowModal,
 }) => {
-  const [showChannelModal, setShowChannelModal] = useState(false);
-  const [apiErrors, setApiErrors] = useState({});
 
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
@@ -28,21 +28,20 @@ export const CreateChannelButton = ({
       setValidated(true);
       return;
     }
-    onSuccess();
-    const [isChannelCreated, apiErrors_] = await onCreateChannel(
+    createChannel(
       channelName, channelDescription, isChannelSynced,
     );
-    if (isChannelCreated) {
-      setShowChannelModal(false);
-    } else {
-      setApiErrors(apiErrors_);
-      setPrimaryFormError(MSG_CORRECT_FORM_ERRORS);
-    }
+    // if (isChannelCreated) {
+    //   setShowChannelModal(false);
+    // } else {
+    //   setApiErrors(apiErrors_);
+    //   setPrimaryFormError(MSG_CORRECT_FORM_ERRORS);
+    // }
   };
 
   const renderModal = () => (
     <>
-      <Modal show={showChannelModal} onHide={() => setShowChannelModal(false)}>
+      <Modal show={showModal} onHide={() => setCreateChannelShowModal(false)}>
         <Form onSubmit={(e) => createChannelHandler(e)} noValidate validated={validated}>
           <Modal.Header closeButton>
             <Modal.Title>Create a channel</Modal.Title>
@@ -72,7 +71,7 @@ export const CreateChannelButton = ({
             <p className="text-danger">
               {primaryFormError}
             </p>
-            <button onClick={() => setShowChannelModal(false)} type="button" className="btn btn-light">Cancel</button>
+            <button onClick={() => setCreateChannelShowModal(false)} type="button" className="btn btn-light">Cancel</button>
             <button type="submit" className="btn btn-primary">Create Channel</button>
           </Modal.Footer>
 
@@ -84,7 +83,7 @@ export const CreateChannelButton = ({
   return (
     <>
       <div>
-        <a onClick={() => setShowChannelModal(true)} className="mt-2 btn btn-outline-secondary">
+        <a onClick={() => setCreateChannelShowModal(true)} className="mt-2 btn btn-outline-secondary">
           <i className="material-icons align-middle">add_circle_outline</i> Create Channel
         </a>
       </div>

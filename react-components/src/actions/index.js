@@ -7,6 +7,8 @@ import {
   updateActiveVideoDetailMetadata,
   openVideoDetailModal,
   closeVideoDetailModal,
+  createChannel,
+  setCreateChannelShowModal,
 } from './ChannelManager';
 import {
   setActiveChannel,
@@ -38,4 +40,6 @@ export {
   closeVideoDetailModal,
   toggleVideoLike,
   toggleVideoDislike,
+  createChannel,
+  setCreateChannelShowModal,
 };

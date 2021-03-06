@@ -7,11 +7,14 @@ import {
   setExistingThumbnailAsPrimary,
   updateVideo,
   getUploadById,
+  createChannelRequest,
+  getChannelsRequest,
 } from '../api/api';
 import { MSG_CORRECT_FORM_ERRORS } from '../constants';
 import { configureStore } from '../store';
 import { randomItem } from '../utils';
-import { fetchActiveChannelVideos } from './Channel';
+import { fetchActiveChannelVideos, setChannels, setActiveChannel } from './Channel';
+import { createToast } from './Global';
 
 const { store } = configureStore.getInstance();
 const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
@@ -25,6 +28,7 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
 };
 
 export const setChannelSyncModalOpen = (state) => async (dispatch) => {
+  console.debug('action, setChannelSyncModalOpen');
   dispatch({ type: aTypes.SET_CHANNEL_SYNC_MODAL_OPEN, payload: state });
 };
 
@@ -32,9 +36,9 @@ export const updateActiveVideoDetailMetadata = (videoId, updatedFields) => async
   const { response, data } = await updateVideo(videoId, updatedFields);
   if (response?.status === 400) {
     // setApiErrors(response?.data);
-    dispatch({ type: aTypes.CREATE_TOAST, payload: TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT });
+    dispatch(createToast(TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT));
   } else {
-    dispatch({ type: aTypes.CREATE_TOAST, payload: TOAST_PAYLOAD_VIDEO_DETAIL_SAVED });
+    dispatch(createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED));
     // setApiErrors(null);
     dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
     dispatch(fetchActiveChannelVideos(data.channel_id, false));
@@ -152,4 +156,46 @@ const _uploadFeedbackAutogenThumbnailChoices = (uploadFeedbackData) => {
   } else {
     return [];
   }
+}
+
+
+const _setCreateChannelApiErrors = apiErrors => ({
+  type: aTypes.SET_CREATE_CHANNEL_API_ERRORS,
+  payload: apiErrors
+})
+
+const _setCreateChannelShowModal = bool => ({
+  type: aTypes.SET_CREATE_CHANNEL_SHOW_MODAL,
+  payload: bool
+})
+
+
+export const createChannel = (name, desc, isSynced) => async (dispatch) => {
+  console.debug('action, createChannel');
+  const { response, data } = await createChannelRequest(name, desc, isSynced);
+  let apiErrors = {};
+  if (response?.status === 400) {
+    apiErrors = response?.data;
+    dispatch(_setCreateChannelApiErrors(apiErrors));
+  } else {
+    dispatch(createToast({
+      header: 'Success',
+      body: 'New Channel was created!',
+    }));
+    dispatch(_setCreateChannelApiErrors(apiErrors));
+    const allChannels = await getChannelsRequest();
+    dispatch(setChannels(allChannels.data));
+    dispatch(setActiveChannel(data.id));
+    if (isSynced) {
+      dispatch(setChannelSyncModalOpen(isSynced));
+      window.location.pathname = '/channel/sync/';
+    } else {
+      dispatch(_setCreateChannelShowModal(false));
+    }
+  }
+};
+
+export const setCreateChannelShowModal = bool => async (dispatch) => {
+  console.debug('action, setCreateChannelShowModal');
+  dispatch(_setCreateChannelShowModal(bool));
 }

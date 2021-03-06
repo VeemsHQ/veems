@@ -33,6 +33,7 @@ export const setActiveChannel = id => async (dispatch) => {
 };
 
 export const setChannels = channels => async (dispatch) => {
+    console.debug('action, setChannels');
     dispatch(_setChannels(channels));
 };
 

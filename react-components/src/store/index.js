@@ -1,11 +1,8 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import { persistStore } from 'redux-persist';
 import ReduxThunk from 'redux-thunk';
-import expireReducer from 'redux-persist-expire';
 
 import reducer from '../reducers';
-import { initialState as ChannelsReducerInitialState } from '../reducers/ChannelsReducer';
 
 // 1 week. Must match IMAGEKIT_CACHE_TIMEOUT, AWS_QUERYSTRING_EXPIRE in settings.py
 const staticAssetsAuthTokenTimeout = 604800;
