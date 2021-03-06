@@ -23,9 +23,10 @@ const Container = ({
   openVideoDetailModal,
   closeVideoDetailModal,
 }) => {
-  useEffect(() => {
-    setActiveChannel(channelId);
-  }, [channelId]);
+  // useEffect(() => {
+  //   if(setActiveChannel)
+  //   setActiveChannel(channelId);
+  // }, [channelId]);
 
   return (
     <ChannelManagerVideos

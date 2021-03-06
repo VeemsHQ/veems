@@ -16,7 +16,6 @@ export const initialState = {
         id: null,
         autogenThumbnailChoices: [],
     },// DEL onreload
-    isDbStale: false,
     isVideoFileSelectorVisible: true, // DEL onreload
     isVideoDetailModalOpen: queryParamUploadModalOpen, // DEL onreload
     displayUploadModal: queryParamUploadModalOpen, // DEL onreload

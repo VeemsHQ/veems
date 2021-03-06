@@ -12,7 +12,6 @@ export const initialState = {
   activeChannelVideosLoading: false,
   isChannelSyncModalOpen: false,
   channels: [],
-  isDbStale: false,
 };
 
 export default (state = initialState, action) => {
