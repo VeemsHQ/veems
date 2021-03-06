@@ -7,7 +7,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import { configureStore } from '../../store';
 import {
-  setActiveChannel,
   openVideoDetailModal,
   closeVideoDetailModal,
 } from '../../actions/index';
@@ -19,15 +18,9 @@ const Container = ({
   videos,
   isLoading,
   channelId,
-  setActiveChannel,
   openVideoDetailModal,
   closeVideoDetailModal,
 }) => {
-  // useEffect(() => {
-  //   if(setActiveChannel)
-  //   setActiveChannel(channelId);
-  // }, [channelId]);
-
   return (
     <ChannelManagerVideos
       videos={videos}
@@ -42,7 +35,6 @@ const Container = ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    setActiveChannel: setActiveChannel,
     openVideoDetailModal: openVideoDetailModal,
     closeVideoDetailModal: closeVideoDetailModal,
   }, dispatch),

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { VideoDetailModalContainer } from '../VideoDetailModal';
 import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
