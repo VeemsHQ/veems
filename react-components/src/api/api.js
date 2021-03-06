@@ -141,7 +141,7 @@ export const uploadComplete = async (uploadId, parts) => {
 }
 
 
-export const uploadVideoParts = async (presignedUploadUrls, file, numParts, fileSize, chunkSize, progressCallback) => {
+export const uploadVideoParts = async (videoId, presignedUploadUrls, file, numParts, fileSize, chunkSize, progressCallback) => {
   let parts = [];
   for (let idx = 0; idx < numParts; idx++) {
     const startByte = chunkSize * idx;
@@ -152,7 +152,7 @@ export const uploadVideoParts = async (presignedUploadUrls, file, numParts, file
     const body = file.slice(startByte, stopByte);
     const res = await axiosInstance.put(url, body);
     const percentageComplete = Math.round(100 * idx / (numParts - 1));
-    progressCallback(percentageComplete)
+    progressCallback(videoId, percentageComplete)
     parts.push({ etag: res.headers.etag, part_number: idx + 1 });
   }
   return parts;

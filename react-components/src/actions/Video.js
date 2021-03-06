@@ -48,7 +48,7 @@ const _removeVideoLike = videoLikeDislikeData => ({
     videoLikeDislikeData
 })
 
-const _setVideoThumbnailUploading = bool => ({
+export const _setVideoThumbnailUploading = bool => ({
     type: SET_VIDEO_THUMBNAIL_UPLOADING,
     payload: bool
 })

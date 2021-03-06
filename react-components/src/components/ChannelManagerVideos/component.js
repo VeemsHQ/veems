@@ -12,6 +12,7 @@ export const ChannelManagerVideos = ({
   videos,
   channelId,
   isLoading,
+  uploadingVideosStatuses,
   onVideoDetailModalOpen,
   onVideoDetailModalClose,
 }) => {
@@ -135,20 +136,21 @@ export const ChannelManagerVideos = ({
             </td>
             <td>
               <div className="text-muted">{video.visibility}</div>
-              <div className="text-muted">Uploading...</div>
-              <div className="progress">
-                <div
-                  className="progress-bar progress-bar-striped progress-bar-animated"
-                  role="progressbar"
-                  style={{ width: '55%' }}
-                  aria-valuenow="55"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >55%
-                </div>
-              </div>
+              {uploadingVideosStatuses[video.id] &&
+                <>
+                  <div className="text-muted d-none">Uploading...</div>
+                  <div className="progress">
+                    <div className="progress-bar progress-bar-striped progress-bar-animated"
+                      role="progressbar" style={{ width: `${uploadingVideosStatuses[video.id].percentageUploaded}%` }} aria-valuenow={uploadingVideosStatuses[video.id].percentageUploaded} aria-valuemin="0"
+                      aria-valuemax="100">{uploadingVideosStatuses[video.id].percentageUploaded}%</div>
+                  </div>
+                </>
+              }
             </td>
-            <td>{video.created_date_human}<br /><span className="text-muted">Uploaded</span></td>
+            <td>
+              {video.created_date_human}<br />
+              {!uploadingVideosStatuses[video.id] && <span className="text-muted">Uploaded</span>}
+            </td>
             <td className="text-success">$0</td>
             <td>{video.view_count}</td>
             <td>{video.comment_count}</td>

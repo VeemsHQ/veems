@@ -15,6 +15,7 @@ import { configureStore } from '../store';
 import { randomItem } from '../utils';
 import { fetchActiveChannelVideos, setChannels, setActiveChannel } from './Channel';
 import { createToast } from './Global';
+import { _setVideoThumbnailUploading } from './Video';
 
 const { store } = configureStore.getInstance();
 
@@ -38,10 +39,26 @@ const _setVideoDetailModalOpen = bool => ({
   payload: bool
 })
 
-const _setVideoUploadingFeedback = feedback => ({
-  type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK,
-  payload: feedback
+const _setVideoDetailModalLoading = bool => ({
+  type: aTypes.SET_VIDEO_DETAIL_MODAL_LOADING,
+  payload: bool
 })
+
+const _setVideoUploadingFeedback = (videoId, feedback) => ({
+  type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK,
+  payload: [videoId, feedback]
+})
+
+const _setFileSelectorVisible = bool => ({
+  type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE,
+  payload: bool
+})
+
+const _setFileIsSelected = bool => ({
+  type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTED,
+  payload: bool
+})
+
 
 export const setChannelSyncModalOpen = (state) => async (dispatch) => {
   console.debug('action, setChannelSyncModalOpen');
@@ -49,6 +66,7 @@ export const setChannelSyncModalOpen = (state) => async (dispatch) => {
 };
 
 export const updateActiveVideoDetailMetadata = (videoId, updatedFields) => async (dispatch) => {
+  console.debug(`action, updateActiveVideoDetailMetadata ${videoId}`);
   const { response, data } = await updateVideo(videoId, updatedFields);
   if (response?.status === 400) {
     // setApiErrors(response?.data);
@@ -64,13 +82,14 @@ export const updateActiveVideoDetailMetadata = (videoId, updatedFields) => async
     }));
     // setApiErrors(null);
     dispatch(_setVideoDetail(data));
-    dispatch(fetchActiveChannelVideos(data.channel_id, false));
+    dispatch(fetchActiveChannelVideos(data.channel_id, true));
   }
 }
 
-export const openVideoDetailModal = (videoId) => async (dispatch) => {
-  console.log(`openVideoDetailModal: ${videoId}`);
+export const openVideoDetailModal = (videoId, isFileSelectorVisible = false) => async (dispatch) => {
+  console.debug('action, openVideoDetailModal');
   dispatch(setVideoDetail(videoId));
+  dispatch(_setFileSelectorVisible(isFileSelectorVisible));
   dispatch(_setVideoDetailModalOpen(true));
 }
 
@@ -80,33 +99,32 @@ export const closeVideoDetailModal = () => async (dispatch) => {
 
 export const setVideoDetail = (videoId) => async (dispatch) => {
   console.debug('action, setVideoDetail');
+  dispatch(_setVideoDetailModalLoading(true));
   const { data } = await getVideoById(videoId);
   dispatch(_setVideoDetail(data));
+  dispatch(_setVideoDetailModalLoading(false));
 };
 
 export const setActiveVideoDetailThumbnailAsPrimary = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
   console.debug('action, setActiveVideoDetailThumbnailAsPrimary');
+  dispatch(_setVideoThumbnailUploading(true));
   const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
-  dispatch(fetchActiveChannelVideos(data.channel_id, false));
   dispatch(_setVideoDetail(data));
+  dispatch(_setVideoThumbnailUploading(false));
+  dispatch(fetchActiveChannelVideos(data.channel_id, true));
 };
 
-export const setFileSelectorVisible = (bool) => async (dispatch) => {
-  console.debug('action, setFileSelectorVisible');
-  dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE, payload: bool });
-}
-
-const _updateUploadProgress = async (percentageDone) => {
-  console.debug(`Upload progress updated: ${percentageDone}`);
+const _updateUploadProgressCallback = async (videoId, percentageDone) => {
+  console.debug(`Uploading ${videoId} ${percentageDone}`);
   const feedback = {
     percentageUploaded: percentageDone
   };
-  store.dispatch(_setVideoUploadingFeedback(feedback));
+  store.dispatch(_setVideoUploadingFeedback(videoId, feedback));
   // store.dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
   // TODO: get the video
 }
 
-const _uploadVideo = async (file, uploadPrepareResult) => {
+const _uploadVideo = async (videoId, file, uploadPrepareResult) => {
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const fileSize = file.size;
   const numParts = Math.ceil(fileSize / chunkSize)
@@ -114,12 +132,13 @@ const _uploadVideo = async (file, uploadPrepareResult) => {
   const presignedUploadUrls = uploadPrepareResult.presigned_upload_urls;
   console.debug('Uploading video parts')
   const parts = await uploadVideoParts(
+    videoId,
     presignedUploadUrls,
     file,
     numParts,
     fileSize,
     chunkSize,
-    _updateUploadProgress,
+    _updateUploadProgressCallback,
   )
   console.debug('Uploading video parts completed')
   await uploadComplete(uploadId, parts);
@@ -137,14 +156,17 @@ export const startVideoUpload = (channelId, file) => async (dispatch) => {
     console.error('UPLOAD FAILED');
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
-    dispatch(provideUploadFeedback(data.video_id, data.upload_id, channelId));
+    dispatch(fetchActiveChannelVideos(channelId, true));
     dispatch(setVideoDetail(data.video_id));
-    await _uploadVideo(file, data);
+    dispatch(provideUploadFeedback(data.video_id, data.upload_id, channelId));
+    dispatch(_setFileIsSelected(true));
+    dispatch(_setFileSelectorVisible(false));
+    await _uploadVideo(data.video_id, file, data);
   }
 };
 
 const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch) => {
-  console.debug(`Upload feedback process running for video ${videoId}, upload ${uploadId}...`)
+  console.debug(`action, provideUploadFeedback, for video ${videoId}, upload ${uploadId}...`)
   const delayBetweenChecks = 5000;
   while (true) {
     const { data } = await getUploadById(uploadId);
@@ -160,11 +182,11 @@ const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch)
       isProcessing: isProcessing,
       autogenThumbnailChoices: autogenThumbnailChoices,
     };
-    dispatch(_setVideoUploadingFeedback(feedback));
+    dispatch(_setVideoUploadingFeedback(videoId, feedback));
     // dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
     if (isViewable && !isProcessing) {
       console.debug('Upload feedback process exiting');
-      dispatch(fetchActiveChannelVideos(channelId, false));
+      dispatch(fetchActiveChannelVideos(channelId, true));
       break
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));

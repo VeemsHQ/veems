@@ -3,21 +3,24 @@ import {
     SET_VIDEO_UPLOADING_FEEDBACK,
     SET_VIDEO_DETAIL,
     SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE,
+    SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTED,
     SET_VIDEO_DETAIL_MODAL_OPEN,
     SET_VIDEO_THUMBNAIL_UPLOADING,
+    SET_VIDEO_DETAIL_MODAL_LOADING,
 } from '../actions/ActionTypes';
 import { randomItem } from '../utils';
 
 const urlParams = new URLSearchParams(window.location.search);
 const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
+const initialStateUploadingVideo = {
+    autogenThumbnailChoices: [],
+    isProcessing: false,
+    isUploading: true,
+    isViewable: false,
+    percentageUploaded: 0,
+}
 export const initialState = {
     uploadingVideos: {
-        // null: {
-        //     autogenThumbnailChoices: [],
-        //     isProcessing: false,
-        //     isUploading: false,
-        //     isViewable: false,
-        // }
     },
     videoDetail: {
         video: {},
@@ -27,19 +30,18 @@ export const initialState = {
     // TODO: replace container state with this.
     videoDetailForm: {
         apiErrors: {},
-        isFileSelectorVisible: true,
+        isFileSelectorVisible: queryParamUploadModalOpen,
         isFileSelected: false,
         isLoading: false,
         isThumbnailUploading: false,
         thumbsUpdatedFromUploadFeedback: false,
         isProcessing: false,
-        isUploading: false,
+        // isUploading: false,
         isViewable: false,
+        isSaving: false,
     },
-    isVideoThumbnailUploading: false,
     isVideoFileSelectorVisible: true,
     isVideoDetailModalOpen: queryParamUploadModalOpen,
-    displayUploadModal: queryParamUploadModalOpen,
 };
 
 export default (state = initialState, action) => {
@@ -55,7 +57,6 @@ export default (state = initialState, action) => {
                     ...state,
                     ...{
                         isVideoDetailModalOpen: false,
-                        displayUploadModal: false,
                         videoDetail: initialState.videoDetail,
                     }
                 };
@@ -71,23 +72,36 @@ export default (state = initialState, action) => {
             return { ...state, videoDetail: videoDetail };
         case START_VIDEO_UPLOADING:
             videoId = payload;
-            newState = { ...state.uploadingVideos, [videoId]: {} };
-            return { ...state, uploadingVideos: newState };
-        case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE:
-            return { ...state, isVideoFileSelectorVisible: payload };
-        case SET_VIDEO_THUMBNAIL_UPLOADING:
-            return { ...state, isVideoThumbnailUploading: payload };
-        case SET_VIDEO_UPLOADING_FEEDBACK:
-            videoId = state.videoDetail.id;
-            let newFeedback;
-            if (state.uploadingVideos) {
-                const feedback = state.uploadingVideos[videoId];
-                newFeedback = { ...feedback, ...payload };
-            } else {
-                newFeedback = payload
+            newState = { ...state.uploadingVideos, [videoId]: initialStateUploadingVideo };
+            return {
+                ...state, uploadingVideos: newState
             }
-            newState = { ...state.uploadingVideos, [videoId]: newFeedback };
-            return { ...state, uploadingVideos: newState };
+        case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE:
+            return {
+                ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isFileSelectorVisible: payload } }
+            };
+        case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTED:
+            return {
+                ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isFileSelected: payload } }
+            };
+        case SET_VIDEO_DETAIL_MODAL_LOADING:
+            return {
+                ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isLoading: payload } }
+            };
+        case SET_VIDEO_THUMBNAIL_UPLOADING:
+            return {
+                ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isThumbnailUploading: payload } }
+            };
+        case SET_VIDEO_UPLOADING_FEEDBACK:
+            videoId = payload[0];
+            let newFeedbackForVideo = { ...state.uploadingVideos[videoId], ...payload[1] };
+            return {
+                ...state,
+                uploadingVideos: {
+                    ...state.uploadingVideos,
+                    [videoId]: newFeedbackForVideo,
+                }
+            };
         default:
             return state;
     }

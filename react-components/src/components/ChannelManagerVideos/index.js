@@ -18,6 +18,7 @@ const Container = ({
   videos,
   isLoading,
   channelId,
+  uploadingVideosStatuses,
   openVideoDetailModal,
   closeVideoDetailModal,
 }) => {
@@ -26,6 +27,7 @@ const Container = ({
       videos={videos}
       channelId={channelId}
       isLoading={isLoading}
+      uploadingVideosStatuses={uploadingVideosStatuses}
       onVideoDetailModalOpen={openVideoDetailModal}
       onVideoDetailModalClose={openVideoDetailModal}
     />
@@ -57,6 +59,7 @@ const mapStateToProps = (state, ownProps) => {
     videos: videos,
     isLoading: state.channels.activeChannelVideosLoading,
     channelId: channelId,
+    uploadingVideosStatuses: state.temp.uploadingVideos,
   };
 };
 

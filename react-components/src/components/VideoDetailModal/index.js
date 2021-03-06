@@ -15,7 +15,6 @@ import {
   startVideoUpload,
   setVideoDetail,
   setActiveVideoDetailThumbnailAsPrimary,
-  setFileSelectorVisible,
   updateActiveVideoDetailMetadata,
   openVideoDetailModal,
   closeVideoDetailModal,
@@ -33,36 +32,30 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
 };
 
 const Container = ({
-  videoId, autogenThumbnailChoices, videoData, channelId, fetchActiveChannelVideos, createToast,
+  videoId, videoDetail, channelId, createToast,
   isModalOpen, startVideoUpload,
-  uploadStatus, setVideoDetail, isVideoFileSelectorVisible,
-  setFileSelectorVisible, videoDetailForm,
+  uploadStatus, setVideoDetail,
+  videoDetailForm,
   updateActiveVideoDetailMetadata, openVideoDetailModal,
   closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary, setVideoCustomThumbnail,
 }) => {
-  const [_autogenThumbnailChoices, setAutogenThumbnailChoices] = useState(autogenThumbnailChoices);
-  const [thumbsUpdatedFromUploadFeedback, setThumbsUpdatedFromUploadFeedback] = useState(false);
+  // const [_autogenThumbnailChoices, setAutogenThumbnailChoices] = useState(autogenThumbnailChoices);
+  // const [thumbsUpdatedFromUploadFeedback, setThumbsUpdatedFromUploadFeedback] = useState(false);
   const [isThumbnailUploading, setIsThumbUploading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
-  const [percentageUploaded, setPercentageUploaded] = useState(0);
-  // TODO: replace with uploadStatus, single var
-  console.log('uploadStatus');
-  console.log(uploadStatus);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isViewable, setIsViewable] = useState(false);
-
+  // const [isProcessing, setIsProcessing] = useState(false);
+  // const [isUploading, setIsUploading] = useState(false);
+  // const [isViewable, setIsViewable] = useState(false);
   // TODO: if isUploading=true, prevent leaving page.
-
-  const [apiErrors, setApiErrors] = useState(null);
+  // const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
   // useEffect(() => {
-  //   if (videoData.id) {
+  //   if (video.id) {
   //     setIsLoading(false);
-  //     setAutogenThumbnailChoices(videoData.autogenThumbnailChoices);
+  //     setAutogenThumbnailChoices(video.autogenThumbnailChoices);
   //   } else {
   //     setIsLoading(true);
   //   }
@@ -99,16 +92,14 @@ const Container = ({
   //     setIsViewable(true);
   //   }
 
-  // }, [videoData, uploadingVideos]);
+  // }, [video, uploadingVideos]);
 
   const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
-    setIsThumbUploading(true);
-    const videoId = videoData.id;
+    const videoId = videoDetail.id;
     await setActiveVideoDetailThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
-    setIsThumbUploading(false);
   };
 
-  const handleVideoUpdate = async (videoData, updatedFields = null) => {
+  const handleVideoUpdate = async (video, updatedFields = null) => {
     // To give better UX, update the state before the server request.
     setIsSaving(true);
     if (!updatedFields) {
@@ -118,9 +109,9 @@ const Container = ({
       setIsSaving(false);
     } else {
       // Now do it for real.
-      let newData = Object.create(videoData);
+      let newData = Object.create(video);
       newData = Object.assign(newData, updatedFields);
-      updateActiveVideoDetailMetadata(videoData.id, updatedFields);
+      updateActiveVideoDetailMetadata(video.id, updatedFields);
     }
   };
 
@@ -137,21 +128,17 @@ const Container = ({
 
   const handleInputThumbnailChange = async (e) => {
     const file = e.target.files[0];
-    setVideoCustomThumbnail(channelId, videoData.id, file);
+    setVideoCustomThumbnail(channelId, videoDetail.id, file);
   };
 
   const handleFileSelect = async (acceptedFiles) => {
-    // https://github.com/cvisionai/tator/blob/e7dd26489ab50637e480c22ded01673e27f5cad9/main/static/js/tasks/upload-worker.js
-    // https://www.altostra.com/blog/multipart-uploads-with-s3-presigned-url
     console.debug('Video file was selected, starting upload...')
-    setIsFileSelected(true);
     startVideoUpload(channelId, acceptedFiles[0]);
-    setFileSelectorVisible(false);
   }
-  if (isVideoFileSelectorVisible === true) {
+  if (videoDetailForm.isFileSelectorVisible === true) {
     return (
       <FileUploadChooseModal
-        isFileSelected={isFileSelected}
+        isFileSelected={videoDetailForm.isFileSelected}
         onFileSelect={handleFileSelect}
         // onModalClose={() => setIsChooseFileUploadModalOpen(false)}
         isModalOpen={isModalOpen}
@@ -163,17 +150,10 @@ const Container = ({
     return (
       <VideoDetailModal
         inputThumbnailFile={inputThumbnailFile}
-        isThumbnailUploading={isThumbnailUploading}
-        isSaving={isSaving}
         isModalOpen={isModalOpen}
-        isLoading={isLoading}
-        videoData={videoData}
-        autogenThumbnailChoices={_autogenThumbnailChoices}
+        videoDetail={videoDetail}
+        videoDetailForm={videoDetailForm}
         uploadStatus={uploadStatus}
-        isUploading={isUploading}
-        isProcessing={isProcessing}
-        isViewable={isViewable}
-        apiErrors={apiErrors}
         onModalOpen={(videoId) => handleEditVideoModalOpen(videoId)}
         onModalClose={() => closeVideoDetailModal}
         onFormFieldChange={handleVideoUpdate}
@@ -186,27 +166,16 @@ const Container = ({
 
 const mapStateToProps = (state, ownProps) => {
   let videoId = null;
-  let autogenThumbnailChoices = [];
-  let videoData = null;
-  let channelId = null;
-  if (state.temp.videoDetail) {
-    videoId = state.temp.videoDetail.id;
-    autogenThumbnailChoices = state.temp.videoDetail.autogenThumbnailChoices;
-    videoData = state.temp.videoDetail.video;
-    channelId = state.temp.videoDetail.video.channel_id;
+  if (state.temp.videoDetail.video.id) {
+    videoId = state.temp.videoDetail.video.id;
   } else {
     videoId = ownProps.videoId;
-    videoData = null;
-    channelId = ownProps.channelId;
   }
   return {
     uploadStatus: state.temp.uploadingVideos[videoId],
-    // uploadingVideos: state.temp.uploadingVideos,
     videoId: videoId,
-    autogenThumbnailChoices: autogenThumbnailChoices,
-    videoData: videoData,
+    videoDetail: state.temp.videoDetail,
     channelId: state.channels.activeChannelId,
-    isVideoFileSelectorVisible: state.temp.isVideoFileSelectorVisible,
     isModalOpen: state.temp.isVideoDetailModalOpen,
     videoDetailForm: state.temp.videoDetailForm,
   };
@@ -218,11 +187,9 @@ const mapDispatchToProps = (dispatch) => ({
     setVideoCustomThumbnail: setVideoCustomThumbnail,
     createToast: createToast,
     setChannelSyncModalOpen: setChannelSyncModalOpen,
-    fetchActiveChannelVideos: fetchActiveChannelVideos,
     startVideoUpload: startVideoUpload,
     setVideoDetail: setVideoDetail,
     setActiveVideoDetailThumbnailAsPrimary: setActiveVideoDetailThumbnailAsPrimary,
-    setFileSelectorVisible: setFileSelectorVisible,
     openVideoDetailModal: openVideoDetailModal,
     closeVideoDetailModal: closeVideoDetailModal,
     updateActiveVideoDetailMetadata: updateActiveVideoDetailMetadata,

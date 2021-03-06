@@ -10,80 +10,76 @@ import { valueOrEmpty } from '../../utils';
 
 export const VideoDetailModal = ({
   inputThumbnailFile,
-  isSaving,
-  isThumbnailUploading,
   isModalOpen,
   onModalClose,
   onModalOpen,
-  isLoading,
-  isUploading,
-  isViewable,
-  isProcessing,
-  videoData,
+  videoDetail,
+  videoDetailForm,
   uploadStatus,
   onFormFieldChange,
   onInputThumbnailChange,
   onSetExistingThumbnailAsPrimary,
-  autogenThumbnailChoices,
-  apiErrors,
 }) => {
-  const saveButtonText = isSaving ? 'Saving...' : 'Save Changes';
+  const saveButtonText = videoDetailForm.isSaving ? 'Saving...' : 'Save Changes';
   let statusText = '';
-  if (isUploading) {
-    statusText = 'Uploading...'
-  } else if (isProcessing && !isViewable) {
-    statusText = 'Uploaded & processing'
-  } else if (isProcessing && isViewable) {
-    statusText = 'Viewable & processing'
-  } else if (!isProcessing && isViewable) {
-    statusText = 'Viewable & finished processing'
-  } else {
-    statusText = 'Unknown';
+  const isUploading = uploadStatus && uploadStatus.percentageUploaded < 100;
+  if (uploadStatus) {
+    if (isUploading) {
+      statusText = 'Uploading...'
+    } else if (uploadStatus.isProcessing && !uploadStatus.isViewable) {
+      statusText = 'Uploaded & processing'
+    } else if (uploadStatus.isProcessing && uploadStatus.isViewable) {
+      statusText = 'Viewable & processing'
+    } else if (!uploadStatus.isProcessing && uploadStatus.isViewable) {
+      statusText = 'Viewable & finished processing'
+    }
   }
-  const uploadThumbnailButtonText = isThumbnailUploading ? 'Uploading...' : 'Upload thumbnail';
-  const videoId = valueOrEmpty(videoData.id);
-  const initialTitle = valueOrEmpty(videoData.title);
-  const initialDescription = valueOrEmpty(videoData.description);
-  const initialTags = valueOrEmpty(videoData.tags);
-  const initialVisibility = valueOrEmpty(videoData.visibility);
-  const filename = valueOrEmpty(videoData.filename);
-  const primaryThumbnailUrl = videoData.thumbnail_image_small_url;
+  const uploadThumbnailButtonText = videoDetailForm.isThumbnailUploading ? 'Uploading...' : 'Upload thumbnail';
+  const video = videoDetail.video;
+  const videoId = valueOrEmpty(video.id);
+  const initialTitle = valueOrEmpty(video.title);
+  const initialDescription = valueOrEmpty(video.description);
+  const initialTags = valueOrEmpty(video.tags);
+  const initialVisibility = valueOrEmpty(video.visibility);
+  const filename = valueOrEmpty(video.filename);
+  const primaryThumbnailUrl = video.thumbnail_image_small_url;
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
+  const autogenThumbnailChoices = uploadStatus && uploadStatus.autogenThumbnailChoices ? uploadStatus.autogenThumbnailChoices : videoDetail.autogenThumbnailChoices;
 
   React.useEffect(() => {
     setTitle(initialTitle);
     setDescription(initialDescription);
     setTags(initialTags);
     setVisibility(initialVisibility);
-  }, [videoData]);
+  }, [videoDetail]);
 
   const debouncedOnFormFieldChange = useCallback(
-    debounce((videoData, data) => onFormFieldChange(videoData, data), 1000),
+    debounce((video, data) => onFormFieldChange(video, data), 1000),
     [],
   );
 
   const handleVisibilityChange = async (e) => {
-    onFormFieldChange(videoData, { visibility: e.target.name });
+    onFormFieldChange(videoDetail, { visibility: e.target.name });
   };
 
   const handleTagsChange = async (e) => {
     const tags = e.target.value;
     const tagsArray = tags.split(',').map((e) => e.trim());
-    debouncedOnFormFieldChange(videoData, { tags: tagsArray });
+    debouncedOnFormFieldChange(videoDetail, { tags: tagsArray });
     setTags(tags);
   };
 
   const handleFieldChange = (e, setterFunc) => {
-    debouncedOnFormFieldChange(videoData, { [e.target.name]: e.target.value });
+    debouncedOnFormFieldChange(videoDetail, { [e.target.name]: e.target.value });
     setterFunc(e.target.value);
   };
 
   const handleSaveChangesClicked = async (e) => {
     e.preventDefault();
-    onFormFieldChange(videoData);
+    onFormFieldChange(videoDetail);
   };
 
   const handleUploadThumbButtonClick = (e) => {
@@ -101,13 +97,13 @@ export const VideoDetailModal = ({
       <Form>
 
         <Modal.Header closeButton>
-          {isLoading && (<Modal.Title className="w-100"><div className="shine d-block w-75" style={{ height: '30px' }} /></Modal.Title>)}
-          {!isLoading && (<Modal.Title>Video Details</Modal.Title>)}
+          {videoDetailForm.isLoading && (<Modal.Title className="w-100"><div className="shine d-block w-75" style={{ height: '30px' }} /></Modal.Title>)}
+          {!videoDetailForm.isLoading && (<Modal.Title>Video Details</Modal.Title>)}
 
         </Modal.Header>
 
         <Modal.Body>
-          {isLoading && (
+          {videoDetailForm.isLoading && (
             <div className="row">
               <div className="col-12 col-lg-8">
 
@@ -137,13 +133,13 @@ export const VideoDetailModal = ({
               </div>
             </div>
           )}
-          {!isLoading && (
+          {!videoDetailForm.isLoading && (
             <div className="row">
               <div className="col-12 col-lg-8">
 
                 <Form.Group>
                   <Form.Label>Title</Form.Label>
-                  <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.title : false)} onChange={(e) => handleFieldChange(e, setTitle)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
+                  <Form.Control isInvalid={Boolean(videoDetailForm.apiErrors ? videoDetailForm.apiErrors.title : false)} onChange={(e) => handleFieldChange(e, setTitle)} type="text" name="title" value={title} placeholder="Add a title that describes your video." required />
                   <Form.Control.Feedback type="invalid">
                     Please provide a title, up to 500 characters in length.
                   </Form.Control.Feedback>
@@ -151,7 +147,7 @@ export const VideoDetailModal = ({
 
                 <Form.Group>
                   <Form.Label>Description</Form.Label>
-                  <Form.Control as="textarea" isInvalid={Boolean(apiErrors ? apiErrors.description : false)} rows={3} onChange={(e) => handleFieldChange(e, setDescription)} name="description" value={description} placeholder="Tell viewers about your video." />
+                  <Form.Control as="textarea" isInvalid={Boolean(videoDetailForm.apiErrors ? videoDetailForm.apiErrors.description : false)} rows={3} onChange={(e) => handleFieldChange(e, setDescription)} name="description" value={description} placeholder="Tell viewers about your video." />
                 </Form.Group>
 
                 <Form.Group>
@@ -175,7 +171,7 @@ export const VideoDetailModal = ({
                     <input type="file" onChange={onInputThumbnailChange} id="custom_thumbnail_image" ref={inputThumbnailFile} className="d-none" />
                     {autogenThumbnailChoices.length > 0 && (
                       <>
-                        {!isThumbnailUploading && (
+                        {!videoDetailForm.isThumbnailUploading && (
                           <button type="button" className="thumbnail thumbnail-small thumbnail-selected mr-2 rounded d-flex align-items-center">
                             <img
                               src={primaryThumbnailUrl}
@@ -184,7 +180,7 @@ export const VideoDetailModal = ({
                             />
                           </button>
                         )}
-                        {isThumbnailUploading && (
+                        {videoDetailForm.isThumbnailUploading && (
                           <div
                             className="text-muted thumbnail thumbnail-small rounded shine d-inline-flex align-items-center justify-content-center mr-2"
                           />
@@ -265,7 +261,7 @@ export const VideoDetailModal = ({
 
                 <Form.Group>
                   <Form.Label>Tags</Form.Label>
-                  <Form.Control isInvalid={Boolean(apiErrors ? apiErrors.tags : false)} onChange={(e) => handleTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
+                  <Form.Control isInvalid={Boolean(videoDetailForm.apiErrors ? videoDetailForm.apiErrors.tags : false)} onChange={(e) => handleTagsChange(e)} type="text" name="tags" value={tags} placeholder="Up to 3 tags to describe your video." />
                   <div className="mt-1 mx-2 text-muted" style={{ fontSize: '0.9em' }}>Enter a comma after each tag.</div>
                   <Form.Control.Feedback type="invalid">
                     Please provide some tags.
@@ -283,14 +279,14 @@ export const VideoDetailModal = ({
                       Uploading video…
                     </div>
                   )}
-                  {!isUploading && isThumbnailUploading && (
+                  {!isUploading && videoDetailForm.isThumbnailUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 shine d-flex align-items-center justify-content-center"
                     >
                       Uploading thumbnail...
                     </div>
                   )}
-                  {!isUploading && primaryThumbnailUrl && !isThumbnailUploading && (
+                  {!isUploading && primaryThumbnailUrl && !videoDetailForm.isThumbnailUploading && (
                     <div
                       className="thumbnail thumbnail-medium w-100 d-flex align-items-center justify-content-center"
                       style={{ width: 'auto', height: '171px' }}
@@ -318,10 +314,10 @@ export const VideoDetailModal = ({
           )}
         </Modal.Body>
         <Modal.Footer className="bg-secondary text-muted">
-          {isLoading && (
+          {videoDetailForm.isLoading && (
             <div className="shine d-block w-10 mr-auto" style={{ height: '30px' }} />
           )}
-          {!isLoading && (
+          {!videoDetailForm.isLoading && (
             <>
               {!isUploading && (<div className="mr-auto">{statusText}</div>)}
               {isUploading && (
