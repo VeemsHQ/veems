@@ -17,15 +17,31 @@ import { fetchActiveChannelVideos, setChannels, setActiveChannel } from './Chann
 import { createToast } from './Global';
 
 const { store } = configureStore.getInstance();
-const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
-  header: 'Success',
-  body: 'Your video was saved',
-};
-const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
-  header: 'Oops',
-  body: MSG_CORRECT_FORM_ERRORS,
-  isError: true,
-};
+
+const _setCreateChannelApiErrors = apiErrors => ({
+  type: aTypes.SET_CREATE_CHANNEL_API_ERRORS,
+  payload: apiErrors
+})
+
+const _setCreateChannelShowModal = bool => ({
+  type: aTypes.SET_CREATE_CHANNEL_SHOW_MODAL,
+  payload: bool
+})
+
+const _setVideoDetail = videoDetail => ({
+  type: aTypes.SET_VIDEO_DETAIL,
+  payload: videoDetail
+})
+
+const _setVideoDetailModalOpen = bool => ({
+  type: aTypes.SET_VIDEO_DETAIL_MODAL_OPEN,
+  payload: bool
+})
+
+const _setVideoUploadingFeedback = feedback => ({
+  type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK,
+  payload: feedback
+})
 
 export const setChannelSyncModalOpen = (state) => async (dispatch) => {
   console.debug('action, setChannelSyncModalOpen');
@@ -36,37 +52,47 @@ export const updateActiveVideoDetailMetadata = (videoId, updatedFields) => async
   const { response, data } = await updateVideo(videoId, updatedFields);
   if (response?.status === 400) {
     // setApiErrors(response?.data);
-    dispatch(createToast(TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT));
+    dispatch(createToast({
+      header: 'Oops',
+      body: MSG_CORRECT_FORM_ERRORS,
+      isError: true,
+    }));
   } else {
-    dispatch(createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED));
+    dispatch(createToast({
+      header: 'Success',
+      body: 'Your video was saved',
+    }));
     // setApiErrors(null);
-    dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
+    dispatch(_setVideoDetail(data));
     dispatch(fetchActiveChannelVideos(data.channel_id, false));
   }
 }
 
 export const openVideoDetailModal = (videoId) => async (dispatch) => {
   console.log(`openVideoDetailModal: ${videoId}`);
-  await setActiveVideoDetailData(videoId)(dispatch);
-  dispatch({ type: aTypes.SET_VIDEO_DETAIL_MODAL_OPEN, payload: true });
+  dispatch(setVideoDetail(videoId));
+  dispatch(_setVideoDetailModalOpen(true));
 }
 
 export const closeVideoDetailModal = () => async (dispatch) => {
-  dispatch({ type: aTypes.SET_VIDEO_DETAIL_MODAL_OPEN, payload: false });
+  dispatch(_setVideoDetailModalOpen(false));
 }
 
-export const setActiveVideoDetailData = (videoId) => async (dispatch) => {
+export const setVideoDetail = (videoId) => async (dispatch) => {
+  console.debug('action, setVideoDetail');
   const { data } = await getVideoById(videoId);
-  dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
+  dispatch(_setVideoDetail(data));
 };
 
 export const setActiveVideoDetailThumbnailAsPrimary = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
+  console.debug('action, setActiveVideoDetailThumbnailAsPrimary');
   const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
   dispatch(fetchActiveChannelVideos(data.channel_id, false));
-  dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
+  dispatch(_setVideoDetail(data));
 };
 
 export const setFileSelectorVisible = (bool) => async (dispatch) => {
+  console.debug('action, setFileSelectorVisible');
   dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE, payload: bool });
 }
 
@@ -75,7 +101,8 @@ const _updateUploadProgress = async (percentageDone) => {
   const feedback = {
     percentageUploaded: percentageDone
   };
-  store.dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
+  store.dispatch(_setVideoUploadingFeedback(feedback));
+  // store.dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
   // TODO: get the video
 }
 
@@ -99,6 +126,7 @@ const _uploadVideo = async (file, uploadPrepareResult) => {
 }
 
 export const startVideoUpload = (channelId, file) => async (dispatch) => {
+  console.debug('action, startVideoUpload');
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const filename = file.name;
   const fileSize = file.size;
@@ -109,8 +137,8 @@ export const startVideoUpload = (channelId, file) => async (dispatch) => {
     console.error('UPLOAD FAILED');
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
-    provideUploadFeedback(data.video_id, data.upload_id, channelId)(dispatch);
-    setActiveVideoDetailData(data.video_id)(dispatch);
+    dispatch(provideUploadFeedback(data.video_id, data.upload_id, channelId));
+    dispatch(setVideoDetail(data.video_id));
     await _uploadVideo(file, data);
   }
 };
@@ -132,7 +160,8 @@ const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch)
       isProcessing: isProcessing,
       autogenThumbnailChoices: autogenThumbnailChoices,
     };
-    dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
+    dispatch(_setVideoUploadingFeedback(feedback));
+    // dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
     if (isViewable && !isProcessing) {
       console.debug('Upload feedback process exiting');
       dispatch(fetchActiveChannelVideos(channelId, false));
@@ -141,7 +170,6 @@ const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch)
     await new Promise((r) => setTimeout(r, delayBetweenChecks));
   }
 }
-
 
 const _uploadFeedbackAutogenThumbnailChoices = (uploadFeedbackData) => {
   if (uploadFeedbackData.autogenerated_thumbnail_choices.length > 0) {
@@ -157,18 +185,6 @@ const _uploadFeedbackAutogenThumbnailChoices = (uploadFeedbackData) => {
     return [];
   }
 }
-
-
-const _setCreateChannelApiErrors = apiErrors => ({
-  type: aTypes.SET_CREATE_CHANNEL_API_ERRORS,
-  payload: apiErrors
-})
-
-const _setCreateChannelShowModal = bool => ({
-  type: aTypes.SET_CREATE_CHANNEL_SHOW_MODAL,
-  payload: bool
-})
-
 
 export const createChannel = (name, desc, isSynced) => async (dispatch) => {
   console.debug('action, createChannel');

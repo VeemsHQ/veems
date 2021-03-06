@@ -3,13 +3,21 @@ import {
     ADD_VIDEO_DISLIKE,
     REMOVE_VIDEO_LIKE,
     REMOVE_VIDEO_DISLIKE,
+    SET_VIDEO_THUMBNAIL_UPLOADING,
 } from './ActionTypes';
 import {
     setVideoLikeDislike,
+    updateVideoCustomThumbnail,
 } from '../api/api';
 import {
     createToast,
 } from './Global';
+import {
+    setVideoDetail,
+} from './ChannelManager';
+import {
+    fetchActiveChannelVideos,
+} from './Channel';
 
 const TOAST_VIDEO_LIKED = {
     header: 'Success',
@@ -40,7 +48,12 @@ const _removeVideoLike = videoLikeDislikeData => ({
     videoLikeDislikeData
 })
 
-export const toggleVideoLike = (videoId, isLiked) => async (dispatch, getState) => {
+const _setVideoThumbnailUploading = bool => ({
+    type: SET_VIDEO_THUMBNAIL_UPLOADING,
+    payload: bool
+})
+
+export const toggleVideoLike = (videoId, isLiked) => async (dispatch) => {
     console.debug('action, toggleVideoLike');
     if (isLiked === false || isLiked === null) {
         // Like
@@ -54,7 +67,7 @@ export const toggleVideoLike = (videoId, isLiked) => async (dispatch, getState) 
     }
 }
 
-export const toggleVideoDislike = (videoId, isLiked) => async (dispatch, getState) => {
+export const toggleVideoDislike = (videoId, isLiked) => async (dispatch) => {
     console.debug('action, toggleVideoDislike');
     if (isLiked === true || isLiked === null) {
         // Dislike
@@ -66,4 +79,17 @@ export const toggleVideoDislike = (videoId, isLiked) => async (dispatch, getStat
         const { data } = await setVideoLikeDislike(videoId, null);
         dispatch(_removeVideoDislike(data));
     }
+}
+
+export const setVideoCustomThumbnail = (channelId, videoId, file) => async (dispatch) => {
+    console.debug('action, setVideoCustomThumbnail');
+    dispatch(_setVideoThumbnailUploading(true));
+    await updateVideoCustomThumbnail(videoId, file);
+    dispatch(setVideoDetail(videoId));
+    dispatch(_setVideoThumbnailUploading(false));
+    dispatch(fetchActiveChannelVideos(channelId, false));
+    dispatch(createToast({
+        header: 'Success',
+        body: 'Your video was saved',
+    }));
 }

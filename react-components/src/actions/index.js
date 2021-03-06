@@ -1,6 +1,6 @@
 import {
   setChannelSyncModalOpen,
-  setActiveVideoDetailData,
+  setVideoDetail,
   startVideoUpload,
   setActiveVideoDetailThumbnailAsPrimary,
   setFileSelectorVisible,
@@ -22,6 +22,7 @@ import {
 import {
   toggleVideoLike,
   toggleVideoDislike,
+  setVideoCustomThumbnail,
 } from './Video';
 
 export {
@@ -31,7 +32,7 @@ export {
   setChannels,
   setChannelSyncModalOpen,
   fetchActiveChannelVideos,
-  setActiveVideoDetailData,
+  setVideoDetail,
   startVideoUpload,
   setActiveVideoDetailThumbnailAsPrimary,
   setFileSelectorVisible,
@@ -42,4 +43,5 @@ export {
   toggleVideoDislike,
   createChannel,
   setCreateChannelShowModal,
+  setVideoCustomThumbnail,
 };

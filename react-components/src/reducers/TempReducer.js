@@ -1,24 +1,45 @@
 import {
     START_VIDEO_UPLOADING,
     SET_VIDEO_UPLOADING_FEEDBACK,
-    SET_ACTIVE_VIDEO_DETAIL_DATA,
+    SET_VIDEO_DETAIL,
     SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE,
     SET_VIDEO_DETAIL_MODAL_OPEN,
+    SET_VIDEO_THUMBNAIL_UPLOADING,
 } from '../actions/ActionTypes';
 import { randomItem } from '../utils';
 
 const urlParams = new URLSearchParams(window.location.search);
 const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
 export const initialState = {
-    uploadingVideos: null,// DEL onreload
-    activeVideoDetailData: {
+    uploadingVideos: {
+        // null: {
+        //     autogenThumbnailChoices: [],
+        //     isProcessing: false,
+        //     isUploading: false,
+        //     isViewable: false,
+        // }
+    },
+    videoDetail: {
         video: {},
         id: null,
         autogenThumbnailChoices: [],
-    },// DEL onreload
-    isVideoFileSelectorVisible: true, // DEL onreload
-    isVideoDetailModalOpen: queryParamUploadModalOpen, // DEL onreload
-    displayUploadModal: queryParamUploadModalOpen, // DEL onreload
+    },
+    // TODO: replace container state with this.
+    videoDetailForm: {
+        apiErrors: {},
+        isFileSelectorVisible: true,
+        isFileSelected: false,
+        isLoading: false,
+        isThumbnailUploading: false,
+        thumbsUpdatedFromUploadFeedback: false,
+        isProcessing: false,
+        isUploading: false,
+        isViewable: false,
+    },
+    isVideoThumbnailUploading: false,
+    isVideoFileSelectorVisible: true,
+    isVideoDetailModalOpen: queryParamUploadModalOpen,
+    displayUploadModal: queryParamUploadModalOpen,
 };
 
 export default (state = initialState, action) => {
@@ -35,28 +56,29 @@ export default (state = initialState, action) => {
                     ...{
                         isVideoDetailModalOpen: false,
                         displayUploadModal: false,
-                        activeVideoDetailData: initialState.activeVideoDetailData,
+                        videoDetail: initialState.videoDetail,
                     }
                 };
             } else {
                 return { ...state, isVideoDetailModalOpen: payload };
             }
-        case SET_ACTIVE_VIDEO_DETAIL_DATA:
-            console.log(payload);
-            const activeVideoDetailData = {
+        case SET_VIDEO_DETAIL:
+            const videoDetail = {
                 video: payload,
                 id: payload.id,
                 autogenThumbnailChoices: getAutogenThumbnailChoices(payload),
             }
-            return { ...state, activeVideoDetailData: activeVideoDetailData };
+            return { ...state, videoDetail: videoDetail };
         case START_VIDEO_UPLOADING:
             videoId = payload;
             newState = { ...state.uploadingVideos, [videoId]: {} };
             return { ...state, uploadingVideos: newState };
         case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE:
             return { ...state, isVideoFileSelectorVisible: payload };
+        case SET_VIDEO_THUMBNAIL_UPLOADING:
+            return { ...state, isVideoThumbnailUploading: payload };
         case SET_VIDEO_UPLOADING_FEEDBACK:
-            videoId = state.activeVideoDetailData.id;
+            videoId = state.videoDetail.id;
             let newFeedback;
             if (state.uploadingVideos) {
                 const feedback = state.uploadingVideos[videoId];

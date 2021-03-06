@@ -13,12 +13,13 @@ import {
   fetchActiveChannelVideos,
   createToast,
   startVideoUpload,
-  setActiveVideoDetailData,
+  setVideoDetail,
   setActiveVideoDetailThumbnailAsPrimary,
   setFileSelectorVisible,
   updateActiveVideoDetailMetadata,
   openVideoDetailModal,
   closeVideoDetailModal,
+  setVideoCustomThumbnail,
 } from '../../actions/index';
 import {
   updateVideoCustomThumbnail,
@@ -34,10 +35,10 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
 const Container = ({
   videoId, autogenThumbnailChoices, videoData, channelId, fetchActiveChannelVideos, createToast,
   isModalOpen, startVideoUpload,
-  uploadingVideos, setActiveVideoDetailData, isVideoFileSelectorVisible,
-  setFileSelectorVisible,
+  uploadStatus, setVideoDetail, isVideoFileSelectorVisible,
+  setFileSelectorVisible, videoDetailForm,
   updateActiveVideoDetailMetadata, openVideoDetailModal,
-  closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary,
+  closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary, setVideoCustomThumbnail,
 }) => {
   const [_autogenThumbnailChoices, setAutogenThumbnailChoices] = useState(autogenThumbnailChoices);
   const [thumbsUpdatedFromUploadFeedback, setThumbsUpdatedFromUploadFeedback] = useState(false);
@@ -47,6 +48,8 @@ const Container = ({
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [percentageUploaded, setPercentageUploaded] = useState(0);
   // TODO: replace with uploadStatus, single var
+  console.log('uploadStatus');
+  console.log(uploadStatus);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isViewable, setIsViewable] = useState(false);
@@ -56,53 +59,47 @@ const Container = ({
   const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
-  useEffect(() => {
-    if (videoData.id) {
-      setIsLoading(false);
-      setAutogenThumbnailChoices(videoData.autogenThumbnailChoices);
-    } else {
-      setIsLoading(true);
-    }
-    if (uploadingVideos) {
-      setIsUploading(true);
-    }
-    if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
-      if (uploadingVideos[videoId].isViewable !== undefined) {
-        setIsUploading(uploadingVideos[videoId].isViewable);
-        setIsViewable(uploadingVideos[videoId].isViewable);
-        setIsProcessing(uploadingVideos[videoId].isProcessing === true);
-      }
+  // useEffect(() => {
+  //   if (videoData.id) {
+  //     setIsLoading(false);
+  //     setAutogenThumbnailChoices(videoData.autogenThumbnailChoices);
+  //   } else {
+  //     setIsLoading(true);
+  //   }
+  //   if (uploadingVideos) {
+  //     setIsUploading(true);
+  //   }
+  //   if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
+  //     if (uploadingVideos[videoId].isViewable !== undefined) {
+  //       setIsUploading(uploadingVideos[videoId].isViewable);
+  //       setIsViewable(uploadingVideos[videoId].isViewable);
+  //       setIsProcessing(uploadingVideos[videoId].isProcessing === true);
+  //     }
 
-      if (uploadingVideos[videoId].isProcessing !== undefined) {
-        setIsProcessing(uploadingVideos[videoId].isProcessing === true);
-      }
+  //     if (uploadingVideos[videoId].isProcessing !== undefined) {
+  //       setIsProcessing(uploadingVideos[videoId].isProcessing === true);
+  //     }
 
-      if (uploadingVideos[videoId].autogenThumbnailChoices && uploadingVideos[videoId].autogenThumbnailChoices.length >= 3) {
-        if (!thumbsUpdatedFromUploadFeedback && uploadingVideos[videoId].autogenThumbnailChoices) {
-          setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
-          setThumbsUpdatedFromUploadFeedback(true);
-        }
-      }
+  //     if (uploadingVideos[videoId].autogenThumbnailChoices && uploadingVideos[videoId].autogenThumbnailChoices.length >= 3) {
+  //       if (!thumbsUpdatedFromUploadFeedback && uploadingVideos[videoId].autogenThumbnailChoices) {
+  //         setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
+  //         setThumbsUpdatedFromUploadFeedback(true);
+  //       }
+  //     }
 
-      if (uploadingVideos[videoId].percentageUploaded) {
-        setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
-        if (uploadingVideos[videoId].percentageUploaded == 100) {
-          setIsUploading(false);
-        }
-      }
-    } else {
-      setIsUploading(false);
-      setIsProcessing(false);
-      setIsViewable(true);
-    }
+  //     if (uploadingVideos[videoId].percentageUploaded) {
+  //       setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
+  //       if (uploadingVideos[videoId].percentageUploaded == 100) {
+  //         setIsUploading(false);
+  //       }
+  //     }
+  //   } else {
+  //     setIsUploading(false);
+  //     setIsProcessing(false);
+  //     setIsViewable(true);
+  //   }
 
-  }, [videoData, uploadingVideos]);
-
-  const updateParentState = (channelId) => {
-    // Update the Channel Videos list on the page beneath
-    console.log('>>>>>updateParentState');
-    fetchActiveChannelVideos(channelId, false);
-  };
+  // }, [videoData, uploadingVideos]);
 
   const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
     setIsThumbUploading(true);
@@ -134,33 +131,13 @@ const Container = ({
     if (!openedVideoId) {
       return null;
     }
-    // TODO: readd this
-    // setIsLoading(true);
     openVideoDetailModal(openedVideoId);
-    // onSetModalOpen();
-    setActiveVideoDetailData(openedVideoId);
-    // const { data } = await getVideoById(videoId ? videoId : activeVideoId);
-    // if (data) {
-    //   setVideoData(data);
-    //   setAutogenThumbnailChoices(getAutogenThumbnailChoices(data));
-    // }
-    // TODO: readd this
-    // setIsLoading(false);
+    setVideoDetail(openedVideoId);
   };
 
   const handleInputThumbnailChange = async (e) => {
     const file = e.target.files[0];
-    setIsThumbUploading(true);
-    await updateVideoCustomThumbnail(videoData.id, file);
-
-    setActiveVideoDetailData(videoData.id);
-    // const { data } = await getVideoById(videoData.id);
-    // if (data) {
-    //   setVideoData(data);
-    // }
-    setIsThumbUploading(false);
-    createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
-    updateParentState(videoData.channel_id);
+    setVideoCustomThumbnail(channelId, videoData.id, file);
   };
 
   const handleFileSelect = async (acceptedFiles) => {
@@ -168,51 +145,8 @@ const Container = ({
     // https://www.altostra.com/blog/multipart-uploads-with-s3-presigned-url
     console.debug('Video file was selected, starting upload...')
     setIsFileSelected(true);
-
     startVideoUpload(channelId, acceptedFiles[0]);
     setFileSelectorVisible(false);
-    // // TODO: num files validation
-    // const file = acceptedFiles[0]
-    // const filename = file.name;
-    // const fileSize = file.size;
-    // const numParts = Math.ceil(fileSize / UPLOAD_CHUNK_SIZE)
-
-    // setIsUploading(true);
-    // const { response, data } = await uploadPrepare(channelId, filename, numParts);
-    // setIsSaving(false);
-    // if (response?.status === 400) {
-    //   alert('upload error');
-    // } else {
-    //   console.debug(`Setting active videoId ${ data.video_id }`);
-    //   setActiveVideoId(data.video_id);
-    //   await uploadVideo(file, data);
-    //   /*
-    //   TODO:
-    //   Call a function.
-    //   If not video.is_viewable:
-
-    //   - Every 10 seconds.
-    //   - Call get video and update the video metadata for:
-    //     - Auto gen thumbnails
-    //     - primary thumbnail
-
-    //   Store this in localstorage uploadFeedback object.
-
-    //   If video.is_viewable:
-    //    - Update the status to: Ready
-    //   */
-
-    //   setIsUploading(false);
-    //   onSetModalOpen(true);
-    //   setIsFileSelected(false);
-    //   setShowFileSelect(false);
-    // }
-
-    // setIsUploading(false);
-    // onSetModalOpen(true);
-    // setIsFileSelected(false);
-    // setShowFileSelect(false);
-
   }
   if (isVideoFileSelectorVisible === true) {
     return (
@@ -235,7 +169,7 @@ const Container = ({
         isLoading={isLoading}
         videoData={videoData}
         autogenThumbnailChoices={_autogenThumbnailChoices}
-        percentageUploaded={percentageUploaded}
+        uploadStatus={uploadStatus}
         isUploading={isUploading}
         isProcessing={isProcessing}
         isViewable={isViewable}
@@ -255,35 +189,38 @@ const mapStateToProps = (state, ownProps) => {
   let autogenThumbnailChoices = [];
   let videoData = null;
   let channelId = null;
-  if (state.temp.activeVideoDetailData) {
-    videoId = state.temp.activeVideoDetailData.id;
-    autogenThumbnailChoices = state.temp.activeVideoDetailData.autogenThumbnailChoices;
-    videoData = state.temp.activeVideoDetailData.video;
-    channelId = state.temp.activeVideoDetailData.video.channel_id;
+  if (state.temp.videoDetail) {
+    videoId = state.temp.videoDetail.id;
+    autogenThumbnailChoices = state.temp.videoDetail.autogenThumbnailChoices;
+    videoData = state.temp.videoDetail.video;
+    channelId = state.temp.videoDetail.video.channel_id;
   } else {
     videoId = ownProps.videoId;
     videoData = null;
     channelId = ownProps.channelId;
   }
   return {
-    uploadingVideos: state.temp.uploadingVideos,
+    uploadStatus: state.temp.uploadingVideos[videoId],
+    // uploadingVideos: state.temp.uploadingVideos,
     videoId: videoId,
     autogenThumbnailChoices: autogenThumbnailChoices,
     videoData: videoData,
     channelId: state.channels.activeChannelId,
     isVideoFileSelectorVisible: state.temp.isVideoFileSelectorVisible,
     isModalOpen: state.temp.isVideoDetailModalOpen,
+    videoDetailForm: state.temp.videoDetailForm,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
+    setVideoCustomThumbnail: setVideoCustomThumbnail,
     createToast: createToast,
     setChannelSyncModalOpen: setChannelSyncModalOpen,
     fetchActiveChannelVideos: fetchActiveChannelVideos,
     startVideoUpload: startVideoUpload,
-    setActiveVideoDetailData: setActiveVideoDetailData,
+    setVideoDetail: setVideoDetail,
     setActiveVideoDetailThumbnailAsPrimary: setActiveVideoDetailThumbnailAsPrimary,
     setFileSelectorVisible: setFileSelectorVisible,
     openVideoDetailModal: openVideoDetailModal,

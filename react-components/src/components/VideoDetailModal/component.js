@@ -20,7 +20,7 @@ export const VideoDetailModal = ({
   isViewable,
   isProcessing,
   videoData,
-  percentageUploaded,
+  uploadStatus,
   onFormFieldChange,
   onInputThumbnailChange,
   onSetExistingThumbnailAsPrimary,
@@ -329,8 +329,8 @@ export const VideoDetailModal = ({
                   <div className="mr-2">{statusText}</div>
                   <div className="progress w-25">
                     <div className="progress-bar progress-bar-striped progress-bar-animated"
-                      role="progressbar" style={{ width: `${percentageUploaded}%` }} aria-valuenow={percentageUploaded} aria-valuemin="0"
-                      aria-valuemax="100">{percentageUploaded}%</div>
+                      role="progressbar" style={{ width: `${uploadStatus.percentageUploaded}%` }} aria-valuenow={uploadStatus.percentageUploaded} aria-valuemin="0"
+                      aria-valuemax="100">{uploadStatus.percentageUploaded}%</div>
                   </div></div>)}
               <button onClick={handleSaveChangesClicked} type="submit" className="btn btn-primary">{saveButtonText}</button>
             </>
