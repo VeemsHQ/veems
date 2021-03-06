@@ -3,7 +3,7 @@ import expireReducer from 'redux-persist-expire';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
-import GlobalsReducer from './GlobalsReducer';
+import GlobalsReducer from './Global';
 import ChannelsReducer, { initialState as ChannelsReducerInitialState } from './ChannelsReducer';
 import TempReducer from './TempReducer';
 import VideoReducer from './Video';

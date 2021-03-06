@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const VideoLikeDislikeWidget = ({
+export const VideoLikeDislike = ({
   onToggleVideoLikeClicked,
   onToggleVideoDislikeClicked,
   video,
@@ -47,4 +47,4 @@ export const VideoLikeDislikeWidget = ({
   );
 };
 
-export default VideoLikeDislikeWidget;
+export default VideoLikeDislike;

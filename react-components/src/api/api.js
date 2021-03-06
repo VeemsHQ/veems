@@ -2,14 +2,14 @@ import axios from 'axios';
 import { configureStore } from '../store';
 import { MSG_SERVER_ERROR } from '../constants';
 import {
-  createToastAction,
+  createToast,
 } from '../actions/index';
 
 const { store } = configureStore.getInstance();
 
 const handleError = (error) => {
   if (error.response === undefined || error.response.status >= 500) {
-    store.dispatch(createToastAction({
+    store.dispatch(createToast({
       header: 'Oops',
       body: MSG_SERVER_ERROR,
       isError: true,

@@ -6,10 +6,10 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import SyncChannelButton from './SyncChannelButton';
+import SyncChannelButton from './component';
 
 import {
-  setChannelSyncModalOpenAction,
+  setChannelSyncModalOpen,
 } from '../../actions/index';
 
 // TODO: Call API
@@ -40,7 +40,7 @@ const Container = ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    setChannelSyncModalOpen: setChannelSyncModalOpenAction,
+    setChannelSyncModalOpen: setChannelSyncModalOpen,
   }, dispatch),
 });
 

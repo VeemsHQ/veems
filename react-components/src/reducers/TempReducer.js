@@ -29,7 +29,6 @@ export default (state = initialState, action) => {
 
     switch (type) {
         case SET_VIDEO_DETAIL_MODAL_OPEN:
-            console.debug('Reduce SET_VIDEO_DETAIL_MODAL_OPEN');
             if (payload === false) {
                 // On modal close, clear all related state.
                 return {
@@ -44,7 +43,6 @@ export default (state = initialState, action) => {
                 return { ...state, isVideoDetailModalOpen: payload };
             }
         case SET_ACTIVE_VIDEO_DETAIL_DATA:
-            console.debug('Reduce SET_ACTIVE_VIDEO_DETAIL_DATA');
             console.log(payload);
             const activeVideoDetailData = {
                 video: payload,
@@ -53,15 +51,12 @@ export default (state = initialState, action) => {
             }
             return { ...state, activeVideoDetailData: activeVideoDetailData };
         case START_VIDEO_UPLOADING:
-            console.debug('Reduce START_VIDEO_UPLOADING');
             videoId = payload;
             newState = { ...state.uploadingVideos, [videoId]: {} };
             return { ...state, uploadingVideos: newState };
         case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE:
-            console.debug('Reduce SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE');
             return { ...state, isVideoFileSelectorVisible: payload };
         case SET_VIDEO_UPLOADING_FEEDBACK:
-            console.debug('Reduce SET_VIDEO_UPLOADING_FEEDBACK');
             videoId = state.activeVideoDetailData.id;
             let newFeedback;
             if (state.uploadingVideos) {

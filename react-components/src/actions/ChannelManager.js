@@ -1,6 +1,5 @@
 import * as aTypes from './ActionTypes';
 import {
-  getAllVideosForChannelRequest,
   uploadVideoParts,
   uploadComplete,
   uploadPrepare,
@@ -12,6 +11,7 @@ import {
 import { MSG_CORRECT_FORM_ERRORS } from '../constants';
 import { configureStore } from '../store';
 import { randomItem } from '../utils';
+import { fetchActiveChannelVideos } from './Channel';
 
 const { store } = configureStore.getInstance();
 const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
@@ -24,39 +24,11 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_BAD_INPUT = {
   isError: true,
 };
 
-export const fetchActiveChannelVideosAction = (
-  channelId, loadingIndication = true,
-) => async (dispatch) => {
-  console.log('Fetching active channel videos...');
-  if (loadingIndication) {
-    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: true });
-  }
-  const { data } = await getAllVideosForChannelRequest(channelId)
-  if (loadingIndication) {
-    dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS_LOADING, payload: false });
-  }
-  dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_VIDEOS, payload: data });
-};
-
-export const setActiveChannelAction = (id) => async (dispatch) => {
-  fetchActiveChannelVideosAction(id)(dispatch);
-  dispatch({ type: aTypes.SET_ACTIVE_CHANNEL_ID, payload: id });
-};
-
-export const setChannelsAction = (channels) => async (dispatch) => {
-  dispatch({ type: aTypes.SET_DB_STALE, payload: true });
-  dispatch({ type: aTypes.SET_CHANNELS, payload: channels });
-};
-
-export const setChannelSyncModalOpenAction = (state) => async (dispatch) => {
+export const setChannelSyncModalOpen = (state) => async (dispatch) => {
   dispatch({ type: aTypes.SET_CHANNEL_SYNC_MODAL_OPEN, payload: state });
 };
 
-export const setChannelsDbStaleAction = (state) => async (dispatch) => {
-  dispatch({ type: aTypes.SET_DB_STALE, payload: state });
-};
-
-export const updateActiveVideoDetailMetadataAction = (videoId, updatedFields) => async (dispatch) => {
+export const updateActiveVideoDetailMetadata = (videoId, updatedFields) => async (dispatch) => {
   const { response, data } = await updateVideo(videoId, updatedFields);
   if (response?.status === 400) {
     // setApiErrors(response?.data);
@@ -65,32 +37,32 @@ export const updateActiveVideoDetailMetadataAction = (videoId, updatedFields) =>
     dispatch({ type: aTypes.CREATE_TOAST, payload: TOAST_PAYLOAD_VIDEO_DETAIL_SAVED });
     // setApiErrors(null);
     dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
-    fetchActiveChannelVideosAction(data.channel_id, false)(dispatch);
+    dispatch(fetchActiveChannelVideos(data.channel_id, false));
   }
 }
 
-export const openVideoDetailModalAction = (videoId) => async (dispatch) => {
-  console.log(`openVideoDetailModalAction: ${videoId}`);
-  await setActiveVideoDetailDataAction(videoId)(dispatch);
+export const openVideoDetailModal = (videoId) => async (dispatch) => {
+  console.log(`openVideoDetailModal: ${videoId}`);
+  await setActiveVideoDetailData(videoId)(dispatch);
   dispatch({ type: aTypes.SET_VIDEO_DETAIL_MODAL_OPEN, payload: true });
 }
 
-export const closeVideoDetailModalAction = () => async (dispatch) => {
+export const closeVideoDetailModal = () => async (dispatch) => {
   dispatch({ type: aTypes.SET_VIDEO_DETAIL_MODAL_OPEN, payload: false });
 }
 
-export const setActiveVideoDetailDataAction = (videoId) => async (dispatch) => {
+export const setActiveVideoDetailData = (videoId) => async (dispatch) => {
   const { data } = await getVideoById(videoId);
   dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
 };
 
-export const setActiveVideoDetailThumbnailAsPrimaryAction = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
+export const setActiveVideoDetailThumbnailAsPrimary = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
   const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
-  fetchActiveChannelVideosAction(data.channel_id, false)(dispatch);
+  dispatch(fetchActiveChannelVideos(data.channel_id, false));
   dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_DATA, payload: data });
 };
 
-export const setFileSelectorVisibleAction = (bool) => async (dispatch) => {
+export const setFileSelectorVisible = (bool) => async (dispatch) => {
   dispatch({ type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE, payload: bool });
 }
 
@@ -122,7 +94,7 @@ const _uploadVideo = async (file, uploadPrepareResult) => {
   await uploadComplete(uploadId, parts);
 }
 
-export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
+export const startVideoUpload = (channelId, file) => async (dispatch) => {
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const filename = file.name;
   const fileSize = file.size;
@@ -134,7 +106,7 @@ export const startVideoUploadAction = (channelId, file) => async (dispatch) => {
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
     provideUploadFeedback(data.video_id, data.upload_id, channelId)(dispatch);
-    setActiveVideoDetailDataAction(data.video_id)(dispatch);
+    setActiveVideoDetailData(data.video_id)(dispatch);
     await _uploadVideo(file, data);
   }
 };
@@ -159,7 +131,7 @@ const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch)
     dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
     if (isViewable && !isProcessing) {
       console.debug('Upload feedback process exiting');
-      fetchActiveChannelVideosAction(channelId, false)(dispatch);
+      dispatch(fetchActiveChannelVideos(channelId, false));
       break
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));

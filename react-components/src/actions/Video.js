@@ -8,8 +8,8 @@ import {
     setVideoLikeDislike,
 } from '../api/api';
 import {
-    createToastAction,
-} from './Globals';
+    createToast,
+} from './Global';
 
 const TOAST_VIDEO_LIKED = {
     header: 'Success',
@@ -20,22 +20,22 @@ const TOAST_VIDEO_DISLIKED = {
     body: 'You disliked this video.',
 };
 
-const addVideoLikeUnsafe = videoLikeDislikeData => ({
+const _addVideoLike = videoLikeDislikeData => ({
     type: ADD_VIDEO_LIKE,
     videoLikeDislikeData
 })
 
-const addVideoDislikeUnsafe = videoLikeDislikeData => ({
+const _addVideoDislike = videoLikeDislikeData => ({
     type: ADD_VIDEO_DISLIKE,
     videoLikeDislikeData
 })
 
-const removeVideoDislikeUnsafe = videoLikeDislikeData => ({
+const _removeVideoDislike = videoLikeDislikeData => ({
     type: REMOVE_VIDEO_DISLIKE,
     videoLikeDislikeData
 })
 
-const removeVideoLikeUnsafe = videoLikeDislikeData => ({
+const _removeVideoLike = videoLikeDislikeData => ({
     type: REMOVE_VIDEO_LIKE,
     videoLikeDislikeData
 })
@@ -45,12 +45,12 @@ export const toggleVideoLike = videoId => async (dispatch, getState) => {
     if (isLiked === false || isLiked === null) {
         // Like
         const { data } = await setVideoLikeDislike(videoId, true);
-        dispatch(addVideoLikeUnsafe(data))
-        dispatch(createToastAction(TOAST_VIDEO_LIKED));
+        dispatch(_addVideoLike(data))
+        dispatch(createToast(TOAST_VIDEO_LIKED));
     } else {
         // Remove Like
         const { data } = await setVideoLikeDislike(videoId, null);
-        dispatch(removeVideoLikeUnsafe(data));
+        dispatch(_removeVideoLike(data));
     }
 }
 
@@ -59,11 +59,11 @@ export const toggleVideoDislike = videoId => async (dispatch, getState) => {
     if (isLiked === true || isLiked === null) {
         // Dislike
         const { data } = await setVideoLikeDislike(videoId, false);
-        dispatch(addVideoDislikeUnsafe(data))
-        dispatch(createToastAction(TOAST_VIDEO_DISLIKED));
+        dispatch(_addVideoDislike(data))
+        dispatch(createToast(TOAST_VIDEO_DISLIKED));
     } else {
         // Remove Dislike
         const { data } = await setVideoLikeDislike(videoId, null);
-        dispatch(removeVideoDislikeUnsafe(data));
+        dispatch(_removeVideoDislike(data));
     }
 }

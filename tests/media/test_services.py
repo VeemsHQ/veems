@@ -645,7 +645,8 @@ class TestGetVideos:
 
         records = services.get_videos()
 
-        assert tuple(records) == tuple(videos[:-1])
+        assert len(records) == 2
+        assert set(v.visibility for v in records) == {'public'}
         assert all(not v.deleted_on for v in records)
 
     def test_with_channel_id_and_user_id_of_owner_returns_non_public(

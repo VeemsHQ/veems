@@ -7,11 +7,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import { configureStore } from '../../store';
 import {
-  setActiveChannelAction,
-  openVideoDetailModalAction,
-  closeVideoDetailModalAction,
+  setActiveChannel,
+  openVideoDetailModal,
+  closeVideoDetailModal,
 } from '../../actions/index';
-import ChannelManagerVideos from './ChannelManagerVideos';
+import ChannelManagerVideos from './component';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -41,9 +41,9 @@ const Container = ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    setActiveChannel: setActiveChannelAction,
-    openVideoDetailModal: openVideoDetailModalAction,
-    closeVideoDetailModal: closeVideoDetailModalAction,
+    setActiveChannel: setActiveChannel,
+    openVideoDetailModal: openVideoDetailModal,
+    closeVideoDetailModal: closeVideoDetailModal,
   }, dispatch),
 });
 

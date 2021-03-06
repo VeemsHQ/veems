@@ -5,23 +5,23 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import VideoDetailModal from './VideoDetailModal';
+import VideoDetailModal from './component';
 import FileUploadChooseModal from './FileUploadChooseModal';
 
 import {
-  setChannelSyncModalOpenAction,
-  fetchActiveChannelVideosAction,
-  createToastAction,
-  startVideoUploadAction,
-  setActiveVideoDetailDataAction,
-  setActiveVideoDetailThumbnailAsPrimaryAction,
-  setFileSelectorVisibleAction,
-  updateActiveVideoDetailMetadataAction,
-  openVideoDetailModalAction,
-  closeVideoDetailModalAction,
+  setChannelSyncModalOpen,
+  fetchActiveChannelVideos,
+  createToast,
+  startVideoUpload,
+  setActiveVideoDetailData,
+  setActiveVideoDetailThumbnailAsPrimary,
+  setFileSelectorVisible,
+  updateActiveVideoDetailMetadata,
+  openVideoDetailModal,
+  closeVideoDetailModal,
 } from '../../actions/index';
 import {
-  getVideoById, updateVideoCustomThumbnail,
+  updateVideoCustomThumbnail,
 } from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
@@ -100,6 +100,7 @@ const Container = ({
 
   const updateParentState = (channelId) => {
     // Update the Channel Videos list on the page beneath
+    console.log('>>>>>updateParentState');
     fetchActiveChannelVideos(channelId, false);
   };
 
@@ -135,7 +136,7 @@ const Container = ({
     }
     // TODO: readd this
     // setIsLoading(true);
-    openVideoDetailModalAction(openedVideoId);
+    openVideoDetailModal(openedVideoId);
     // onSetModalOpen();
     setActiveVideoDetailData(openedVideoId);
     // const { data } = await getVideoById(videoId ? videoId : activeVideoId);
@@ -225,8 +226,6 @@ const Container = ({
       />
     );
   } else {
-    console.log(`_autogenThumbnailChoices:`);
-    console.log(_autogenThumbnailChoices);
     return (
       <VideoDetailModal
         inputThumbnailFile={inputThumbnailFile}
@@ -280,16 +279,16 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    createToast: createToastAction,
-    setChannelSyncModalOpen: setChannelSyncModalOpenAction,
-    fetchActiveChannelVideos: fetchActiveChannelVideosAction,
-    startVideoUpload: startVideoUploadAction,
-    setActiveVideoDetailData: setActiveVideoDetailDataAction,
-    setActiveVideoDetailThumbnailAsPrimary: setActiveVideoDetailThumbnailAsPrimaryAction,
-    setFileSelectorVisible: setFileSelectorVisibleAction,
-    openVideoDetailModal: openVideoDetailModalAction,
-    closeVideoDetailModal: closeVideoDetailModalAction,
-    updateActiveVideoDetailMetadata: updateActiveVideoDetailMetadataAction,
+    createToast: createToast,
+    setChannelSyncModalOpen: setChannelSyncModalOpen,
+    fetchActiveChannelVideos: fetchActiveChannelVideos,
+    startVideoUpload: startVideoUpload,
+    setActiveVideoDetailData: setActiveVideoDetailData,
+    setActiveVideoDetailThumbnailAsPrimary: setActiveVideoDetailThumbnailAsPrimary,
+    setFileSelectorVisible: setFileSelectorVisible,
+    openVideoDetailModal: openVideoDetailModal,
+    closeVideoDetailModal: closeVideoDetailModal,
+    updateActiveVideoDetailMetadata: updateActiveVideoDetailMetadata,
   }, dispatch),
 });
 

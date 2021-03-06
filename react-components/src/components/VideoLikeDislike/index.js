@@ -6,10 +6,10 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import VideoLikeDislikeWidget from './component';
+import VideoLikeDislike from './component';
 
 import {
-  createToastAction,
+  createToast,
   toggleVideoLike,
   toggleVideoDislike,
 } from '../../actions/index';
@@ -20,7 +20,7 @@ function Container(props) {
   const { video } = props;
 
   return (
-    <VideoLikeDislikeWidget
+    <VideoLikeDislike
       onToggleVideoLikeClicked={() => props.toggleVideoLike(props.videoId)}
       onToggleVideoDislikeClicked={() => props.toggleVideoDislike(props.videoId)}
       video={video}
@@ -31,7 +31,7 @@ function Container(props) {
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    createToast: createToastAction,
+    createToast: createToast,
     toggleVideoLike: toggleVideoLike,
     toggleVideoDislike: toggleVideoDislike,
   }, dispatch),
@@ -57,7 +57,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
-export const CreateVideoLikeDislikeWidget = ({
+export const CreateVideoLikeDislike = ({
   element,
   ...params
 }) => (

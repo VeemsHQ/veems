@@ -6,12 +6,12 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import CreateChannelButton from './CreateChannelButton';
+import CreateChannelButton from './component';
 import {
-  setChannelSyncModalOpenAction,
-  setActiveChannelAction,
-  setChannelsAction,
-  createToastAction,
+  setChannelSyncModalOpen,
+  setActiveChannel,
+  setChannels,
+  createToast,
 } from '../../actions/index';
 import {
   createChannelRequest,
@@ -75,10 +75,10 @@ const Container = ({
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    setChannelSyncModalOpen: setChannelSyncModalOpenAction,
-    setActiveChannel: setActiveChannelAction,
-    setChannels: setChannelsAction,
-    createToast: createToastAction,
+    setChannelSyncModalOpen: setChannelSyncModalOpen,
+    setActiveChannel: setActiveChannel,
+    setChannels: setChannels,
+    createToast: createToast,
   }, dispatch),
 });
 

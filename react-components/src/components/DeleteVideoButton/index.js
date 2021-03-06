@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import DeleteVideoButton from './DeleteVideoButton';
+import DeleteVideoButton from './component';
 
 import {
-  fetchActiveChannelVideosAction,
-  createToastAction,
+  fetchActiveChannelVideos,
+  createToast,
 } from '../../actions/index';
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import {
@@ -90,8 +90,8 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    createToast: createToastAction,
-    fetchActiveChannelVideos: fetchActiveChannelVideosAction,
+    createToast: createToast,
+    fetchActiveChannelVideos: fetchActiveChannelVideos,
   }, dispatch),
 });
 
