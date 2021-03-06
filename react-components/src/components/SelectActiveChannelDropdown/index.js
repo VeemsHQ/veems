@@ -21,7 +21,6 @@ const Container = ({
 }) => {
 
   const handleSelectChannel = async (e) => {
-    console.debug('handleSelectChannel');
     const channelId = e.target.value;
     if (channelId) {
       setActiveChannel(channelId);

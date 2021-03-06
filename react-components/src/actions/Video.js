@@ -40,8 +40,8 @@ const _removeVideoLike = videoLikeDislikeData => ({
     videoLikeDislikeData
 })
 
-export const toggleVideoLike = videoId => async (dispatch, getState) => {
-    const isLiked = getState().video.viewing.isLiked;
+export const toggleVideoLike = (videoId, isLiked) => async (dispatch, getState) => {
+    console.debug('action, toggleVideoLike');
     if (isLiked === false || isLiked === null) {
         // Like
         const { data } = await setVideoLikeDislike(videoId, true);
@@ -54,8 +54,8 @@ export const toggleVideoLike = videoId => async (dispatch, getState) => {
     }
 }
 
-export const toggleVideoDislike = videoId => async (dispatch, getState) => {
-    const isLiked = getState().video.viewing.isLiked;
+export const toggleVideoDislike = (videoId, isLiked) => async (dispatch, getState) => {
+    console.debug('action, toggleVideoDislike');
     if (isLiked === true || isLiked === null) {
         // Dislike
         const { data } = await setVideoLikeDislike(videoId, false);

@@ -16,13 +16,25 @@ import {
 
 const { store, persistor } = configureStore.getInstance();
 
-function Container(props) {
-  const { video } = props;
+function Container({
+  toggleVideoLike,
+  toggleVideoDislike,
+  video,
+}) {
+  const onToggleVideoLikeClicked = async (e) => {
+    e.preventDefault();
+    toggleVideoLike(video.videoId, video.isLiked)
+  }
+
+  const onToggleVideoDislikeClicked = async (e) => {
+    e.preventDefault();
+    toggleVideoDislike(video.videoId, video.isLiked)
+  }
 
   return (
     <VideoLikeDislike
-      onToggleVideoLikeClicked={() => props.toggleVideoLike(props.videoId)}
-      onToggleVideoDislikeClicked={() => props.toggleVideoDislike(props.videoId)}
+      onToggleVideoLikeClicked={onToggleVideoLikeClicked}
+      onToggleVideoDislikeClicked={onToggleVideoDislikeClicked}
       video={video}
     />
   );
@@ -39,15 +51,14 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state, ownProps) => {
   if (!state.video.viewing.videoId) {
-    return {
-      video: {
-        videoId: ownProps.videoId,
-        likesCount: ownProps.likesCount,
-        dislikesCount: ownProps.dislikesCount,
-        likesDislikesPercentage: ownProps.likesDislikesPercentage,
-        isLiked: ownProps.isLiked,
-      }
+    const video = {
+      videoId: ownProps.videoId,
+      likesCount: ownProps.likesCount,
+      dislikesCount: ownProps.dislikesCount,
+      likesDislikesPercentage: ownProps.likesDislikesPercentage,
+      isLiked: ownProps.isLiked,
     };
+    return { video: video };
   } else {
     return {
       video: state.video.viewing,

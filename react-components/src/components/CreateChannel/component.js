@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-
-import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import 'regenerator-runtime/runtime.js';
 
 export const CreateChannelButton = ({
@@ -12,10 +9,8 @@ export const CreateChannelButton = ({
   apiErrors,
   setCreateChannelShowModal,
 }) => {
-
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
-  const [primaryFormError, setPrimaryFormError] = useState('');
   const [isChannelSynced, setIsChannelSynced] = useState(false);
   const [validated, setValidated] = useState(false);
 
@@ -31,12 +26,6 @@ export const CreateChannelButton = ({
     createChannel(
       channelName, channelDescription, isChannelSynced,
     );
-    // if (isChannelCreated) {
-    //   setShowChannelModal(false);
-    // } else {
-    //   setApiErrors(apiErrors_);
-    //   setPrimaryFormError(MSG_CORRECT_FORM_ERRORS);
-    // }
   };
 
   const renderModal = () => (
@@ -68,9 +57,6 @@ export const CreateChannelButton = ({
           </Modal.Body>
 
           <Modal.Footer>
-            <p className="text-danger">
-              {primaryFormError}
-            </p>
             <button onClick={() => setCreateChannelShowModal(false)} type="button" className="btn btn-light">Cancel</button>
             <button type="submit" className="btn btn-primary">Create Channel</button>
           </Modal.Footer>

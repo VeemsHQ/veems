@@ -13,7 +13,6 @@ export const initialState = {
     dislikesCount: 0,
     isLiked: null,
     likesDislikesPercentage: 0,
-
   }
 };
 
