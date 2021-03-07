@@ -8,6 +8,7 @@ import {
 } from './Global';
 import {
     populateVideoDetail,
+    openVideoDetailModal,
 } from './ChannelManager';
 import {
     fetchActiveChannelVideos,
@@ -86,4 +87,8 @@ export const setVideoCustomThumbnail = (channelId, videoId, file) => async (disp
         header: 'Success',
         body: 'Your video was saved',
     }));
+}
+
+export const openUploadVideoModal = () => async (dispatch) => {
+    dispatch(openVideoDetailModal(null, true));
 }

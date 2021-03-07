@@ -104,7 +104,9 @@ export const updateVideoMetadata = (videoId, updatedFields) => async (dispatch) 
 
 export const openVideoDetailModal = (videoId, isFileSelectorVisible = false) => async (dispatch) => {
   console.debug('action, openVideoDetailModal');
-  dispatch(populateVideoDetail(videoId));
+  if (videoId) {
+    dispatch(populateVideoDetail(videoId));
+  }
   dispatch(_setVideoDetailFileSelectorIsVisible(isFileSelectorVisible));
   dispatch(_setVideoDetailModalOpen(true));
 }

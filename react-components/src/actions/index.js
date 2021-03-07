@@ -22,6 +22,7 @@ import {
   toggleVideoLike,
   toggleVideoDislike,
   setVideoCustomThumbnail,
+  openUploadVideoModal,
 } from './Video';
 
 export {
@@ -42,4 +43,5 @@ export {
   setCreateChannelShowModal,
   setVideoCustomThumbnail,
   updateVideoMetadata,
+  openUploadVideoModal,
 };

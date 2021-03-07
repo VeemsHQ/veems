@@ -34,9 +34,9 @@ export const initialState = {
         isFileSelected: false,
         isLoading: false,
         isThumbnailUploading: false,
-        thumbsUpdatedFromUploadFeedback: false,
-        isProcessing: false,
-        isViewable: false,
+        // thumbsUpdatedFromUploadFeedback: false,
+        // isProcessing: false,
+        // isViewable: false,
         isSaving: false,
     },
     isVideoDetailModalOpen: queryParamUploadModalOpen,
@@ -55,6 +55,7 @@ export default (state = initialState, action) => {
                     ...state,
                     ...{
                         isVideoDetailModalOpen: false,
+                        videoDetailForm: initialState.videoDetailForm,
                         videoDetail: initialState.videoDetail,
                     }
                 };

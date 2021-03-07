@@ -9,33 +9,25 @@ import { configureStore } from '../../store';
 import TopNavControls from './component';
 
 import {
-    createToast,
-    toggleVideoLike,
-    toggleVideoDislike,
+    openUploadVideoModal,
 } from '../../actions/index';
 
 const { store, persistor } = configureStore.getInstance();
 
 function Container({
-    toggleVideoLike,
-    toggleVideoDislike,
-    video,
+    openUploadVideoModal,
 }) {
-    const onToggleVideoLikeClicked = async (e) => {
-        e.preventDefault();
-        toggleVideoLike(video.videoId, video.isLiked)
+    const onOpenUploadVideoModalClicked = async (e) => {
+        if (window.location.pathname == '/channel/videos/') {
+            e.preventDefault();
+            openUploadVideoModal();
+        } else {
+            console.debug('Upload clicked, not on Channel Managed Videos page, redirecting...');
+        }
     }
-
-    const onToggleVideoDislikeClicked = async (e) => {
-        e.preventDefault();
-        toggleVideoDislike(video.videoId, video.isLiked)
-    }
-
     return (
         <TopNavControls
-            onToggleVideoLikeClicked={onToggleVideoLikeClicked}
-            onToggleVideoDislikeClicked={onToggleVideoDislikeClicked}
-            video={video}
+            openUploadVideoModal={onOpenUploadVideoModalClicked}
         />
     );
 }
@@ -43,30 +35,11 @@ function Container({
 const mapDispatchToProps = (dispatch) => ({
     dispatch,
     ...bindActionCreators({
-        createToast: createToast,
-        toggleVideoLike: toggleVideoLike,
-        toggleVideoDislike: toggleVideoDislike,
+        openUploadVideoModal: openUploadVideoModal,
     }, dispatch),
 });
 
-const mapStateToProps = (state, ownProps) => {
-    if (!state.video.viewing.videoId) {
-        const video = {
-            videoId: ownProps.videoId,
-            likesCount: ownProps.likesCount,
-            dislikesCount: ownProps.dislikesCount,
-            likesDislikesPercentage: ownProps.likesDislikesPercentage,
-            isLiked: ownProps.isLiked,
-        };
-        return { video: video };
-    } else {
-        return {
-            video: state.video.viewing,
-        };
-    }
-};
-
-const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
+const ConnectedContainer = connect(null, mapDispatchToProps)(Container);
 
 export const CreateTopNavControls = ({
     element,
