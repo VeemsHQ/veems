@@ -2,6 +2,7 @@
 {% load nav_active to_json %}
 
 {% block body %}
+
 <body class="bg-white">
     <div class="container-fluid middle-col-nomargin">
         <div class="row">
@@ -10,7 +11,7 @@
         <div class="row justify-content-around">
             <div class="col h-100">
                 <div class="title-band d-flex align-items-center mt-5 pt-5 pb-2 px-0 mb-0 border-bottom">
-                    <h1 class="h2 m-0 p-0 d-inline-block">Channel Manager</h1>
+                    <h1 class="h2 m-0 p-0 d-inline-block mr-3">Channel Manager</h1>
                     <div id="select-channel-dropdown">
                         <select class="custom-select custom-select-sm d-inline-block w-auto ml-3">
                             {% for channel in channel_summaries %}

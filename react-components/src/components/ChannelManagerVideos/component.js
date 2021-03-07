@@ -12,6 +12,7 @@ export const ChannelManagerVideos = ({
   videos,
   channelId,
   isLoading,
+  channels,
   uploadingVideosStatuses,
   onVideoDetailModalOpen,
   onVideoDetailModalClose,
@@ -105,6 +106,7 @@ export const ChannelManagerVideos = ({
         )}
         <VideoDetailModalContainer
           channelId={channelId}
+          channels={channels}
           onSetModalOpen={() => onVideoDetailModalOpen()}
           onSetModalClosed={onVideoDetailModalClose}
         />

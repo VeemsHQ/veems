@@ -12,7 +12,7 @@ export const SelectActiveChannelDropdown = ({
       <select
         value={activeID}
         onChange={onSelectChannel}
-        className="custom-select custom-select-sm d-inline-block w-auto ml-3"
+        className="custom-select custom-select-sm d-inline-block w-auto"
       >
         {channels.map((channel) => (
           <option key={channel.id} value={channel.id}>{channel.name}</option>

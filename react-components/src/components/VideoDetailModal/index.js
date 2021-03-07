@@ -10,7 +10,7 @@ import FileUploadChooseModal from './FileUploadChooseModal';
 
 import {
   setChannelSyncModalOpen,
-  fetchActiveChannelVideos,
+  setActiveChannel,
   createToast,
   startVideoUpload,
   setVideoDetail,
@@ -20,9 +20,6 @@ import {
   closeVideoDetailModal,
   setVideoCustomThumbnail,
 } from '../../actions/index';
-import {
-  updateVideoCustomThumbnail,
-} from '../../api/api';
 
 const { store, persistor } = configureStore.getInstance();
 
@@ -35,64 +32,14 @@ const Container = ({
   videoId, videoDetail, channelId, createToast,
   isModalOpen, startVideoUpload,
   uploadStatus, setVideoDetail,
-  videoDetailForm,
+  videoDetailForm, channels, setActiveChannel,
   updateActiveVideoDetailMetadata, openVideoDetailModal,
   closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary, setVideoCustomThumbnail,
 }) => {
-  // const [_autogenThumbnailChoices, setAutogenThumbnailChoices] = useState(autogenThumbnailChoices);
-  // const [thumbsUpdatedFromUploadFeedback, setThumbsUpdatedFromUploadFeedback] = useState(false);
-  const [isThumbnailUploading, setIsThumbUploading] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isFileSelected, setIsFileSelected] = useState(false);
-  // const [isProcessing, setIsProcessing] = useState(false);
-  // const [isUploading, setIsUploading] = useState(false);
-  // const [isViewable, setIsViewable] = useState(false);
   // TODO: if isUploading=true, prevent leaving page.
   // const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
-
-  // useEffect(() => {
-  //   if (video.id) {
-  //     setIsLoading(false);
-  //     setAutogenThumbnailChoices(video.autogenThumbnailChoices);
-  //   } else {
-  //     setIsLoading(true);
-  //   }
-  //   if (uploadingVideos) {
-  //     setIsUploading(true);
-  //   }
-  //   if (uploadingVideos && uploadingVideos[videoId] !== undefined && uploadingVideos[videoId] !== null) {
-  //     if (uploadingVideos[videoId].isViewable !== undefined) {
-  //       setIsUploading(uploadingVideos[videoId].isViewable);
-  //       setIsViewable(uploadingVideos[videoId].isViewable);
-  //       setIsProcessing(uploadingVideos[videoId].isProcessing === true);
-  //     }
-
-  //     if (uploadingVideos[videoId].isProcessing !== undefined) {
-  //       setIsProcessing(uploadingVideos[videoId].isProcessing === true);
-  //     }
-
-  //     if (uploadingVideos[videoId].autogenThumbnailChoices && uploadingVideos[videoId].autogenThumbnailChoices.length >= 3) {
-  //       if (!thumbsUpdatedFromUploadFeedback && uploadingVideos[videoId].autogenThumbnailChoices) {
-  //         setAutogenThumbnailChoices(uploadingVideos[videoId].autogenThumbnailChoices);
-  //         setThumbsUpdatedFromUploadFeedback(true);
-  //       }
-  //     }
-
-  //     if (uploadingVideos[videoId].percentageUploaded) {
-  //       setPercentageUploaded(uploadingVideos[videoId].percentageUploaded)
-  //       if (uploadingVideos[videoId].percentageUploaded == 100) {
-  //         setIsUploading(false);
-  //       }
-  //     }
-  //   } else {
-  //     setIsUploading(false);
-  //     setIsProcessing(false);
-  //     setIsViewable(true);
-  //   }
-
-  // }, [video, uploadingVideos]);
 
   const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
     const videoId = videoDetail.id;
@@ -133,6 +80,9 @@ const Container = ({
 
   const handleFileSelect = async (acceptedFiles) => {
     console.debug('Video file was selected, starting upload...')
+    // TODO: validate only one file is selected.
+    // TODO: validate it's a video file.
+    // TODO: validate file size.
     startVideoUpload(channelId, acceptedFiles[0]);
   }
   if (videoDetailForm.isFileSelectorVisible === true) {
@@ -142,6 +92,9 @@ const Container = ({
         onFileSelect={handleFileSelect}
         // onModalClose={() => setIsChooseFileUploadModalOpen(false)}
         isModalOpen={isModalOpen}
+        channels={channels}
+        channelId={channelId}
+        setActiveChannel={setActiveChannel}
         onModalOpen={() => handleEditVideoModalOpen}
         onModalClose={() => closeVideoDetailModal}
       />
@@ -166,6 +119,12 @@ const Container = ({
 
 const mapStateToProps = (state, ownProps) => {
   let videoId = null;
+  let channels = [];
+  if (ownProps.channels && !state.channels.channels.length) {
+    channels = ownProps.channels;
+  } else {
+    channels = state.channels.channels;
+  }
   if (state.temp.videoDetail.video.id) {
     videoId = state.temp.videoDetail.video.id;
   } else {
@@ -176,6 +135,7 @@ const mapStateToProps = (state, ownProps) => {
     videoId: videoId,
     videoDetail: state.temp.videoDetail,
     channelId: state.channels.activeChannelId,
+    channels: channels,
     isModalOpen: state.temp.isVideoDetailModalOpen,
     videoDetailForm: state.temp.videoDetailForm,
   };
@@ -187,6 +147,7 @@ const mapDispatchToProps = (dispatch) => ({
     setVideoCustomThumbnail: setVideoCustomThumbnail,
     createToast: createToast,
     setChannelSyncModalOpen: setChannelSyncModalOpen,
+    setActiveChannel: setActiveChannel,
     startVideoUpload: startVideoUpload,
     setVideoDetail: setVideoDetail,
     setActiveVideoDetailThumbnailAsPrimary: setActiveVideoDetailThumbnailAsPrimary,

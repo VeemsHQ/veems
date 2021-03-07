@@ -1,8 +1,9 @@
 import React from 'react';
 import { useDropzone } from 'react-dropzone';
-
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner'
+
+import { SelectActiveChannelDropdownComponent } from '../SelectActiveChannelDropdown/index';
 
 import 'regenerator-runtime/runtime.js';
 
@@ -10,6 +11,9 @@ export const FileUploadChooseModal = ({
     isModalOpen,
     isFileSelected,
     onFileSelect,
+    channels,
+    channelId,
+    setActiveChannel,
     onModalClose = null,
     onModalOpen = null,
 }) => {
@@ -33,6 +37,17 @@ export const FileUploadChooseModal = ({
                                 <i className="material-icons  text-secondary" style={{ fontSize: '72px' }}>publish</i>
                             )}
                         </div>
+                    </div>
+                </div>
+                <div className="d-flex flex-column align-items-center mt-3 mb-4">
+                    <SelectActiveChannelDropdownComponent key="channel-select-upload"
+                        channels={channels}
+                        activeChannelId={channelId}
+                        setActiveChannel={setActiveChannel}
+                    />
+                </div>
+                <div {...getRootProps({ className: 'dropzone d-flex flex-column align-items-center' })}>
+                    <div className="d-flex flex-column align-items-center">
                         <input {...getInputProps()} />
                         <p>{!isFileSelected && 'Drag and drop video files here to upload'}{isFileSelected && 'Hang tight, uploading...'}</p>
                         <p className="text-muted align-self-center">Your videos will be private until you publish them.</p>

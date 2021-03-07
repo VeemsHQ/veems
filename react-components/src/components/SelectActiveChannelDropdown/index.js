@@ -65,16 +65,22 @@ const mapStateToProps = (state, ownProps) => {
 
 const ConnectedContainer = connect(mapStateToProps, mapDispatchToProps)(Container);
 
+export const SelectActiveChannelDropdownComponent = ({
+  ...params
+}) => (
+  <PersistGate loading={null} persistor={persistor}>
+    <Provider store={store}>
+      <ConnectedContainer {...params} />
+    </Provider>
+  </PersistGate>
+);
+
 export const CreateSelectActiveChannelDropdown = ({
   element,
   ...params
 }) => (
   ReactDOM.render(
-    <PersistGate loading={null} persistor={persistor}>
-      <Provider store={store}>
-        <ConnectedContainer {...params} />
-      </Provider>
-    </PersistGate>,
-    element || document.createElement('div'), // for testing purposes
+    <SelectActiveChannelDropdownComponent key="channel-select-base" {...params} />,
+    element || document.createElement('div')
   )
 );

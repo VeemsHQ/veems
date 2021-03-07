@@ -18,6 +18,7 @@ const Container = ({
   videos,
   isLoading,
   channelId,
+  channels,
   uploadingVideosStatuses,
   openVideoDetailModal,
   closeVideoDetailModal,
@@ -27,6 +28,7 @@ const Container = ({
       videos={videos}
       channelId={channelId}
       isLoading={isLoading}
+      channels={channels}
       uploadingVideosStatuses={uploadingVideosStatuses}
       onVideoDetailModalOpen={openVideoDetailModal}
       onVideoDetailModalClose={openVideoDetailModal}
@@ -45,6 +47,12 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state, ownProps) => {
   let videos = [];
   let channelId = null;
+  let channels = [];
+  if (ownProps.channels && !state.channels.channels.length) {
+    channels = ownProps.channels;
+  } else {
+    channels = state.channels.channels;
+  }
   if (state.channels.activeChannelVideos === null) {
     videos = ownProps.videos;
   } else {
@@ -59,6 +67,7 @@ const mapStateToProps = (state, ownProps) => {
     videos: videos,
     isLoading: state.channels.activeChannelVideosLoading,
     channelId: channelId,
+    channels: channels,
     uploadingVideosStatuses: state.temp.uploadingVideos,
   };
 };
