@@ -28,7 +28,7 @@ export const setActiveChannel = id => async (dispatch) => {
     console.debug('action, setActiveChannel');
     setChannelRequest(id);
     dispatch(_setActiveChannelId(id));
-    // window.SELECTED_CHANNEL_ID = id;
+    window.SELECTED_CHANNEL_ID = id;
     dispatch(fetchActiveChannelVideos(id));
 };
 

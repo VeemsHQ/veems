@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -11,14 +11,13 @@ import FileUploadChooseModal from './FileUploadChooseModal';
 import {
   setChannelSyncModalOpen,
   setActiveChannel,
-  createToast,
   startVideoUpload,
-  setVideoDetail,
+  populateVideoDetail,
   setActiveVideoDetailThumbnailAsPrimary,
-  updateActiveVideoDetailMetadata,
   openVideoDetailModal,
   closeVideoDetailModal,
   setVideoCustomThumbnail,
+  updateVideoMetadata,
 } from '../../actions/index';
 
 const { store, persistor } = configureStore.getInstance();
@@ -29,16 +28,14 @@ const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
 };
 
 const Container = ({
-  videoId, videoDetail, channelId, createToast,
+  videoId, videoDetail, channelId,
   isModalOpen, startVideoUpload,
-  uploadStatus, setVideoDetail,
+  uploadStatus, populateVideoDetail,
   videoDetailForm, channels, setActiveChannel,
-  updateActiveVideoDetailMetadata, openVideoDetailModal,
-  closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary, setVideoCustomThumbnail,
+  openVideoDetailModal, updateVideoMetadata,
+  closeVideoDetailModal, setActiveVideoDetailThumbnailAsPrimary,
+  setVideoCustomThumbnail,
 }) => {
-  const [isSaving, setIsSaving] = useState(false);
-  // TODO: if isUploading=true, prevent leaving page.
-  // const [apiErrors, setApiErrors] = useState(null);
   const inputThumbnailFile = useRef(null);
 
   const handleSetExistingThumbnailAsPrimary = async (videoRenditionThumbnailId) => {
@@ -47,19 +44,7 @@ const Container = ({
   };
 
   const handleVideoUpdate = async (video, updatedFields = null) => {
-    // To give better UX, update the state before the server request.
-    setIsSaving(true);
-    if (!updatedFields) {
-      // If no fields updated, pretend to do it.
-      await new Promise((r) => setTimeout(r, 300));
-      createToast(TOAST_PAYLOAD_VIDEO_DETAIL_SAVED);
-      setIsSaving(false);
-    } else {
-      // Now do it for real.
-      let newData = Object.create(video);
-      newData = Object.assign(newData, updatedFields);
-      updateActiveVideoDetailMetadata(video.id, updatedFields);
-    }
+    updateVideoMetadata(video.id, updatedFields);
   };
 
   const handleEditVideoModalOpen = async (openedVideoId = null) => {
@@ -70,7 +55,7 @@ const Container = ({
       return null;
     }
     openVideoDetailModal(openedVideoId);
-    setVideoDetail(openedVideoId);
+    populateVideoDetail(openedVideoId);
   };
 
   const handleInputThumbnailChange = async (e) => {
@@ -145,15 +130,14 @@ const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
     setVideoCustomThumbnail: setVideoCustomThumbnail,
-    createToast: createToast,
     setChannelSyncModalOpen: setChannelSyncModalOpen,
     setActiveChannel: setActiveChannel,
     startVideoUpload: startVideoUpload,
-    setVideoDetail: setVideoDetail,
+    populateVideoDetail: populateVideoDetail,
     setActiveVideoDetailThumbnailAsPrimary: setActiveVideoDetailThumbnailAsPrimary,
     openVideoDetailModal: openVideoDetailModal,
     closeVideoDetailModal: closeVideoDetailModal,
-    updateActiveVideoDetailMetadata: updateActiveVideoDetailMetadata,
+    updateVideoMetadata: updateVideoMetadata,
   }, dispatch),
 });
 

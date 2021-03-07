@@ -57,7 +57,7 @@ export const VideoDetailModal = ({
   }, [videoDetail]);
 
   const debouncedOnFormFieldChange = useCallback(
-    debounce((video, data) => onFormFieldChange(video, data), 1000),
+    debounce((video, data) => onFormFieldChange(video, data), 2000),
     [],
   );
 

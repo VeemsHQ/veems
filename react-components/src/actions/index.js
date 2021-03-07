@@ -1,13 +1,13 @@
 import {
   setChannelSyncModalOpen,
-  setVideoDetail,
+  populateVideoDetail,
   startVideoUpload,
   setActiveVideoDetailThumbnailAsPrimary,
-  updateActiveVideoDetailMetadata,
   openVideoDetailModal,
   closeVideoDetailModal,
   createChannel,
   setCreateChannelShowModal,
+  updateVideoMetadata,
 } from './ChannelManager';
 import {
   setActiveChannel,
@@ -31,10 +31,9 @@ export {
   setChannels,
   setChannelSyncModalOpen,
   fetchActiveChannelVideos,
-  setVideoDetail,
+  populateVideoDetail,
   startVideoUpload,
   setActiveVideoDetailThumbnailAsPrimary,
-  updateActiveVideoDetailMetadata,
   openVideoDetailModal,
   closeVideoDetailModal,
   toggleVideoLike,
@@ -42,4 +41,5 @@ export {
   createChannel,
   setCreateChannelShowModal,
   setVideoCustomThumbnail,
+  updateVideoMetadata,
 };

@@ -116,7 +116,7 @@ export const ChannelManagerVideos = ({
               <div className="d-flex">
                 <button type="button" onClick={() => onVideoDetailModalOpen(video.id)} className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
                   <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
-                  <div className="overlays">{video.video_duration}</div>
+                  <div className="overlays">{video.duration_human}</div>
                 </button>
                 <div className="metadata-container d-flex">
                   <div className="content p-2">

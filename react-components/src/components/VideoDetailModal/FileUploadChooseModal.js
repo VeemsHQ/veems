@@ -17,6 +17,7 @@ export const FileUploadChooseModal = ({
     onModalClose = null,
     onModalOpen = null,
 }) => {
+    console.log(`isFileSelected: ${isFileSelected}`);
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: onFileSelect, disabled: isFileSelected
     });

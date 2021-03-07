@@ -1,10 +1,4 @@
-import {
-    ADD_VIDEO_LIKE,
-    ADD_VIDEO_DISLIKE,
-    REMOVE_VIDEO_LIKE,
-    REMOVE_VIDEO_DISLIKE,
-    SET_VIDEO_THUMBNAIL_UPLOADING,
-} from './ActionTypes';
+import * as aTypes from './ActionTypes';
 import {
     setVideoLikeDislike,
     updateVideoCustomThumbnail,
@@ -13,7 +7,7 @@ import {
     createToast,
 } from './Global';
 import {
-    setVideoDetail,
+    populateVideoDetail,
 } from './ChannelManager';
 import {
     fetchActiveChannelVideos,
@@ -29,27 +23,27 @@ const TOAST_VIDEO_DISLIKED = {
 };
 
 const _addVideoLike = videoLikeDislikeData => ({
-    type: ADD_VIDEO_LIKE,
+    type: aTypes.ADD_VIDEO_LIKE,
     videoLikeDislikeData
 })
 
 const _addVideoDislike = videoLikeDislikeData => ({
-    type: ADD_VIDEO_DISLIKE,
+    type: aTypes.ADD_VIDEO_DISLIKE,
     videoLikeDislikeData
 })
 
 const _removeVideoDislike = videoLikeDislikeData => ({
-    type: REMOVE_VIDEO_DISLIKE,
+    type: aTypes.REMOVE_VIDEO_DISLIKE,
     videoLikeDislikeData
 })
 
 const _removeVideoLike = videoLikeDislikeData => ({
-    type: REMOVE_VIDEO_LIKE,
+    type: aTypes.REMOVE_VIDEO_LIKE,
     videoLikeDislikeData
 })
 
 export const _setVideoThumbnailUploading = bool => ({
-    type: SET_VIDEO_THUMBNAIL_UPLOADING,
+    type: aTypes.SET_VIDEO_THUMBNAIL_UPLOADING,
     payload: bool
 })
 
@@ -85,7 +79,7 @@ export const setVideoCustomThumbnail = (channelId, videoId, file) => async (disp
     console.debug('action, setVideoCustomThumbnail');
     dispatch(_setVideoThumbnailUploading(true));
     await updateVideoCustomThumbnail(videoId, file);
-    dispatch(setVideoDetail(videoId));
+    dispatch(populateVideoDetail(videoId));
     dispatch(_setVideoThumbnailUploading(false));
     dispatch(fetchActiveChannelVideos(channelId, true));
     dispatch(createToast({

@@ -39,8 +39,8 @@ const _setVideoDetailModalOpen = bool => ({
   payload: bool
 })
 
-const _setVideoDetailModalLoading = bool => ({
-  type: aTypes.SET_VIDEO_DETAIL_MODAL_LOADING,
+const _setVideoDetailIsLoading = bool => ({
+  type: aTypes.SET_VIDEO_DETAIL_IS_LOADING,
   payload: bool
 })
 
@@ -49,13 +49,18 @@ const _setVideoUploadingFeedback = (videoId, feedback) => ({
   payload: [videoId, feedback]
 })
 
-const _setFileSelectorVisible = bool => ({
-  type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE,
+const _setVideoDetailFileSelectorIsVisible = bool => ({
+  type: aTypes.SET_VIDEO_DETAIL_FILE_SELECTOR_IS_VISIBLE,
   payload: bool
 })
 
-const _setFileIsSelected = bool => ({
+const _setVideoDetailFileIsSelected = bool => ({
   type: aTypes.SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTED,
+  payload: bool
+})
+
+const _setVideoDetailIsSaving = bool => ({
+  type: aTypes.SET_VIDEO_DETAIL_IS_SAVING,
   payload: bool
 })
 
@@ -65,31 +70,42 @@ export const setChannelSyncModalOpen = (state) => async (dispatch) => {
   dispatch({ type: aTypes.SET_CHANNEL_SYNC_MODAL_OPEN, payload: state });
 };
 
-export const updateActiveVideoDetailMetadata = (videoId, updatedFields) => async (dispatch) => {
-  console.debug(`action, updateActiveVideoDetailMetadata ${videoId}`);
-  const { response, data } = await updateVideo(videoId, updatedFields);
-  if (response?.status === 400) {
-    // setApiErrors(response?.data);
-    dispatch(createToast({
-      header: 'Oops',
-      body: MSG_CORRECT_FORM_ERRORS,
-      isError: true,
-    }));
-  } else {
+export const updateVideoMetadata = (videoId, updatedFields) => async (dispatch) => {
+  console.debug(`action, updateVideoMetadata ${videoId}`);
+  dispatch(_setVideoDetailIsSaving(true));
+  if (!updatedFields) {
+    // If there's nothing updated, simulate the save.
+    await new Promise((r) => setTimeout(r, 300));
     dispatch(createToast({
       header: 'Success',
       body: 'Your video was saved',
     }));
-    // setApiErrors(null);
-    dispatch(_setVideoDetail(data));
-    dispatch(fetchActiveChannelVideos(data.channel_id, true));
+  } else {
+    const { response, data } = await updateVideo(videoId, updatedFields);
+    if (response?.status === 400) {
+      // setApiErrors(response?.data);
+      dispatch(createToast({
+        header: 'Oops',
+        body: MSG_CORRECT_FORM_ERRORS,
+        isError: true,
+      }));
+    } else {
+      dispatch(createToast({
+        header: 'Success',
+        body: 'Your video was saved',
+      }));
+      // setApiErrors(null);
+      dispatch(_setVideoDetail(data));
+      dispatch(fetchActiveChannelVideos(data.channel_id, true));
+    }
   }
+  dispatch(_setVideoDetailIsSaving(false));
 }
 
 export const openVideoDetailModal = (videoId, isFileSelectorVisible = false) => async (dispatch) => {
   console.debug('action, openVideoDetailModal');
-  dispatch(setVideoDetail(videoId));
-  dispatch(_setFileSelectorVisible(isFileSelectorVisible));
+  dispatch(populateVideoDetail(videoId));
+  dispatch(_setVideoDetailFileSelectorIsVisible(isFileSelectorVisible));
   dispatch(_setVideoDetailModalOpen(true));
 }
 
@@ -97,12 +113,12 @@ export const closeVideoDetailModal = () => async (dispatch) => {
   dispatch(_setVideoDetailModalOpen(false));
 }
 
-export const setVideoDetail = (videoId) => async (dispatch) => {
-  console.debug('action, setVideoDetail');
-  dispatch(_setVideoDetailModalLoading(true));
+export const populateVideoDetail = (videoId) => async (dispatch) => {
+  console.debug('action, populateVideoDetail');
+  dispatch(_setVideoDetailIsLoading(true));
   const { data } = await getVideoById(videoId);
   dispatch(_setVideoDetail(data));
-  dispatch(_setVideoDetailModalLoading(false));
+  dispatch(_setVideoDetailIsLoading(false));
 };
 
 export const setActiveVideoDetailThumbnailAsPrimary = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
@@ -120,8 +136,6 @@ const _updateUploadProgressCallback = async (videoId, percentageDone) => {
     percentageUploaded: percentageDone
   };
   store.dispatch(_setVideoUploadingFeedback(videoId, feedback));
-  // store.dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
-  // TODO: get the video
 }
 
 const _uploadVideo = async (videoId, file, uploadPrepareResult) => {
@@ -146,6 +160,7 @@ const _uploadVideo = async (videoId, file, uploadPrepareResult) => {
 
 export const startVideoUpload = (channelId, file) => async (dispatch) => {
   console.debug('action, startVideoUpload');
+  dispatch(_setVideoDetailFileIsSelected(true));
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const filename = file.name;
   const fileSize = file.size;
@@ -157,10 +172,10 @@ export const startVideoUpload = (channelId, file) => async (dispatch) => {
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
     dispatch(fetchActiveChannelVideos(channelId, true));
-    dispatch(setVideoDetail(data.video_id));
+    dispatch(populateVideoDetail(data.video_id));
     dispatch(provideUploadFeedback(data.video_id, data.upload_id, channelId));
-    dispatch(_setFileIsSelected(true));
-    dispatch(_setFileSelectorVisible(false));
+    // dispatch(_setVideoDetailFileIsSelected(true));
+    dispatch(_setVideoDetailFileSelectorIsVisible(false));
     await _uploadVideo(data.video_id, file, data);
   }
 };

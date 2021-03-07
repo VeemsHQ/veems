@@ -2,11 +2,12 @@ import {
     START_VIDEO_UPLOADING,
     SET_VIDEO_UPLOADING_FEEDBACK,
     SET_VIDEO_DETAIL,
-    SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE,
+    SET_VIDEO_DETAIL_FILE_SELECTOR_IS_VISIBLE,
     SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTED,
     SET_VIDEO_DETAIL_MODAL_OPEN,
     SET_VIDEO_THUMBNAIL_UPLOADING,
-    SET_VIDEO_DETAIL_MODAL_LOADING,
+    SET_VIDEO_DETAIL_IS_LOADING,
+    SET_VIDEO_DETAIL_IS_SAVING,
 } from '../actions/ActionTypes';
 import { randomItem } from '../utils';
 
@@ -27,7 +28,6 @@ export const initialState = {
         id: null,
         autogenThumbnailChoices: [],
     },
-    // TODO: replace container state with this.
     videoDetailForm: {
         apiErrors: {},
         isFileSelectorVisible: queryParamUploadModalOpen,
@@ -36,11 +36,9 @@ export const initialState = {
         isThumbnailUploading: false,
         thumbsUpdatedFromUploadFeedback: false,
         isProcessing: false,
-        // isUploading: false,
         isViewable: false,
         isSaving: false,
     },
-    isVideoFileSelectorVisible: true,
     isVideoDetailModalOpen: queryParamUploadModalOpen,
 };
 
@@ -76,7 +74,7 @@ export default (state = initialState, action) => {
             return {
                 ...state, uploadingVideos: newState
             }
-        case SET_ACTIVE_VIDEO_DETAIL_FILE_SELECTOR_VISIBLE:
+        case SET_VIDEO_DETAIL_FILE_SELECTOR_IS_VISIBLE:
             return {
                 ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isFileSelectorVisible: payload } }
             };
@@ -84,9 +82,13 @@ export default (state = initialState, action) => {
             return {
                 ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isFileSelected: payload } }
             };
-        case SET_VIDEO_DETAIL_MODAL_LOADING:
+        case SET_VIDEO_DETAIL_IS_LOADING:
             return {
                 ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isLoading: payload } }
+            };
+        case SET_VIDEO_DETAIL_IS_SAVING:
+            return {
+                ...state, ...{ videoDetailForm: { ...state.videoDetailForm, isSaving: payload } }
             };
         case SET_VIDEO_THUMBNAIL_UPLOADING:
             return {
