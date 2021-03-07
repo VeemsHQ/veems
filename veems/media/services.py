@@ -307,7 +307,17 @@ def get_videos(channel_id=None, user_id=None):
             only_return_public = False
     if only_return_public:
         filters['visibility'] = 'public'
-    return models.Video.objects.select_related().filter(**filters)
+    return (
+        models.Video.objects.filter(**filters)
+        .select_related('channel', 'upload')
+        .prefetch_related(
+            'transcode_jobs',
+            'likedislikes',
+            'renditions',
+            'renditions__rendition_segments',
+            'renditions__rendition_thumbnails',
+        )
+    )
 
 
 def get_popular_videos():
