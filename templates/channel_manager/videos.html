@@ -65,11 +65,13 @@
 <script type="text/javascript">
     var videos = {{ channel_videos | to_json }};
     var channels = {{ channel_summaries | to_json }};
+    var uploads_processing = {{ channel_uploads_processing | to_json }};
     app.CreateChannelManagerVideos({
         element: document.getElementById('videos-table'),
         channelId: "{{channel_id}}",
         videos: videos,
         channels: channels,
+        uploadsProcessing: uploads_processing,
     })
 </script>
 

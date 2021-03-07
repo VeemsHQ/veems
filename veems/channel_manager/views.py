@@ -51,7 +51,16 @@ class VideosView(ChannelManagerTemplateView):
         channel_videos = media_serializers.VideoSerializer(
             instance=channel_videos, many=True
         ).data
+        channel_uploads_processing = media_services.get_uploads_processing(
+            channel_id=channel_id,
+            user_id=self.request.user.id,
+        )
+        # TODO: use very very shallow serializer
+        channel_uploads_processing = media_serializers.UploadSerializer(
+            instance=channel_uploads_processing, many=True
+        ).data
         context['channel_videos'] = channel_videos
+        context['channel_uploads_processing'] = channel_uploads_processing
         context['channel_id'] = channel_id
         return context
 

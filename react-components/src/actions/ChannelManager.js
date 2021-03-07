@@ -211,7 +211,7 @@ const _haveAllVideoUploadsCompleted = (uploadingVideos) => {
 }
 
 
-const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch) => {
+export const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch) => {
   console.debug(`action, provideUploadFeedback, for video ${videoId}, upload ${uploadId}...`)
   const delayBetweenChecks = 5000;
   while (true) {

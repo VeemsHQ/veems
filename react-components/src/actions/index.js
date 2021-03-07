@@ -8,6 +8,7 @@ import {
   createChannel,
   setCreateChannelShowModal,
   updateVideoMetadata,
+  provideUploadFeedback,
 } from './ChannelManager';
 import {
   setActiveChannel,
@@ -46,4 +47,5 @@ export {
   updateVideoMetadata,
   openUploadVideoModal,
   setActiveChannelVideos,
+  provideUploadFeedback,
 };

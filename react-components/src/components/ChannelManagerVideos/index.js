@@ -12,6 +12,7 @@ import {
   setChannels,
   setActiveChannel,
   setActiveChannelVideos,
+  provideUploadFeedback,
 } from '../../actions/index';
 import ChannelManagerVideos from './component';
 
@@ -19,11 +20,13 @@ const { store, persistor } = configureStore.getInstance();
 
 const Container = ({
   videos,
+  uploadsProcessing,
   isLoading,
   channelId,
   channels,
   setActiveChannel,
   setActiveChannelVideos,
+  provideUploadFeedback,
   setChannels,
   propsSetFromHtmlContextVars,
   uploadingVideosStatuses,
@@ -38,7 +41,22 @@ const Container = ({
     setActiveChannel(channelId, callServerInitially);
     setChannels(channels);
     setActiveChannelVideos(videos);
-  }, [setActiveChannel, setChannels, setActiveChannelVideos])
+
+    // uploadsProcessing have items if you upload a video and reload
+    // the page before it's done processing.
+    // We use this list of uploads to re-trigger the background API polling
+    // of the video upload feedback/status.
+    // This gives the live updates on the Channel Videos Page for the
+    // status of the processing of the videos.
+    for (let upload of uploadsProcessing) {
+      provideUploadFeedback(
+        upload.video_id,
+        upload.id,
+        upload.channel_id,
+      )
+    }
+
+  }, [setActiveChannel, setChannels, setActiveChannelVideos, provideUploadFeedback])
 
   return (
     <ChannelManagerVideos
@@ -61,6 +79,7 @@ const mapDispatchToProps = (dispatch) => ({
     setChannels: setChannels,
     setActiveChannel: setActiveChannel,
     setActiveChannelVideos: setActiveChannelVideos,
+    provideUploadFeedback: provideUploadFeedback,
   }, dispatch),
 });
 
@@ -90,6 +109,7 @@ const mapStateToProps = (state, ownProps) => {
   }
   return {
     videos: videos,
+    uploadsProcessing: ownProps.uploadsProcessing,
     isLoading: state.channels.activeChannelVideosLoading,
     channelId: channelId,
     channels: channels,

@@ -320,10 +320,22 @@ def get_videos(channel_id=None, user_id=None):
     )
 
 
+def get_uploads_processing(channel_id, user_id):
+    # TODO: test
+    statuses = ('processing', 'processing_viewable', 'uploaded')
+    return models.Upload.objects.filter(
+        channel_id=channel_id,
+        channel__user_id=user_id,
+        status__in=statuses,
+    ).prefetch_related('video')
+
+
 def get_popular_videos():
-    return models.Video.objects.filter(
-        is_viewable=True, visibility='public'
-    ).order_by('-created_on')
+    return (
+        models.Video.objects.filter(is_viewable=True, visibility='public')
+        .select_related('channel')
+        .order_by('-created_on')
+    )
 
 
 def create_video(*, upload, **kwargs):
