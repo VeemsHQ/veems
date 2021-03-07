@@ -70,6 +70,21 @@ export const setChannelSyncModalOpen = (state) => async (dispatch) => {
   dispatch({ type: aTypes.SET_CHANNEL_SYNC_MODAL_OPEN, payload: state });
 };
 
+const alertUserExitingPageWhileUploading = e => {
+  e.preventDefault()
+  const msg = 'Your uploads will be cancelled if you leave this page'
+  e.returnValue = msg;
+  return msg;
+}
+
+const setUserPermissionToLeavePage = (bool) => async (dispatch) => {
+  console.debug('action, setUserPermissionToLeavePage');
+  window.removeEventListener('beforeunload', alertUserExitingPageWhileUploading);
+  if (bool === false) {
+    window.addEventListener('beforeunload', alertUserExitingPageWhileUploading);
+  }
+}
+
 export const updateVideoMetadata = (videoId, updatedFields) => async (dispatch) => {
   console.debug(`action, updateVideoMetadata ${videoId}`);
   dispatch(_setVideoDetailIsSaving(true));
@@ -160,8 +175,9 @@ const _uploadVideo = async (videoId, file, uploadPrepareResult) => {
   await uploadComplete(uploadId, parts);
 }
 
-export const startVideoUpload = (channelId, file) => async (dispatch) => {
+export const startVideoUpload = (channelId, file) => async (dispatch, getState) => {
   console.debug('action, startVideoUpload');
+  dispatch(setUserPermissionToLeavePage(false));
   dispatch(_setVideoDetailFileIsSelected(true));
   const chunkSize = 5 * 1024 * 1024; // 5MB
   const filename = file.name;
@@ -176,11 +192,20 @@ export const startVideoUpload = (channelId, file) => async (dispatch) => {
     dispatch(fetchActiveChannelVideos(channelId, true));
     dispatch(populateVideoDetail(data.video_id));
     dispatch(provideUploadFeedback(data.video_id, data.upload_id, channelId));
-    // dispatch(_setVideoDetailFileIsSelected(true));
     dispatch(_setVideoDetailFileSelectorIsVisible(false));
     await _uploadVideo(data.video_id, file, data);
+    if (_haveAllVideoUploadsCompleted(getState().temp.uploadingVideos)) {
+      dispatch(setUserPermissionToLeavePage(true));
+    }
   }
 };
+
+
+const _haveAllVideoUploadsCompleted = (uploadingVideos) => {
+  // TODO: Check if any other uploads exist with percentageUploaded<100;
+  return true;
+}
+
 
 const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch) => {
   console.debug(`action, provideUploadFeedback, for video ${videoId}, upload ${uploadId}...`)

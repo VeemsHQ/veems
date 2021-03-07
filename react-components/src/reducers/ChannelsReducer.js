@@ -27,6 +27,7 @@ export default (state = initialState, action) => {
     case SET_ACTIVE_CHANNEL_ID:
       return { ...state, activeChannelId: payload };
     case SET_ACTIVE_CHANNEL_VIDEOS:
+      // TODO: Move into Temp
       return { ...state, activeChannelVideos: payload };
     case SET_ACTIVE_CHANNEL_VIDEOS_LOADING:
       return { ...state, activeChannelVideosLoading: payload };

@@ -23,6 +23,12 @@ const Container = ({
   openVideoDetailModal,
   closeVideoDetailModal,
 }) => {
+
+  // useEffect(() => {
+  // TODO: launch check loop for processing videos
+  // }, [])
+
+
   return (
     <ChannelManagerVideos
       videos={videos}
