@@ -202,8 +202,12 @@ export const startVideoUpload = (channelId, file) => async (dispatch, getState) 
 
 
 const _haveAllVideoUploadsCompleted = (uploadingVideos) => {
-  // TODO: Check if any other uploads exist with percentageUploaded<100;
-  return true;
+  for (var videoId in uploadingVideos) {
+    if (uploadingVideos[videoId].isUploading === true) {
+      return true;
+    }
+  }
+  return false;
 }
 
 
