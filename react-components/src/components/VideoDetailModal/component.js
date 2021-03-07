@@ -297,8 +297,8 @@ export const VideoDetailModal = ({
                   <div className="card-body text-secondary bg-light">
                     <p className="card-text">Video link<br />
                       <a
-                        href={`https://veems.com/v/${videoId}`}
-                      >{`https://veems.com/v/${videoId}`}
+                        href={`https://veems.tv/v/${videoId}`}
+                      >{`https://veems.tv/v/${videoId}`}
                       </a>
                     </p>
                     <p className="card-text text-truncate">Filename<br />

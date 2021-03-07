@@ -87,7 +87,7 @@ export const setVideoCustomThumbnail = (channelId, videoId, file) => async (disp
     await updateVideoCustomThumbnail(videoId, file);
     dispatch(setVideoDetail(videoId));
     dispatch(_setVideoThumbnailUploading(false));
-    dispatch(fetchActiveChannelVideos(channelId, false));
+    dispatch(fetchActiveChannelVideos(channelId, true));
     dispatch(createToast({
         header: 'Success',
         body: 'Your video was saved',

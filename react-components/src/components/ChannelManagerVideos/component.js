@@ -5,7 +5,7 @@ import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
 
 import 'regenerator-runtime/runtime.js';
 
-const descMaxLen = 150;
+const descMaxLen = 100;
 const truncate = (input, max) => (input.length > max ? `${input.substring(0, max + 1)}...` : input);
 
 export const ChannelManagerVideos = ({
@@ -118,11 +118,32 @@ export const ChannelManagerVideos = ({
                 </button>
                 <div className="metadata-container d-flex">
                   <div className="content p-2">
-                    <h5 className="m-0 mb-1"><a href="#">{video.title}</a></h5>
+                    <h5 className="m-0 mb-1 text-primary">{video.title}</h5>
                     <div className="metadata">
                       <div className="card-text text-muted text-wrap text-truncate">
-                        <a href="#">{truncate(video.description ? video.description : '', descMaxLen)}</a>
+                        {truncate(video.description ? video.description : '', descMaxLen)}
                       </div>
+                      {uploadingVideosStatuses[video.id] && !uploadingVideosStatuses[video.id].isUploaded &&
+                        <>
+                          <div className="text-muted d-flex align-items-center mt-2">
+                            <i className="material-icons text-primary mr-1">upload</i> Uploading {uploadingVideosStatuses[video.id].percentageUploaded}%...
+                          </div>
+                        </>
+                      }
+                      {uploadingVideosStatuses[video.id] && uploadingVideosStatuses[video.id].isProcessing && !uploadingVideosStatuses[video.id].isViewable &&
+                        <>
+                          <div className="text-muted d-flex align-items-center mt-2">
+                            <i className="material-icons text-primary mr-1">pending</i> Processing...
+                          </div>
+                        </>
+                      }
+                      {uploadingVideosStatuses[video.id] && uploadingVideosStatuses[video.id].isProcessing && uploadingVideosStatuses[video.id].isViewable &&
+                        <>
+                          <div className="text-muted d-flex align-items-center mt-2">
+                            <i className="material-icons text-primary mr-1">pending</i> Viewable &amp; processing...
+                          </div>
+                        </>
+                      }
                     </div>
                   </div>
                   <div className="overlay align-items-center">
@@ -136,16 +157,6 @@ export const ChannelManagerVideos = ({
             </td>
             <td>
               <div className="text-muted">{video.visibility}</div>
-              {uploadingVideosStatuses[video.id] &&
-                <>
-                  <div className="text-muted d-none">Uploading...</div>
-                  <div className="progress">
-                    <div className="progress-bar progress-bar-striped progress-bar-animated"
-                      role="progressbar" style={{ width: `${uploadingVideosStatuses[video.id].percentageUploaded}%` }} aria-valuenow={uploadingVideosStatuses[video.id].percentageUploaded} aria-valuemin="0"
-                      aria-valuemax="100">{uploadingVideosStatuses[video.id].percentageUploaded}%</div>
-                  </div>
-                </>
-              }
             </td>
             <td>
               {video.created_date_human}<br />

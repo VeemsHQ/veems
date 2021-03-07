@@ -169,6 +169,7 @@ const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch)
   console.debug(`action, provideUploadFeedback, for video ${videoId}, upload ${uploadId}...`)
   const delayBetweenChecks = 5000;
   while (true) {
+    console.debug(`upload feedback check, video ${videoId}, upload ${uploadId}`);
     const { data } = await getUploadById(uploadId);
 
     const isViewable = data.status === 'processing_viewable' || data.status === 'completed'
@@ -183,10 +184,9 @@ const provideUploadFeedback = (videoId, uploadId, channelId) => async (dispatch)
       autogenThumbnailChoices: autogenThumbnailChoices,
     };
     dispatch(_setVideoUploadingFeedback(videoId, feedback));
-    // dispatch({ type: aTypes.SET_VIDEO_UPLOADING_FEEDBACK, payload: feedback });
     if (isViewable && !isProcessing) {
       console.debug('Upload feedback process exiting');
-      dispatch(fetchActiveChannelVideos(channelId, true));
+      dispatch(fetchActiveChannelVideos(channelId, false));
       break
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));
