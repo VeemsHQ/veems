@@ -19,25 +19,29 @@
       </button>
     </form>
   </div>
-  <div class="col-7 col-md-3 col-lg-3 d-flex justify-content-end top-nav-right pr-4">
-    <a href="#" class="icon-link text-dark d-flex d-md-none justify-content-center ml-3 bg-light rounded-circle"><i
-        class="material-icons align-self-center">search</i></a>
-    <a href="{% url 'upload' %}"
-      class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle"><i
-        class="small material-icons align-self-center">cloud_upload</i></a>
-    <a href="#" class="icon-link text-dark d-none d-lg-flex justify-content-center ml-3 bg-light rounded-circle">
-      <i class="small material-icons align-self-center">notifications_none</i></a>
-
-    {% if request.user.is_authenticated %}
-    <a href="{% url 'channel-manager-index' %}"
-      class="ml-3 rounded-circle bg-light d-flex justify-content-center avatar">
-      <!-- TODO: update this image to one provided by the backend -->
-      <i class="material-icons align-middle" style="font-size: 300%; width: 42px; height: 42px">face</i>
-      <img class="d-none COMMENTEDOUT-d-block rounded-circle align-self-center" src="https://i.imgur.com/AhSGyhc.png" />
-    </a>
-    {% else %}
-    <a href="{% url 'login' %}" data-toggle="modal" data-target="#loginModal"
-      class="ml-3 d-flex justify-content-center btn btn-outline-primary">Sign in</a>
-    {% endif %}
+  <div class="col-7 col-md-3 col-lg-3 d-flex justify-content-end top-nav-right">
+    <div id="top-nav-controls" class="d-flex d-row">
+      <a href="#" class="icon-link text-dark d-flex d-md-none justify-content-center ml-3 bg-light rounded-circle">
+        <i class="material-icons align-self-center">search</i></a>
+      <a href="{% url 'upload' %}"
+        class="icon-link text-dark d-flex justify-content-center ml-3 bg-light rounded-circle">
+        <i class="small material-icons align-self-center">cloud_upload</i></a>
+      <a href="#" class="icon-link text-dark d-none d-lg-flex justify-content-center ml-3 bg-light rounded-circle">
+        <i class="small material-icons align-self-center">notifications_none</i></a>
+    </div>
+    <div class="d-flex d-row">
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'channel-manager-index' %}"
+        class="ml-3 rounded-circle bg-light d-flex justify-content-center avatar">
+        <!-- TODO: update this image to one provided by the backend -->
+        <i class="material-icons align-middle" style="font-size: 300%; width: 42px; height: 42px">face</i>
+        <img class="d-none COMMENTEDOUT-d-block rounded-circle align-self-center"
+          src="https://i.imgur.com/AhSGyhc.png" />
+      </a>
+      {% else %}
+      <a href="{% url 'login' %}" data-toggle="modal" data-target="#loginModal"
+        class="ml-3 d-flex justify-content-center btn btn-outline-primary">Sign in</a>
+      {% endif %}
+    </div>
   </div>
 </nav>
