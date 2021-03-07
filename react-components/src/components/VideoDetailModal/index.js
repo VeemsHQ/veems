@@ -22,11 +22,6 @@ import {
 
 const { store, persistor } = configureStore.getInstance();
 
-const TOAST_PAYLOAD_VIDEO_DETAIL_SAVED = {
-  header: 'Success',
-  body: 'Your video was saved',
-};
-
 const Container = ({
   videoId, videoDetail, channelId,
   isModalOpen, startVideoUpload,
@@ -104,7 +99,13 @@ const Container = ({
 
 const mapStateToProps = (state, ownProps) => {
   let videoId = null;
+  let activeChannelId;
   let channels = [];
+  if (!state.channels.activeChannelId) {
+    activeChannelId = ownProps.channelId;
+  } else {
+    activeChannelId = state.channels.activeChannelId;
+  }
   if (ownProps.channels && !state.channels.channels.length) {
     channels = ownProps.channels;
   } else {
@@ -119,7 +120,7 @@ const mapStateToProps = (state, ownProps) => {
     uploadStatus: state.temp.uploadingVideos[videoId],
     videoId: videoId,
     videoDetail: state.temp.videoDetail,
-    channelId: state.channels.activeChannelId,
+    channelId: activeChannelId,
     channels: channels,
     isModalOpen: state.temp.isVideoDetailModalOpen,
     videoDetailForm: state.temp.videoDetailForm,

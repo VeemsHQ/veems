@@ -24,17 +24,26 @@ const _setActiveChannelVideos = videos => ({
     payload: videos
 })
 
-export const setActiveChannel = id => async (dispatch) => {
+export const setActiveChannel = (id, callServer = true) => async (dispatch) => {
     console.debug('action, setActiveChannel');
-    setChannelRequest(id);
+    if (callServer) {
+        setChannelRequest(id);
+    }
     dispatch(_setActiveChannelId(id));
     window.SELECTED_CHANNEL_ID = id;
-    dispatch(fetchActiveChannelVideos(id));
+    if (callServer) {
+        dispatch(fetchActiveChannelVideos(id));
+    }
 };
 
 export const setChannels = channels => async (dispatch) => {
     console.debug('action, setChannels');
     dispatch(_setChannels(channels));
+};
+
+export const setActiveChannelVideos = videos => async (dispatch) => {
+    console.debug('action, setActiveChannelVideos');
+    dispatch(_setActiveChannelVideos(videos));
 };
 
 export const fetchActiveChannelVideos = (
@@ -48,5 +57,5 @@ export const fetchActiveChannelVideos = (
     if (loadingIndication) {
         dispatch(_setActiveChannelVideosLoading(false));
     }
-    dispatch(_setActiveChannelVideos(data));
+    dispatch(setActiveChannelVideos(data));
 };

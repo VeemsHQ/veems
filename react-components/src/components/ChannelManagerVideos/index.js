@@ -9,6 +9,9 @@ import { configureStore } from '../../store';
 import {
   openVideoDetailModal,
   closeVideoDetailModal,
+  setChannels,
+  setActiveChannel,
+  setActiveChannelVideos,
 } from '../../actions/index';
 import ChannelManagerVideos from './component';
 
@@ -19,15 +22,23 @@ const Container = ({
   isLoading,
   channelId,
   channels,
+  setActiveChannel,
+  setActiveChannelVideos,
+  setChannels,
+  propsSetFromHtmlContextVars,
   uploadingVideosStatuses,
   openVideoDetailModal,
   closeVideoDetailModal,
 }) => {
+  const callServerInitially = !propsSetFromHtmlContextVars;
 
-  // useEffect(() => {
-  // TODO: launch check loop for processing videos
-  // }, [])
-
+  useEffect(() => {
+    // If props came from HTML context we need to update Redux state to match
+    // on first load.
+    setActiveChannel(channelId, callServerInitially);
+    setChannels(channels);
+    setActiveChannelVideos(videos);
+  }, [setActiveChannel, setChannels, setActiveChannelVideos])
 
   return (
     <ChannelManagerVideos
@@ -47,6 +58,9 @@ const mapDispatchToProps = (dispatch) => ({
   ...bindActionCreators({
     openVideoDetailModal: openVideoDetailModal,
     closeVideoDetailModal: closeVideoDetailModal,
+    setChannels: setChannels,
+    setActiveChannel: setActiveChannel,
+    setActiveChannelVideos: setActiveChannelVideos,
   }, dispatch),
 });
 
@@ -54,18 +68,23 @@ const mapStateToProps = (state, ownProps) => {
   let videos = [];
   let channelId = null;
   let channels = [];
+  // If true then prop values came from the HTML template content.
+  let propsSetFromHtmlContextVars = false;
   if (ownProps.channels && !state.channels.channels.length) {
     channels = ownProps.channels;
+    propsSetFromHtmlContextVars = true;
   } else {
     channels = state.channels.channels;
   }
-  if (state.channels.activeChannelVideos === null) {
+  if (!state.channels.activeChannelVideos) {
     videos = ownProps.videos;
+    propsSetFromHtmlContextVars = true;
   } else {
     videos = state.channels.activeChannelVideos;
   }
-  if (state.channels.activeChannelId === null) {
+  if (!state.channels.activeChannelId) {
     channelId = ownProps.channelId;
+    propsSetFromHtmlContextVars = true;
   } else {
     channelId = state.channels.activeChannelId;
   }
@@ -74,6 +93,7 @@ const mapStateToProps = (state, ownProps) => {
     isLoading: state.channels.activeChannelVideosLoading,
     channelId: channelId,
     channels: channels,
+    propsSetFromServerValues: propsSetFromHtmlContextVars,
     uploadingVideosStatuses: state.temp.uploadingVideos,
   };
 };

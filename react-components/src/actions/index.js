@@ -13,6 +13,7 @@ import {
   setActiveChannel,
   setChannels,
   fetchActiveChannelVideos,
+  setActiveChannelVideos,
 } from './Channel';
 import {
   createToast,
@@ -44,4 +45,5 @@ export {
   setVideoCustomThumbnail,
   updateVideoMetadata,
   openUploadVideoModal,
+  setActiveChannelVideos,
 };
