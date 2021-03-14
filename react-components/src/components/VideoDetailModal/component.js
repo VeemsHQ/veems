@@ -20,6 +20,7 @@ export const VideoDetailModal = ({
   onInputThumbnailChange,
   onSetExistingThumbnailAsPrimary,
 }) => {
+  console.log('>>>>> VideoDetailModal');
   const saveButtonText = videoDetailForm.isSaving ? 'Saving...' : 'Save Changes';
   let statusText = '';
   const isUploading = uploadStatus && uploadStatus.percentageUploaded < 100;
@@ -45,6 +46,7 @@ export const VideoDetailModal = ({
   const initialPrimaryThumbnailUrl = (
     (uploadStatus && uploadStatus.thumbnailImageSmallUrl) ? uploadStatus.thumbnailImageSmallUrl : video.thumbnail_image_small_url
   );
+  const [isFormFieldFocussed, setIsFormFieldFocussed] = useState(false);
   const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(initialPrimaryThumbnailUrl);
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
@@ -55,19 +57,39 @@ export const VideoDetailModal = ({
   );
 
   React.useEffect(() => {
-    setTitle(initialTitle);
-    setDescription(initialDescription);
-    setTags(initialTags);
-    setVisibility(initialVisibility);
+    console.log('uploadStatus useeffect')
+    // setTitle(valueOrEmpty(video.title));
+    // setDescription(valueOrEmpty(video.description));
+    // setTags(valueOrEmpty(video.tags));
+    // setVisibility(valueOrEmpty(video.visibility));
     if (uploadStatus && uploadStatus.isProcessing) {
       setPrimaryThumbnailUrl(uploadStatus.thumbnailImageSmallUrl)
     } else {
       setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url)
     }
-  }, [videoDetail, uploadStatus]);
+  }, [uploadStatus]);
+
+  React.useEffect(() => {
+    if (videoDetail.video.title !== valueOrEmpty(videoDetail.video.title)) {
+      console.log('title changed');
+      setTitle(valueOrEmpty(videoDetail.video.title));
+    }
+    if (videoDetail.video.description !== valueOrEmpty(videoDetail.video.description)) {
+      console.log('desc changed');
+      setDescription(valueOrEmpty(videoDetail.video.description));
+    }
+    setTags(valueOrEmpty(videoDetail.video.tags));
+    setVisibility(valueOrEmpty(videoDetail.video.visibility));
+  }, [videoDetail]);
+
+  const debouncedOnFormFieldChangeCallback = async (video, data) => {
+    console.log('focus')
+    debounce((video, data) => onFormFieldChange(video, data), 2000)
+    console.log('after focus')
+  }
 
   const debouncedOnFormFieldChange = useCallback(
-    debounce((video, data) => onFormFieldChange(video, data), 2000),
+    debouncedOnFormFieldChangeCallback,
     [],
   );
 

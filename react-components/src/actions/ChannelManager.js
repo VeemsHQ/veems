@@ -217,7 +217,10 @@ export const provideUploadFeedback = (videoId, uploadId, channelId) => async (di
   while (true) {
     console.debug(`upload feedback check, video ${videoId}, upload ${uploadId}`);
     const { data } = await getUploadById(uploadId);
-
+    if (!data) {
+      console.error(`Could not get upload ${uploadId}`);
+      continue;
+    }
     const isViewable = data.status === 'processing_viewable' || data.status === 'completed'
     const isUploaded = data.status != 'draft';
     const isProcessing = isUploaded && data.status != 'completed';
