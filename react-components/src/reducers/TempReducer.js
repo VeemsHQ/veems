@@ -15,6 +15,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
 const initialStateUploadingVideo = {
     autogenThumbnailChoices: [],
+    thumbnailImage: null,
     isProcessing: false,
     isUploading: true,
     isViewable: false,

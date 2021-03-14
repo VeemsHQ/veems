@@ -228,6 +228,7 @@ export const provideUploadFeedback = (videoId, uploadId, channelId) => async (di
       isViewable: isViewable,
       isProcessing: isProcessing,
       autogenThumbnailChoices: autogenThumbnailChoices,
+      thumbnailImage: data.thumbnail_image_small_url,
     };
     dispatch(_setVideoUploadingFeedback(videoId, feedback));
     if (isViewable && !isProcessing) {

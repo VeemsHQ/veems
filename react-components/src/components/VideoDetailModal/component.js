@@ -42,19 +42,30 @@ export const VideoDetailModal = ({
   const initialTags = valueOrEmpty(video.tags);
   const initialVisibility = valueOrEmpty(video.visibility);
   const filename = valueOrEmpty(video.filename);
-  const primaryThumbnailUrl = video.thumbnail_image_small_url;
+  const initialPrimaryThumbnailUrl = (uploadStatus && uploadStatus.thumbnailImage) ? uploadStatus.thumbnailImage : video.thumbnail_image_small_url;
+  const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(initialPrimaryThumbnailUrl);
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
-  const autogenThumbnailChoices = uploadStatus && uploadStatus.autogenThumbnailChoices ? uploadStatus.autogenThumbnailChoices : videoDetail.autogenThumbnailChoices;
+  const autogenThumbnailChoices = (uploadStatus && uploadStatus.autogenThumbnailChoices) ? uploadStatus.autogenThumbnailChoices : videoDetail.autogenThumbnailChoices;
 
   React.useEffect(() => {
+    console.log('videoDetail changed');
+
     setTitle(initialTitle);
     setDescription(initialDescription);
     setTags(initialTags);
     setVisibility(initialVisibility);
-  }, [videoDetail]);
+    console.log(uploadStatus);
+    if (uploadStatus && uploadStatus.isProcessing) {
+      console.log('thumb st from up')
+      setPrimaryThumbnailUrl(uploadStatus.thumbnailImage)
+    } else {
+      console.log('thumb st from vudei')
+      setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url)
+    }
+  }, [videoDetail, uploadStatus]);
 
   const debouncedOnFormFieldChange = useCallback(
     debounce((video, data) => onFormFieldChange(video, data), 2000),
