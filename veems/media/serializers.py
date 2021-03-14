@@ -424,3 +424,8 @@ class VideoThumbnailSerializer(CustomModelSerializer):
             'thumbnail_image_medium_url': {'read_only': True},
             'thumbnail_image_large_url': {'read_only': True},
         }
+
+
+class UploadPartSerializer(serializers.Serializer):
+    etag = serializers.CharField(required=True, min_length=20, max_length=40)
+    part_number = serializers.IntegerField(required=True)

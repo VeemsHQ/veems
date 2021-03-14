@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
-from . import upload_manager, serializers, models, services
+from . import upload_manager, serializers, services
 
 
 logger = logging.getLogger(__name__)
@@ -55,8 +55,7 @@ def upload_prepare(request):
 
 @api_view(['GET'])
 def upload_detail(request, upload_id):
-    # TODO: test and auth verify tests
-    upload = models.Upload.objects.get(
+    upload = services.get_upload(
         id=upload_id, channel__user_id=request.user.id
     )
     data = serializers.UploadSerializer(instance=upload).data
@@ -65,17 +64,16 @@ def upload_detail(request, upload_id):
 
 @api_view(['PUT'])
 def upload_complete(request, upload_id):
-    # TODO: set to status=`processing`.
     try:
-        parts = request.data['parts']
-    except KeyError:
+        parts = serializers.UploadPartSerializer(
+            instance=request.data['parts'], many=True
+        ).data
+    except (KeyError, ValueError):
         return Response({'detail': 'parts not provided'}, status=BAD_REQUEST)
-    # TODO: validate 'parts' with serializer
     # Verify the auth'd user owns this upload.
-    upload = models.Upload.objects.get(
+    upload = services.get_upload(
         id=upload_id, channel__user_id=request.user.id
     )
-    # TODO: test set status
     services.set_upload_status(upload=upload, status='uploaded')
     upload_manager.complete.delay(upload_id=upload_id, parts=parts)
     return Response({}, status=OK)

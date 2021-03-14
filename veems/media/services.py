@@ -22,9 +22,9 @@ from .transcoder import transcoder_profiles
 logger = logging.getLogger(__name__)
 
 
-def get_upload(id):
+def get_upload(**kwargs):
     # TODO: test
-    return models.Upload.objects.get(id=id)
+    return models.Upload.objects.get(**kwargs)
 
 
 def _get_rendition_playlists(video_record):
