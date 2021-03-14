@@ -307,8 +307,8 @@ export const VideoDetailModal = ({
                   <div className="card-body text-secondary bg-light">
                     <p className="card-text">Video link<br />
                       <a
-                        href={`https://veems.tv/v/${videoId}`}
-                      >{`https://veems.tv/v/${videoId}`}
+                        href={`${window.SITE_BASE_URL}/v/${videoId}`}
+                      >{`${window.SITE_BASE_URL}/v/${videoId}`}
                       </a>
                     </p>
                     <p className="card-text text-truncate">Filename<br />

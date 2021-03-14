@@ -3,13 +3,15 @@
 {% block content %}
 <div class="col col-xl-8">
     <div class="d-block d-lg-none">
-        <p class="alert alert-secondary">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a></p>
+        <p class="alert alert-secondary">Channel link<br /><a href="#">{{settings.SITE_BASE_URL}}/c/UCASvHD</a>
+        </p>
     </div>
     <div>
         <div class="border rounded p-3">
             <div class="row no-gutters my-md-3">
                 <div class="col text-center text-muted">
-                    <p><i class="material-icons align-middle text-muted" style="font-size:1000%; opacity: 0.3">add_a_photo</i></p>
+                    <p><i class="material-icons align-middle text-muted"
+                            style="font-size:1000%; opacity: 0.3">add_a_photo</i></p>
 
                     <h2 class="h3">Let's get started, upload a video</h2>
 
@@ -20,8 +22,9 @@
                             <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal"><i
                                     class="material-icons align-middle">backup</i>
                                 Upload Video</a>
-                                <a href="{% url 'channel-manager-sync' %}" class="btn btn-secondary"><i class="material-icons align-middle">sync</i>
-                                    Sync YouTube Videos</a>
+                            <a href="{% url 'channel-manager-sync' %}" class="btn btn-secondary"><i
+                                    class="material-icons align-middle">sync</i>
+                                Sync YouTube Videos</a>
                         </div>
                     </div>
 
