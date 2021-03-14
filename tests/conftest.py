@@ -219,7 +219,7 @@ def simple_uploaded_file_factory():
 
 @pytest.fixture
 def upload_factory(request):
-    def make(video_path=VIDEO_PATH_2160_30FPS, channel=None):
+    def make(video_path=VIDEO_PATH_2160_30FPS, channel=None, status=None):
         with video_path.open('rb') as file_:
             file_contents = file_.read()
         channel = channel or request.getfixturevalue('channel')
@@ -232,6 +232,7 @@ def upload_factory(request):
             media_type='video',
             file=SimpleUploadedFile(video_path.name, file_contents),
             channel=channel,
+            status=status,
         )
         return upload
 

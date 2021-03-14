@@ -321,7 +321,6 @@ def get_videos(channel_id=None, user_id=None):
 
 
 def get_uploads_processing(channel_id, user_id):
-    # TODO: test
     statuses = ('processing', 'processing_viewable', 'uploaded')
     return models.Upload.objects.filter(
         channel_id=channel_id,

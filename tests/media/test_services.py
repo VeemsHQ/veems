@@ -850,3 +850,32 @@ def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
     metadata = services.get_metadata(thumbnail_path)
     assert metadata['summary']['width'] == transcoder_profiles.Webm144p.width
     assert metadata['summary']['height'] == transcoder_profiles.Webm144p.height
+
+
+def test_get_uploads_processing(upload_factory, channel_factory, user_factory):
+    statuses = (
+        'draft',
+        'uploaded',
+        'processing',
+        'processing_viewable',
+        'completed',
+    )
+    user = user_factory()
+    channel = channel_factory(user=user)
+    channels = (channel, channel_factory(user=user_factory()))
+    for channel_ in channels:
+        for status in statuses:
+            upload_factory(status=status, channel=channel_)
+
+    results = services.get_uploads_processing(
+        channel_id=channel.id, user_id=user.id
+    )
+
+    assert results
+    assert all(u.channel.user_id == user.id for u in results)
+    assert all(u.channel_id == channel.id for u in results)
+    assert set(u.status for u in results) == {
+        'processing',
+        'processing_viewable',
+        'uploaded',
+    }
