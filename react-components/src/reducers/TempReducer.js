@@ -15,7 +15,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const queryParamUploadModalOpen = urlParams.get('display') == 'upload-modal';
 const initialStateUploadingVideo = {
     autogenThumbnailChoices: [],
-    thumbnailImage: null,
+    thumbnailImageSmallUrl: null,
     isProcessing: false,
     isUploading: true,
     isViewable: false,
@@ -99,11 +99,19 @@ export default (state = initialState, action) => {
         case SET_VIDEO_UPLOADING_FEEDBACK:
             videoId = payload[0];
             let newFeedbackForVideo = { ...state.uploadingVideos[videoId], ...payload[1] };
+            let newVideoDetailVideoItem = {
+                ...state.videoDetail.video,
+                thumbnail_image_small_url: newFeedbackForVideo.thumbnailImageSmallUrl,
+            }
             return {
                 ...state,
                 uploadingVideos: {
                     ...state.uploadingVideos,
                     [videoId]: newFeedbackForVideo,
+                },
+                videoDetail: {
+                    ...state.videoDetail,
+                    video: newVideoDetailVideoItem,
                 }
             };
         default:
