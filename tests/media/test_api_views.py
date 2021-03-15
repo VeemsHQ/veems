@@ -101,6 +101,25 @@ class TestUploadDetail:
 
         assert response.status_code == NOT_FOUND
 
+    def test_returns_404_if_video_related_to_upload_is_marked_as_deleted(
+        self,
+        api_client,
+        channel_factory,
+        upload_factory,
+        video_factory,
+    ):
+        api_client, user = api_client
+        channel = channel_factory(user=user)
+        upload = upload_factory(channel=channel)
+        upload_id = upload.id
+        video = video_factory(channel=channel, upload=upload)
+
+        services.delete_video(id=video.id)
+
+        response = api_client.get(f'/api/v1/upload/{upload_id}/')
+
+        assert response.status_code == NOT_FOUND
+
 
 class TestUploadPrepare:
     URL = '/api/v1/upload/prepare/'
