@@ -20,7 +20,6 @@ export const VideoDetailModal = ({
   onInputThumbnailChange,
   onSetExistingThumbnailAsPrimary,
 }) => {
-  console.log('>>>>> VideoDetailModal');
   const saveButtonText = videoDetailForm.isSaving ? 'Saving...' : 'Save Changes';
   let statusText = '';
   const isUploading = uploadStatus && uploadStatus.percentageUploaded < 100;
@@ -70,26 +69,15 @@ export const VideoDetailModal = ({
   }, [uploadStatus]);
 
   React.useEffect(() => {
-    if (videoDetail.video.title !== valueOrEmpty(videoDetail.video.title)) {
-      console.log('title changed');
-      setTitle(valueOrEmpty(videoDetail.video.title));
-    }
-    if (videoDetail.video.description !== valueOrEmpty(videoDetail.video.description)) {
-      console.log('desc changed');
-      setDescription(valueOrEmpty(videoDetail.video.description));
-    }
+    console.log('videoDETAIL useeffect')
+    setTitle(valueOrEmpty(videoDetail.video.title));
+    setDescription(valueOrEmpty(videoDetail.video.description));
     setTags(valueOrEmpty(videoDetail.video.tags));
     setVisibility(valueOrEmpty(videoDetail.video.visibility));
   }, [videoDetail]);
 
-  const debouncedOnFormFieldChangeCallback = async (video, data) => {
-    console.log('focus')
-    debounce((video, data) => onFormFieldChange(video, data), 2000)
-    console.log('after focus')
-  }
-
   const debouncedOnFormFieldChange = useCallback(
-    debouncedOnFormFieldChangeCallback,
+    debounce((video, data) => onFormFieldChange(video, data), 2000),
     [],
   );
 

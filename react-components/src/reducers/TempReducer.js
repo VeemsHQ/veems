@@ -99,20 +99,20 @@ export default (state = initialState, action) => {
         case SET_VIDEO_UPLOADING_FEEDBACK:
             videoId = payload[0];
             let newFeedbackForVideo = { ...state.uploadingVideos[videoId], ...payload[1] };
-            let newVideoDetailVideoItem = {
-                ...state.videoDetail.video,
-                thumbnail_image_small_url: newFeedbackForVideo.thumbnailImageSmallUrl,
-            }
+            // let newVideoDetailVideoItem = {
+            //     ...state.videoDetail.video,
+            //     thumbnail_image_small_url: newFeedbackForVideo.thumbnailImageSmallUrl,
+            // }
             return {
                 ...state,
                 uploadingVideos: {
                     ...state.uploadingVideos,
                     [videoId]: newFeedbackForVideo,
                 },
-                videoDetail: {
-                    ...state.videoDetail,
-                    video: newVideoDetailVideoItem,
-                }
+                // videoDetail: {
+                //     ...state.videoDetail,
+                //     video: newVideoDetailVideoItem,
+                // }
             };
         default:
             return state;
