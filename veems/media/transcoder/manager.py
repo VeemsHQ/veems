@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def create_transcodes(video_id):
     logger.info('Creating transcodes for video %s', video_id)
     video = services.get_video(id=video_id)
-    upload = video.upload
+    upload = video.uploads.first()
     uploaded_file = tempfile.NamedTemporaryFile(
         suffix=Path(upload.file.name).name
     )
@@ -63,7 +63,7 @@ def task_on_all_transcodes_completed(task_results, video_id, upload_id):
 def task_transcode(*args, video_id, transcode_job_id):
     logger.info('Task transcode started %s %s', video_id, transcode_job_id)
     video = services.get_video(id=video_id)
-    upload = video.upload
+    upload = video.uploads.first()
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
     if transcode_job.status == 'completed':
         logger.warning(

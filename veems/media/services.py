@@ -13,6 +13,7 @@ from imagekit.exceptions import MissingSource
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count
 from django.utils import timezone
+from django.db import transaction
 from django.core.files import File
 
 from . import models
@@ -309,8 +310,9 @@ def get_videos(channel_id=None, user_id=None):
         filters['visibility'] = 'public'
     return (
         models.Video.objects.filter(**filters)
-        .select_related('channel', 'upload')
+        .select_related('channel')
         .prefetch_related(
+            'uploads',
             'transcode_jobs',
             'likedislikes',
             'renditions',
@@ -326,7 +328,8 @@ def get_uploads_processing(channel_id, user_id):
         channel_id=channel_id,
         channel__user_id=user_id,
         status__in=statuses,
-    ).prefetch_related('video')
+        video__deleted_on__isnull=True,
+    )
 
 
 def get_popular_videos():
@@ -337,12 +340,15 @@ def get_popular_videos():
     )
 
 
+@transaction.atomic
 def create_video(*, upload, **kwargs):
-    return models.Video.objects.create(
-        upload_id=upload.id,
+    video = models.Video.objects.create(
         channel_id=upload.channel_id,
         **kwargs,
     )
+    upload.video = video
+    upload.save()
+    return video
 
 
 def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):

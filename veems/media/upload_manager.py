@@ -73,6 +73,7 @@ def prepare(*, user, filename, channel_id, num_parts):
     video = services.create_video(
         upload=upload, title=title, filename=filename
     )
+    upload.refresh_from_db()
     logger.info(
         'Done preparing upload for user %s, draft video %s', user.id, video.id
     )

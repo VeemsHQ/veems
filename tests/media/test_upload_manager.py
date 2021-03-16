@@ -29,6 +29,7 @@ def test_prepare(user, channel_factory):
     assert upload.channel == channel
     assert video.channel == channel
     assert video.filename == 'MyFile.mp4'
+    assert upload.video == video
 
 
 class TestComplete:
@@ -61,7 +62,8 @@ class TestComplete:
         assert mock_create_transcodes.called
         mock_create_transcodes.assert_called_once_with(video_id=video.id)
         video.refresh_from_db()
-        assert video.upload.status == 'completed'
+        upload.refresh_from_db()
+        assert upload.status == 'uploaded'
         assert mock_provider_complete_multipart_upload.called
         mock_provider_complete_multipart_upload.assert_called_once_with(
             Bucket=upload.file.field.storage.bucket_name,
@@ -95,10 +97,11 @@ class TestComplete:
         upload.status = 'completed'
         upload.save()
 
-        upload_manager.complete(upload_id=video.upload.id, parts=parts)
+        upload_manager.complete(upload_id=upload.id, parts=parts)
 
         assert not mock_create_transcodes.called
-        assert video.upload.status == 'completed'
+        upload.refresh_from_db()
+        assert upload.status == 'completed'
 
     def test_does_nothing_if_upload_provider_upload_id_missing(
         self,
@@ -120,7 +123,7 @@ class TestComplete:
         upload.provider_upload_id = None
         upload.save()
 
-        upload_manager.complete(upload_id=video.upload.id, parts=parts)
+        upload_manager.complete(upload_id=upload.id, parts=parts)
 
         assert not mock_create_transcodes.called
 
@@ -130,12 +133,17 @@ def test_get_presigned_upload_url(settings, user, channel_factory):
     channel = channel_factory(user=user)
     upload = models.Upload.objects.create(channel=channel, media_type='video')
 
-    signed_urls, object_key = upload_manager._get_presigned_upload_url(
+    (
+        provider_upload_id,
+        signed_urls,
+        object_key,
+    ) = upload_manager._get_presigned_upload_url(
         upload=upload,
         filename=filename,
         num_parts=5,
     )
 
+    assert provider_upload_id
     for signed_url in signed_urls:
         assert signed_url.startswith('http')
         assert 'AccessKeyId' in signed_url

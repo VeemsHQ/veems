@@ -619,7 +619,7 @@ def test_create_video(upload):
     )
 
     assert video.channel == upload.channel
-    assert video.upload == upload
+    assert video.uploads.first() == upload
     assert video.title == 'hello'
     assert video.filename == 'video.mp4'
     assert video.description is None
@@ -852,7 +852,9 @@ def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
     assert metadata['summary']['height'] == transcoder_profiles.Webm144p.height
 
 
-def test_get_uploads_processing(upload_factory, channel_factory, user_factory):
+def test_get_uploads_processing(
+    upload_factory, channel_factory, user_factory, video_factory
+):
     statuses = (
         'draft',
         'uploaded',
@@ -865,7 +867,11 @@ def test_get_uploads_processing(upload_factory, channel_factory, user_factory):
     channels = (channel, channel_factory(user=user_factory()))
     for channel_ in channels:
         for status in statuses:
-            upload_factory(status=status, channel=channel_)
+            upload = upload_factory(
+                status=status, channel=channel_, video=video_factory()
+            )
+    # Delete one of the videos, the upload for it shouldn't be returned.
+    services.delete_video(upload.video_id)
 
     results = services.get_uploads_processing(
         channel_id=channel.id, user_id=user.id
@@ -873,6 +879,7 @@ def test_get_uploads_processing(upload_factory, channel_factory, user_factory):
 
     assert results
     assert all(u.channel.user_id == user.id for u in results)
+    assert all(u.video.deleted_on is None for u in results)
     assert all(u.channel_id == channel.id for u in results)
     assert set(u.status for u in results) == {
         'processing',

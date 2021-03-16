@@ -243,7 +243,7 @@ class TestTaskTranscode:
         ]
         with source_file_path.open('rb') as file_:
             file_data = file_.read()
-        assert file_data == video.upload.file.read()
+        assert file_data == video.uploads.first().file.read()
 
     def test_does_nothing_if_transcode_job_alread_completes(
         self, video_factory, mocker
