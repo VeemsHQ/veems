@@ -70,6 +70,8 @@ export const VideoDetailModal = ({
 
   React.useEffect(() => {
     console.log('videoDETAIL useeffect')
+    console.log(videoDetail.video);
+    setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url);
     setTitle(valueOrEmpty(videoDetail.video.title));
     setDescription(valueOrEmpty(videoDetail.video.description));
     setTags(valueOrEmpty(videoDetail.video.tags));
