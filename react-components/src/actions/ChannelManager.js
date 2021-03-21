@@ -130,12 +130,16 @@ export const closeVideoDetailModal = () => async (dispatch) => {
   dispatch(_setVideoDetailModalOpen(false));
 }
 
-export const populateVideoDetail = (videoId) => async (dispatch) => {
+export const populateVideoDetail = (videoId, loadingIndication = true) => async (dispatch) => {
   console.debug('action, populateVideoDetail');
-  dispatch(_setVideoDetailIsLoading(true));
+  if (loadingIndication) {
+    dispatch(_setVideoDetailIsLoading(true));
+  }
   const { data } = await getVideoById(videoId);
   dispatch(_setVideoDetail(data));
-  dispatch(_setVideoDetailIsLoading(false));
+  if (loadingIndication) {
+    dispatch(_setVideoDetailIsLoading(false));
+  }
 };
 
 export const setActiveVideoDetailThumbnailAsPrimary = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
@@ -241,6 +245,7 @@ export const provideUploadFeedback = (videoId, uploadId, channelId) => async (di
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));
   }
+  dispatch(populateVideoDetail(videoId, false));
 }
 
 const _uploadFeedbackAutogenThumbnailChoices = (uploadFeedbackData) => {

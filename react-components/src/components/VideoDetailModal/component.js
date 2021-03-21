@@ -43,34 +43,28 @@ export const VideoDetailModal = ({
   const initialVisibility = valueOrEmpty(video.visibility);
   const filename = valueOrEmpty(video.filename);
   const initialPrimaryThumbnailUrl = (
-    (uploadStatus && uploadStatus.thumbnailImageSmallUrl) ? uploadStatus.thumbnailImageSmallUrl : video.thumbnail_image_small_url
+    (uploadStatus && uploadStatus.thumbnailImageSmallUrl) ? uploadStatus.thumbnailImageSmallUrl :
+      video.thumbnail_image_small_url
   );
-  const [isFormFieldFocussed, setIsFormFieldFocussed] = useState(false);
   const [primaryThumbnailUrl, setPrimaryThumbnailUrl] = useState(initialPrimaryThumbnailUrl);
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [tags, setTags] = useState(initialTags);
   const [visibility, setVisibility] = useState(initialVisibility);
   const autogenThumbnailChoices = (
-    (uploadStatus && uploadStatus.autogenThumbnailChoices) ? uploadStatus.autogenThumbnailChoices : videoDetail.autogenThumbnailChoices
+    (uploadStatus && uploadStatus.autogenThumbnailChoices) ? uploadStatus.autogenThumbnailChoices :
+      videoDetail.autogenThumbnailChoices
   );
 
   React.useEffect(() => {
-    console.log('uploadStatus useeffect')
-    // setTitle(valueOrEmpty(video.title));
-    // setDescription(valueOrEmpty(video.description));
-    // setTags(valueOrEmpty(video.tags));
-    // setVisibility(valueOrEmpty(video.visibility));
     if (uploadStatus && uploadStatus.isProcessing) {
+      console.debug('Set video thumb from Upload Status');
       setPrimaryThumbnailUrl(uploadStatus.thumbnailImageSmallUrl)
-    } else {
-      setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url)
     }
   }, [uploadStatus]);
 
   React.useEffect(() => {
-    console.log('videoDETAIL useeffect')
-    console.log(videoDetail.video);
+    console.debug('Set video data from Video Data');
     setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url);
     setTitle(valueOrEmpty(videoDetail.video.title));
     setDescription(valueOrEmpty(videoDetail.video.description));
@@ -117,13 +111,10 @@ export const VideoDetailModal = ({
   const renderModal = () => (
     <Modal show={isModalOpen} onShow={() => onModalOpen(videoId)} onHide={onModalClose()}>
       <Form>
-
         <Modal.Header closeButton>
           {videoDetailForm.isLoading && (<Modal.Title className="w-100"><div className="shine d-block w-75" style={{ height: '30px' }} /></Modal.Title>)}
           {!videoDetailForm.isLoading && (<Modal.Title>Video Details</Modal.Title>)}
-
         </Modal.Header>
-
         <Modal.Body>
           {videoDetailForm.isLoading && (
             <div className="row">
@@ -137,7 +128,6 @@ export const VideoDetailModal = ({
 
               </div>
               <div className="col-12 col-lg-4">
-
                 <div className="card" style={{ width: '18rem' }}>
                   <div
                     className="card-img-top shine d-flex align-items-center justify-content-center"
@@ -197,7 +187,7 @@ export const VideoDetailModal = ({
                           <button type="button" className="thumbnail thumbnail-small thumbnail-selected mr-2 rounded d-flex align-items-center">
                             <img
                               src={primaryThumbnailUrl}
-                              alt="Thumbnail"
+                              alt="Primary Thumbnail"
                               className="img-fluid h-100"
                             />
                           </button>
