@@ -28,16 +28,4 @@ export const SelectActiveChannelDropdown = ({
   );
 };
 
-// SelectActiveChannelDropdown.propTypes = {
-//   activeID: PropTypes.string,
-//   channels: PropTypes.arrayOf(PropTypes.shape()),
-//   onSelectChannel: PropTypes.func,
-// };
-
-// SelectActiveChannelDropdown.defaultProps = {
-//   activeID: '',
-//   onSelectChannel: () => { Error('No callback defined for SelectActiveChannelDropdown'); },
-//   channels: [],
-// };
-
 export default SelectActiveChannelDropdown;
