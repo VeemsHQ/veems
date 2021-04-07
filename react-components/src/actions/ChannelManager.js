@@ -111,7 +111,7 @@ export const updateVideoMetadata = (videoId, updatedFields) => async (dispatch) 
       }));
       // setApiErrors(null);
       dispatch(_setVideoDetail(data));
-      dispatch(fetchActiveChannelVideos(data.channel_id, true));
+      dispatch(fetchActiveChannelVideos(data.channel_id, false));
     }
   }
   dispatch(_setVideoDetailIsSaving(false));
@@ -120,6 +120,7 @@ export const updateVideoMetadata = (videoId, updatedFields) => async (dispatch) 
 export const openVideoDetailModal = (videoId, isFileSelectorVisible = false) => async (dispatch) => {
   console.debug('action, openVideoDetailModal');
   if (videoId) {
+    dispatch(_setActiveVideoId(videoId));
     dispatch(populateVideoDetail(videoId));
   }
   dispatch(_setVideoDetailFileSelectorIsVisible(isFileSelectorVisible));
@@ -142,13 +143,19 @@ export const populateVideoDetail = (videoId, loadingIndication = true) => async 
   }
 };
 
+export const _setActiveVideoId = (videoId) => async (dispatch) => {
+  console.debug('action, setActiveVideoId');
+  const data = {id: videoId}
+  dispatch(_setVideoDetail(data));
+};
+
 export const setActiveVideoDetailThumbnailAsPrimary = (videoId, videoRenditionThumbnailId) => async (dispatch) => {
   console.debug('action, setActiveVideoDetailThumbnailAsPrimary');
   dispatch(_setVideoThumbnailUploading(true));
   const { data } = await setExistingThumbnailAsPrimary(videoId, videoRenditionThumbnailId);
   dispatch(_setVideoDetail(data));
   dispatch(_setVideoThumbnailUploading(false));
-  dispatch(fetchActiveChannelVideos(data.channel_id, true));
+  dispatch(fetchActiveChannelVideos(data.channel_id, false));
 };
 
 const _updateUploadProgressCallback = async (videoId, percentageDone) => {
@@ -193,7 +200,7 @@ export const startVideoUpload = (channelId, file) => async (dispatch, getState) 
     console.error('UPLOAD FAILED');
   } else {
     dispatch({ type: aTypes.START_VIDEO_UPLOADING, payload: data.video_id });
-    dispatch(fetchActiveChannelVideos(channelId, true));
+    dispatch(fetchActiveChannelVideos(channelId, false));
     dispatch(populateVideoDetail(data.video_id));
     dispatch(provideUploadFeedback(data.video_id, data.upload_id, channelId));
     dispatch(_setVideoDetailFileSelectorIsVisible(false));
@@ -245,6 +252,7 @@ export const provideUploadFeedback = (videoId, uploadId, channelId) => async (di
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));
   }
+  // TODO: check if this videoId is still the active one.
   dispatch(populateVideoDetail(videoId, false));
 }
 

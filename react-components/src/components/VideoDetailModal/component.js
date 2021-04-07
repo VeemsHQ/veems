@@ -64,12 +64,15 @@ export const VideoDetailModal = ({
   }, [uploadStatus]);
 
   React.useEffect(() => {
-    console.debug('Set video data from Video Data');
-    setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url);
-    setTitle(valueOrEmpty(videoDetail.video.title));
-    setDescription(valueOrEmpty(videoDetail.video.description));
-    setTags(valueOrEmpty(videoDetail.video.tags));
-    setVisibility(valueOrEmpty(videoDetail.video.visibility));
+    if (Object.entries(videoDetail.video)) {
+      setPrimaryThumbnailUrl(videoDetail.video.thumbnail_image_small_url);
+      setTitle(valueOrEmpty(videoDetail.video.title));
+      setDescription(valueOrEmpty(videoDetail.video.description));
+      setTags(valueOrEmpty(videoDetail.video.tags));
+      setVisibility(valueOrEmpty(videoDetail.video.visibility));
+    } else {
+      console.debug('Skip Set video data from Video Data, video not set');
+    }
   }, [videoDetail]);
 
   const debouncedOnFormFieldChange = useCallback(

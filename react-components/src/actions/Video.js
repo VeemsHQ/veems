@@ -80,7 +80,7 @@ export const setVideoCustomThumbnail = (channelId, videoId, file) => async (disp
     console.debug('action, setVideoCustomThumbnail');
     dispatch(_setVideoThumbnailUploading(true));
     await updateVideoCustomThumbnail(videoId, file);
-    dispatch(populateVideoDetail(videoId));
+    dispatch(populateVideoDetail(videoId, false));
     dispatch(_setVideoThumbnailUploading(false));
     dispatch(fetchActiveChannelVideos(channelId, true));
     dispatch(createToast({
