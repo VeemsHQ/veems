@@ -70,7 +70,6 @@ const Container = ({
       <FileUploadChooseModal
         isFileSelected={videoDetailForm.isFileSelected}
         onFileSelect={handleFileSelect}
-        // onModalClose={() => setIsChooseFileUploadModalOpen(false)}
         isModalOpen={isModalOpen}
         channels={channels}
         channelId={channelId}
