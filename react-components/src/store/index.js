@@ -10,7 +10,7 @@ const staticAssetsAuthTokenTimeout = 604800;
 
 
 // todo: remove when not in dev. Add proper dev check.
-const composeEnhancers = window.__RED
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   // eslint-disable-next-line no-mixed-operators
   && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
     trace: true,
