@@ -1,4 +1,4 @@
-django==3.1.6
+django==3.1.7
 amqp==5.0.2
 celery[redis,rabbitmq]==5.0.5
 psycopg2-binary==2.8.6
