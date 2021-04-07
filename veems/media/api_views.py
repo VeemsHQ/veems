@@ -3,7 +3,6 @@ from pathlib import Path
 from http.client import CREATED, BAD_REQUEST, OK, NO_CONTENT
 
 from django.http import HttpResponse, Http404
-from django.http.response import Http404
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
