@@ -8,6 +8,8 @@ import {
     SET_VIDEO_THUMBNAIL_UPLOADING,
     SET_VIDEO_DETAIL_IS_LOADING,
     SET_VIDEO_DETAIL_IS_SAVING,
+    SET_ACTIVE_CHANNEL_VIDEOS,
+    SET_ACTIVE_CHANNEL_VIDEOS_LOADING,
 } from '../actions/ActionTypes';
 import { randomItem } from '../utils';
 
@@ -20,6 +22,8 @@ const initialStateUploadingVideo = {
     isUploading: true,
     isViewable: false,
     percentageUploaded: 0,
+    activeChannelVideos: null,
+    activeChannelVideosLoading: false,
 }
 export const initialState = {
     uploadingVideos: {
@@ -46,6 +50,10 @@ export default (state = initialState, action) => {
     let videoId = null;
 
     switch (type) {
+        case SET_ACTIVE_CHANNEL_VIDEOS:
+          return { ...state, activeChannelVideos: payload };
+        case SET_ACTIVE_CHANNEL_VIDEOS_LOADING:
+          return { ...state, activeChannelVideosLoading: payload };
         case SET_VIDEO_DETAIL_MODAL_OPEN:
             if (payload === false) {
                 // On modal close, clear all related state.

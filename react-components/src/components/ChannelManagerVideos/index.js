@@ -95,11 +95,11 @@ const mapStateToProps = (state, ownProps) => {
   } else {
     channels = state.channels.channels;
   }
-  if (!state.channels.activeChannelVideos) {
+  if (!state.temp.activeChannelVideos) {
     videos = ownProps.videos;
     propsSetFromHtmlContextVars = true;
   } else {
-    videos = state.channels.activeChannelVideos;
+    videos = state.temp.activeChannelVideos;
   }
   if (!state.channels.activeChannelId) {
     channelId = ownProps.channelId;
@@ -110,7 +110,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     videos: videos,
     uploadsProcessing: ownProps.uploadsProcessing,
-    isLoading: state.channels.activeChannelVideosLoading,
+    isLoading: state.temp.activeChannelVideosLoading,
     channelId: channelId,
     channels: channels,
     propsSetFromServerValues: propsSetFromHtmlContextVars,

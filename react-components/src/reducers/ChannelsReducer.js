@@ -2,16 +2,12 @@ import {
   SET_ACTIVE_CHANNEL_ID,
   SET_CHANNEL_SYNC_MODAL_OPEN,
   SET_CHANNELS,
-  SET_ACTIVE_CHANNEL_VIDEOS,
-  SET_ACTIVE_CHANNEL_VIDEOS_LOADING,
   SET_CREATE_CHANNEL_API_ERRORS,
   SET_CREATE_CHANNEL_SHOW_MODAL,
 } from '../actions/ActionTypes';
 
 export const initialState = {
   activeChannelId: null,
-  activeChannelVideos: null,
-  activeChannelVideosLoading: false,
   isChannelSyncModalOpen: false,
   channels: [],
   createChannelForm: {
@@ -26,11 +22,6 @@ export default (state = initialState, action) => {
   switch (type) {
     case SET_ACTIVE_CHANNEL_ID:
       return { ...state, activeChannelId: payload };
-    case SET_ACTIVE_CHANNEL_VIDEOS:
-      // TODO: Move into Temp
-      return { ...state, activeChannelVideos: payload };
-    case SET_ACTIVE_CHANNEL_VIDEOS_LOADING:
-      return { ...state, activeChannelVideosLoading: payload };
     case SET_CHANNEL_SYNC_MODAL_OPEN:
       return { ...state, isChannelSyncModalOpen: payload };
     case SET_CHANNELS:
