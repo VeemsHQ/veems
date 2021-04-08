@@ -21,6 +21,7 @@ import {
 } from '../../actions/index';
 
 const { store, persistor } = configureStore.getInstance();
+const UPLOAD_MAX_BYTES = 5000000000;
 
 const Container = ({
   videoId, videoDetail, channelId,
@@ -60,10 +61,18 @@ const Container = ({
 
   const handleFileSelect = async (acceptedFiles) => {
     console.debug('Video file was selected, starting upload...')
-    // TODO: validate only one file is selected.
-    // TODO: validate it's a video file.
-    // TODO: validate file size.
-    startVideoUpload(channelId, acceptedFiles[0]);
+    if (acceptedFiles.length == 1) {
+      var file = acceptedFiles[0];
+      if (file.size > UPLOAD_MAX_BYTES) {
+        alert('That file is too large. The maximum permitted size is 5 gigabytes.');
+      } else if (!file.type.startsWith('video/')) {
+        alert('The file you selected is not a video file.');
+      } else {
+        startVideoUpload(channelId, acceptedFiles[0]);
+      }
+    } else {
+      alert('You may only upload one video file at a time.');
+    }
   }
   if (videoDetailForm.isFileSelectorVisible === true) {
     return (

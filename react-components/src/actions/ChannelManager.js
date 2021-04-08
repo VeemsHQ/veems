@@ -252,7 +252,6 @@ export const provideUploadFeedback = (videoId, uploadId, channelId) => async (di
     }
     await new Promise((r) => setTimeout(r, delayBetweenChecks));
   }
-  // TODO: check if this videoId is still the active one.
   dispatch(populateVideoDetail(videoId, false));
 }
 

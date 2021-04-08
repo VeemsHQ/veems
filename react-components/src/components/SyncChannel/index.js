@@ -12,9 +12,6 @@ import {
   setChannelSyncModalOpen,
 } from '../../actions/index';
 
-// TODO: Call API
-// import { syncChannelRequest } from '../../api/api';
-
 const { store, persistor } = configureStore.getInstance();
 
 const Container = ({
