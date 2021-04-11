@@ -162,7 +162,7 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     assert result == exp_result
 
 
-@pytest.mark.xfail
+# @pytest.mark.xfail
 @pytest.mark.parametrize(
     'video_filename, exp_profiles',
     [
@@ -186,7 +186,7 @@ def test_transcode_profile_does_apply(video_filename, profile_cls, exp_result):
     ],
 )
 def test_create_transcodes(
-    video_filename, exp_profiles, video_factory, mocker, settings
+    video_filename, exp_profiles, video_factory, settings
 ):
     settings.CELERY_TASK_ALWAYS_EAGER = True
     video = video_factory(video_path=video_filename)
@@ -203,14 +203,15 @@ def test_create_transcodes(
         assert video_rendition.playlist_file
 
     exp_num_jobs = len(exp_profiles)
-    executed_profiles = tuple(
+    executed_profiles = set(
         models.TranscodeJob.objects.values_list('profile', flat=True)
     )
     assert (
         models.TranscodeJob.objects.filter(status='completed').count()
         == exp_num_jobs
     )
-    assert executed_profiles == exp_profiles
+    assert executed_profiles == set(exp_profiles)
+    assert video.uploads.first().status == 'completed'
 
 
 class TestTaskTranscode:
@@ -243,7 +244,9 @@ class TestTaskTranscode:
         ]
         with source_file_path.open('rb') as file_:
             file_data = file_.read()
-        assert file_data == video.uploads.first().file.read()
+        upload = video.uploads.first()
+        assert file_data == upload.file.read()
+        assert upload.status == 'processing_viewable'
 
     def test_does_nothing_if_transcode_job_alread_completes(
         self, video_factory, mocker
