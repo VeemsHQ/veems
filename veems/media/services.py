@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_upload(**kwargs):
-    # TODO: test
     return models.Upload.objects.get(**kwargs)
 
 
@@ -98,7 +97,6 @@ def mark_video_as_viewable(*, video):
 
 
 def set_upload_status(*, upload, status):
-    # TODO: test
     upload.status = status
     upload.save(update_fields=('status',))
     upload.refresh_from_db()
@@ -224,7 +222,7 @@ def get_metadata(video_path):
             try:
                 duration_secs = float(probe_data['format']['duration'])
             except KeyError:
-                # TODO: test, its img
+                # Occurs when you pass this func an image.
                 duration_secs = None
         else:
             struct_time = time.strptime(duration_str, '%H:%M:%S')
@@ -252,7 +250,7 @@ def get_metadata(video_path):
     try:
         bit_rate = int(format_['bit_rate'])
     except KeyError:
-        # TODO: test, its img
+        # Occurs when you pass this func an image.
         bit_rate = 0
     summary = {
         'width': int(video_stream['width']),
@@ -263,7 +261,6 @@ def get_metadata(video_path):
         'audio_codec': audio_codec_name,
         'file_size': int(format_['size']),
         'video_aspect_ratio': video_stream.get('display_aspect_ratio'),
-        # TODO: fails on images, make func for images
         'video_bit_rate': bit_rate,
     }
     return {
