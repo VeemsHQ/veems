@@ -898,7 +898,7 @@ class TestVideo:
             assert video == expected_video_resp_json
             assert video['channel_id'] == channel.id
         # Since auth'd user owns this channel, all visibilities returned
-        assert tuple(r['visibility'] for r in resp_json) == visibilities
+        assert set(r['visibility'] for r in resp_json) == set(visibilities)
 
 
 class TestVideoThumbnailSelectAPIView:

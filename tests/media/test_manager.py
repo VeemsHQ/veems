@@ -266,3 +266,7 @@ class TestTaskTranscode:
         )
 
         assert not mock_executor.transcode.called
+
+
+def test_task_on_all_transcodes_completed():
+    pass
