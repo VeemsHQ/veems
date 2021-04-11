@@ -125,5 +125,5 @@ def complete(*, upload_id, parts):
     logger.info(
         'Completed Upload %s, transcoding started for video %s',
         upload.id,
-        upload.video.id,
+        upload.video_id,
     )
