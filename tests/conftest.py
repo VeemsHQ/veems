@@ -358,11 +358,11 @@ def rendition_thumbnails_factory(
             metadata={'example': 'metadata'},
         )
         thumbnails = []
-        for _ in range(num_thumbnails):
+        for idx in range(num_thumbnails):
             video_rendition_thumbnail = (
                 models.VideoRenditionThumbnail.objects.create(
                     video_rendition=video_rendition,
-                    time_offset_secs=1,
+                    time_offset_secs=1 + (idx * 10),
                     height=height,
                     width=width,
                     ext='.jpg',
