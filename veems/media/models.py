@@ -257,7 +257,7 @@ class Upload(BaseModel):
         blank=True,
     )
     presigned_upload_urls = ArrayField(
-        models.URLField(max_length=500), null=True
+        models.URLField(max_length=500), null=False, default=list,
     )
     # The upload_id within the Object Storage backend itself.
     provider_upload_id = models.CharField(
