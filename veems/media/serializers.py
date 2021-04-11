@@ -126,7 +126,6 @@ class UploadSerializer(CustomModelSerializer):
         }
 
 
-
 class UploadSummarySerializer(UploadSerializer):
     class Meta:
         model = UploadSerializer.Meta.model

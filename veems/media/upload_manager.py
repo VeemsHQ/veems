@@ -109,7 +109,6 @@ def complete(*, upload_id, parts):
         )
         return None
 
-    # TODO: verify response
     _provider().complete_multipart_upload(
         Bucket=bucket_name,
         Key=object_name,
@@ -122,16 +121,9 @@ def complete(*, upload_id, parts):
         UploadId=provider_upload_id,
     )
     transcode_manager.create_transcodes(video_id=upload.video.id)
-    # TODO: test
     services.set_upload_status(upload=upload, status='uploaded')
-    # _mark_upload_completed(upload)
     logger.info(
         'Completed Upload %s, transcoding started for video %s',
         upload.id,
         upload.video.id,
     )
-
-
-def _mark_upload_completed(upload):
-    upload.status = 'completed'
-    upload.save(update_fields=('status',))
