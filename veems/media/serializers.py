@@ -234,7 +234,6 @@ class VideoSerializer(CustomModelSerializer):
 
     def get_created_date_human(self, instance):
         return instance.created_on.strftime('%d %b %Y')
-        return naturalday(instance.created_on.date())
 
     def get_upload(self, instance):
         return instance.uploads.first().id
