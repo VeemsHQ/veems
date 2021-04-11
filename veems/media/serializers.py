@@ -126,6 +126,19 @@ class UploadSerializer(CustomModelSerializer):
         }
 
 
+
+class UploadSummarySerializer(UploadSerializer):
+    class Meta:
+        model = UploadSerializer.Meta.model
+        fields = [
+            'id',
+            'channel_id',
+            'video_id',
+            'status',
+        ]
+        extra_kwargs = UploadSerializer.Meta.extra_kwargs
+
+
 class VideoRenditionSerializer(CustomModelSerializer):
     rendition_thumbnails = VideoRenditionThumbnailSerializer(
         many=True, read_only=True
