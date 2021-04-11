@@ -33,7 +33,7 @@ make-buckets-remote:
 
 .ONESHELL:
 start-deps-remote:
-	docker-compose up -d postgres rabbit localstack
+	docker-compose up -d postgres rabbit localstack redis
 
 .ONESHELL:
 start-deps:
