@@ -268,5 +268,15 @@ class TestTaskTranscode:
         assert not mock_executor.transcode.called
 
 
-def test_task_on_all_transcodes_completed():
-    pass
+def test_task_on_all_transcodes_completed(upload_factory, video, mocker):
+    upload = upload_factory(video=video)
+    assert upload.status != 'completed'
+
+    manager.task_on_all_transcodes_completed(
+        task_results=[mocker.Mock()],
+        video_id=video.id,
+        upload_id=upload.id,
+    )
+
+    upload.refresh_from_db()
+    assert upload.status == 'completed'
