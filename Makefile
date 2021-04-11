@@ -27,7 +27,7 @@ install:
 	pip install -r requirements-dev.txt
 
 .ONESHELL:
-make-buckets-remote:
+make-buckets:
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC} || true
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
@@ -43,7 +43,7 @@ start-deps:
 
 .ONESHELL:
 .PHONY: seed
-seed: install make-buckets-remote
+seed: install make-buckets
 	python manage.py flush --noinput
 	python manage.py import_seed_data
 
