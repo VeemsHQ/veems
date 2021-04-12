@@ -6,8 +6,9 @@ lint:
 .ONESHELL:
 .PHONY: test
 test: install lint
-	pytest -n auto -k 'TestTranscode' -vvv
 	pytest -n auto -k 'not TestTranscode' -vvv
+	make start-deps
+	pytest -n auto -k 'TestTranscode' -vvv
 
 .ONESHELL:
 .PHONY: test-js

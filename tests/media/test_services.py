@@ -535,23 +535,12 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
 
 
 def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
-    video, video_renditions_to_create = video_with_renditions_and_segments
+    video, _ = video_with_renditions_and_segments
 
     playlists = services._get_rendition_playlists(video_record=video)
 
     assert len(playlists) == 2
     exp_playlists = [
-        {
-            'height': 360,
-            'playlist_url': mocker.ANY,
-            'width': 640,
-            'name': 'webm_360p',
-            'profile': 'webm_360p',
-            'resolution': '640x360',
-            'bandwidth': 182464,
-            'frame_rate': 30,
-            'codecs_string': 'avc1.640028,mp4a.40.2',
-        },
         {
             'height': 1080,
             'playlist_url': mocker.ANY,
@@ -560,6 +549,17 @@ def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
             'profile': 'webm_1080p',
             'resolution': '1920x1080',
             'bandwidth': 5127303,
+            'frame_rate': 30,
+            'codecs_string': 'avc1.640028,mp4a.40.2',
+        },
+        {
+            'height': 360,
+            'playlist_url': mocker.ANY,
+            'width': 640,
+            'name': 'webm_360p',
+            'profile': 'webm_360p',
+            'resolution': '640x360',
+            'bandwidth': 182464,
             'frame_rate': 30,
             'codecs_string': 'avc1.640028,mp4a.40.2',
         },
@@ -589,8 +589,8 @@ class TestGeneratePlaylist:
             'playlists': [
                 {
                     'stream_info': {
-                        'bandwidth': 182464,
-                        'resolution': '640x360',
+                        'bandwidth': 5127303,
+                        'resolution': '1920x1080',
                         'closed_captions': 'NONE',
                         'codecs': 'avc1.640028,mp4a.40.2',
                         'program_id': 1,
@@ -599,8 +599,8 @@ class TestGeneratePlaylist:
                 },
                 {
                     'stream_info': {
-                        'bandwidth': 5127303,
-                        'resolution': '1920x1080',
+                        'bandwidth': 182464,
+                        'resolution': '640x360',
                         'closed_captions': 'NONE',
                         'codecs': 'avc1.640028,mp4a.40.2',
                         'program_id': 1,
