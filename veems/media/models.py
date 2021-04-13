@@ -202,6 +202,32 @@ class Video(BaseModel):
             f'{self.id} {self.channel_id} {self.title}>'
         )
 
+
+    def clean(self):
+        super().clean()
+        if self.custom_thumbnail_image:
+            from PIL import Image, ImageOps
+            from django.core.files.uploadedfile import SimpleUploadedFile
+
+
+            file = self.custom_thumbnail_image.file
+            from io import BytesIO
+
+            original = Image.open(self.custom_thumbnail_image.file)
+            # rotate image to correct orientation before removing EXIF data
+            original = ImageOps.exif_transpose(original)
+            # create output image, forgetting the EXIF metadata
+            stripped = Image.new(original.mode, original.size)
+            stripped.putdata(list(original.getdata()))
+            from django.core.files.base import ContentFile
+
+            result_file = ContentFile(stripped.tobytes())
+            self.custom_thumbnail_image.save(file.name, result_file)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
     @property
     def thumbnail_image_small_url(self):
         if not self.custom_thumbnail_image_small:
@@ -257,7 +283,9 @@ class Upload(BaseModel):
         blank=True,
     )
     presigned_upload_urls = ArrayField(
-        models.URLField(max_length=500), null=False, default=list,
+        models.URLField(max_length=500),
+        null=False,
+        default=list,
     )
     # The upload_id within the Object Storage backend itself.
     provider_upload_id = models.CharField(

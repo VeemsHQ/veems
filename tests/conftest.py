@@ -18,6 +18,7 @@ from tests import constants
 
 TEST_DATA_DIR = Path(__file__).parent / 'test_data'
 EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
+EXAMPLE_IMG_EXIF_GPS = TEST_DATA_DIR / 'image-with-exif-gps.jpg'
 VIDEO_PATH = constants.VID_360P_24FPS
 VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
 
@@ -27,6 +28,16 @@ def simple_uploaded_img_file():
     with EXAMPLE_IMG.open('rb') as file_:
         file_contents = file_.read()
     return SimpleUploadedFile(EXAMPLE_IMG.name, file_contents)
+
+
+@pytest.fixture
+def uploaded_img_with_exif():
+    with EXAMPLE_IMG_EXIF_GPS.open('rb') as file_:
+        file_contents = file_.read()
+    return (
+        SimpleUploadedFile(EXAMPLE_IMG_EXIF_GPS.name, file_contents),
+        EXAMPLE_IMG_EXIF_GPS,
+    )
 
 
 @pytest.fixture
