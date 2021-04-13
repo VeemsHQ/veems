@@ -8,7 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
 import {
-  removeToastAction,
+  removeToast,
 } from '../../actions/index';
 
 const { store, persistor } = configureStore.getInstance();
@@ -76,7 +76,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    removeToast: removeToastAction,
+    removeToast: removeToast,
   }, dispatch),
 });
 

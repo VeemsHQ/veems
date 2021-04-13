@@ -2,14 +2,14 @@ import axios from 'axios';
 import { configureStore } from '../store';
 import { MSG_SERVER_ERROR } from '../constants';
 import {
-  createToastAction,
+  createToast,
 } from '../actions/index';
 
 const { store } = configureStore.getInstance();
 
 const handleError = (error) => {
-  if (error.response.status >= 500) {
-    store.dispatch(createToastAction({
+  if (error.response === undefined || error.response.status >= 500) {
+    store.dispatch(createToast({
       header: 'Oops',
       body: MSG_SERVER_ERROR,
       isError: true,
@@ -18,7 +18,7 @@ const handleError = (error) => {
 };
 
 export const API = axios.create({
-  timeout: 5000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     'X-CSRFTOKEN': window.CSRF_TOKEN,
@@ -29,7 +29,7 @@ export const API = axios.create({
   transformResponse: axios.defaults.transformResponse.concat((data) => data),
 });
 const API_MULTIPART = axios.create({
-  timeout: 50000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'multipart/form-data',
     'X-CSRFTOKEN': window.CSRF_TOKEN,
@@ -86,6 +86,16 @@ export const getVideoById = async (videoId) => {
   }
 };
 
+export const getUploadById = async (uploadId) => {
+  try {
+    const res = await API.get(`${serverURL}/api/v1/upload/${uploadId}/`);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+};
+
 export const deleteVideo = async (videoId) => {
   try {
     const res = await API.delete(`${serverURL}/api/v1/video/${videoId}/`);
@@ -105,6 +115,48 @@ export const updateVideo = async (videoId, data) => {
     return err;
   }
 };
+
+export const uploadPrepare = async (channelId, filename, numParts) => {
+  const url = '/api/v1/upload/prepare/'
+  const data = { channel_id: channelId, filename: filename, num_parts: numParts };
+  try {
+    const res = await API.put(url, data);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+}
+
+export const uploadComplete = async (uploadId, parts) => {
+  const url = `/api/v1/upload/complete/${uploadId}/`
+  const data = { parts: parts };
+  try {
+    const res = await API.put(url, data);
+    return res;
+  } catch (err) {
+    handleError(err);
+    return err;
+  }
+}
+
+
+export const uploadVideoParts = async (videoId, presignedUploadUrls, file, numParts, fileSize, chunkSize, progressCallback) => {
+  let parts = [];
+  for (let idx = 0; idx < numParts; idx++) {
+    const startByte = chunkSize * idx;
+    const stopByte = Math.min(startByte + chunkSize, fileSize);
+    const url = presignedUploadUrls[idx];
+    var axiosInstance = axios.create();
+    delete axiosInstance.defaults.headers.put['Content-Type']
+    const body = file.slice(startByte, stopByte);
+    const res = await axiosInstance.put(url, body);
+    const percentageComplete = Math.round(100 * idx / (numParts - 1));
+    progressCallback(videoId, percentageComplete)
+    parts.push({ etag: res.headers.etag, part_number: idx + 1 });
+  }
+  return parts;
+}
 
 export const setExistingThumbnailAsPrimary = async (videoId, videoRenditionThumbnailId) => {
   try {

@@ -13,6 +13,7 @@ from imagekit.exceptions import MissingSource
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count
 from django.utils import timezone
+from django.db import transaction
 from django.core.files import File
 
 from . import models
@@ -20,6 +21,10 @@ from ..channel import services as channel_services
 from .transcoder import transcoder_profiles
 
 logger = logging.getLogger(__name__)
+
+
+def get_upload(**kwargs):
+    return models.Upload.objects.get(**kwargs)
 
 
 def _get_rendition_playlists(video_record):
@@ -89,6 +94,13 @@ def mark_video_as_viewable(*, video):
     video.save(update_fields=('is_viewable',))
     video.refresh_from_db()
     return video
+
+
+def set_upload_status(*, upload, status):
+    upload.status = status
+    upload.save(update_fields=('status',))
+    upload.refresh_from_db()
+    return upload
 
 
 def mark_transcode_job_failed(*, transcode_job, failure_context=None):
@@ -207,7 +219,11 @@ def get_metadata(video_path):
         try:
             duration_str = video_stream['tags']['DURATION'].split('.')[0]
         except KeyError:
-            duration_secs = float(probe_data['format']['duration'])
+            try:
+                duration_secs = float(probe_data['format']['duration'])
+            except KeyError:
+                # Occurs when you pass this func an image.
+                duration_secs = None
         else:
             struct_time = time.strptime(duration_str, '%H:%M:%S')
             hours = struct_time.tm_hour * 3600
@@ -231,6 +247,11 @@ def get_metadata(video_path):
         audio_codec_name = audio_stream['codec_name']
     except TypeError:
         audio_codec_name = None
+    try:
+        bit_rate = int(format_['bit_rate'])
+    except KeyError:
+        # Occurs when you pass this func an image.
+        bit_rate = 0
     summary = {
         'width': int(video_stream['width']),
         'height': int(video_stream['height']),
@@ -240,7 +261,7 @@ def get_metadata(video_path):
         'audio_codec': audio_codec_name,
         'file_size': int(format_['size']),
         'video_aspect_ratio': video_stream.get('display_aspect_ratio'),
-        'video_bit_rate': int(format_['bit_rate']),
+        'video_bit_rate': bit_rate,
     }
     return {
         'video_stream': video_stream,
@@ -284,21 +305,47 @@ def get_videos(channel_id=None, user_id=None):
             only_return_public = False
     if only_return_public:
         filters['visibility'] = 'public'
-    return models.Video.objects.filter(**filters)
+    return (
+        models.Video.objects.filter(**filters)
+        .select_related('channel')
+        .prefetch_related(
+            'uploads',
+            'transcode_jobs',
+            'likedislikes',
+            'renditions',
+            'renditions__rendition_segments',
+            'renditions__rendition_thumbnails',
+        )
+    )
+
+
+def get_uploads_processing(channel_id, user_id):
+    statuses = ('processing', 'processing_viewable', 'uploaded')
+    return models.Upload.objects.filter(
+        channel_id=channel_id,
+        channel__user_id=user_id,
+        status__in=statuses,
+        video__deleted_on__isnull=True,
+    )
 
 
 def get_popular_videos():
-    return models.Video.objects.filter(
-        is_viewable=True, visibility='public'
-    ).order_by('-created_on')
+    return (
+        models.Video.objects.filter(is_viewable=True, visibility='public')
+        .select_related('channel')
+        .order_by('-created_on')
+    )
 
 
+@transaction.atomic
 def create_video(*, upload, **kwargs):
-    return models.Video.objects.create(
-        upload_id=upload.id,
+    video = models.Video.objects.create(
         channel_id=upload.channel_id,
         **kwargs,
     )
+    upload.video = video
+    upload.save()
+    return video
 
 
 def set_video_default_thumbnail_image(*, video_record, thumbnail_paths):

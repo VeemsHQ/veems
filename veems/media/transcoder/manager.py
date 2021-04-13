@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def create_transcodes(video_id):
     logger.info('Creating transcodes for video %s', video_id)
     video = services.get_video(id=video_id)
-    upload = video.upload
+    upload = video.uploads.first()
     uploaded_file = tempfile.NamedTemporaryFile(
         suffix=Path(upload.file.name).name
     )
@@ -33,6 +33,8 @@ def create_transcodes(video_id):
                 status='created',
             ).id
             task_transcode_args.append((video.id, transcode_job_id))
+
+    services.set_upload_status(upload=upload, status='processing')
     tasks = [
         task_transcode.s(video_id=video_id, transcode_job_id=transcode_job_id)
         for video_id, transcode_job_id in task_transcode_args
@@ -40,15 +42,17 @@ def create_transcodes(video_id):
     logger.info(
         'Created %s transcode tasks for video %s', len(tasks), video_id
     )
-    callback = task_on_all_transcodes_completed.s(video.id)
+    callback = task_on_all_transcodes_completed.s(video.id, upload.id)
     async_result = chord(tasks, callback).delay()
     return async_result
 
 
 @async_task()
-def task_on_all_transcodes_completed(task_results, video_id):
+def task_on_all_transcodes_completed(task_results, video_id, upload_id):
     if not task_results:
         logger.warning('Not all transcodes successful for Video %s', video_id)
+    upload = services.get_upload(id=upload_id)
+    services.set_upload_status(upload=upload, status='completed')
     logger.info('Transcodes completes callback executed')
 
 
@@ -56,7 +60,7 @@ def task_on_all_transcodes_completed(task_results, video_id):
 def task_transcode(*args, video_id, transcode_job_id):
     logger.info('Task transcode started %s %s', video_id, transcode_job_id)
     video = services.get_video(id=video_id)
-    upload = video.upload
+    upload = video.uploads.first()
     transcode_job = models.TranscodeJob.objects.get(id=transcode_job_id)
     if transcode_job.status == 'completed':
         logger.warning(
@@ -75,6 +79,7 @@ def task_transcode(*args, video_id, transcode_job_id):
             transcode_job=transcode_job,
             source_file_path=Path(uploaded_file.name),
         )
+    services.set_upload_status(upload=upload, status='processing_viewable')
     logger.info('Task transcode completed %s %s', video_id, transcode_job_id)
     return True
 

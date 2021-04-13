@@ -8,6 +8,7 @@ from veems.media.models import Video
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.skip('multipart upload does not work with localstack')
 def test_run():
     import_seed_data._run()
 

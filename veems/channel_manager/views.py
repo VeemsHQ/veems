@@ -1,6 +1,8 @@
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from ..stub_data import VIDEOS, CHANNEL_SYNCS
 from ..channel import services as channel_services
@@ -49,9 +51,23 @@ class VideosView(ChannelManagerTemplateView):
         channel_videos = media_serializers.VideoSerializer(
             instance=channel_videos, many=True
         ).data
+        channel_uploads_processing = media_services.get_uploads_processing(
+            channel_id=channel_id,
+            user_id=self.request.user.id,
+        )
+        channel_uploads_processing = media_serializers.UploadSummarySerializer(
+            instance=channel_uploads_processing, many=True
+        ).data
         context['channel_videos'] = channel_videos
+        context['channel_uploads_processing'] = channel_uploads_processing
         context['channel_id'] = channel_id
         return context
+
+
+def upload_redirect(request):
+    return redirect(
+        reverse('channel-manager-videos') + '?display=upload-modal'
+    )
 
 
 class MonetizationView(ChannelManagerTemplateView):

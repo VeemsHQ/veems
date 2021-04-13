@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore } from '../../store';
 
-import DeleteVideoButton from './DeleteVideoButton';
+import DeleteVideoButton from './component';
 
 import {
-  fetchActiveChannelVideosAction,
-  createToastAction,
+  fetchActiveChannelVideos,
+  createToast,
 } from '../../actions/index';
 import { MSG_CORRECT_FORM_ERRORS } from '../../constants';
 import {
@@ -30,38 +30,43 @@ const TOAST_BAD_REQUEST_PAYLOAD = {
 
 const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [videoData, setVideoData] = useState({});
 
-  const updateParentState = (channelId) => {
+  const updateParentState = async (channelId) => {
     // Update the Channel Videos list on the page beneath
-    fetchActiveChannelVideos(channelId, false);
+    await fetchActiveChannelVideos(channelId, false);
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
     const videoId = videoData.id;
+    if (videoId === undefined) {
+      console.warning('no video on delete');
+      console.warning(videoData);
+    }
     setIsSaving(true);
     const { response } = await deleteVideo(videoId);
-    setModalOpen(false);
+    await updateParentState(videoData.channel_id);
     setIsSaving(false);
+    setModalOpen(false);
     if (response?.status === 400) {
       createToast(TOAST_BAD_REQUEST_PAYLOAD);
     } else {
       createToast(TOAST_SUCCESS_PAYLOAD);
       setVideoData({});
-      updateParentState(videoData.channel_id);
     }
   };
 
   const handleDeleteVideoModalClose = () => {
     setModalOpen(false);
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   const handleDeleteVideoModalOpen = async () => {
     setModalOpen(true);
+    setIsLoading(true);
     const { data } = await getVideoById(videoId);
     if (data) {
       setVideoData(data);
@@ -85,8 +90,8 @@ const Container = ({ videoId, fetchActiveChannelVideos, createToast }) => {
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
-    createToast: createToastAction,
-    fetchActiveChannelVideos: fetchActiveChannelVideosAction,
+    createToast: createToast,
+    fetchActiveChannelVideos: fetchActiveChannelVideos,
   }, dispatch),
 });
 

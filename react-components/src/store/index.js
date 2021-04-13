@@ -1,26 +1,13 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import { persistStore } from 'redux-persist';
 import ReduxThunk from 'redux-thunk';
-import expireReducer from 'redux-persist-expire';
 
 import reducer from '../reducers';
-import { initialState as ChannelsReducerInitialState } from '../reducers/ChannelsReducer';
 
 // 1 week. Must match IMAGEKIT_CACHE_TIMEOUT, AWS_QUERYSTRING_EXPIRE in settings.py
 const staticAssetsAuthTokenTimeout = 604800;
 /* eslint-disable no-underscore-dangle */
-const persistConfig = {
-  key: 'root',
-  storage,
-  transforms: [
-    expireReducer('channels', {
-      expireSeconds: staticAssetsAuthTokenTimeout,
-      expiredState: ChannelsReducerInitialState,
-      autoExpire: true,
-    }),
-  ],
-};
+
 
 // todo: remove when not in dev. Add proper dev check.
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -30,6 +17,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     traceLimit: 25,
     // eslint-disable-next-line no-mixed-operators
   }) || compose;
+
 
 /* Singleton for store to make sure we don't duplicate between components */
 export class configureStore {
@@ -48,7 +36,7 @@ export class configureStore {
   }
 
   static setInstance() {
-    this.persistedReducer = persistReducer(persistConfig, reducer);
+    this.persistedReducer = reducer;
     this.store = createStore(this.persistedReducer, composeEnhancers(
       applyMiddleware(ReduxThunk),
     ));

@@ -1,27 +1,23 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-import { VideoEditModalContainer } from '../VideoEditModal';
+import { VideoDetailModalContainer } from '../VideoDetailModal';
 import { DeleteVideoButtonContainer } from '../DeleteVideoButton';
 
 import 'regenerator-runtime/runtime.js';
 
-const descMaxLen = 150;
+const descMaxLen = 100;
 const truncate = (input, max) => (input.length > max ? `${input.substring(0, max + 1)}...` : input);
 
 export const ChannelManagerVideos = ({
   videos,
+  channelId,
   isLoading,
+  channels,
+  uploadingVideosStatuses,
+  onVideoDetailModalOpen,
+  onVideoDetailModalClose,
 }) => {
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const handleSetEditModalOpen = () => {
-    setEditModalOpen(true);
-  }
-
-  const handleSetEditModalClosed = () => {
-    setEditModalOpen(false);
-  }
-
-  return(<>
+  return (<>
     <table className="table mt-4">
       <thead>
         <tr className="text-muted">
@@ -108,31 +104,52 @@ export const ChannelManagerVideos = ({
             </tr>
           </>
         )}
-        {!isLoading && videos.map((video, index) => (
+        <VideoDetailModalContainer
+          channelId={channelId}
+          channels={channels}
+          onSetModalOpen={() => onVideoDetailModalOpen()}
+          onSetModalClosed={onVideoDetailModalClose}
+        />
+        {!isLoading && videos && videos.map((video, index) => (
           <tr key={index}>
             <td>
               <div className="d-flex">
-                <button type="button" onClick={handleSetEditModalOpen}  className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
+                <button type="button" onClick={() => onVideoDetailModalOpen(video.id)} className="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
                   <img className="h-100" src={video.thumbnail_image_small_url} alt={video.title} />
-                  <div className="overlays">{video.video_duration}</div>
+                  <div className="overlays">{video.duration_human}</div>
                 </button>
                 <div className="metadata-container d-flex">
                   <div className="content p-2">
-                    <h5 className="m-0 mb-1"><a href="#">{video.title}</a></h5>
+                    <h5 className="m-0 mb-1 text-primary">{video.title}</h5>
                     <div className="metadata">
                       <div className="card-text text-muted text-wrap text-truncate">
-                        <a href="#">{truncate(video.description ? video.description : '', descMaxLen)}</a>
+                        {truncate(video.description ? video.description : '', descMaxLen)}
                       </div>
+                      {uploadingVideosStatuses[video.id] && !uploadingVideosStatuses[video.id].isUploaded &&
+                        <>
+                          <div className="text-muted d-flex align-items-center mt-2">
+                            <i className="material-icons text-primary mr-1">upload</i> Uploading {uploadingVideosStatuses[video.id].percentageUploaded}%...
+                          </div>
+                        </>
+                      }
+                      {uploadingVideosStatuses[video.id] && uploadingVideosStatuses[video.id].isProcessing && !uploadingVideosStatuses[video.id].isViewable &&
+                        <>
+                          <div className="text-muted d-flex align-items-center mt-2">
+                            <i className="material-icons text-primary mr-1">pending</i> Processing...
+                          </div>
+                        </>
+                      }
+                      {uploadingVideosStatuses[video.id] && uploadingVideosStatuses[video.id].isProcessing && uploadingVideosStatuses[video.id].isViewable &&
+                        <>
+                          <div className="text-muted d-flex align-items-center mt-2">
+                            <i className="material-icons text-primary mr-1">pending</i> Viewable &amp; processing...
+                          </div>
+                        </>
+                      }
                     </div>
                   </div>
                   <div className="overlay align-items-center">
-                    <VideoEditModalContainer
-                      videoId={video.id}
-                      onSetModalOpen={handleSetEditModalOpen}
-                      onSetModalClosed={handleSetEditModalClosed}
-                      isModalOpen={isEditModalOpen}
-                    />
-                    <button type="button" onClick={handleSetEditModalOpen} className="btn"><i className="material-icons text-secondary">create</i></button>
+                    <button type="button" onClick={() => onVideoDetailModalOpen(video.id)} className="btn"><i className="material-icons text-secondary">create</i></button>
                     <a href={`/v/${video.id}/`} className="btn" target="_blank"><i className="material-icons text-secondary">play_circle_outline</i></a>
                     <DeleteVideoButtonContainer videoId={video.id} />
                     <a href="#" className="btn"><i className="material-icons text-secondary d-none">delete</i></a>
@@ -142,20 +159,11 @@ export const ChannelManagerVideos = ({
             </td>
             <td>
               <div className="text-muted">{video.visibility}</div>
-              <div className="text-muted">Uploading...</div>
-              <div className="progress">
-                <div
-                  className="progress-bar progress-bar-striped progress-bar-animated"
-                  role="progressbar"
-                  style={{ width: '55%' }}
-                  aria-valuenow="55"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >55%
-                </div>
-              </div>
             </td>
-            <td>{video.created_date_human}<br /><span className="text-muted">Uploaded</span></td>
+            <td>
+              {video.created_date_human}<br />
+              {!uploadingVideosStatuses[video.id] && <span className="text-muted">Uploaded</span>}
+            </td>
             <td className="text-success">$0</td>
             <td>{video.view_count}</td>
             <td>{video.comment_count}</td>

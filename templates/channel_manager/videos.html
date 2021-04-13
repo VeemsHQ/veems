@@ -20,7 +20,8 @@
             <tr>
                 <td>
                     <div class="d-flex">
-                        <button type="button" class="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
+                        <button type="button"
+                            class="remove-default-style thumbnail thumbnail-small d-inline-block mr-2">
                             <img class="h-100" src="{{video.thumbnail_image_small_url}}">
                             <div class="overlays">{{video.video_duration}}</div>
                         </button>
@@ -29,7 +30,7 @@
                                 <h5 class="m-0 mb-1"><a href="#">{{video.title}}</a></h5>
                                 <div class="metadata">
                                     <div class="card-text text-muted text-wrap text-truncate"><a
-                                            href="#">{{video.description|truncatechars:150}}</a>
+                                            href="#">{{video.description|truncatechars:100}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -44,11 +45,6 @@
                 </td>
                 <td>
                     <div class="text-muted">{{video.visibility}}</div>
-                    <div class="text-muted">Uploading...</div>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                            style="width: 55%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
-                    </div>
                 </td>
                 <td>{{video.created_date_human}}<br /><span class="text-muted">Uploaded</span></td>
                 <td class="text-success">$0</td>
@@ -68,10 +64,14 @@
 {{ block.super }}
 <script type="text/javascript">
     var videos = {{ channel_videos | to_json }};
+    var channels = {{ channel_summaries | to_json }};
+    var uploads_processing = {{ channel_uploads_processing | to_json }};
     app.CreateChannelManagerVideos({
         element: document.getElementById('videos-table'),
         channelId: "{{channel_id}}",
-        videos: videos
+        videos: videos,
+        channels: channels,
+        uploadsProcessing: uploads_processing,
     })
 </script>
 

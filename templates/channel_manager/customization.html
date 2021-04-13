@@ -3,12 +3,13 @@
 {% block title %}Channel Customization{% endblock %}
 {% block content %}
 <div class="col col-xl-8">
-    <p class="alert alert-secondary d-block d-xl-none">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a>
+    <p class="alert alert-secondary d-block d-xl-none">Channel link<br /><a
+            href="#">{{settings.SITE_BASE_URL}}/c/UCASvHD</a>
     </p>
     {% include './_customize_channel_detail.html' %}
 </div>
 <div class="col col-xl-4 d-none d-xl-block">
-    <p class="alert alert-secondary m-0">Channel link<br /><a href="#">https://veems.com/c/UCASvHD</a>
+    <p class="alert alert-secondary m-0">Channel link<br /><a href="#">{{settings.SITE_BASE_URL}}/c/UCASvHD</a>
     </p>
 </div>
 

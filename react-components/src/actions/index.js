@@ -1,23 +1,51 @@
 import {
-  setActiveChannelAction,
-  setChannelsAction,
-  setChannelSyncModalOpenAction,
-  setChannelsDbStaleAction,
-  fetchActiveChannelVideosAction,
+  setChannelSyncModalOpen,
+  populateVideoDetail,
+  startVideoUpload,
+  setActiveVideoDetailThumbnailAsPrimary,
+  openVideoDetailModal,
+  closeVideoDetailModal,
+  createChannel,
+  setCreateChannelShowModal,
+  updateVideoMetadata,
+  provideUploadFeedback,
 } from './ChannelManager';
 import {
-  setSessionAction,
-  createToastAction,
-  removeToastAction,
-} from './Globals';
+  setActiveChannel,
+  setChannels,
+  fetchActiveChannelVideos,
+  setActiveChannelVideos,
+} from './Channel';
+import {
+  createToast,
+  removeToast,
+} from './Global';
+import {
+  toggleVideoLike,
+  toggleVideoDislike,
+  setVideoCustomThumbnail,
+  openUploadVideoModal,
+} from './Video';
 
 export {
-  setSessionAction,
-  createToastAction,
-  removeToastAction,
-  setActiveChannelAction,
-  setChannelsAction,
-  setChannelSyncModalOpenAction,
-  setChannelsDbStaleAction,
-  fetchActiveChannelVideosAction,
+  createToast,
+  removeToast,
+  setActiveChannel,
+  setChannels,
+  setChannelSyncModalOpen,
+  fetchActiveChannelVideos,
+  populateVideoDetail,
+  startVideoUpload,
+  setActiveVideoDetailThumbnailAsPrimary,
+  openVideoDetailModal,
+  closeVideoDetailModal,
+  toggleVideoLike,
+  toggleVideoDislike,
+  createChannel,
+  setCreateChannelShowModal,
+  setVideoCustomThumbnail,
+  updateVideoMetadata,
+  openUploadVideoModal,
+  setActiveChannelVideos,
+  provideUploadFeedback,
 };

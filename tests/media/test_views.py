@@ -1,4 +1,4 @@
-from http.client import OK
+from http.client import OK, FOUND
 
 from django.urls import reverse
 import pytest
@@ -131,3 +131,10 @@ class TestVideoView:
         assert dict(video_context) == expected_video_resp_json
         channel_context = response.context['channel']
         assert dict(channel_context) == expected_channel_resp_json
+
+
+def test_upload_redirect(client):
+    response = client.get('/upload/')
+
+    assert response.status_code == FOUND
+    assert response.url == '/channel/videos/?display=upload-modal'

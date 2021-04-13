@@ -86,6 +86,11 @@ urlpatterns = [
         name='channel-manager-videos',
     ),
     path(
+        'upload/',
+        channel_manager_views.upload_redirect,
+        name='upload',
+    ),
+    path(
         'channel/monetization/',
         channel_manager_views.MonetizationView.as_view(),
         name='channel-manager-monetization',
@@ -119,6 +124,7 @@ urlpatterns = [
         channel_api_views.ChannelBannerAPIView.as_view(),
     ),
     path('api/v1/upload/prepare/', api_views.upload_prepare),
+    path('api/v1/upload/<slug:upload_id>/', api_views.upload_detail),
     path(
         'api/v1/upload/complete/<slug:upload_id>/', api_views.upload_complete
     ),

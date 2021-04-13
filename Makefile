@@ -6,8 +6,9 @@ lint:
 .ONESHELL:
 .PHONY: test
 test: install lint
-	pytest -n auto -k 'TestTranscode' -vvv
 	pytest -n auto -k 'not TestTranscode' -vvv
+	make start-deps
+	pytest -n auto -k 'TestTranscode' -vvv
 
 .ONESHELL:
 .PHONY: test-js
@@ -27,23 +28,23 @@ install:
 	pip install -r requirements-dev.txt
 
 .ONESHELL:
-make-buckets-remote:
+make-buckets:
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC} || true
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
 .ONESHELL:
 start-deps-remote:
-	docker-compose up -d postgres rabbit localstack
+	docker-compose up -d postgres rabbit localstack redis
 
 .ONESHELL:
 start-deps:
-	docker-compose up -d postgres rabbit localstack
+	docker-compose up -d postgres rabbit localstack redis
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_STATIC} || true
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
 .ONESHELL:
 .PHONY: seed
-seed: install make-buckets-remote
+seed: install make-buckets
 	python manage.py flush --noinput
 	python manage.py import_seed_data
 

@@ -47,313 +47,393 @@ def test_mark_transcode_job_processing(transcode_job_factory):
     assert updated_job.id == job.id
 
 
-@pytest.mark.parametrize(
-    'video_path, exp_metadata',
-    [
-        (
-            constants.VIDEO_PATH_2160_30FPS,
-            S(
-                {
-                    'audio_stream': None,
-                    'format': {
-                        'bit_rate': '43266533',
-                        'duration': '10.100000',
-                        'filename': str(constants.VIDEO_PATH_2160_30FPS),
-                        'format_long_name': 'QuickTime / MOV',
-                        'format_name': 'mov,mp4,m4a,3gp,3g2,mj2',
-                        'nb_programs': 0,
-                        'nb_streams': 1,
-                        'probe_score': 100,
-                        'size': '54623999',
-                        'start_time': '0.000000',
-                        'tags': {
-                            'compatible_brands': 'mp42mp41',
-                            'creation_time': '2018-07-10T20:22:55.000000Z',
-                            'major_brand': 'mp42',
-                            'minor_version': '0',
+class TestGetMetadata:
+    @pytest.mark.parametrize(
+        'video_path, exp_metadata',
+        [
+            (
+                constants.VIDEO_PATH_2160_30FPS,
+                S(
+                    {
+                        'audio_stream': None,
+                        'format': {
+                            'bit_rate': '43266533',
+                            'duration': '10.100000',
+                            'filename': str(constants.VIDEO_PATH_2160_30FPS),
+                            'format_long_name': 'QuickTime / MOV',
+                            'format_name': 'mov,mp4,m4a,3gp,3g2,mj2',
+                            'nb_programs': 0,
+                            'nb_streams': 1,
+                            'probe_score': 100,
+                            'size': '54623999',
+                            'start_time': '0.000000',
+                            'tags': {
+                                'compatible_brands': 'mp42mp41',
+                                'creation_time': '2018-07-10T20:22:55.000000Z',
+                                'major_brand': 'mp42',
+                                'minor_version': '0',
+                            },
+                        },
+                        'summary': {
+                            'audio_codec': None,
+                            'duration': 10.1,
+                            'file_size': 54623999,
+                            'framerate': 30,
+                            'height': 2160,
+                            'video_aspect_ratio': '16:9',
+                            'video_bit_rate': 43266533,
+                            'video_codec': 'h264',
+                            'width': 3840,
+                        },
+                        'video_stream': {
+                            'avg_frame_rate': '30/1',
+                            'bit_rate': '43255196',
+                            'bits_per_raw_sample': '8',
+                            'chroma_location': 'left',
+                            'closed_captions': 0,
+                            'codec_long_name': (
+                                'H.264 / AVC / MPEG-4 AVC / MPEG-4 part ' '10'
+                            ),
+                            'codec_name': 'h264',
+                            'codec_tag': '0x31637661',
+                            'codec_tag_string': 'avc1',
+                            'codec_time_base': '1/60',
+                            'codec_type': 'video',
+                            'coded_height': 2160,
+                            'coded_width': 3840,
+                            'color_primaries': 'bt709',
+                            'color_range': 'tv',
+                            'color_space': 'bt709',
+                            'color_transfer': 'bt709',
+                            'display_aspect_ratio': '16:9',
+                            'disposition': {
+                                'attached_pic': 0,
+                                'clean_effects': 0,
+                                'comment': 0,
+                                'default': 1,
+                                'dub': 0,
+                                'forced': 0,
+                                'hearing_impaired': 0,
+                                'karaoke': 0,
+                                'lyrics': 0,
+                                'original': 0,
+                                'timed_thumbnails': 0,
+                                'visual_impaired': 0,
+                            },
+                            'duration': '10.100000',
+                            'duration_ts': 303000,
+                            'has_b_frames': 1,
+                            'height': 2160,
+                            'index': 0,
+                            'is_avc': 'true',
+                            'level': 52,
+                            'nal_length_size': '4',
+                            'nb_frames': '303',
+                            'pix_fmt': 'yuv420p',
+                            'profile': 'High',
+                            'r_frame_rate': '30/1',
+                            'refs': 1,
+                            'sample_aspect_ratio': '1:1',
+                            'start_pts': 0,
+                            'start_time': '0.000000',
+                            'tags': {
+                                'creation_time': '2018-07-10T20:22:55.000000Z',
+                                'encoder': 'AVC Coding',
+                                'handler_name': str,
+                                'language': 'eng',
+                            },
+                            'time_base': '1/30000',
+                            'width': 3840,
                         },
                     },
-                    'summary': {
-                        'audio_codec': None,
-                        'duration': 10.1,
-                        'file_size': 54623999,
-                        'framerate': 30,
-                        'height': 2160,
-                        'video_aspect_ratio': '16:9',
-                        'video_bit_rate': 43266533,
-                        'video_codec': 'h264',
-                        'width': 3840,
-                    },
-                    'video_stream': {
-                        'avg_frame_rate': '30/1',
-                        'bit_rate': '43255196',
-                        'bits_per_raw_sample': '8',
-                        'chroma_location': 'left',
-                        'closed_captions': 0,
-                        'codec_long_name': (
-                            'H.264 / AVC / MPEG-4 AVC / MPEG-4 part ' '10'
-                        ),
-                        'codec_name': 'h264',
-                        'codec_tag': '0x31637661',
-                        'codec_tag_string': 'avc1',
-                        'codec_time_base': '1/60',
-                        'codec_type': 'video',
-                        'coded_height': 2160,
-                        'coded_width': 3840,
-                        'color_primaries': 'bt709',
-                        'color_range': 'tv',
-                        'color_space': 'bt709',
-                        'color_transfer': 'bt709',
-                        'display_aspect_ratio': '16:9',
-                        'disposition': {
-                            'attached_pic': 0,
-                            'clean_effects': 0,
-                            'comment': 0,
-                            'default': 1,
-                            'dub': 0,
-                            'forced': 0,
-                            'hearing_impaired': 0,
-                            'karaoke': 0,
-                            'lyrics': 0,
-                            'original': 0,
-                            'timed_thumbnails': 0,
-                            'visual_impaired': 0,
-                        },
-                        'duration': '10.100000',
-                        'duration_ts': 303000,
-                        'has_b_frames': 1,
-                        'height': 2160,
-                        'index': 0,
-                        'is_avc': 'true',
-                        'level': 52,
-                        'nal_length_size': '4',
-                        'nb_frames': '303',
-                        'pix_fmt': 'yuv420p',
-                        'profile': 'High',
-                        'r_frame_rate': '30/1',
-                        'refs': 1,
-                        'sample_aspect_ratio': '1:1',
-                        'start_pts': 0,
-                        'start_time': '0.000000',
-                        'tags': {
-                            'creation_time': '2018-07-10T20:22:55.000000Z',
-                            'encoder': 'AVC Coding',
-                            'handler_name': str,
-                            'language': 'eng',
-                        },
-                        'time_base': '1/30000',
-                        'width': 3840,
-                    },
-                },
-                required=False,
+                    required=False,
+                ),
             ),
-        ),
-        (
-            constants.VIDEO_PATH_1080_30FPS_VERT,
-            S(
-                {
-                    'audio_stream': {
-                        'avg_frame_rate': '0/0',
-                        'bits_per_sample': 0,
-                        'channel_layout': 'stereo',
-                        'channels': 2,
-                        'codec_long_name': (
-                            'Opus (Opus Interactive Audio Codec)'
-                        ),
-                        'codec_name': 'opus',
-                        'codec_tag': '0x0000',
-                        'codec_tag_string': '[0][0][0][0]',
-                        'codec_time_base': '1/48000',
-                        'codec_type': 'audio',
-                        'disposition': {
-                            'attached_pic': 0,
-                            'clean_effects': 0,
-                            'comment': 0,
-                            'default': 1,
-                            'dub': 0,
-                            'forced': 0,
-                            'hearing_impaired': 0,
-                            'karaoke': 0,
-                            'lyrics': 0,
-                            'original': 0,
-                            'timed_thumbnails': 0,
-                            'visual_impaired': 0,
+            (
+                constants.VIDEO_PATH_1080_30FPS_VERT,
+                S(
+                    {
+                        'audio_stream': {
+                            'avg_frame_rate': '0/0',
+                            'bits_per_sample': 0,
+                            'channel_layout': 'stereo',
+                            'channels': 2,
+                            'codec_long_name': (
+                                'Opus (Opus Interactive Audio Codec)'
+                            ),
+                            'codec_name': 'opus',
+                            'codec_tag': '0x0000',
+                            'codec_tag_string': '[0][0][0][0]',
+                            'codec_time_base': '1/48000',
+                            'codec_type': 'audio',
+                            'disposition': {
+                                'attached_pic': 0,
+                                'clean_effects': 0,
+                                'comment': 0,
+                                'default': 1,
+                                'dub': 0,
+                                'forced': 0,
+                                'hearing_impaired': 0,
+                                'karaoke': 0,
+                                'lyrics': 0,
+                                'original': 0,
+                                'timed_thumbnails': 0,
+                                'visual_impaired': 0,
+                            },
+                            'index': 1,
+                            'r_frame_rate': '0/0',
+                            'sample_fmt': 'fltp',
+                            'sample_rate': '48000',
+                            'start_pts': -7,
+                            'start_time': '-0.007000',
+                            'tags': {
+                                'DURATION': '00:01:17.441000000',
+                                'language': 'eng',
+                            },
+                            'time_base': '1/1000',
                         },
-                        'index': 1,
-                        'r_frame_rate': '0/0',
-                        'sample_fmt': 'fltp',
-                        'sample_rate': '48000',
-                        'start_pts': -7,
-                        'start_time': '-0.007000',
-                        'tags': {
-                            'DURATION': '00:01:17.441000000',
-                            'language': 'eng',
+                        'format': {
+                            'bit_rate': '2769908',
+                            'duration': '77.441000',
+                            'filename': str(
+                                constants.VIDEO_PATH_1080_30FPS_VERT
+                            ),
+                            'format_long_name': 'Matroska / WebM',
+                            'format_name': 'matroska,webm',
+                            'nb_programs': 0,
+                            'nb_streams': 2,
+                            'probe_score': 100,
+                            'size': '26813061',
+                            'start_time': '-0.007000',
+                            'tags': {'ENCODER': 'Lavf58.45.100'},
                         },
-                        'time_base': '1/1000',
-                    },
-                    'format': {
-                        'bit_rate': '2769908',
-                        'duration': '77.441000',
-                        'filename': str(constants.VIDEO_PATH_1080_30FPS_VERT),
-                        'format_long_name': 'Matroska / WebM',
-                        'format_name': 'matroska,webm',
-                        'nb_programs': 0,
-                        'nb_streams': 2,
-                        'probe_score': 100,
-                        'size': '26813061',
-                        'start_time': '-0.007000',
-                        'tags': {'ENCODER': 'Lavf58.45.100'},
-                    },
-                    'summary': {
-                        'audio_codec': 'opus',
-                        'duration': 77.0,
-                        'file_size': 26813061,
-                        'framerate': 30,
-                        'height': 1920,
-                        'video_aspect_ratio': '9:16',
-                        'video_bit_rate': 2769908,
-                        'video_codec': 'vp9',
-                        'width': 1080,
-                    },
-                    'video_stream': {
-                        'avg_frame_rate': '30000/1001',
-                        'closed_captions': 0,
-                        'codec_long_name': 'Google VP9',
-                        'codec_name': 'vp9',
-                        'codec_tag': '0x0000',
-                        'codec_tag_string': '[0][0][0][0]',
-                        'codec_time_base': '1001/30000',
-                        'codec_type': 'video',
-                        'coded_height': 1920,
-                        'coded_width': 1080,
-                        'color_primaries': 'bt709',
-                        'color_range': 'tv',
-                        'color_space': 'bt709',
-                        'color_transfer': 'bt709',
-                        'display_aspect_ratio': '9:16',
-                        'disposition': {
-                            'attached_pic': 0,
-                            'clean_effects': 0,
-                            'comment': 0,
-                            'default': 1,
-                            'dub': 0,
-                            'forced': 0,
-                            'hearing_impaired': 0,
-                            'karaoke': 0,
-                            'lyrics': 0,
-                            'original': 0,
-                            'timed_thumbnails': 0,
-                            'visual_impaired': 0,
+                        'summary': {
+                            'audio_codec': 'opus',
+                            'duration': 77.0,
+                            'file_size': 26813061,
+                            'framerate': 30,
+                            'height': 1920,
+                            'video_aspect_ratio': '9:16',
+                            'video_bit_rate': 2769908,
+                            'video_codec': 'vp9',
+                            'width': 1080,
                         },
-                        'has_b_frames': 0,
-                        'height': 1920,
-                        'index': 0,
-                        'level': -99,
-                        'pix_fmt': 'yuv420p',
-                        'profile': 'Profile 0',
-                        'r_frame_rate': '30000/1001',
-                        'refs': 1,
-                        'sample_aspect_ratio': '1:1',
-                        'start_pts': 0,
-                        'start_time': '0.000000',
-                        'tags': {
-                            'DURATION': '00:01:17.410000000',
-                            'language': 'eng',
+                        'video_stream': {
+                            'avg_frame_rate': '30000/1001',
+                            'closed_captions': 0,
+                            'codec_long_name': 'Google VP9',
+                            'codec_name': 'vp9',
+                            'codec_tag': '0x0000',
+                            'codec_tag_string': '[0][0][0][0]',
+                            'codec_time_base': '1001/30000',
+                            'codec_type': 'video',
+                            'coded_height': 1920,
+                            'coded_width': 1080,
+                            'color_primaries': 'bt709',
+                            'color_range': 'tv',
+                            'color_space': 'bt709',
+                            'color_transfer': 'bt709',
+                            'display_aspect_ratio': '9:16',
+                            'disposition': {
+                                'attached_pic': 0,
+                                'clean_effects': 0,
+                                'comment': 0,
+                                'default': 1,
+                                'dub': 0,
+                                'forced': 0,
+                                'hearing_impaired': 0,
+                                'karaoke': 0,
+                                'lyrics': 0,
+                                'original': 0,
+                                'timed_thumbnails': 0,
+                                'visual_impaired': 0,
+                            },
+                            'has_b_frames': 0,
+                            'height': 1920,
+                            'index': 0,
+                            'level': -99,
+                            'pix_fmt': 'yuv420p',
+                            'profile': 'Profile 0',
+                            'r_frame_rate': '30000/1001',
+                            'refs': 1,
+                            'sample_aspect_ratio': '1:1',
+                            'start_pts': 0,
+                            'start_time': '0.000000',
+                            'tags': {
+                                'DURATION': '00:01:17.410000000',
+                                'language': 'eng',
+                            },
+                            'time_base': '1/1000',
+                            'width': 1080,
                         },
-                        'time_base': '1/1000',
-                        'width': 1080,
                     },
-                },
-                required=False,
+                    required=False,
+                ),
             ),
-        ),
-        (
-            constants.VID_4k_2,
-            S(
-                {
-                    'audio_stream': None,
-                    'format': {
-                        'bit_rate': '12216038',
-                        'duration': '30.233000',
-                        'filename': str(constants.VID_4k_2),
-                        'format_long_name': 'Matroska / WebM',
-                        'format_name': 'matroska,webm',
-                        'nb_programs': 0,
-                        'nb_streams': 1,
-                        'probe_score': 100,
-                        'size': '46165938',
-                        'start_time': '0.000000',
-                        'tags': {'encoder': 'google/video-file'},
-                    },
-                    'summary': {
-                        'audio_codec': None,
-                        'duration': 30.233,
-                        'file_size': 46165938,
-                        'framerate': 30,
-                        'height': 2160,
-                        'video_aspect_ratio': '16:9',
-                        'video_bit_rate': 12216038,
-                        'video_codec': 'vp9',
-                        'width': 3840,
-                    },
-                    'video_stream': {
-                        'avg_frame_rate': '30/1',
-                        'closed_captions': 0,
-                        'codec_long_name': 'Google VP9',
-                        'codec_name': 'vp9',
-                        'codec_tag': '0x0000',
-                        'codec_tag_string': '[0][0][0][0]',
-                        'codec_time_base': '1/30',
-                        'codec_type': 'video',
-                        'coded_height': 2160,
-                        'coded_width': 3840,
-                        'color_primaries': 'bt709',
-                        'color_range': 'tv',
-                        'color_space': 'bt709',
-                        'color_transfer': 'bt709',
-                        'display_aspect_ratio': '16:9',
-                        'disposition': {
-                            'attached_pic': 0,
-                            'clean_effects': 0,
-                            'comment': 0,
-                            'default': 1,
-                            'dub': 0,
-                            'forced': 0,
-                            'hearing_impaired': 0,
-                            'karaoke': 0,
-                            'lyrics': 0,
-                            'original': 0,
-                            'timed_thumbnails': 0,
-                            'visual_impaired': 0,
+            (
+                constants.VID_4k_2,
+                S(
+                    {
+                        'audio_stream': None,
+                        'format': {
+                            'bit_rate': '12216038',
+                            'duration': '30.233000',
+                            'filename': str(constants.VID_4k_2),
+                            'format_long_name': 'Matroska / WebM',
+                            'format_name': 'matroska,webm',
+                            'nb_programs': 0,
+                            'nb_streams': 1,
+                            'probe_score': 100,
+                            'size': '46165938',
+                            'start_time': '0.000000',
+                            'tags': {'encoder': 'google/video-file'},
                         },
-                        'has_b_frames': 0,
-                        'height': 2160,
-                        'index': 0,
-                        'level': -99,
-                        'pix_fmt': 'yuv420p',
-                        'profile': 'Profile 0',
-                        'r_frame_rate': '30/1',
-                        'refs': 1,
-                        'sample_aspect_ratio': '1:1',
-                        'start_pts': 0,
-                        'start_time': '0.000000',
-                        'tags': {'language': 'eng'},
-                        'time_base': '1/1000',
-                        'width': 3840,
+                        'summary': {
+                            'audio_codec': None,
+                            'duration': 30.233,
+                            'file_size': 46165938,
+                            'framerate': 30,
+                            'height': 2160,
+                            'video_aspect_ratio': '16:9',
+                            'video_bit_rate': 12216038,
+                            'video_codec': 'vp9',
+                            'width': 3840,
+                        },
+                        'video_stream': {
+                            'avg_frame_rate': '30/1',
+                            'closed_captions': 0,
+                            'codec_long_name': 'Google VP9',
+                            'codec_name': 'vp9',
+                            'codec_tag': '0x0000',
+                            'codec_tag_string': '[0][0][0][0]',
+                            'codec_time_base': '1/30',
+                            'codec_type': 'video',
+                            'coded_height': 2160,
+                            'coded_width': 3840,
+                            'color_primaries': 'bt709',
+                            'color_range': 'tv',
+                            'color_space': 'bt709',
+                            'color_transfer': 'bt709',
+                            'display_aspect_ratio': '16:9',
+                            'disposition': {
+                                'attached_pic': 0,
+                                'clean_effects': 0,
+                                'comment': 0,
+                                'default': 1,
+                                'dub': 0,
+                                'forced': 0,
+                                'hearing_impaired': 0,
+                                'karaoke': 0,
+                                'lyrics': 0,
+                                'original': 0,
+                                'timed_thumbnails': 0,
+                                'visual_impaired': 0,
+                            },
+                            'has_b_frames': 0,
+                            'height': 2160,
+                            'index': 0,
+                            'level': -99,
+                            'pix_fmt': 'yuv420p',
+                            'profile': 'Profile 0',
+                            'r_frame_rate': '30/1',
+                            'refs': 1,
+                            'sample_aspect_ratio': '1:1',
+                            'start_pts': 0,
+                            'start_time': '0.000000',
+                            'tags': {'language': 'eng'},
+                            'time_base': '1/1000',
+                            'width': 3840,
+                        },
                     },
-                },
-                required=False,
+                    required=False,
+                ),
             ),
-        ),
-    ],
-)
-def test_get_metadata(video_path, exp_metadata):
-    metadata = services.get_metadata(video_path=video_path)
-
-    assert metadata == exp_metadata
-    assert sorted(metadata.keys()) == sorted(
-        ('audio_stream', 'video_stream', 'summary', 'format')
+        ],
     )
+    def test_video(self, video_path, exp_metadata):
+        metadata = services.get_metadata(video_path=video_path)
+
+        assert metadata == exp_metadata
+        assert sorted(metadata.keys()) == sorted(
+            ('audio_stream', 'video_stream', 'summary', 'format')
+        )
+
+    def test_image(self):
+        image_path = TEST_DATA_DIR / 'thumbnail-vertical.jpg'
+
+        result = services.get_metadata(image_path)
+
+        assert result == S({
+            'audio_stream': None,
+            'format': {
+                'bit_rate': '5620200',
+                'duration': '0.040000',
+                'filename': str,
+                'format_long_name': 'image2 sequence',
+                'format_name': 'image2',
+                'nb_programs': 0,
+                'nb_streams': 1,
+                'probe_score': 50,
+                'size': '28101',
+                'start_time': '0.000000',
+            },
+            'summary': {
+                'audio_codec': None,
+                'duration': 0.04,
+                'file_size': 28101,
+                'framerate': 25,
+                'height': 720,
+                'video_aspect_ratio': '16:9',
+                'video_bit_rate': 5620200,
+                'video_codec': 'mjpeg',
+                'width': 1280,
+            },
+            'video_stream': {
+                'avg_frame_rate': '0/0',
+                'bits_per_raw_sample': '8',
+                'chroma_location': 'center',
+                'codec_long_name': 'Motion JPEG',
+                'codec_name': 'mjpeg',
+                'codec_tag': '0x0000',
+                'codec_tag_string': '[0][0][0][0]',
+                'codec_time_base': '0/1',
+                'codec_type': 'video',
+                'coded_height': 720,
+                'coded_width': 1280,
+                'color_range': 'pc',
+                'color_space': 'bt470bg',
+                'display_aspect_ratio': '16:9',
+                'disposition': {
+                    'attached_pic': 0,
+                    'clean_effects': 0,
+                    'comment': 0,
+                    'default': 0,
+                    'dub': 0,
+                    'forced': 0,
+                    'hearing_impaired': 0,
+                    'karaoke': 0,
+                    'lyrics': 0,
+                    'original': 0,
+                    'timed_thumbnails': 0,
+                    'visual_impaired': 0,
+                },
+                'duration': '0.040000',
+                'duration_ts': 1,
+                'has_b_frames': 0,
+                'height': 720,
+                'index': 0,
+                'level': -99,
+                'pix_fmt': 'yuvj420p',
+                'profile': 'Baseline',
+                'r_frame_rate': '25/1',
+                'refs': 1,
+                'sample_aspect_ratio': '1:1',
+                'start_pts': 0,
+                'start_time': '0.000000',
+                'time_base': '1/25',
+                'width': 1280,
+            },
+        })
 
 
 def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
@@ -455,23 +535,12 @@ def test_persist_video_rendition_segments(video, simple_uploaded_file, tmpdir):
 
 
 def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
-    video, video_renditions_to_create = video_with_renditions_and_segments
+    video, _ = video_with_renditions_and_segments
 
     playlists = services._get_rendition_playlists(video_record=video)
 
     assert len(playlists) == 2
     exp_playlists = [
-        {
-            'height': 360,
-            'playlist_url': mocker.ANY,
-            'width': 640,
-            'name': 'webm_360p',
-            'profile': 'webm_360p',
-            'resolution': '640x360',
-            'bandwidth': 182464,
-            'frame_rate': 30,
-            'codecs_string': 'avc1.640028,mp4a.40.2',
-        },
         {
             'height': 1080,
             'playlist_url': mocker.ANY,
@@ -480,6 +549,17 @@ def test_get_rendition_playlists(video_with_renditions_and_segments, mocker):
             'profile': 'webm_1080p',
             'resolution': '1920x1080',
             'bandwidth': 5127303,
+            'frame_rate': 30,
+            'codecs_string': 'avc1.640028,mp4a.40.2',
+        },
+        {
+            'height': 360,
+            'playlist_url': mocker.ANY,
+            'width': 640,
+            'name': 'webm_360p',
+            'profile': 'webm_360p',
+            'resolution': '640x360',
+            'bandwidth': 182464,
             'frame_rate': 30,
             'codecs_string': 'avc1.640028,mp4a.40.2',
         },
@@ -509,8 +589,8 @@ class TestGeneratePlaylist:
             'playlists': [
                 {
                     'stream_info': {
-                        'bandwidth': 182464,
-                        'resolution': '640x360',
+                        'bandwidth': 5127303,
+                        'resolution': '1920x1080',
                         'closed_captions': 'NONE',
                         'codecs': 'avc1.640028,mp4a.40.2',
                         'program_id': 1,
@@ -519,8 +599,8 @@ class TestGeneratePlaylist:
                 },
                 {
                     'stream_info': {
-                        'bandwidth': 5127303,
-                        'resolution': '1920x1080',
+                        'bandwidth': 182464,
+                        'resolution': '640x360',
                         'closed_captions': 'NONE',
                         'codecs': 'avc1.640028,mp4a.40.2',
                         'program_id': 1,
@@ -619,7 +699,7 @@ def test_create_video(upload):
     )
 
     assert video.channel == upload.channel
-    assert video.upload == upload
+    assert video.uploads.first() == upload
     assert video.title == 'hello'
     assert video.filename == 'video.mp4'
     assert video.description is None
@@ -645,7 +725,8 @@ class TestGetVideos:
 
         records = services.get_videos()
 
-        assert tuple(records) == tuple(videos[:-1])
+        assert len(records) == 2
+        assert set(v.visibility for v in records) == {'public'}
         assert all(not v.deleted_on for v in records)
 
     def test_with_channel_id_and_user_id_of_owner_returns_non_public(
@@ -849,3 +930,59 @@ def test_set_video_custom_thumbnail_image_from_rendition_thumbnail(
     metadata = services.get_metadata(thumbnail_path)
     assert metadata['summary']['width'] == transcoder_profiles.Webm144p.width
     assert metadata['summary']['height'] == transcoder_profiles.Webm144p.height
+
+
+def test_get_uploads_processing(
+    upload_factory, channel_factory, user_factory, video_factory
+):
+    statuses = (
+        'draft',
+        'uploaded',
+        'processing',
+        'processing_viewable',
+        'completed',
+    )
+    user = user_factory()
+    channel = channel_factory(user=user)
+    channels = (channel, channel_factory(user=user_factory()))
+    for channel_ in channels:
+        for status in statuses:
+            upload = upload_factory(
+                status=status, channel=channel_, video=video_factory()
+            )
+    # Delete one of the videos, the upload for it shouldn't be returned.
+    services.delete_video(upload.video_id)
+
+    results = services.get_uploads_processing(
+        channel_id=channel.id, user_id=user.id
+    )
+
+    assert results
+    assert all(u.channel.user_id == user.id for u in results)
+    assert all(u.video.deleted_on is None for u in results)
+    assert all(u.channel_id == channel.id for u in results)
+    assert set(u.status for u in results) == {
+        'processing',
+        'processing_viewable',
+        'uploaded',
+    }
+
+
+def test_get_upload(upload):
+    assert services.get_upload(id=upload.id) == upload
+
+
+@pytest.mark.parametrize(
+    'status',
+    [
+        'draft',
+        'uploaded',
+        'processing',
+        'processing_viewable',
+        'completed',
+    ],
+)
+def test_set_upload_status(upload, status):
+    upload = services.set_upload_status(upload=upload, status=status)
+
+    assert upload.status == status
