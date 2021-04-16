@@ -121,7 +121,17 @@ def test_video_custom_thumbnail_image(video_factory, uploaded_img_with_exif):
     video = video_factory(custom_thumbnail_image=img_file_obj)
 
     assert video.custom_thumbnail_image
+    # from PIL import Image, ImageOps
+    # import PIL
+    # img = Image.open(video.custom_thumbnail_image)
+    # exif = {
+    #     PIL.ExifTags.TAGS[k]: v
+    #     for k, v in img._getexif().items()
+    #     if k in PIL.ExifTags.TAGS
+    # }
+    # import ipdb; ipdb.set_trace()
     exif_image = ExifImage(video.custom_thumbnail_image)
+    import ipdb; ipdb.set_trace()
     exif = exif_image.list_all()
     assert exif == [
         'image_description',

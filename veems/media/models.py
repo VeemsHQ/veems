@@ -203,30 +203,30 @@ class Video(BaseModel):
         )
 
 
-    def clean(self):
-        super().clean()
-        if self.custom_thumbnail_image:
-            from PIL import Image, ImageOps
-            from django.core.files.uploadedfile import SimpleUploadedFile
+    # def clean(self):
+    #     super().clean()
+    #     if self.custom_thumbnail_image:
+    #         from PIL import Image, ImageOps
+    #         from django.core.files.uploadedfile import SimpleUploadedFile
 
 
-            file = self.custom_thumbnail_image.file
-            from io import BytesIO
+    #         file = self.custom_thumbnail_image.file
+    #         from io import BytesIO
 
-            original = Image.open(self.custom_thumbnail_image.file)
-            # rotate image to correct orientation before removing EXIF data
-            original = ImageOps.exif_transpose(original)
-            # create output image, forgetting the EXIF metadata
-            stripped = Image.new(original.mode, original.size)
-            stripped.putdata(list(original.getdata()))
-            from django.core.files.base import ContentFile
+    #         original = Image.open(self.custom_thumbnail_image.file)
+    #         # rotate image to correct orientation before removing EXIF data
+    #         original = ImageOps.exif_transpose(original)
+    #         # create output image, forgetting the EXIF metadata
+    #         stripped = Image.new(original.mode, original.size)
+    #         stripped.putdata(list(original.getdata()))
+    #         from django.core.files.base import ContentFile
 
-            result_file = ContentFile(stripped.tobytes())
-            self.custom_thumbnail_image.save(file.name, result_file)
+    #         result_file = ContentFile(stripped.tobytes())
+    #         self.custom_thumbnail_image.save(file.name, result_file)
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.full_clean()
+    #     return super().save(*args, **kwargs)
 
     @property
     def thumbnail_image_small_url(self):
@@ -269,6 +269,34 @@ class Video(BaseModel):
                 'images/player/error-video-processing-simple-480p.png'
             )
         return self.default_thumbnail_image_large.url
+
+from django.db.models.signals import post_save, post_delete, pre_save
+from django.dispatch import receiver
+
+
+@receiver(pre_save, sender=Video)
+def my_callback(sender, instance, *args, **kwargs):
+
+    if instance.custom_thumbnail_image:
+        from PIL import Image, ImageOps
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+
+        file = instance.custom_thumbnail_image.file
+        from io import BytesIO
+
+        original = Image.open(instance.custom_thumbnail_image)
+        # rotate image to correct orientation before removing EXIF data
+        original = ImageOps.exif_transpose(original)
+        # create output image, forgetting the EXIF metadata
+        stripped = Image.new(original.mode, original.size)
+        stripped.putdata(list(original.getdata()))
+        from django.core.files.base import ContentFile
+
+        # result_file = ContentFile(stripped.tobytes())
+        result_file = SimpleUploadedFile(file.name, stripped.tobytes())
+        instance.custom_thumbnail_image = result_file
+
 
 
 class Upload(BaseModel):
