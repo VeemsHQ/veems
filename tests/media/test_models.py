@@ -1,6 +1,7 @@
 import io
 
 import pytest
+from exif import Image as ExifImage
 from django.core.files.uploadedfile import SimpleUploadedFile
 import boto3
 
@@ -47,153 +48,15 @@ def test_video_rendition_upload_to(video_rendition):
     )
 
 
-from exif import Image as ExifImage
-
-
 def test_video_custom_thumbnail_image(video_factory, uploaded_img_with_exif):
-    img_file_obj, img_path = uploaded_img_with_exif
-
-    with img_path.open('rb') as file_:
-        exif_image = ExifImage(file_)
-    assert exif_image.has_exif
-    assert exif_image.list_all() == [
-        'image_description',
-        'make',
-        'model',
-        'orientation',
-        'x_resolution',
-        'y_resolution',
-        'resolution_unit',
-        'software',
-        'datetime',
-        'y_and_c_positioning',
-        '_exif_ifd_pointer',
-        '_gps_ifd_pointer',
-        'compression',
-        'jpeg_interchange_format',
-        'jpeg_interchange_format_length',
-        'exposure_time',
-        'f_number',
-        'exposure_program',
-        'photographic_sensitivity',
-        'exif_version',
-        'datetime_original',
-        'datetime_digitized',
-        'components_configuration',
-        'exposure_bias_value',
-        'max_aperture_value',
-        'metering_mode',
-        'light_source',
-        'flash',
-        'focal_length',
-        'maker_note',
-        'user_comment',
-        'flashpix_version',
-        'color_space',
-        'pixel_x_dimension',
-        'pixel_y_dimension',
-        '_interoperability_ifd_Pointer',
-        'file_source',
-        'scene_type',
-        'custom_rendered',
-        'exposure_mode',
-        'white_balance',
-        'digital_zoom_ratio',
-        'focal_length_in_35mm_film',
-        'scene_capture_type',
-        'gain_control',
-        'contrast',
-        'saturation',
-        'sharpness',
-        'subject_distance_range',
-        'gps_latitude_ref',
-        'gps_latitude',
-        'gps_longitude_ref',
-        'gps_longitude',
-        'gps_altitude_ref',
-        'gps_timestamp',
-        'gps_satellites',
-        'gps_img_direction_ref',
-        'gps_map_datum',
-        'gps_datestamp',
-    ]
+    img_file_obj, _ = uploaded_img_with_exif
 
     video = video_factory(custom_thumbnail_image=img_file_obj)
 
     assert video.custom_thumbnail_image
-    # from PIL import Image, ImageOps
-    # import PIL
-    # img = Image.open(video.custom_thumbnail_image)
-    # exif = {
-    #     PIL.ExifTags.TAGS[k]: v
-    #     for k, v in img._getexif().items()
-    #     if k in PIL.ExifTags.TAGS
-    # }
-    # import ipdb; ipdb.set_trace()
+    # Check all exif data was removed
     exif_image = ExifImage(video.custom_thumbnail_image)
-    import ipdb; ipdb.set_trace()
-    exif = exif_image.list_all()
-    assert exif == [
-        'image_description',
-        'make',
-        'model',
-        'orientation',
-        'x_resolution',
-        'y_resolution',
-        'resolution_unit',
-        'software',
-        'datetime',
-        'y_and_c_positioning',
-        '_exif_ifd_pointer',
-        '_gps_ifd_pointer',
-        'compression',
-        'jpeg_interchange_format',
-        'jpeg_interchange_format_length',
-        'exposure_time',
-        'f_number',
-        'exposure_program',
-        'photographic_sensitivity',
-        'exif_version',
-        'datetime_original',
-        'datetime_digitized',
-        'components_configuration',
-        'exposure_bias_value',
-        'max_aperture_value',
-        'metering_mode',
-        'light_source',
-        'flash',
-        'focal_length',
-        'maker_note',
-        'user_comment',
-        'flashpix_version',
-        'color_space',
-        'pixel_x_dimension',
-        'pixel_y_dimension',
-        '_interoperability_ifd_Pointer',
-        'file_source',
-        'scene_type',
-        'custom_rendered',
-        'exposure_mode',
-        'white_balance',
-        'digital_zoom_ratio',
-        'focal_length_in_35mm_film',
-        'scene_capture_type',
-        'gain_control',
-        'contrast',
-        'saturation',
-        'sharpness',
-        'subject_distance_range',
-        'gps_latitude_ref',
-        'gps_latitude',
-        'gps_longitude_ref',
-        'gps_longitude',
-        'gps_altitude_ref',
-        'gps_timestamp',
-        'gps_satellites',
-        'gps_img_direction_ref',
-        'gps_map_datum',
-        'gps_datestamp',
-    ]
+    assert exif_image.list_all() == []
 
 
 def test_video_rendition_thumbnail_upload_to(

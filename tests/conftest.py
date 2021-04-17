@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from pytest_voluptuous import S
 from rest_framework.test import APIClient
+from exif import Image as ExifImage
 
 from veems.channel import services as channel_services
 from veems.media.transcoder import transcoder_profiles
@@ -32,11 +33,17 @@ def simple_uploaded_img_file():
 
 @pytest.fixture
 def uploaded_img_with_exif():
-    with EXAMPLE_IMG_EXIF_GPS.open('rb') as file_:
+    img_path = EXAMPLE_IMG_EXIF_GPS
+    with img_path.open('rb') as file_:
         file_contents = file_.read()
+        file_.seek(0)
+        exif_image = ExifImage(file_)
+        assert exif_image.has_exif
+        assert exif_image.list_all()
+
     return (
-        SimpleUploadedFile(EXAMPLE_IMG_EXIF_GPS.name, file_contents),
-        EXAMPLE_IMG_EXIF_GPS,
+        SimpleUploadedFile(img_path.name, file_contents),
+        img_path,
     )
 
 

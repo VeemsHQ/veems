@@ -5,11 +5,14 @@ from django.templatetags.static import static
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.contrib.auth import get_user_model
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
 from . import storage_backends
 from .transcoder import transcoder_profiles
+from . import images
 
 STORAGE_BACKEND = storage_backends.MediaStorage
 UPLOAD_CHOICES = (
@@ -202,32 +205,6 @@ class Video(BaseModel):
             f'{self.id} {self.channel_id} {self.title}>'
         )
 
-
-    # def clean(self):
-    #     super().clean()
-    #     if self.custom_thumbnail_image:
-    #         from PIL import Image, ImageOps
-    #         from django.core.files.uploadedfile import SimpleUploadedFile
-
-
-    #         file = self.custom_thumbnail_image.file
-    #         from io import BytesIO
-
-    #         original = Image.open(self.custom_thumbnail_image.file)
-    #         # rotate image to correct orientation before removing EXIF data
-    #         original = ImageOps.exif_transpose(original)
-    #         # create output image, forgetting the EXIF metadata
-    #         stripped = Image.new(original.mode, original.size)
-    #         stripped.putdata(list(original.getdata()))
-    #         from django.core.files.base import ContentFile
-
-    #         result_file = ContentFile(stripped.tobytes())
-    #         self.custom_thumbnail_image.save(file.name, result_file)
-
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()
-    #     return super().save(*args, **kwargs)
-
     @property
     def thumbnail_image_small_url(self):
         if not self.custom_thumbnail_image_small:
@@ -269,34 +246,6 @@ class Video(BaseModel):
                 'images/player/error-video-processing-simple-480p.png'
             )
         return self.default_thumbnail_image_large.url
-
-from django.db.models.signals import post_save, post_delete, pre_save
-from django.dispatch import receiver
-
-
-@receiver(pre_save, sender=Video)
-def my_callback(sender, instance, *args, **kwargs):
-
-    if instance.custom_thumbnail_image:
-        from PIL import Image, ImageOps
-        from django.core.files.uploadedfile import SimpleUploadedFile
-
-
-        file = instance.custom_thumbnail_image.file
-        from io import BytesIO
-
-        original = Image.open(instance.custom_thumbnail_image)
-        # rotate image to correct orientation before removing EXIF data
-        original = ImageOps.exif_transpose(original)
-        # create output image, forgetting the EXIF metadata
-        stripped = Image.new(original.mode, original.size)
-        stripped.putdata(list(original.getdata()))
-        from django.core.files.base import ContentFile
-
-        # result_file = ContentFile(stripped.tobytes())
-        result_file = SimpleUploadedFile(file.name, stripped.tobytes())
-        instance.custom_thumbnail_image = result_file
-
 
 
 class Upload(BaseModel):
@@ -472,4 +421,12 @@ class VideoLikeDislike(BaseModel):
         return (
             f'<{self.__class__.__name__} {self.id} {self.video_id} '
             f'{self.is_like}>'
+        )
+
+
+@receiver(pre_save, sender=Video)
+def video_pre_save_callback(sender, instance, *args, **kwargs):
+    if instance.custom_thumbnail_image:
+        instance.custom_thumbnail_image = images.remove_exif_data(
+            image_file=instance.custom_thumbnail_image.file
         )
