@@ -55,7 +55,7 @@ In order of priority.
 - Homepage video listings ✅.
 - Search function ✅.
 - Channel Manager (basics).
-    - Video Management (backend ✅, frontend ⏳).
+    - Video Management (backend ✅, frontend ✅).
     - Channel customisation (backend ✅, frontend ⏳).
 - Like/dislike videos (backend ✅, frontend ✅).
 - Related videos suggestions, Video playback page.
