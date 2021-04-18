@@ -12,10 +12,10 @@ class TestVideosView:
         video_with_transcodes_factory,
         channel_factory,
         user,
-        pasword,
+        password,
         expected_video_resp_json,
     ):
-        assert client.login(username=user.email, password=pasword)
+        assert client.login(username=user.email, password=password)
         # Select a channel and add videos
         channel = channel_factory(
             name='My Channel',

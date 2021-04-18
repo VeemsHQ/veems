@@ -85,3 +85,29 @@ class TestChannelAboutView:
             }
         )
         assert response.context['is_owner'] is False
+
+
+class TestCustomizationView:
+    @pytest.fixture(autouse=True)
+    def setup(self, client, user, password, channel_factory):
+        channel = channel_factory(user=user, is_selected=True)
+        assert client.login(username=user.email, password=password)
+        self.channel = channel
+
+    def test_get(self, client):
+        response = client.get('/channel/customization/')
+
+        assert response.status_code == OK
+        assert response.context['selected_channel'] == self.channel.id
+
+    def test_post_channel_name(self):
+        pass
+
+    def test_post_channel_description(self):
+        pass
+
+    def test_post_avatar_image(self):
+        pass
+
+    def test_post_banner_image(self):
+        pass
