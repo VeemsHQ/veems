@@ -5,11 +5,14 @@ from django.templatetags.static import static
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.contrib.auth import get_user_model
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from ..common.models import BaseModel
 from ..channel.models import Channel
 from . import storage_backends
 from .transcoder import transcoder_profiles
+from .. import images
 
 STORAGE_BACKEND = storage_backends.MediaStorage
 UPLOAD_CHOICES = (
@@ -257,7 +260,9 @@ class Upload(BaseModel):
         blank=True,
     )
     presigned_upload_urls = ArrayField(
-        models.URLField(max_length=500), null=False, default=list,
+        models.URLField(max_length=500),
+        null=False,
+        default=list,
     )
     # The upload_id within the Object Storage backend itself.
     provider_upload_id = models.CharField(
@@ -416,4 +421,12 @@ class VideoLikeDislike(BaseModel):
         return (
             f'<{self.__class__.__name__} {self.id} {self.video_id} '
             f'{self.is_like}>'
+        )
+
+
+@receiver(pre_save, sender=Video)
+def video_pre_save_callback(sender, instance, *args, **kwargs):
+    if instance.custom_thumbnail_image:
+        instance.custom_thumbnail_image = images.remove_exif_data(
+            image_file=instance.custom_thumbnail_image.file
         )

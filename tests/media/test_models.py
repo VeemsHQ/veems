@@ -1,6 +1,7 @@
 import io
 
 import pytest
+from exif import Image as ExifImage
 from django.core.files.uploadedfile import SimpleUploadedFile
 import boto3
 
@@ -45,6 +46,17 @@ def test_video_rendition_upload_to(video_rendition):
         f'/{video_rendition.id}/rendition/'
         f'{video_rendition.id}.webm'
     )
+
+
+def test_video_custom_thumbnail_image(video_factory, uploaded_img_with_exif):
+    img_file_obj, _ = uploaded_img_with_exif
+
+    video = video_factory(custom_thumbnail_image=img_file_obj)
+
+    assert video.custom_thumbnail_image
+    # Check all exif data was removed
+    exif_image = ExifImage(video.custom_thumbnail_image)
+    assert exif_image.list_all() == []
 
 
 def test_video_rendition_thumbnail_upload_to(

@@ -43,6 +43,10 @@ start-deps:
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://${BUCKET_MEDIA} || true
 
 .ONESHELL:
+start-deps-min:
+	docker-compose up -d postgres rabbit redis
+
+.ONESHELL:
 .PHONY: seed
 seed: install make-buckets
 	python manage.py flush --noinput

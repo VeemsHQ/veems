@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from pytest_voluptuous import S
 from rest_framework.test import APIClient
+from exif import Image as ExifImage
 
 from veems.channel import services as channel_services
 from veems.media.transcoder import transcoder_profiles
@@ -18,6 +19,7 @@ from tests import constants
 
 TEST_DATA_DIR = Path(__file__).parent / 'test_data'
 EXAMPLE_IMG = TEST_DATA_DIR / 'example-image.jpeg'
+EXAMPLE_IMG_EXIF_GPS = TEST_DATA_DIR / 'image-with-exif-gps.jpg'
 VIDEO_PATH = constants.VID_360P_24FPS
 VIDEO_PATH_2160_30FPS = TEST_DATA_DIR / '2160p_30fps.mp4'
 
@@ -27,6 +29,23 @@ def simple_uploaded_img_file():
     with EXAMPLE_IMG.open('rb') as file_:
         file_contents = file_.read()
     return SimpleUploadedFile(EXAMPLE_IMG.name, file_contents)
+
+
+@pytest.fixture
+def uploaded_img_with_exif():
+    """An image with some EXIF data including GPS."""
+    img_path = EXAMPLE_IMG_EXIF_GPS
+    with img_path.open('rb') as file_:
+        file_contents = file_.read()
+        file_.seek(0)
+        exif_image = ExifImage(file_)
+        assert exif_image.has_exif
+        assert exif_image.list_all()
+
+    return (
+        SimpleUploadedFile(img_path.name, file_contents),
+        img_path,
+    )
 
 
 @pytest.fixture
