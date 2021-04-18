@@ -1,6 +1,6 @@
 from exif import Image as ExifImage
 
-from veems.media import images
+from veems import images
 
 
 def test_remove_exif_data(uploaded_img_with_exif):

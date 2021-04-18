@@ -12,7 +12,7 @@ from ..common.models import BaseModel
 from ..channel.models import Channel
 from . import storage_backends
 from .transcoder import transcoder_profiles
-from . import images
+from .. import images
 
 STORAGE_BACKEND = storage_backends.MediaStorage
 UPLOAD_CHOICES = (

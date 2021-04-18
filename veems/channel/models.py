@@ -5,10 +5,13 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill, ResizeToFit
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from ..common.models import BaseModel
 from ..common import validators
 from ..media import storage_backends
+from .. import images
 
 STORAGE_BACKEND = storage_backends.MediaStorage
 
@@ -114,3 +117,15 @@ class Channel(BaseModel):
         if not self.banner_image_small:
             return static(self._DEFAULT_BANNER_PATH)
         return self.banner_image_small.url
+
+
+@receiver(pre_save, sender=Channel)
+def channel_pre_save_callback(sender, instance, *args, **kwargs):
+    if instance.banner_image:
+        instance.banner_image = images.remove_exif_data(
+            image_file=instance.banner_image.file
+        )
+    if instance.avatar_image:
+        instance.avatar_image = images.remove_exif_data(
+            image_file=instance.avatar_image.file
+        )

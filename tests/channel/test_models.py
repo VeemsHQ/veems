@@ -1,5 +1,7 @@
 import pytest
 
+from exif import Image as ExifImage
+
 pytestmark = pytest.mark.django_db
 
 
@@ -58,3 +60,23 @@ class TestChannel:
             'defaults/channel-banner-image-large.png'
             in channel.banner_image_large_url
         )
+
+    def test_banner_image(self, user, channel_factory, uploaded_img_with_exif):
+        img_file_obj, _ = uploaded_img_with_exif
+
+        channel = channel_factory(banner_image=img_file_obj, user=user)
+
+        assert channel.banner_image
+        # Check all exif data was removed
+        exif_image = ExifImage(channel.banner_image)
+        assert exif_image.list_all() == []
+
+    def test_avatar_image(self, user, channel_factory, uploaded_img_with_exif):
+        img_file_obj, _ = uploaded_img_with_exif
+
+        channel = channel_factory(avatar_image=img_file_obj, user=user)
+
+        assert channel.avatar_image
+        # Check all exif data was removed
+        exif_image = ExifImage(channel.avatar_image)
+        assert exif_image.list_all() == []
