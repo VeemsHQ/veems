@@ -33,6 +33,7 @@ def simple_uploaded_img_file():
 
 @pytest.fixture
 def uploaded_img_with_exif():
+    """An image with some EXIF data including GPS."""
     img_path = EXAMPLE_IMG_EXIF_GPS
     with img_path.open('rb') as file_:
         file_contents = file_.read()
