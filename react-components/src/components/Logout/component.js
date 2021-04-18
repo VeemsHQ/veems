@@ -5,10 +5,10 @@ export const Logout = ({
     destroySession,
 }) => {
     return (
-        <>
-            <div><a onClick={() => destroySession()} href="/accounts/logout/" className="mt-2 btn btn-outline-secondary"><i
-                className="material-icons align-middle">exit_to_app</i> Logout</a></div>
-        </>
+        <div>
+            <a onClick={() => destroySession()} href="/accounts/logout/" className="mt-2 btn btn-outline-secondary"><i
+            className="material-icons align-middle">exit_to_app</i> Logout</a>
+        </div>
     );
 };
 
