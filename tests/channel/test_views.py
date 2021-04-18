@@ -100,8 +100,10 @@ class TestCustomizationView:
         assert response.status_code == OK
         assert response.context['selected_channel'] == self.channel.id
 
-    def test_post_channel_name(self):
-        pass
+    def test_post_channel_name(self, client):
+        response = client.post('/channel/customization/', data={})
+
+        assert response.status_code == OK
 
     def test_post_channel_description(self):
         pass

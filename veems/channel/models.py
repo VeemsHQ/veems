@@ -40,7 +40,7 @@ class Channel(BaseModel):
     )
     name = models.CharField(max_length=60, db_index=True)
     description = models.TextField(max_length=5000, null=True, blank=True)
-    sync_videos_interested = models.BooleanField(db_index=True)
+    sync_videos_interested = models.BooleanField(db_index=True, default=True)
     language = models.CharField(
         max_length=2, validators=(validators.validate_language,), default=None
     )

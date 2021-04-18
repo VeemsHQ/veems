@@ -25,6 +25,11 @@ def get_selected_channel_id(user):
     return user.channels.only('id').get(is_selected=True).id
 
 
+def get_selected_channel(user):
+    # TODO: test
+    return user.channels.only('id').get(is_selected=True)
+
+
 def update_channel(*, channel, **kwargs):
     logger.info('Updating channel %s...', channel.id)
     for field, val in kwargs.items():

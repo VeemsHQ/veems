@@ -10,6 +10,7 @@ from ..media import (
     services as media_services,
     serializers as media_serializers,
 )
+from . import forms
 
 
 @method_decorator(login_required, name='dispatch')
@@ -76,6 +77,22 @@ class MonetizationView(ChannelManagerTemplateView):
 
 class CustomizationView(ChannelManagerTemplateView):
     template_name = 'channel_manager/customization.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        channel = channel_services.get_selected_channel(
+            user=self.request.user
+        )
+        context['channel'] = channel
+        return context
+
+    def post(self, request):
+        form = forms.ChannelForm(request.POST)
+        if form.is_valid():
+            channel_services.update_channel(channel=form.instance, **form.cleaned_data)
+        else:
+            import ipdb; ipdb.set_trace()
+            1/0
 
 
 class SyncView(ChannelManagerTemplateView):

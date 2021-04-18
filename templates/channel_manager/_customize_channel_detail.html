@@ -4,17 +4,18 @@
     <div class="border mt-3 rounded">
         <div class="row">
             <div class="col">
-                <form>
+                <form method="post" action="{% url 'channel-manager-customization' %}">
+                    {% csrf_token %}
                     <div class="p-3">
                         <div class="form-group">
-                            <label for="exampleFormControlInput4">Channel Name</label>
-                            <input type="text" class="form-control" id="exampleFormControlInput4"
+                            <label for="name">Channel Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value={{channel.name}}
                                 placeholder="My Awesome Channel">
                         </div>
                         <div class="form-group">
-                            <label for="exampleFormControlTextarea3">Channel Description</label>
-                            <textarea class="form-control" id="exampleFormControlTextarea3" rows="3"
-                                placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places."></textarea>
+                            <label for="description">Channel Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.">{{channel.description}}</textarea>
                         </div>
                     </div>
                     <div class="footer bg-secondary p-3">
@@ -41,7 +42,8 @@
             <div
                 class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
                 <i class="material-icons align-middle" style="font-size:900%">face</i>
-                <img class="d-none avatar-large rounded-circle img-fluid" src="https://camo.githubusercontent.com/e6e6f6e6a6e9636268ea0cbee56b370626a7c0d6d081aeda867a75df108afd2d/687474703a2f2f692e696d6775722e636f6d2f3749707a69416a2e706e67" />
+                <img class="d-none avatar-large rounded-circle img-fluid"
+                    src="https://camo.githubusercontent.com/e6e6f6e6a6e9636268ea0cbee56b370626a7c0d6d081aeda867a75df108afd2d/687474703a2f2f692e696d6775722e636f6d2f3749707a69416a2e706e67" />
             </div>
         </div>
         <div class="col-8 col-md-9">
