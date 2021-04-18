@@ -19,6 +19,7 @@ import {
 import {
   createToast,
   removeToast,
+  destroySession,
 } from './Global';
 import {
   toggleVideoLike,
@@ -28,6 +29,7 @@ import {
 } from './Video';
 
 export {
+  destroySession,
   createToast,
   removeToast,
   setActiveChannel,
