@@ -101,12 +101,20 @@ class TestCustomizationView:
         assert response.context['selected_channel'] == self.channel.id
 
     def test_post_channel_name(self, client):
-        response = client.post('/channel/customization/', data={})
+        response = client.post('/channel/customization/', data={
+            'name': 'Channel name',
+        })
 
         assert response.status_code == OK
+        assert response.context['channel'].name == 'Channel name'
 
-    def test_post_channel_description(self):
-        pass
+    def test_post_channel_description(self, client):
+        response = client.post('/channel/customization/', data={
+            'description': 'Channel desc',
+        })
+
+        assert response.status_code == OK
+        assert response.context['channel'].description == 'Channel desc'
 
     def test_post_avatar_image(self):
         pass
