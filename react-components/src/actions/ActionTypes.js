@@ -1,6 +1,7 @@
 /* ---- GLOBALS ---- */
 export const CREATE_TOAST = 'CREATE_TOAST';
 export const REMOVE_TOAST = 'REMOVE_TOAST';
+export const DESTROY_SESSION = 'DESTROY_SESSION';
 
 /* ---- CHANNELS ---- */
 export const SET_ACTIVE_CHANNEL_ID = 'SET_ACTIVE_CHANNEL_ID';

@@ -8,3 +8,7 @@ export const createToast = (data) => async (dispatch) => {
 export const removeToast = () => async (dispatch) => {
   dispatch({ type: aTypes.REMOVE_TOAST, payload: null });
 };
+
+export const destroySession = () => async (dispatch) => {
+  dispatch({ type: aTypes.DESTROY_SESSION, payload: null });
+};

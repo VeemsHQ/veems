@@ -4,6 +4,7 @@ import {
   SET_CHANNELS,
   SET_CREATE_CHANNEL_API_ERRORS,
   SET_CREATE_CHANNEL_SHOW_MODAL,
+  DESTROY_SESSION,
 } from '../actions/ActionTypes';
 
 export const initialState = {
@@ -43,6 +44,8 @@ export default (state = initialState, action) => {
           ...{ createChannelForm: initialState.createChannelForm }
         };
       }
+    case DESTROY_SESSION:
+      return initialState;
     default:
       return state;
   }

@@ -27,11 +27,14 @@
         <a href="#" data-toggle="modal" data-target="#createChannelModal" class="mt-2 btn btn-outline-secondary">
             <i class="material-icons align-middle">add_circle_outline</i> Create Channel</a>
     </div>
-    <div><a href="{% url 'logout' %}" class="mt-2 btn btn-outline-secondary"><i
+    <div id="logout-button"><a href="{% url 'logout' %}" class="mt-2 btn btn-outline-secondary"><i
                 class="material-icons align-middle">exit_to_app</i> Logout</a></div>
 </div>
 <script type="text/javascript">
     app.CreateChannelContainer({
         element: document.getElementById('create-channel-button'),
+    })
+    app.CreateLogoutContainer({
+        element: document.getElementById('logout-button'),
     })
 </script>
