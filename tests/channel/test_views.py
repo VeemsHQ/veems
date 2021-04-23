@@ -100,24 +100,58 @@ class TestCustomizationView:
         assert response.status_code == OK
         assert response.context['selected_channel'] == self.channel.id
 
-    def test_post_channel_name(self, client):
-        response = client.post('/channel/customization/', data={
-            'name': 'Channel name',
-        })
+    def test_post_channel_name(self, client, simple_uploaded_img_file):
+        self.channel.avatar_image = simple_uploaded_img_file
+        self.channel.save()
+
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'name': 'Channel name',
+            },
+        )
 
         assert response.status_code == OK
         assert response.context['channel'].name == 'Channel name'
+        assert response.context['channel'].avatar_image
 
     def test_post_channel_description(self, client):
-        response = client.post('/channel/customization/', data={
-            'description': 'Channel desc',
-        })
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'description': 'Channel desc',
+            },
+        )
 
         assert response.status_code == OK
         assert response.context['channel'].description == 'Channel desc'
 
-    def test_post_avatar_image(self):
-        pass
+    def test_post_avatar_image(self, client, simple_uploaded_img_file):
+        avatar_image = simple_uploaded_img_file
 
-    def test_post_banner_image(self):
-        pass
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'avatar_image': avatar_image,
+            },
+            format='multipart',
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel'].avatar_image
+        assert not response.context['channel'].banner_image
+
+    def test_post_banner_image(self, client, simple_uploaded_img_file):
+        banner_image = simple_uploaded_img_file
+
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'banner_image': banner_image,
+            },
+            format='multipart',
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel'].banner_image
+        assert not response.context['channel'].avatar_image

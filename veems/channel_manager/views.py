@@ -86,13 +86,14 @@ class CustomizationView(ChannelManagerTemplateView):
 
     def post(self, request):
         channel = channel_services.get_selected_channel(user=self.request.user)
-        form = forms.ChannelForm(instance=channel, data=request.POST)
+        form = forms.ChannelForm(
+            instance=channel, data=request.POST, files=request.FILES
+        )
         if form.is_valid():
             channel_services.update_channel(
                 channel=form.instance, **form.cleaned_data
             )
         else:
-            import ipdb; ipdb.set_trace()
             1 / 0
         context = self.get_context_data()
         return render(
