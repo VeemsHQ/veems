@@ -82,6 +82,10 @@ class CustomizationView(ChannelManagerTemplateView):
         context = super().get_context_data(*args, **kwargs)
         channel = channel_services.get_selected_channel(user=self.request.user)
         context['channel'] = channel
+        context['channel_basic_info_saved'] = False
+        context['channel_avatar_image_saved'] = False
+        context['channel_banner_image_saved'] = False
+        context['errors'] = None
         return context
 
     def post(self, request):
@@ -89,13 +93,19 @@ class CustomizationView(ChannelManagerTemplateView):
         form = forms.ChannelForm(
             instance=channel, data=request.POST, files=request.FILES
         )
+        context = self.get_context_data()
         if form.is_valid():
             channel_services.update_channel(
                 channel=form.instance, **form.cleaned_data
             )
+            if form.cleaned_data['name'] or form.cleaned_data['description']:
+                context['channel_basic_info_saved'] = True
+            if form.cleaned_data['avatar_image']:
+                context['channel_avatar_image_saved'] = True
+            if form.cleaned_data['banner_image']:
+                context['channel_banner_image_saved'] = True
         else:
-            1 / 0
-        context = self.get_context_data()
+            context['errors'] = form.errors
         return render(
             request=request, template_name=self.template_name, context=context
         )

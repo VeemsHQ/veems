@@ -1,6 +1,19 @@
 {% load static %}
 <div>
+
+    {% if errors %}
+        {% for field, error_messages in errors.items %}
+            {% for error in error_messages %}
+                <p class="alert alert-danger"><b>{{field|title}}</b>, {{error}}</p>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
     <h2 class="h5">Basic info</h2>
+
+    {% if channel_basic_info_saved %}
+    <p class="alert alert-success">Channel details were successfully updated.</p>
+    {% endif %}
     <div class="border mt-3 rounded">
         <div class="row">
             <div class="col">
@@ -29,6 +42,9 @@
     </div>
 </div>
 <h2 class="h5 mt-4">Avatar image</h2>
+{% if channel_avatar_image_saved %}
+<p class="alert alert-success">Channel avatar image has been updated.</p>
+{% endif %}
 <p class="text-muted">Your avatar picture will appear where your channel is presented
     on
     Veems, like next to
@@ -62,6 +78,9 @@
 </div>
 
 <h2 class="h5 mt-4">Banner image</h2>
+{% if channel_banner_image_saved %}
+<p class="alert alert-success">Channel banner image has been updated.</p>
+{% endif %}
 <p class="text-muted">This image will appear across the top of your channel.</p>
 
 <div class="border mt-3 p-3 rounded">
