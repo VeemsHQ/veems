@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from ..stub_data import VIDEOS, CHANNEL_SYNCS
 from ..channel import services as channel_services
@@ -98,11 +99,19 @@ class CustomizationView(ChannelManagerTemplateView):
             channel_services.update_channel(
                 channel=form.instance, **form.cleaned_data
             )
+
             if form.cleaned_data['name'] or form.cleaned_data['description']:
                 context['channel_basic_info_saved'] = True
-            if form.cleaned_data['avatar_image']:
+            if isinstance(
+                form.cleaned_data['avatar_image'], InMemoryUploadedFile
+            ):
                 context['channel_avatar_image_saved'] = True
-            if form.cleaned_data['banner_image']:
+            if isinstance(
+                form.cleaned_data['banner_image'], InMemoryUploadedFile
+            ):
+                import ipdb
+
+                ipdb.set_trace()
                 context['channel_banner_image_saved'] = True
         else:
             context['errors'] = form.errors
