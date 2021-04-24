@@ -22,8 +22,7 @@
                     <div class="p-3">
                         <div class="form-group">
                             <label for="name">Channel Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value={{channel.name}}
-                                placeholder="My Awesome Channel">
+                            <input type="text" class="form-control" id="name" name="name" value="{{channel.name}}">
                         </div>
                         <div class="form-group">
                             <label for="description">Channel Description</label>
@@ -54,12 +53,17 @@
 
 <div class="border mt-3 p-3 rounded">
     <div class="row">
+        <form method="post" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="col-4 col-md-3">
             <div
                 class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
+
+                {% if channel.avatar_image %}
+                <img src="{{channel.avatar_image_small_url}}" />
+                {% else %}
                 <i class="material-icons align-middle" style="font-size:900%">face</i>
-                <img class="d-none avatar-large rounded-circle img-fluid"
-                    src="https://camo.githubusercontent.com/e6e6f6e6a6e9636268ea0cbee56b370626a7c0d6d081aeda867a75df108afd2d/687474703a2f2f692e696d6775722e636f6d2f3749707a69416a2e706e67" />
+                {% endif %}
             </div>
         </div>
         <div class="col-8 col-md-9">
@@ -71,9 +75,11 @@
                 SFW.
             </p>
             <p>
-                <a href="#" class="btn text-primary btn-outline-primary">Upload</a>
+                <input type="file" id="avatar_image" name="avatar_image">
+                <button type="submit" class="btn text-primary btn-outline-primary">Upload</button>
             </p>
         </div>
+        </form>
     </div>
 </div>
 
@@ -85,11 +91,21 @@
 
 <div class="border mt-3 p-3 rounded">
     <div class="row">
+        <form method="post" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="col-6 col-md-5">
             <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
                 style="min-height:140px">
-                <div style="height: 120px; overflow:hidden" class="border"><img class="img-fluid banner-pic-135"
-                        src="{% static 'images/defaults/channel-banner-image.png' %}" /></div>
+                <div style="height: 120px; overflow:hidden" class="border">
+                    {% if channel.banner_image %}
+                    <img src="{{channel.banner_image_small_url}}" />
+                    {% else %}
+                    <img
+                        class="img-fluid banner-pic-135"
+                        src="{% static 'images/defaults/channel-banner-image.png' %}"
+                    />
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="col-6 col-md-7">
@@ -99,8 +115,10 @@
                 pixels
                 and 6 MB or less.</p>
             <p>
-                <a href="#" class="btn text-primary btn-outline-primary">Upload</a>
+                <input type="file" id="banner_image" name="banner_image">
+                <button type="submit" class="btn text-primary btn-outline-primary">Upload</button>
             </p>
         </div>
+        </form>
     </div>
 </div>
