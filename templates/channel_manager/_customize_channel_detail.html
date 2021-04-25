@@ -52,9 +52,8 @@
     services.</p>
 
 <div class="border mt-3 p-3 rounded">
-    <form method="post" class="row" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="col-4 col-md-3">
+    <div class="row">
+        <div class="col-12 col-md-3">
             <div
                 class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
                 {% if channel.avatar_image %}
@@ -64,7 +63,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-8 col-md-9">
+        <div class="col-12 col-md-9">
             <p class="text-muted">It's recommended that you use a picture that's at least 98
                 x
                 98 pixels and 4 MB
@@ -72,17 +71,20 @@
                 less. Use a PNG or GIF (no animations) file. Make sure that your picture is
                 SFW.
             </p>
-            <div class="input-group">
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="avatar_image">
-                    <label class="custom-file-label" for="avatar_image">Choose file</label>
+            <form method="post" id="avatar_image_form" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="avatar_image">
+                        <label class="custom-file-label" for="avatar_image">Choose file</label>
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-sm" type="submit">Upload</button>
+                    </div>
                 </div>
-                <div class="input-group-append">
-                    <button class="btn btn-primary btn-sm" type="submit">Upload</button>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
 <h2 class="h5 mt-4">Banner image</h2>
@@ -92,9 +94,9 @@
 <p class="text-muted">This image will appear across the top of your channel.</p>
 
 <div class="border mt-3 p-3 rounded">
-    <form method="post" class="row" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+    <form method="post" id="banner_image_form"  class="row" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="col-6 col-md-5">
+        <div class="col-12 col-md-6">
             <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
                 style="min-height:140px">
                 <div style="height: 120px; overflow:hidden" class="border">
@@ -107,7 +109,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-7">
+        <div class="col-12 col-md-6">
             <p class="text-muted">For the best results on all devices, use an image that's
                 at
                 least 2048 x 1152

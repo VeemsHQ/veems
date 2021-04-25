@@ -37,6 +37,21 @@ def update_channel(*, channel, **kwargs):
             raise RuntimeError('Updating of channel user is not permitted')
         setattr(channel, field, val)
     channel.save(update_fields=tuple(kwargs.keys()))
+    channel.refresh_from_db()
+    # if 'avatar_image' in kwargs:
+    #     cached_attrs = (
+    #         'avatar_image_small',
+    #         'avatar_image_large',
+    #     )
+    #     for attr in cached_attrs:
+    #         getattr(channel, attr).generate(force=True)
+    # if 'banner_image' in kwargs:
+    #     cached_attrs = (
+    #         'banner_image_small',
+    #         'banner_image_large',
+    #     )
+    #     for attr in cached_attrs:
+    #         getattr(channel, attr).generate(force=True)
     if channel.is_selected:
         channel.user.channels.exclude(id=channel.id).update(is_selected=False)
     return channel

@@ -99,7 +99,6 @@ class CustomizationView(ChannelManagerTemplateView):
             channel_services.update_channel(
                 channel=form.instance, **form.cleaned_data
             )
-
             if form.cleaned_data['name'] or form.cleaned_data['description']:
                 context['channel_basic_info_saved'] = True
             if isinstance(
@@ -109,9 +108,6 @@ class CustomizationView(ChannelManagerTemplateView):
             if isinstance(
                 form.cleaned_data['banner_image'], InMemoryUploadedFile
             ):
-                import ipdb
-
-                ipdb.set_trace()
                 context['channel_banner_image_saved'] = True
         else:
             context['errors'] = form.errors
