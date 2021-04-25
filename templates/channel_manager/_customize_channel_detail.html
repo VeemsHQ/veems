@@ -52,34 +52,37 @@
     services.</p>
 
 <div class="border mt-3 p-3 rounded">
-    <div class="row">
-        <form method="post" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="col-4 col-md-3">
-                <div
-                    class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
-                    {% if channel.avatar_image %}
-                    <img src="{{channel.avatar_image_large_url}}" class="rounded-circle"/>
-                    {% else %}
-                    <i class="material-icons align-middle" style="font-size:900%">face</i>
-                    {% endif %}
+    <form method="post" class="row" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="col-4 col-md-3">
+            <div
+                class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
+                {% if channel.avatar_image %}
+                <img src="{{channel.avatar_image_large_url}}" class="rounded-circle" />
+                {% else %}
+                <i class="material-icons align-middle" style="font-size:900%">face</i>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-8 col-md-9">
+            <p class="text-muted">It's recommended that you use a picture that's at least 98
+                x
+                98 pixels and 4 MB
+                or
+                less. Use a PNG or GIF (no animations) file. Make sure that your picture is
+                SFW.
+            </p>
+            <div class="input-group">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="avatar_image">
+                    <label class="custom-file-label" for="avatar_image">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary btn-sm" type="submit">Upload</button>
                 </div>
             </div>
-            <div class="col-8 col-md-9">
-                <p class="text-muted">It's recommended that you use a picture that's at least 98
-                    x
-                    98 pixels and 4 MB
-                    or
-                    less. Use a PNG or GIF (no animations) file. Make sure that your picture is
-                    SFW.
-                </p>
-                <p>
-                    <input type="file" id="avatar_image" name="avatar_image">
-                    <button type="submit" class="btn text-primary btn-outline-primary">Upload</button>
-                </p>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 <h2 class="h5 mt-4">Banner image</h2>
@@ -89,33 +92,36 @@
 <p class="text-muted">This image will appear across the top of your channel.</p>
 
 <div class="border mt-3 p-3 rounded">
-    <div class="row">
-        <form method="post" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="col-6 col-md-5">
-                <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
-                    style="min-height:140px">
-                    <div style="height: 120px; overflow:hidden" class="border">
-                        {% if channel.banner_image %}
-                        <img src="{{channel.banner_image_small_url}}" />
-                        {% else %}
-                        <img class="img-fluid banner-pic-135"
-                            src="{% static 'images/defaults/channel-banner-image.png' %}" />
-                        {% endif %}
-                    </div>
+    <form method="post" class="row" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="col-6 col-md-5">
+            <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
+                style="min-height:140px">
+                <div style="height: 120px; overflow:hidden" class="border">
+                    {% if channel.banner_image %}
+                    <img src="{{channel.banner_image_small_url}}" />
+                    {% else %}
+                    <img class="img-fluid banner-pic-135"
+                        src="{% static 'images/defaults/channel-banner-image.png' %}" />
+                    {% endif %}
                 </div>
             </div>
-            <div class="col-6 col-md-7">
-                <p class="text-muted">For the best results on all devices, use an image that's
-                    at
-                    least 2048 x 1152
-                    pixels
-                    and 6 MB or less.</p>
-                <p>
-                    <input type="file" id="banner_image" name="banner_image">
-                    <button type="submit" class="btn text-primary btn-outline-primary">Upload</button>
-                </p>
+        </div>
+        <div class="col-6 col-md-7">
+            <p class="text-muted">For the best results on all devices, use an image that's
+                at
+                least 2048 x 1152
+                pixels
+                and 6 MB or less.</p>
+            <div class="input-group">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="banner_image">
+                    <label class="custom-file-label" for="banner_image">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary btn-sm" type="submit">Upload</button>
+                </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
