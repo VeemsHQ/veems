@@ -45,10 +45,12 @@ class Channel(BaseModel):
         max_length=2, validators=(validators.validate_language,), default=None
     )
     avatar_image = models.ImageField(
+        verbose_name='Avatar Image',
         upload_to=_channel_avatar_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
+        validators=(validators.validate_minimum_size(width=98, height=98),),
     )
     avatar_image_small = ImageSpecField(
         source='avatar_image',
@@ -63,6 +65,7 @@ class Channel(BaseModel):
         options={'quality': 90, 'optimize': True},
     )
     banner_image = models.ImageField(
+        verbose_name='Banner Image',
         upload_to=_channel_banner_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
