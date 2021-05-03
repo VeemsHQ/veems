@@ -70,6 +70,9 @@ class Channel(BaseModel):
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
+        validators=(
+            validators.validate_minimum_size(width=2048, height=1152),
+        ),
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
