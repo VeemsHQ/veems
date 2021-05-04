@@ -9,8 +9,8 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 from ..common.models import BaseModel
-from ..common import validators
 from ..media import storage_backends
+from ..common import validators
 from .. import images
 
 STORAGE_BACKEND = storage_backends.MediaStorage
@@ -35,6 +35,12 @@ class Channel(BaseModel):
         'images/defaults/channel-banner-image-large.png'
     )
 
+    def _validate_minimum_size_avatar_image(self, image):
+        return validators.validate_minimum_size(width=98, height=98)(image)
+
+    def _validate_minimum_size_banner_image(self, image):
+        return validators.validate_minimum_size(width=2048, height=1152)(image)
+
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='channels'
     )
@@ -50,7 +56,7 @@ class Channel(BaseModel):
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
-        validators=(validators.validate_minimum_size(width=98, height=98),),
+        validators=(_validate_minimum_size_avatar_image,),
     )
     avatar_image_small = ImageSpecField(
         source='avatar_image',
@@ -70,9 +76,7 @@ class Channel(BaseModel):
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
-        validators=(
-            validators.validate_minimum_size(width=2048, height=1152),
-        ),
+        validators=(_validate_minimum_size_banner_image,),
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
