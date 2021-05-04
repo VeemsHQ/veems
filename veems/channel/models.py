@@ -4,7 +4,7 @@ from django.templatetags.static import static
 from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill, ResizeToFit, SmartResize
+from imagekit.processors import ResizeToFit, SmartResize
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -62,15 +62,15 @@ class Channel(BaseModel):
     )
     avatar_image_small = ImageSpecField(
         source='avatar_image',
-        processors=[ResizeToFill(44, 44)],
+        processors=[SmartResize(44, 44)],
         format='JPEG',
-        options={'quality': 90, 'optimize': True},
+        options={'quality': 95, 'optimize': True},
     )
     avatar_image_large = ImageSpecField(
         source='avatar_image',
-        processors=[ResizeToFill(88, 88)],
+        processors=[SmartResize(98, 98)],
         format='JPEG',
-        options={'quality': 90, 'optimize': True},
+        options={'quality': 95, 'optimize': True},
     )
     banner_image = models.ImageField(
         verbose_name='Banner Image',
