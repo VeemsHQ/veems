@@ -4,7 +4,7 @@ from django.templatetags.static import static
 from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill, ResizeToFit
+from imagekit.processors import ResizeToFill, ResizeToFit, SmartResize
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -28,18 +28,20 @@ def _channel_banner_image_upload_to(instance, filename):
     return f'channels/banner-images/{channel.id}{Path(filename).suffix}'
 
 
+def _validate_minimum_size_avatar_image(value):
+    return validators.validate_minimum_size(width=98, height=98)(value)
+
+
+def _validate_minimum_size_banner_image(value):
+    return validators.validate_minimum_size(width=2048, height=1152)(value)
+
+
 class Channel(BaseModel):
     _DEFAULT_AVATAR_PATH = 'images/defaults/avatar.svg'
     _DEFAULT_BANNER_PATH = 'images/defaults/channel-banner-image.png'
     _DEFAULT_BANNER_LARGE_PATH = (
         'images/defaults/channel-banner-image-large.png'
     )
-
-    def _validate_minimum_size_avatar_image(self, image):
-        return validators.validate_minimum_size(width=98, height=98)(image)
-
-    def _validate_minimum_size_banner_image(self, image):
-        return validators.validate_minimum_size(width=2048, height=1152)(image)
 
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='channels'
@@ -80,13 +82,13 @@ class Channel(BaseModel):
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
-        processors=[ResizeToFit(2560, 1440)],
+        processors=[SmartResize(2560, 1440)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     banner_image_small = ImageSpecField(
         source='banner_image',
-        processors=[ResizeToFit(1360, 765)],
+        processors=[SmartResize(1360, 765)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )

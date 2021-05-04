@@ -94,14 +94,12 @@
         <div class="col-12 col-md-6">
             <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
                 style="min-height:140px">
-                <div style="height: 120px; overflow:hidden" class="border">
                     {% if channel.banner_image %}
-                    <img src="{{channel.banner_image_small_url}}" />
+                    <img class="border img-fluid banner-pic-135" src="{{channel.banner_image_small_url}}" />
                     {% else %}
-                    <img class="img-fluid banner-pic-135"
+                    <img class="border img-fluid banner-pic-135"
                         src="{% static 'images/defaults/channel-banner-image.png' %}" />
                     {% endif %}
-                </div>
             </div>
         </div>
         <div class="col-12 col-md-6">
