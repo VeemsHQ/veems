@@ -82,13 +82,13 @@ class Channel(BaseModel):
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
-        processors=[SmartResize(2560, 1440)],
+        processors=[SmartResize(1138, 188)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     banner_image_small = ImageSpecField(
         source='banner_image',
-        processors=[SmartResize(1360, 765)],
+        processors=[SmartResize(800, 132)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
