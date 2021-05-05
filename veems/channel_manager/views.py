@@ -96,8 +96,9 @@ class CustomizationView(ChannelManagerTemplateView):
         )
         context = self.get_context_data()
         if form.is_valid():
+            field_updates = {k: v for k, v in form.cleaned_data.items() if v}
             channel_services.update_channel(
-                channel=form.instance, **form.cleaned_data
+                channel=form.instance, **field_updates
             )
             if form.cleaned_data['name'] or form.cleaned_data['description']:
                 context['channel_basic_info_saved'] = True

@@ -50,3 +50,8 @@ class TestVideosView:
             assert video == expected_video_resp_json
             # Check only videos for the selected channel are listed
             assert video['channel_id'] == channel.id
+
+
+class TestCustomizationView:
+
+    pass
