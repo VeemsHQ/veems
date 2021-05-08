@@ -1,8 +1,9 @@
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from ..stub_data import VIDEOS, CHANNEL_SYNCS
 from ..channel import services as channel_services
@@ -10,6 +11,7 @@ from ..media import (
     services as media_services,
     serializers as media_serializers,
 )
+from . import forms
 
 
 @method_decorator(login_required, name='dispatch')
@@ -76,6 +78,45 @@ class MonetizationView(ChannelManagerTemplateView):
 
 class CustomizationView(ChannelManagerTemplateView):
     template_name = 'channel_manager/customization.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        channel = channel_services.get_selected_channel(user=self.request.user)
+        context['channel'] = channel
+        # TODO: test
+        context['reload_page_after_channel_selected'] = True
+        context['channel_basic_info_saved'] = False
+        context['channel_avatar_image_saved'] = False
+        context['channel_banner_image_saved'] = False
+        context['errors'] = None
+        return context
+
+    def post(self, request):
+        channel = channel_services.get_selected_channel(user=self.request.user)
+        form = forms.ChannelForm(
+            instance=channel, data=request.POST, files=request.FILES
+        )
+        context = self.get_context_data()
+        if form.is_valid():
+            field_updates = {k: v for k, v in form.cleaned_data.items() if v}
+            channel_services.update_channel(
+                channel=form.instance, **field_updates
+            )
+            if form.cleaned_data['name'] or form.cleaned_data['description']:
+                context['channel_basic_info_saved'] = True
+            if isinstance(
+                form.cleaned_data['avatar_image'], InMemoryUploadedFile
+            ):
+                context['channel_avatar_image_saved'] = True
+            if isinstance(
+                form.cleaned_data['banner_image'], InMemoryUploadedFile
+            ):
+                context['channel_banner_image_saved'] = True
+        else:
+            context['errors'] = form.errors
+        return render(
+            request=request, template_name=self.template_name, context=context
+        )
 
 
 class SyncView(ChannelManagerTemplateView):

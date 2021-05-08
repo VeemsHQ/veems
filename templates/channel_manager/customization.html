@@ -4,12 +4,14 @@
 {% block content %}
 <div class="col col-xl-8">
     <p class="alert alert-secondary d-block d-xl-none">Channel link<br /><a
-            href="#">{{settings.SITE_BASE_URL}}/c/UCASvHD</a>
+            href="{% url 'view-channel' selected_channel %}">{{settings.SITE_BASE_URL}}{% url 'view-channel' selected_channel %}</a>
     </p>
     {% include './_customize_channel_detail.html' %}
 </div>
 <div class="col col-xl-4 d-none d-xl-block">
-    <p class="alert alert-secondary m-0">Channel link<br /><a href="#">{{settings.SITE_BASE_URL}}/c/UCASvHD</a>
+    <p class="alert alert-secondary m-0">Channel link<br /><a href="{% url 'view-channel' selected_channel %}">
+        {{settings.SITE_BASE_URL}}{% url 'view-channel' selected_channel %}
+    </a>
     </p>
 </div>
 

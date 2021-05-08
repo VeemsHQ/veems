@@ -59,12 +59,12 @@ def simple_uploaded_img_file_factory():
 
 
 @pytest.fixture
-def pasword():
+def password():
     return f'password{str(uuid4())[:5]}'
 
 
 @pytest.fixture
-def user_factory(pasword):
+def user_factory(password):
     def make():
         unique = f'user{str(uuid4())[:5]}'
         email = f'{unique}@veems.tv'
@@ -72,7 +72,7 @@ def user_factory(pasword):
             username=email,
             email=email,
         )
-        user.set_password(pasword)
+        user.set_password(password)
         user.save()
         return user
 

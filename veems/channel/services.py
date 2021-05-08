@@ -25,6 +25,11 @@ def get_selected_channel_id(user):
     return user.channels.only('id').get(is_selected=True).id
 
 
+def get_selected_channel(user):
+    # TODO: test
+    return user.channels.only('id').get(is_selected=True)
+
+
 def update_channel(*, channel, **kwargs):
     logger.info('Updating channel %s...', channel.id)
     for field, val in kwargs.items():
@@ -32,8 +37,23 @@ def update_channel(*, channel, **kwargs):
             raise RuntimeError('Updating of channel user is not permitted')
         setattr(channel, field, val)
     channel.save(update_fields=tuple(kwargs.keys()))
+    if channel.avatar_image and 'avatar_image' in kwargs:
+        cached_attrs = (
+            'avatar_image_small',
+            'avatar_image_large',
+        )
+        for attr in cached_attrs:
+            getattr(channel, attr).generate(force=True)
+    if channel.banner_image and 'banner_image' in kwargs:
+        cached_attrs = (
+            'banner_image_small',
+            'banner_image_large',
+        )
+        for attr in cached_attrs:
+            getattr(channel, attr).generate(force=True)
     if channel.is_selected:
         channel.user.channels.exclude(id=channel.id).update(is_selected=False)
+    channel.refresh_from_db()
     return channel
 
 

@@ -17,6 +17,7 @@ const { store, persistor } = configureStore.getInstance();
 const Container = ({
   channels,
   activeChannelId,
+  reloadPageAfterChannelSelected,
   setActiveChannel,
 }) => {
 
@@ -24,6 +25,9 @@ const Container = ({
     const channelId = e.target.value;
     if (channelId) {
       setActiveChannel(channelId);
+      if(reloadPageAfterChannelSelected) {
+        window.location.reload(false);
+      }
     } else {
       console.error('handleSelectChannel, channelId not set');
     }
@@ -60,6 +64,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     channels: channels,
     activeChannelId: activeChannelId,
+    reloadPageAfterChannelSelected: ownProps.reloadPageAfterChannelSelected,
   };
 };
 

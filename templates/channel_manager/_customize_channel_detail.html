@@ -1,20 +1,33 @@
 {% load static %}
 <div>
+
+    {% if errors %}
+    {% for field, error_messages in errors.items %}
+    {% for error in error_messages %}
+    <p class="alert alert-danger"><b>{{field|title}}</b>, {{error}}</p>
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
+
     <h2 class="h5">Basic info</h2>
+
+    {% if channel_basic_info_saved %}
+    <p class="alert alert-success">Channel details were successfully updated.</p>
+    {% endif %}
     <div class="border mt-3 rounded">
         <div class="row">
             <div class="col">
-                <form>
+                <form method="post" action="{% url 'channel-manager-customization' %}">
+                    {% csrf_token %}
                     <div class="p-3">
                         <div class="form-group">
-                            <label for="exampleFormControlInput4">Channel Name</label>
-                            <input type="text" class="form-control" id="exampleFormControlInput4"
-                                placeholder="My Awesome Channel">
+                            <label for="name">Channel Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{channel.name}}">
                         </div>
                         <div class="form-group">
-                            <label for="exampleFormControlTextarea3">Channel Description</label>
-                            <textarea class="form-control" id="exampleFormControlTextarea3" rows="3"
-                                placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places."></textarea>
+                            <label for="description">Channel Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                placeholder="Tell viewers about your channel. Your description will appear in the About section of your channel and search results, among other places.">{{channel.description}}</textarea>
                         </div>
                     </div>
                     <div class="footer bg-secondary p-3">
@@ -28,6 +41,9 @@
     </div>
 </div>
 <h2 class="h5 mt-4">Avatar image</h2>
+{% if channel_avatar_image_saved %}
+<p class="alert alert-success">Channel avatar image has been updated.</p>
+{% endif %}
 <p class="text-muted">Your avatar picture will appear where your channel is presented
     on
     Veems, like next to
@@ -37,49 +53,68 @@
 
 <div class="border mt-3 p-3 rounded">
     <div class="row">
-        <div class="col-4 col-md-3">
+        <div class="col-12 col-md-3">
             <div
                 class="bg-secondary avatar-large p-3 d-flex align-self-center align-items-center justify-content-center">
+                {% if channel.avatar_image %}
+                <img src="{{channel.avatar_image_large_url}}" class="rounded-circle" />
+                {% else %}
                 <i class="material-icons align-middle" style="font-size:900%">face</i>
-                <img class="d-none avatar-large rounded-circle img-fluid" src="https://camo.githubusercontent.com/e6e6f6e6a6e9636268ea0cbee56b370626a7c0d6d081aeda867a75df108afd2d/687474703a2f2f692e696d6775722e636f6d2f3749707a69416a2e706e67" />
+                {% endif %}
             </div>
         </div>
-        <div class="col-8 col-md-9">
-            <p class="text-muted">It's recommended that you use a picture that's at least 98
+        <div class="col-12 col-md-9">
+            <p class="text-muted mt-2">It's recommended that you use a picture that's at least 98
                 x
                 98 pixels and 4 MB
                 or
                 less. Use a PNG or GIF (no animations) file. Make sure that your picture is
                 SFW.
             </p>
-            <p>
-                <a href="#" class="btn text-primary btn-outline-primary">Upload</a>
-            </p>
+            <form method="post" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="d-flex align-items-center">
+                    <input type="file" id="avatar_image" name="avatar_image">
+                    <button type="submit" class="btn btn-outline-primary">Upload</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <h2 class="h5 mt-4">Banner image</h2>
+{% if channel_banner_image_saved %}
+<p class="alert alert-success">Channel banner image has been updated.</p>
+{% endif %}
 <p class="text-muted">This image will appear across the top of your channel.</p>
 
 <div class="border mt-3 p-3 rounded">
     <div class="row">
-        <div class="col-6 col-md-5">
+        <div class="col-12 col-md-6">
             <div class="bg-secondary p-3 d-flex align-self-center align-items-center justify-content-center"
                 style="min-height:140px">
-                <div style="height: 120px; overflow:hidden" class="border"><img class="img-fluid banner-pic-135"
-                        src="{% static 'images/defaults/channel-banner-image.png' %}" /></div>
+                    {% if channel.banner_image %}
+                    <img class="border img-fluid banner-pic-135" src="{{channel.banner_image_small_url}}" />
+                    {% else %}
+                    <img class="border img-fluid banner-pic-135"
+                        src="{% static 'images/defaults/channel-banner-image.png' %}" />
+                    {% endif %}
             </div>
         </div>
-        <div class="col-6 col-md-7">
-            <p class="text-muted">For the best results on all devices, use an image that's
+        <div class="col-12 col-md-6">
+            <p class="text-muted mt-2">For the best results on all devices, use an image that's
                 at
                 least 2048 x 1152
                 pixels
                 and 6 MB or less.</p>
-            <p>
-                <a href="#" class="btn text-primary btn-outline-primary">Upload</a>
-            </p>
+            <form method="post" action="{% url 'channel-manager-customization' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="d-flex align-items-center">
+                    <input type="file" id="banner_image" name="banner_image">
+                    <button type="submit" class="btn btn-outline-primary">Upload</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

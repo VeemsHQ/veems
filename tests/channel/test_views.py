@@ -85,3 +85,110 @@ class TestChannelAboutView:
             }
         )
         assert response.context['is_owner'] is False
+
+
+class TestCustomizationView:
+    @pytest.fixture(autouse=True)
+    def setup(self, client, user, password, channel_factory):
+        channel = channel_factory(user=user, is_selected=True)
+        assert client.login(username=user.email, password=password)
+        self.channel = channel
+
+    def test_get(self, client):
+        response = client.get('/channel/customization/')
+
+        assert response.status_code == OK
+        assert response.context['channel_basic_info_saved'] is False
+        assert response.context['selected_channel'] == self.channel.id
+
+    def test_post_channel_name(self, client, simple_uploaded_img_file):
+        self.channel.avatar_image = simple_uploaded_img_file
+        self.channel.save()
+
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'name': 'Channel name',
+            },
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel_basic_info_saved'] is True
+        assert response.context['channel'].name == 'Channel name'
+        assert response.context['channel'].avatar_image
+
+    def test_post_channel_name_invalid(self, client):
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'name': 'x' * 5000,
+            },
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel_basic_info_saved'] is False
+        assert 'name' in response.context['errors']
+        assert response.context['channel'].name != 'Channel name'
+
+    def test_post_channel_description(self, client):
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'description': 'Channel desc',
+            },
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel_basic_info_saved'] is True
+        assert response.context['channel'].description == 'Channel desc'
+
+    def test_post_channel_description_invalid(self, client):
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'description': 'x' * 5000,
+            },
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel_basic_info_saved'] is False
+        assert 'description' in response.context['errors']
+        assert response.context['channel'].description != 'Channel desc'
+
+    def test_post_avatar_image(self, client, simple_uploaded_img_file):
+        avatar_image = simple_uploaded_img_file
+
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'avatar_image': avatar_image,
+            },
+            format='multipart',
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel_avatar_image_saved'] is True
+        assert response.context['channel'].avatar_image
+        assert not response.context['channel'].banner_image
+
+    def test_post_avatar_image_invalid(self, client, simple_uploaded_img_file):
+        raise NotImplementedError()
+
+    def test_post_banner_image(self, client, simple_uploaded_img_file):
+        banner_image = simple_uploaded_img_file
+
+        response = client.post(
+            '/channel/customization/',
+            data={
+                'banner_image': banner_image,
+            },
+            format='multipart',
+        )
+
+        assert response.status_code == OK
+        assert response.context['channel_banner_image_saved'] is True
+        assert response.context['channel'].banner_image
+        assert not response.context['channel'].avatar_image
+
+    def test_post_banner_image_invalid(self, client, simple_uploaded_img_file):
+        raise NotImplementedError()

@@ -4,13 +4,13 @@ from django.templatetags.static import static
 from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill, ResizeToFit
+from imagekit.processors import SmartResize
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 from ..common.models import BaseModel
-from ..common import validators
 from ..media import storage_backends
+from ..common import validators
 from .. import images
 
 STORAGE_BACKEND = storage_backends.MediaStorage
@@ -28,6 +28,14 @@ def _channel_banner_image_upload_to(instance, filename):
     return f'channels/banner-images/{channel.id}{Path(filename).suffix}'
 
 
+def _validate_minimum_size_avatar_image(value):
+    return validators.validate_minimum_size(width=98, height=98)(value)
+
+
+def _validate_minimum_size_banner_image(value):
+    return validators.validate_minimum_size(width=2048, height=1152)(value)
+
+
 class Channel(BaseModel):
     _DEFAULT_AVATAR_PATH = 'images/defaults/avatar.svg'
     _DEFAULT_BANNER_PATH = 'images/defaults/channel-banner-image.png'
@@ -40,43 +48,47 @@ class Channel(BaseModel):
     )
     name = models.CharField(max_length=60, db_index=True)
     description = models.TextField(max_length=5000, null=True, blank=True)
-    sync_videos_interested = models.BooleanField(db_index=True)
+    sync_videos_interested = models.BooleanField(db_index=True, default=True)
     language = models.CharField(
         max_length=2, validators=(validators.validate_language,), default=None
     )
     avatar_image = models.ImageField(
+        verbose_name='Avatar Image',
         upload_to=_channel_avatar_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
+        validators=(_validate_minimum_size_avatar_image,),
     )
     avatar_image_small = ImageSpecField(
         source='avatar_image',
-        processors=[ResizeToFill(44, 44)],
+        processors=[SmartResize(44, 44)],
         format='JPEG',
-        options={'quality': 90, 'optimize': True},
+        options={'quality': 95, 'optimize': True},
     )
     avatar_image_large = ImageSpecField(
         source='avatar_image',
-        processors=[ResizeToFill(88, 88)],
+        processors=[SmartResize(98, 98)],
         format='JPEG',
-        options={'quality': 90, 'optimize': True},
+        options={'quality': 95, 'optimize': True},
     )
     banner_image = models.ImageField(
+        verbose_name='Banner Image',
         upload_to=_channel_banner_image_upload_to,
         storage=STORAGE_BACKEND,
         null=True,
         blank=True,
+        validators=(_validate_minimum_size_banner_image,),
     )
     banner_image_large = ImageSpecField(
         source='banner_image',
-        processors=[ResizeToFit(2560, 1440)],
+        processors=[SmartResize(1138, 188)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
     banner_image_small = ImageSpecField(
         source='banner_image',
-        processors=[ResizeToFit(1360, 765)],
+        processors=[SmartResize(800, 132)],
         format='JPEG',
         options={'quality': 90, 'optimize': True},
     )
@@ -122,10 +134,12 @@ class Channel(BaseModel):
 @receiver(pre_save, sender=Channel)
 def channel_pre_save_callback(sender, instance, *args, **kwargs):
     if instance.banner_image:
+        # TODO: only do this if this field is changed
         instance.banner_image = images.remove_exif_data(
             image_file=instance.banner_image.file
         )
     if instance.avatar_image:
+        # TODO: only do this if this field is changed
         instance.avatar_image = images.remove_exif_data(
             image_file=instance.avatar_image.file
         )

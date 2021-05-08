@@ -7,7 +7,9 @@
   <div class="row bg-light">
     <div class="w-100 p-0 d-flex flex-column">
       {% if channel.has_banner %}
-      <img class="channel-banner-full" src="{{channel.banner_image_small_url}}" />
+      <div class="channel-banner-full" style="background: url({{channel.banner_image_large_url}}) no-repeat center center fixed">
+
+      </div>
       {% endif %}
       <div class="container-fluid py-3">
         <div class="d-lg-flex text-center text-lg-left">

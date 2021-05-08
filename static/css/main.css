@@ -567,7 +567,7 @@ hr {
 
 .channel-banner-full {
     width: 100%;
-    height: 150px;
+    background-size: cover;
 }
 
 .jumbotron-channel {
@@ -597,7 +597,7 @@ hr {
 .banner-pic-135 {
     object-fit: cover;
     height: 135px;
-    max-width: 572px;
+    /* max-width: 572px; */
     width: 572px;
 }
 
