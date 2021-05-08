@@ -83,6 +83,8 @@ class CustomizationView(ChannelManagerTemplateView):
         context = super().get_context_data(*args, **kwargs)
         channel = channel_services.get_selected_channel(user=self.request.user)
         context['channel'] = channel
+        # TODO: test
+        context['reload_page_after_channel_selected'] = True
         context['channel_basic_info_saved'] = False
         context['channel_avatar_image_saved'] = False
         context['channel_banner_image_saved'] = False

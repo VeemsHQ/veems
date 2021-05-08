@@ -33,4 +33,5 @@ def global_context(request):
     context['login_form'] = user_forms.CustomAuthenticationForm(request)
     context['next'] = request.GET.get('next') or ''
     context['api_base_url'] = settings.FRONTEND_API_BASE_URL
+    context['reload_page_after_channel_selected'] = False
     return context

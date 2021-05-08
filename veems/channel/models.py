@@ -4,7 +4,7 @@ from django.templatetags.static import static
 from django.db import models
 from django.contrib.auth import get_user_model
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFit, SmartResize
+from imagekit.processors import SmartResize
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -134,10 +134,12 @@ class Channel(BaseModel):
 @receiver(pre_save, sender=Channel)
 def channel_pre_save_callback(sender, instance, *args, **kwargs):
     if instance.banner_image:
+        # TODO: only do this if this field is changed
         instance.banner_image = images.remove_exif_data(
             image_file=instance.banner_image.file
         )
     if instance.avatar_image:
+        # TODO: only do this if this field is changed
         instance.avatar_image = images.remove_exif_data(
             image_file=instance.avatar_image.file
         )

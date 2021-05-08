@@ -58,10 +58,12 @@
 {{ block.super }}
 <script type="text/javascript">
     var channels = {{ channel_summaries | to_json }};
+    var reloadPageAfterChannelSelected = {{ reload_page_after_channel_selected | to_json }};
     app.CreateSelectActiveChannelDropdown({
         element: document.getElementById('select-channel-dropdown'),
         activeChannelId: window.SELECTED_CHANNEL_ID,
         channels: channels,
+        reloadPageAfterChannelSelected: reloadPageAfterChannelSelected,
     })
 </script>
 {% endblock %}

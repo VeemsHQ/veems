@@ -19,6 +19,7 @@ class TestGlobalContext:
         assert context['next'] == '/'
         assert context['selected_channel'] == channel.id
         assert context['api_base_url'] == 'http://localhost:8000'
+        assert context['reload_page_after_channel_selected'] is False
 
     def test_user_without_any_channels(self, rf, user):
         request = rf.get('/?next=/')
@@ -32,6 +33,7 @@ class TestGlobalContext:
         assert context['next'] == '/'
         assert context['selected_channel'] is None
         assert context['api_base_url'] == 'http://localhost:8000'
+        assert context['reload_page_after_channel_selected'] is False
 
     def test_unauthenticated(self, rf, user, channel):
         request = rf.get('/?next=/')
@@ -45,3 +47,4 @@ class TestGlobalContext:
         assert context['next'] == '/'
         assert context['selected_channel'] is None
         assert context['api_base_url'] == 'http://localhost:8000'
+        assert context['reload_page_after_channel_selected'] is False
